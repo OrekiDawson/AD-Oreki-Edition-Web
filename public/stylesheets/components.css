@@ -2175,7 +2175,7 @@ perfectly the same. */
 
 .t-dark .c-background-overlay[data-v-fade-away],
 .t-dark-metro .c-background-overlay[data-v-fade-away] {
-  background-image: url("../public/images/dark-bg.png");
+  background-image: url("../images/dark-bg.png");
   background-position: center;
 }
 
@@ -2202,7 +2202,7 @@ perfectly the same. */
   position: fixed;
   top: 0;
   left: 0;
-  background-image: url("../public/images/snow1.png"),
+  background-image: url("../images/snow1.png"),
   url("../images/snow2.png"),
   url("../images/snow3.png");
   animation: a-snow 10s linear infinite, a-snow-fade 10s cubic-bezier(0, 0.3, 1, 0.7) infinite;
