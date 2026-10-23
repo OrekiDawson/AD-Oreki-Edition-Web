@@ -186,8 +186,8 @@ export const eternityChallenges = [
     pelleGoal: DC.E208000,
     goalIncrease: DC.E12000,
     restriction: completions => Math.max(10 - 2 * completions, 1) / 10,
-    checkRestriction: restriction => Time.thisEternity.totalSeconds < restriction,
-    formatRestriction: restriction => `在 ${format(restriction, 0, 1)} 游戏秒内.`,
+    checkRestriction: restriction => Time.thisEternity.totalSeconds / getGlobalSpeedFactor() < restriction,
+    formatRestriction: restriction => `在 ${format(restriction, 0, 1)} 现实秒内.`,
     failedRestriction: "(你超过了挑战时限，挑战失败)",
     reward: {
       description: "降低无限维度的价格增幅",

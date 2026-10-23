@@ -113,7 +113,7 @@ export const infinityChallenges = [
     goal: DC.E27000,
     isQuickResettable: true,
     effect: () => DC.D0_8446303389034288.pow(
-      Math.max(0, player.records.thisInfinity.time - player.records.thisInfinity.lastBuyTime)),
+      Math.max(0, player.records.thisInfinity.time - player.records.thisInfinity.lastBuyTime) / getGlobalSpeedFactor()),
     reward: {
       description:
         "基于第一和第八维度的倍数，获得第二至第七维度额外倍数",

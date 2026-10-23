@@ -88,10 +88,11 @@ class InfinityChallengeState extends GameMechanicState {
 
   updateChallengeTime() {
     const bestTimes = player.challenge.infinity.bestTimes;
-    if (bestTimes[this.id - 1] <= player.records.thisInfinity.time) {
+    // 挑战最速记录以真实时间为准
+    if (bestTimes[this.id - 1] <= player.records.thisInfinity.time / getGlobalSpeedFactor()) {
       return;
     }
-    player.challenge.infinity.bestTimes[this.id - 1] = player.records.thisInfinity.time;
+    player.challenge.infinity.bestTimes[this.id - 1] = player.records.thisInfinity.time / getGlobalSpeedFactor();
     GameCache.infinityChallengeTimeSum.invalidate();
   }
 

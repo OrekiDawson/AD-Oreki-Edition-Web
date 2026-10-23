@@ -1,0 +1,114 @@
+/* AD: Oreki Edition — 自定义界面补充样式
+   只服务于本项目新增的界面元素；对上游固定宽高的按钮类做局部覆盖 */
+
+.c-oreki-speed {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* 信息区：显示当前倍率与说明 */
+.c-oreki-speed__info {
+  width: auto !important;
+  height: auto !important;
+  min-height: 5.5rem;
+  flex: 1 1 22rem;
+  max-width: 34rem;
+  align-items: flex-start !important;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.6rem 0.9rem;
+  box-sizing: border-box;
+  text-align: left;
+  cursor: default;
+}
+
+.c-oreki-speed__hint {
+  font-size: 0.85rem;
+  font-weight: normal;
+  line-height: 1.35;
+  opacity: 0.75;
+  white-space: normal;
+}
+
+/* 自定义输入区 */
+.c-oreki-speed__input {
+  width: auto !important;
+  height: auto !important;
+  min-height: 5.5rem;
+  flex: 0 1 11rem;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.7rem;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+.c-oreki-speed__field {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.35rem 0.4rem;
+  font-family: inherit;
+  font-size: 1.05rem;
+  text-align: center;
+  color: var(--color-text);
+  background: var(--color-base);
+  border: 0.1rem solid var(--color-text);
+  border-radius: var(--var-border-radius, 0.5rem);
+}
+
+.c-oreki-speed__field:focus {
+  outline: none;
+  border-color: var(--color-reality);
+}
+
+/* 应用按钮 */
+.c-oreki-speed__apply {
+  width: auto !important;
+  height: auto !important;
+  min-height: 5.5rem;
+  flex: 0 1 9rem;
+  margin: 0 !important;
+}
+
+/* 快捷倍率按钮行 */
+.c-oreki-speed__presets {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.c-oreki-speed__preset {
+  width: auto !important;
+  /* 4.4rem = 44px，满足触屏最小点击目标 */
+  height: 4.4rem !important;
+  flex: 1 1 0;
+  min-width: 4.6rem;
+  margin: 0 !important;
+  padding: 0 0.4rem;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+/* 窄屏（手机）：信息区与输入区各占整行，快捷按钮三列换行 */
+@media screen and (max-width: 900px) {
+  .c-oreki-speed__info,
+  .c-oreki-speed__input,
+  .c-oreki-speed__apply {
+    flex: 1 1 100%;
+    max-width: none;
+    min-height: 0;
+  }
+
+  .c-oreki-speed__apply {
+    height: 4rem !important;
+  }
+
+  .c-oreki-speed__preset {
+    flex: 1 1 calc(33.33% - 0.5rem);
+    min-width: 0;
+  }
+}

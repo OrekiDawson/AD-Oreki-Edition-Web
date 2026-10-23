@@ -162,9 +162,11 @@ export const normalAchievements = [
     id: 35,
     name: "你还真敢睡？",
     get description() {
-      return `离线时间超过 ${formatInt(6)} 小时。`;
+      const realSeconds = 21600000 / getGlobalSpeedFactor() / 1000;
+      return `离线时间超过 ${formatInt(6)} 小时（该计时受全局加速影响，当前倍率下约需真实离线 ${format(realSeconds, 2, 2)} 秒）。`;
     },
-    checkRequirement: () => Date.now() - player.lastUpdate >= 21600000,
+    // 此项成就的计时明确受全局加速影响（沿用上游加速版设计）
+    checkRequirement: () => (Date.now() - player.lastUpdate) * getGlobalSpeedFactor() >= 21600000,
     checkEvent: GAME_EVENT.GAME_TICK_BEFORE
   },
   {
@@ -335,8 +337,8 @@ export const normalAchievements = [
     get reward() {
       return `在无限最初的 ${formatInt(3)} 分钟内所有反物质维度更强。`;
     },
-    effect: () => Math.max(6 / (Time.thisInfinity.totalMinutes + 3), 1),
-    effectCondition: () => Time.thisInfinity.totalMinutes < 3,
+    effect: () => Math.max(6 / (Time.thisInfinity.totalMinutes / getGlobalSpeedFactor() + 3), 1),
+    effectCondition: () => Time.thisInfinity.totalMinutes / getGlobalSpeedFactor() < 3,
     formatEffect: value => `${formatX(value, 2, 2)}`
   },
   {
@@ -408,8 +410,8 @@ export const normalAchievements = [
     get reward() {
       return `在无限最初的 ${formatInt(3)} 分钟内所有反物质维度更强，但仅在挑战中生效。`;
     },
-    effect: () => (Player.isInAnyChallenge ? Math.max(4 / (Time.thisInfinity.totalMinutes + 1), 1) : 1),
-    effectCondition: () => Player.isInAnyChallenge && Time.thisInfinity.totalMinutes < 3,
+    effect: () => (Player.isInAnyChallenge ? Math.max(4 / (Time.thisInfinity.totalMinutes / getGlobalSpeedFactor() + 1), 1) : 1),
+    effectCondition: () => Player.isInAnyChallenge && Time.thisInfinity.totalMinutes / getGlobalSpeedFactor() < 3,
     formatEffect: value => `${formatX(value, 2, 2)}`
   },
   {
@@ -612,8 +614,8 @@ export const normalAchievements = [
     get reward() {
       return `在无限最初的 ${formatInt(5)} 秒内所有的反物质维度大幅增强。`;
     },
-    effect: () => Math.max((5 - Time.thisInfinity.totalSeconds) * 60, 1),
-    effectCondition: () => Time.thisInfinity.totalSeconds < 5,
+    effect: () => Math.max((5 - Time.thisInfinity.totalSeconds / getGlobalSpeedFactor()) * 60, 1),
+    effectCondition: () => Time.thisInfinity.totalSeconds / getGlobalSpeedFactor() < 5,
     formatEffect: value => `${formatX(value, 2, 2)}`
   },
   {
@@ -627,8 +629,8 @@ export const normalAchievements = [
     get reward() {
       return `在无限最初的 ${formatInt(60)} 秒内所有的反物质维度大幅增强。`;
     },
-    effect: () => Math.max((1 - Time.thisInfinity.totalMinutes) * 100, 1),
-    effectCondition: () => Time.thisInfinity.totalMinutes < 1,
+    effect: () => Math.max((1 - Time.thisInfinity.totalMinutes / getGlobalSpeedFactor()) * 100, 1),
+    effectCondition: () => Time.thisInfinity.totalMinutes / getGlobalSpeedFactor() < 1,
     formatEffect: value => `${formatX(value, 2, 2)}`
   },
   {
@@ -709,7 +711,7 @@ export const normalAchievements = [
     id: 104,
     name: "这不是永恒",
     get description() { return `在 ${formatInt(30)} 秒内达到永恒。`; },
-    checkRequirement: () => Time.thisEternity.totalSeconds <= 30,
+    checkRequirement: () => Time.thisEternity.totalSeconds / getGlobalSpeedFactor() <= 30,
     checkEvent: GAME_EVENT.ETERNITY_RESET_BEFORE,
     get reward() { return `开始永恒时拥有 ${format(5e25)} 无限点数。`; },
     effect: 5e25
@@ -728,7 +730,7 @@ export const normalAchievements = [
     id: 106,
     name: "蜂群",
     get description() { return `每 ${formatInt(15)} 秒获得 ${formatInt(10)} 个复制器星系。`; },
-    checkRequirement: () => Replicanti.galaxies.total >= 10 && Time.thisInfinity.totalSeconds <= 15,
+    checkRequirement: () => Replicanti.galaxies.total >= 10 && Time.thisInfinity.totalSeconds / getGlobalSpeedFactor() <= 15,
     checkEvent: GAME_EVENT.REPLICANTI_TICK_AFTER
   },
   {
@@ -773,7 +775,7 @@ export const normalAchievements = [
     id: 113,
     name: "永恒是新的无限",
     get description() { return `在 ${formatInt(250)} 毫秒内达到永恒。`; },
-    checkRequirement: () => Time.thisEternity.totalMilliseconds <= 250,
+    checkRequirement: () => Time.thisEternity.totalMilliseconds / getGlobalSpeedFactor() <= 250,
     checkEvent: GAME_EVENT.ETERNITY_RESET_BEFORE,
     get reward() { return `多获得 ${formatX(2)} 倍的永恒次数`; },
     effect: 2,
@@ -979,7 +981,7 @@ export const normalAchievements = [
     },
     checkRequirement: () =>
       Currency.antimatter.exponent >= 260000 &&
-      Time.thisEternity.totalMinutes <= 1 &&
+      Time.thisEternity.totalMinutes / getGlobalSpeedFactor() <= 1 &&
       player.dilation.active,
     checkEvent: GAME_EVENT.GAME_TICK_AFTER,
     get reward() { return `在时间膨胀中获得的膨胀时间和时间之理 ${formatX(2)}。`; },
@@ -1111,7 +1113,7 @@ export const normalAchievements = [
     id: 154,
     name: "多快才叫快",
     get description() { return `在游戏内时间 ${formatInt(5)} 秒内达成现实。`; },
-    checkRequirement: () => Time.thisReality.totalSeconds <= 5,
+    checkRequirement: () => Time.thisReality.totalSeconds / getGlobalSpeedFactor() <= 5,
     checkEvent: GAME_EVENT.REALITY_RESET_BEFORE,
     get reward() { return `现实时有 ${formatPercents(0.1)} 的概率，获得的现实次数和复兴点数 ${formatX(2)}。`; },
     effect: 0.1
@@ -1174,7 +1176,7 @@ export const normalAchievements = [
       return `单次现实中，在游戏内时间 ${formatInt(1)} 秒内，完成所有的永恒挑战 ${formatInt(5)} 次。`;
     },
     checkRequirement: () => EternityChallenges.all.map(ec => ec.completions).min() >= 5 &&
-      Time.thisReality.totalSeconds <= 1,
+      Time.thisReality.totalSeconds / getGlobalSpeedFactor() <= 1,
     checkEvent: GAME_EVENT.GAME_TICK_AFTER
   },
   {

@@ -399,7 +399,9 @@ export const AutomatorCommands = [
           S.commandState = { timeMs: 0 };
           AutomatorData.logCommandEvent(`已开始暂停（等待 ${timeString}）`, ctx.startLine);
         } else {
-          S.commandState.timeMs += Math.max(Time.unscaledDeltaTime.totalMilliseconds, AutomatorBackend.currentInterval);
+          // 自动机的暂停以真实时间计时，不随全局加速
+          S.commandState.timeMs += Math.max(Time.unscaledDeltaTime.totalMilliseconds / getGlobalSpeedFactor(),
+            AutomatorBackend.currentInterval);
         }
         const finishPause = S.commandState.timeMs >= duration;
         if (finishPause) {

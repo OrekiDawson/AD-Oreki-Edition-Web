@@ -2,6 +2,7 @@ import OpenModalHotkeysButton from "../../OpenModalHotkeysButton.js";
 import OptionsButton from "../../OptionsButton.js";
 import PrimaryToggleButton from "../../PrimaryToggleButton.js";
 import SliderComponent from "../../SliderComponent.js";
+import { GameSpeed } from "../../../core/speed-config.js";
 
 export default {
   name: "OptionsGameplayTab",
@@ -22,9 +23,21 @@ export default {
       infinityUnlocked: false,
       automatorUnlocked: false,
       automatorLogSize: 0,
+      speedFactor: GameSpeed.factor,
+      speedInput: String(GameSpeed.factor),
+      speedPresets: [1, 10, 100, 1000, 10000, 100000],
     };
   },
   computed: {
+    speedFactorText() {
+      return GameSpeed.format(this.speedFactor);
+    },
+    speedHint() {
+      return `默认 ${GameSpeed.format(GameSpeed.defaultFactor)}×，可调范围 ${GameSpeed.min}× ~ ${GameSpeed.max}×`;
+    },
+    speedStorageHint() {
+      return "独立保存在浏览器本地：重置或导入存档都不会改变倍率";
+    },
     sliderPropsOfflineTicks() {
       return {
         min: 22,
@@ -82,6 +95,34 @@ export default {
       this.infinityUnlocked = PlayerProgress.current.isInfinityUnlocked;
       this.automatorUnlocked = Player.automatorUnlocked;
       this.automatorLogSize = options.automatorEvents.maxEntries;
+      this.speedFactor = GameSpeed.factor;
+    },
+    applySpeedValue(value) {
+      const result = GameSpeed.set(value);
+      if (!result.ok) {
+        GameUI.notify.error(`倍率设置失败：${result.message}`);
+        this.speedInput = String(GameSpeed.factor);
+        return;
+      }
+      this.speedFactor = result.value;
+      this.speedInput = String(result.value);
+      if (result.persisted) {
+        GameUI.notify.success(`游戏速度已设置为 ×${GameSpeed.format(result.value)}`);
+      } else {
+        GameUI.notify.error(result.message);
+      }
+    },
+    applySpeed() {
+      this.applySpeedValue(this.speedInput);
+    },
+    applySpeedPreset(value) {
+      this.applySpeedValue(value);
+    },
+    resetSpeed() {
+      const result = GameSpeed.resetDefault();
+      this.speedFactor = GameSpeed.factor;
+      this.speedInput = String(GameSpeed.factor);
+      if (result.ok) GameUI.notify.info(`游戏速度已恢复默认 ×${GameSpeed.format(GameSpeed.defaultFactor)}`);
     },
     // Given the endpoints of 22-54, this produces 500, 600, ... , 900, 1000, 2000, ... , 1e6 ticks
     // It's essentially 10^(x/10) but with the mantissa spaced linearly instead of logarithmically
@@ -101,6 +142,47 @@ export default {
   template: `
   <div class="l-options-tab">
     <div class="l-options-grid">
+      <div class="l-options-grid__row c-oreki-speed">
+        <div class="o-primary-btn o-primary-btn--option c-oreki-speed__info">
+          <b>游戏速度：×{{ speedFactorText }}</b>
+          <span class="c-oreki-speed__hint">{{ speedHint }}</span>
+          <span class="c-oreki-speed__hint">{{ speedStorageHint }}</span>
+        </div>
+        <div class="o-primary-btn o-primary-btn--option c-oreki-speed__input">
+          <b>自定义倍率</b>
+          <input
+            v-model="speedInput"
+            class="c-oreki-speed__field"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            aria-label="自定义游戏速度倍率"
+            @keydown.enter="applySpeed"
+          >
+        </div>
+        <button
+          class="o-primary-btn o-primary-btn--option c-oreki-speed__apply"
+          @click="applySpeed"
+        >
+          应用倍率
+        </button>
+      </div>
+      <div class="l-options-grid__row c-oreki-speed__presets">
+        <button
+          v-for="preset in speedPresets"
+          :key="preset"
+          class="o-primary-btn o-primary-btn--option c-oreki-speed__preset"
+          @click="applySpeedPreset(preset)"
+        >
+          ×{{ preset }}
+        </button>
+        <button
+          class="o-primary-btn o-primary-btn--option c-oreki-speed__preset"
+          @click="resetSpeed"
+        >
+          恢复默认
+        </button>
+      </div>
       <div class="l-options-grid__row">
         <OptionsButton
           class="o-primary-btn--option"

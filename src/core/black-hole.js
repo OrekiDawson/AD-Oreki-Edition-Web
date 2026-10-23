@@ -373,7 +373,9 @@ export const BlackHoles = {
 
   get unpauseAccelerationFactor() {
     if (this.arePermanent) return 1;
-    return Math.clamp((player.records.realTimePlayed - player.blackHolePauseTime) /
+    // 加速斜坡按「游戏时间」计算：5 秒的 ACCELERATION_TIME 指的是 5 秒游戏时间，
+    // 因此真实时间需要乘回全局速度因子
+    return Math.clamp((player.records.realTimePlayed - player.blackHolePauseTime) * getGlobalSpeedFactor() /
       (1000 * this.ACCELERATION_TIME), 0, 1);
   },
 
