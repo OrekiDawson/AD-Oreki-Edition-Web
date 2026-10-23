@@ -186,6 +186,20 @@ export default {
       <div class="l-options-grid__row">
         <OptionsButton
           class="o-primary-btn--option"
+          onclick="Modal.orekiAchievement.show()"
+        >
+          成就工具
+        </OptionsButton>
+        <OptionsButton
+          class="o-primary-btn--option"
+          onclick="Modal.orekiSave.show()"
+        >
+          存档工具
+        </OptionsButton>
+      </div>
+      <div class="l-options-grid__row">
+        <OptionsButton
+          class="o-primary-btn--option"
           onclick="Modal.confirmationOptions.show()"
         >
           打开确认选项

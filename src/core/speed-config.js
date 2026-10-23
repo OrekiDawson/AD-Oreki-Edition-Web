@@ -138,6 +138,8 @@ export const GameSpeed = {
  * - globalSpeedFactor：只读 getter，供 H2P 等文案显示动态倍率
  */
 export function installSpeedGlobals(target = window) {
+  // GameSpeed 需要作为全局暴露：oreki-tools / H2P 文案在运行时读取当前倍率
+  target.GameSpeed = GameSpeed;
   target.OrekiSpeed = GameSpeed;
   target.getGlobalSpeedFactorRaw = () => GameSpeed.effectiveFactor;
   target.getGlobalSpeedFactor = () => {

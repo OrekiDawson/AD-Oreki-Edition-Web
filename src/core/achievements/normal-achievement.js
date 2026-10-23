@@ -54,7 +54,7 @@ class AchievementState extends GameMechanicState {
     player.achievementBits[this.row - 1] &= this._inverseBitmask;
   }
 
-  unlock(auto) {
+  unlock(auto, silent = false) {
     if (this.isUnlocked) return;
     player.achievementBits[this.row - 1] |= this._bitmask;
     if (this.id === 85 || this.id === 93) {
@@ -66,11 +66,14 @@ class AchievementState extends GameMechanicState {
     if (this.id === 148 || this.id === 166) {
       GameCache.staticGlyphWeights.invalidate();
     }
-    if (auto) {
-      GameUI.notify.reality(`自动成就：${this.name}`);
-    } else {
-      GameUI.notify.success(`成就：${this.name}`);
-      SteamRuntime.activateAchievement(this.id);
+    // silent：批量解锁（成就工具）时跳过逐条通知，其余联动逻辑照常执行
+    if (!silent) {
+      if (auto) {
+        GameUI.notify.reality(`自动成就：${this.name}`);
+      } else {
+        GameUI.notify.success(`成就：${this.name}`);
+        SteamRuntime.activateAchievement(this.id);
+      }
     }
     if (player.speedrun.isActive && !player.speedrun.achievementTimes[this.id]) {
       // This stores a lot of data in the savefile and seems particularly suceptible to floating-point rounding issues

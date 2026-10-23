@@ -30,6 +30,8 @@ import HotkeysModal from "../components/modals/options/HotkeysModal.js";
 import InfoDisplayOptionsModal from "../components/modals/options/InfoDisplayOptionsModal.js";
 import NewsOptionsModal from "../components/modals/options/NewsOptionsModal.js";
 import NotationModal from "../components/modals/options/NotationModal.js";
+import OrekiAchievementModal from "../components/modals/OrekiAchievementModal.js";
+import OrekiSaveModal from "../components/modals/OrekiSaveModal.js";
 import PreferredTreeModal from "../components/modals/options/PreferredTreeModal.js";
 import SingleGlyphAppearanceModal from "../components/modals/options/glyph-appearance/SingleGlyphAppearanceModal.js";
 
@@ -230,6 +232,9 @@ Modal.animationOptions = new Modal(AnimationOptionsModal);
 Modal.hiddenTabs = new Modal(HiddenTabsModal);
 Modal.preferredTree = new Modal(PreferredTreeModal);
 Modal.notation = new Modal(NotationModal);
+// AD: Oreki Edition 新增的可选工具（默认不启用，需玩家主动打开并确认）
+Modal.orekiAchievement = new Modal(OrekiAchievementModal);
+Modal.orekiSave = new Modal(OrekiSaveModal);
 
 Modal.upgradeLock = new Modal(UpgradeMechanicLockModal, 1);
 Modal.deleteCompanion = new Modal(DeleteCompanionGlyphModal, 1);
