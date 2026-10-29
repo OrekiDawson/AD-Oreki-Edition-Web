@@ -1,0 +1,16 @@
+# 换行符策略
+#
+# 【硬链接文件：禁止换行转换】
+# docs/AGENTS_GLOBAL.md 与工作区根 AGENTS.md 是同一物理文件（硬链接，inode 相同）。
+# 本机 core.autocrlf=true 时，git 在 checkout 阶段会把工作区里的 LF 改写成 CRLF，
+# 那会改写文件内容、并可能让 git 删除重建该路径从而**断开硬链接**，
+# 造成三处分叉（约束见 docs/AGENTS_GLOBAL.md §0-A）。
+# 因此这两个共享文件必须 `-text`（不做任何换行转换），按字节原样存取。
+#
+# docs/SHARED_GAMEPLAY_STANDARD.md 同理（Web 与 Android 两仓库硬链接共享）。
+docs/AGENTS_GLOBAL.md -text
+docs/SHARED_GAMEPLAY_STANDARD.md -text
+scripts/check_agents_sync.py -text
+
+# 其余文件沿用 git 的默认文本处理
+* text=auto
