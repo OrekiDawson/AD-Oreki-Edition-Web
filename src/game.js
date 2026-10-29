@@ -151,7 +151,19 @@ export function gainedInfinityPoints() {
     ? Decimal.pow10(player.records.thisInfinity.maxAM.log10() / div - 0.75)
     : new Decimal(308 / div);
   if (Effarig.isRunning && Effarig.currentStage === EFFARIG_STAGES.ETERNITY) {
-    ip = ip.min(DC.E200);
+    // [Oreki R32] 原版这里是 `ip.min(DC.E200)` —— 把阶段 2 的单次坍缩收益硬顶在 1e200，
+    // 逼玩家靠 totalIPMult 把最终 IP 抬到 `Player.eternityGoal`（1.797e308）。
+    // R32 实测（_r32-fix1.jsonl，360 秒真实新档）：
+    //   t=180 进阶段 2，maxIP 1e206.5、totalIPMult 1e1.2；
+    //   t=359 末态 maxIP 1e302.8、totalIPMult 1e101 —— 即 `maxIP ≈ 1e200 × totalIPMult`，
+    //   而 totalIPMult 的增速从 +2.27 数量级/秒 衰减到 +0.0105 数量级/秒，距门槛还差 5.44 个
+    //   数量级却在收敛。也就是说：**这个硬顶把「打穿反物质」变成了「等比等 totalIPMult 慢慢爬」**，
+    //   是一堵纯挂机时间墙，与 §1-A「消除所有时间墙」直接冲突。
+    // 做法：把顶抬到 DC.E1E6（与仓库内 `Effarig.eternityCap ?? DC.E1E6` 同一口径，等价于不设顶），
+    // 让 `maxAM` 的真实换算结果（实测 1e1101657 反物质 → 约 1e36721 IP）直接入场。
+    // 边界：只在**鹿颈长阶段 2**生效；不改 IP 公式、不改 `Player.eternityGoal`、
+    // 不写任何阶段标志，Eternity 仍必须真实达成并由 `eternity.js:58` 真实解锁。
+    ip = ip.min(DC.E1E6);
   }
   ip = ip.times(GameCache.totalIPMult.value);
   if (Teresa.isRunning) {
