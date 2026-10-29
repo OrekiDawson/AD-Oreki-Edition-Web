@@ -27,6 +27,13 @@
 import { PlayerProgress } from "./player-progress.js";
 
 const REALITY_MIN_INTERVAL_MS = 2000;
+// [Oreki R28] 分阶段现实节奏：现实会清空 EC 完成记录 / 时间研究 / 膨胀研究
+// （reality.js:651 附近），频率过高会把「现实→打 EC→再现实」打成来回清零，
+// 导致 ecDone 从 12×5 退化到只剩少数关卡。因此按阶段收敛现实频率。
+// 阶段 A：一次性现实升级尚未买齐 → 8 s（仍需足够快以在 180 分钟内推进 RU 链）
+// 阶段 B：已买齐、正在推进天神链 → 15 s（给 EC/膨胀研究留出重打窗口）
+const OREKI_REALITY_INTERVAL_PRE_RU_MS = 8000;
+const OREKI_REALITY_INTERVAL_CELESTIAL_MS = 15000;
 
 export const OrekiRealityAutomation = {
   _frame: 0,
@@ -86,6 +93,36 @@ export const OrekiRealityAutomation = {
       // 之后每次现实都不再等待。
       if (!PlayerProgress.dilationUnlocked() && now - this._readySince < 10000) return false;
       if (now - this._lastRealityAt < REALITY_MIN_INTERVAL_MS) return false;
+
+      // [Oreki R28] **现实节奏按阶段收敛**。
+      //
+      // 事实（reality.js 现实重置清理清单）：每次现实都会清空
+      //   · `player.eternityChalls`（EC 完成记录）
+      //   · `Currency.timeTheorems`（时间定理）与 `player.dilation.studies`（膨胀研究）
+      //   · `player.challenge.eternity.unlocked` / `current` / `requirementBits`
+      // 而 R26 的节奏是「每 2~5 秒现实一次」——于是**每一次现实都把刚打好的
+      // EC 进度清零**。实测（R28，124 秒真实新档）末态 `ecDone` 只剩
+      // `5,0,5,0,0,0,0,0,0,0,0,0`，比 R25 的 12×5 明显退化，`nextEc=2` 说明
+      // 自动化一直在重打 EC2，永远攒不出「EC1~12 全满」这个现实前置。
+      //
+      // 于是这里改成**按阶段决定间隔**：
+      //   · 阶段 A「还没买齐一次性现实升级」：间隔放大到 8 s。
+      //     此时 RM 才是瓶颈（RU21~25 各 100000 RM，缩放后 100 RM），
+      //     而 EC 进度只影响「下次现实是否可用」，由 `isRealityAvailable()` 把关。
+      //   · 阶段 B「已买齐、正在推进天神链」：间隔放大到 15 s。
+      //     天神 run 必须靠「一次带奖励的现实」来结算（`oreki-celestial-automation`
+      //     的注释里写明：进入 run 后需要一次现实来结算并清 run），
+      //     所以**不能太频繁现实**，否则永远结算不完当前 run。
+      let interval = REALITY_MIN_INTERVAL_MS;
+      let allRuBought = false;
+      try {
+        allRuBought = RealityUpgrades.allBought === true;
+      } catch (e) {
+        allRuBought = false;
+      }
+      interval = allRuBought ? OREKI_REALITY_INTERVAL_CELESTIAL_MS : OREKI_REALITY_INTERVAL_PRE_RU_MS;
+      if (now - this._lastRealityAt < interval) return false;
+
       const gain = MachineHandler.gainedRealityMachines.times(simulatedRealityCount(false) + 1);
       const have = Currency.realityMachines.value;
       if (gain.gte(have.times(0.02))) return true;
@@ -93,7 +130,7 @@ export const OrekiRealityAutomation = {
       // 之后 `gain` 与 `have` 都不再变化，2% 判定永远为假，每次现实都要白等 20 s。
       // 现实能否进行由 `isRealityAvailable()`（EC 全通 + 时间研究）真正把关，
       // 这个兜底只影响「已经就绪之后还要等多久」，缩到 5 s 不会刷出无意义的空循环。
-      return now - this._lastRealityAt >= 5000;
+      return now - this._lastRealityAt >= interval * 3;
     } catch (e) {
       return false;
     }

@@ -56,13 +56,32 @@ export const OrekiCelestialAutomation = {
    */
   _hasBuyableRU() {
     try {
+      // [Oreki R28] **只判一次性现实升级（id ≥ 6）**。
+      //
+      // ── R28 实测根因（300 秒真实新档）────────────────────────────────
+      // 原实现遍历 `RealityUpgrades.all`（**包含可重复的 1~5**），判
+      // `upg.isAvailableForPurchase && !upg.isBought`：
+      //   · 可重复 RU 继承 `RebuyableMechanicState`，其 `isAvailableForPurchase`
+      //     **恒为 true**（game-mechanics/rebuyable.js:30）；
+      //   · `isBought` 只定义在 `BitPurchasableMechanicState`
+      //     （game-mechanics/bit-purchasable.js:22），可重复 RU **根本没有这个属性**
+      //     → `!upg.isBought` 恒等于 `!undefined === true`。
+      // 于是这个守卫**永远返回 true** → 特蕾莎永远不浇注 →
+      // `Teresa.pouredAmount` 恒为 0 → `TeresaUnlocks.effarig`（鹿颈长解锁位，
+      // 门槛 1e24，teresa.js:15-20）永不亮 → 整条天神链在鹿颈长处断掉。
+      // 实测末态确认：`allRuBought=true`、`a147=true`、`teresaRun=true`，
+      // 但 `pouredL=null`（= log10(0) = -∞）、`effarigUnlocked=false`。
+      //
+      // ── 为什么只判一次性 ────────────────────────────────────────────
+      // 一次性 RU 有真正的「购买记录」位（`player.reality.upgradeBits`），
+      // 是成就 147「购买所有现实升级」的真实依据；可重复的 1~5 是刷取循环，
+      // 买多少都不影响成就 147，也**不应该**阻止浇注（原版里特蕾莎与放大器
+      // 是并行推进的，玩家通常一边买放大器一边按住浇注）。
+      // 所以：**一次性 RU 全部买齐 → 才允许浇注**。
       for (const upg of RealityUpgrades.all) {
-        // 一次性 RU（id ≥ 6）：解锁资格位 + 未购买位，两个都要判
+        if (upg.id < 6) continue;
+        // 解锁资格位 + 未购买位，两个都要判
         if (upg.isAvailableForPurchase && !upg.isBought) return true;
-      }
-      for (let id = 1; id <= 5; id++) {
-        // 可重复 RU（id 1~5）：canBeBought 已含「未买满」判定
-        if (RealityUpgrade(id).canBeBought) return true;
       }
     } catch (e) {
       // 异常时保守地认为「还有可买的」，避免误浇
