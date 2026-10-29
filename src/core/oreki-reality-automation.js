@@ -72,6 +72,13 @@ export const OrekiRealityAutomation = {
    */
   shouldReality() {
     try {
+      // [Oreki R33] V 收尾阶段压住现实：`maxDT` 每个现实清零（reality.js:696），
+      // 所以 V 的 `dilatedTime` 判据只能在同一个现实内攒出来，而自动现实每 ~28 s
+      // 就会把它清零。为真时暂停现实，等 maxDT 达标或护栏超时（见
+      // oreki-celestial-automation.js::holdRealityForV，内含两条防死锁护栏）。
+      // 用 globalThis 取而不是 import：本模块被 celestial-automation 反向依赖，
+      // 直接 import 会成环；该对象在 celestial-automation 模块底部挂到 globalThis。
+      if (globalThis.OrekiCelestialAutomation?.holdRealityForV) return false;
       if (!this.realityReady) {
         this._readySince = 0;
         return false;

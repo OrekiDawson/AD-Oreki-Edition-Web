@@ -24,10 +24,14 @@
 
 import { Teresa, TeresaUnlocks } from "./celestials/teresa.js";
 import { Effarig, EffarigUnlock, EFFARIG_STAGES } from "./celestials/effarig.js";
-import { Enslaved } from "./celestials/enslaved.js";
+import { Enslaved, ENSLAVED_UNLOCKS } from "./celestials/enslaved.js";
 import { V, VUnlocks } from "./celestials/V.js";
 import { RealityUpgrades, RealityUpgrade } from "./reality-upgrades.js";
 import { OrekiRealityAutomation } from "./oreki-reality-automation.js";
+import { OrekiEternityAutomation } from "./oreki-eternity-automation.js";
+import { PlayerProgress } from "./player-progress.js";
+import { startDilatedEternity } from "./dilation.js";
+import { OREKI_V_UNLOCK_DILATED_TIME } from "./secret-formula/celestials/v.js";
 
 /** 浇注系数：把 0.01 这一项乘 10，原本 ≈23.2s 真实按住降到 ≈2.3s 真实。保留手感不归零。 */
 const OREKI_TERESA_POUR_RATE = 10;
@@ -52,6 +56,17 @@ export const OrekiCelestialAutomation = {
   _enteredStage: {},
   _vUnlocked: false,
   _unlocksBought: 0,
+  /** [Oreki R33] 上一次尝试启动膨胀的时刻（毫秒），用于 3 秒冷却，避免每帧刷永恒 */
+  _lastDilationTryMs: 0,
+  /** [Oreki R33] 本进程内累计成功启动膨胀的次数（只读观测用） */
+  _dilationStarts: 0,
+  /** [Oreki R33] 累计「膨胀中强化一次永恒喂速子粒子」的次数（只读观测用） */
+  _dilationTpSeeds: 0,
+  /** [Oreki R33] 最近一次成功进入膨胀的时刻，供 holdRealityForV 的护栏①使用 */
+  _lastDilationStartOkMs: 0,
+  /** [Oreki R33] V 收尾压现实的起始时刻与起始 maxDT 指数，供护栏②超时兜底使用 */
+  _vHoldSinceMs: 0,
+  _vHoldStartDtL: 0,
 
   /**
    * 是否存在「当前可购买且尚未购买」的现实升级（一次性或可重复）。
@@ -170,7 +185,36 @@ export const OrekiCelestialAutomation = {
           if (stage >= EFFARIG_STAGES.COMPLETED) return false;
           return this._enteredStage.effarig !== stage;
         }
-        case "enslaved": return !this._entered[name] && Enslaved.isUnlocked;
+        case "enslaved": {
+          // [Oreki R33] **必须持有无名氏的入场券 `ENSLAVED_UNLOCKS.RUN`**。
+          //
+          // ── R33 实测根因（300 秒真实新档，_r32-stage3.jsonl）───────────────
+          // R32 的判据只有 `Enslaved.isUnlocked`，而它等价于
+          // `EffarigUnlock.eternity.isUnlocked`（celestials/enslaved.js:171）——那是
+          // **天神页签的解锁位**，不是「能进祂的现实」的入场券。于是自动化在
+          // t≈187 s 直接 `Enslaved.initializeRun()`，而同帧起整局崩掉：
+          //   · t=186 反物质 log10=6.03e9、AD8 totalAmount=2.00e6；
+          //   · t=187 起 AD8 totalAmount **恒为 1**，时间定理恒 15880、时间研究恒 23 项，
+          //     `canReality` 从 t=195 一直到 t=299 **110 秒内再也没真过**，
+          //     `realities` 冻在 30 不动。
+          // 无名氏现实会把产量压到极低（时间被拉长、维度被砍），必须靠「一次完整的
+          // 现实」才能 `Enslaved.completeRun()`（reality.js:360）并清 run；而现实又要求
+          // `TimeStudy.reality.isBought`（reality.js:120），后者要求 EC11/EC12 各 5 次
+          // ——在被压低的产量下 EC 重打不完 → 永远 reality 不了 → 永远清不掉 run。
+          // 这是一个**自锁**，进去就出不来。
+          //
+          // ── 为什么是「跳过真实前置」而不是「资源不足」─────────────────────
+          // 原版 UI 的入口按钮是 `v-if="hasUnlock(unlocksInfo.RUN)"`
+          // （components/tabs/celestial-enslaved/EnslavedTab.js:214），门票本身要求
+          // 1e40 年游戏时间 + 一个 5000 级符文 + 一个 100% 稀有度符文
+          // （celestials/enslaved.js:11-22、:20-22）。本档符文 13 级，门票根本不可能有。
+          // 这与 R30 修掉的鹿颈长「没买票就进 run」是同一类越权，不是缺资源。
+          //
+          // 结论：没有门票就不进。宁可放弃无名氏的 EC1×1000 奖励，
+          // 也不能让整条现实循环永久停摆（现状是 110 s 零现实）。
+          if (!Enslaved.has(ENSLAVED_UNLOCKS.RUN)) return false;
+          return !this._entered[name] && Enslaved.isUnlocked;
+        }
         // V 同样没有 isUnlocked getter；真实解锁位是 VUnlocks.vAchievementUnlock
         // （v.js:100-101 的 bits 读写 + v.js:174 canUnlockCelestial）。
         case "v": return !this._entered[name] && VUnlocks.vAchievementUnlock.isUnlocked;
@@ -200,8 +244,150 @@ export const OrekiCelestialAutomation = {
     }
   },
 
+  /**
+   * [Oreki R33] V 收尾阶段：**压住现实，让膨胀真的把 `maxDT` 抬起来**。
+   *
+   * ── 为什么必须分「压现实」和「启动膨胀」两件事 ────────────────────────
+   * · `maxDT` 每个现实清零（`reality.js:696`），所以 V 的 `dilatedTime` 判据只能在
+   *   **同一个现实内**攒出来；而自动现实每 ~28 s 按一次，实测「`dilationUnlocked` 为真的窗口
+   *   只有 17 帧」（`_r33-vchain.jsonl`，t=168~185）—— 一现实只给 17 秒，来不及。
+   * · 只调 `startDilatedEternity(true)` 还不够（R33 实测 `_r33-vchain2/3.jsonl`）：
+   *   `dilStarts=1` 成功进了膨胀，但 `tpL=null`（速子粒子恒 0）、`dtRaw` 恒 0。
+   *   因为 DT 速率 = 速子粒子 × 乘子（`dilation.js:117-134`），而速子粒子只在
+   *   「**膨胀状态下做一次永恒**」时才发放（`eternity.js:99 if (player.dilation.active) rewardTP()`）。
+   *   进了膨胀却不再永恒 → TP 永远 0 → DT 永远 0，死锁。
+   *
+   * ── 三段状态机（全部走真实函数，不伪造任何数值）──────────────────────
+   *   ① `holdRealityForV` 为真时才动手（压住现实，见下方 getter）
+   *   ② TP = 0 且未 active → `startDilatedEternity(true)`（真实永恒 + 置 active）
+   *   ③ TP = 0 且已 active → `eternity(false, true)`（**真实的膨胀中永恒**，
+   *      `eternity.js:99` 会 `rewardTP()` 把 TP 喂起来，同时按规矩退出膨胀）
+   *   ④ TP > 0 且未 active → 再次 `startDilatedEternity(true)`，此时 DT 开始复利增长
+   *   ⑤ `maxDT >= OREKI_V_UNLOCK_DILATED_TIME` → 六项同时成立，V 自己解锁
+   *
+   * @returns {boolean} 本次是否真的进入了膨胀
+   */
+  tickDilation() {
+    try {
+      if (VUnlocks.vAchievementUnlock.isUnlocked) return false;
+      const active = player.dilation.active === true;
+      if (!active && !PlayerProgress.dilationUnlocked()) return false;
+      if (EternityChallenge.isRunning) return false;
+      // EC 入口资源正在攒的时候绝不插永恒（eternity 会清掉 requirementCurrent 峰值缓存）
+      if (OrekiEternityAutomation.ecEntryPending()) return false;
+
+      const now = Date.now();
+      if (now - this._lastDilationTryMs < 3000) return false;
+      this._lastDilationTryMs = now;
+
+      const tpZero = Currency.tachyonParticles.value.eq(0);
+
+      // ── 阶段 1「播种」：把速子粒子从 0 抬起来 ────────────────────────────
+      // 不需要压现实，成本被限制在「进膨胀 → 立刻做一次真实永恒」这 3 秒内，
+      // 因为 `startDilatedEternity` 本身就会做一次永恒。
+      if (tpZero) {
+        if (active) {
+          // 膨胀中且 TP 还是 0：这一次永恒的**唯一目的**就是触发
+          // `eternity.js:99 if (player.dilation.active) rewardTP()`，把 TP 播种下来。
+          //
+          // ⚠️ 必须等 `Player.canEternity` 为真才按（R33 实测踩过）：
+          // `rewardTP()` → `getTP(maxAM, true)` → `getBaseTP` 第一行就是
+          // `if (!Player.canEternity && requireEternity) return DC.D0;`（dilation.js:166）。
+          // 刚进膨胀时 IP 被那次入场永恒清零，此时强按永恒只会拿到 TP = 0（实测
+          // `tpSeeds=1` 但 `tpL=null`，`_r33-vseed.jsonl` t≈251 s）。
+          // 所以在膨胀里**等到本局真正够永恒**再按，这一次才是有效播种。
+          if (Player.canEternity) {
+            eternity(false, true);
+            this._dilationTpSeeds++;
+          }
+        } else if (startDilatedEternity(true) === true) {
+          this._dilationStarts++;
+          this._lastDilationStartOkMs = now;
+          return true;
+        }
+        return false;
+      }
+
+      // ── 阶段 2「放大」：TP > 0 之后才允许长时间待在膨胀里滚 DT ────────────
+      // 这一段会把产量压到接近 0（antimatter-dimension.js:70-74 的 dilatedValueOf），
+      // 所以**只在 V 收尾阶段**（压现实 + TP 已就绪）开启，绝不污染刷现实的主循环。
+      if (!this.holdRealityForV) return false;
+      if (player.records.thisReality.maxDT.gte(OREKI_V_UNLOCK_DILATED_TIME)) return false;
+      if (!active && startDilatedEternity(true) === true) {
+        this._dilationStarts++;
+        this._lastDilationStartOkMs = now;
+        return true;
+      }
+    } catch (e) {
+      // 单点异常不击穿主循环
+    }
+    return false;
+  },
+
+  /**
+   * [Oreki R33] 是否处于「V 收尾」阶段 —— 由 `oreki-reality-automation.js` 读取，
+   * 为真时**暂停自动现实**，把同一现实的 `maxDT` 攒到 V 的门槛。
+   *
+   * 判据：`realities >= OREKI_V_UNLOCK_REALITIES` && V 未解锁 && 本现实 maxDT 未达标
+   *      && **速子粒子 TP > 0**（独立判一次，见下）。
+   *
+   * ── 为什么 TP > 0 是硬前提 ────────────────────────────────────────────
+   * TP = 0 时进膨胀只会把产量压到 0（`antimatter-dimension.js:70-74`），而
+   * DT 速率 = TP × 乘子（`dilation.js:117-134`）恒 0 —— 等于把整局静默关掉却不产任何
+   * DT。所以必须先由 `tickDilation()` 的阶段 1「播种」把 TP 抬起来，才允许压现实。
+   *
+   * ── 两条防死锁护栏（缺一不可）────────────────────────────────────────
+   * ① **膨胀必须真的在跑**：当前不在膨胀、且连续 60 秒都没成功启动过 → 立刻放开现实。
+   * ② **超时兜底**：压现实累计 > 300 秒而 maxDT 的 log10 增量 < 6
+   *    （= 0.02 数量级/秒 × 300 s）时强制释放并打印 `[V-HOLD] 超时释放`；
+   *    稳定增长不误杀。
+   */
+  get holdRealityForV() {
+    try {
+      if (VUnlocks.vAchievementUnlock.isUnlocked) return false;
+      if (Currency.realities.value < OREKI_V_UNLOCK_REALITIES) return false;
+      if (player.records.thisReality.maxDT.gte(OREKI_V_UNLOCK_DILATED_TIME)) return false;
+      if (Currency.tachyonParticles.value.lte(0)) {
+        this._vHoldSinceMs = 0;
+        return false;
+      }
+
+      const now = Date.now();
+      const active = player.dilation.active === true;
+      const canDilate = active || PlayerProgress.dilationUnlocked() === true;
+      if (!canDilate) {
+        this._vHoldSinceMs = 0;
+        return false;
+      }
+
+      if (!this._vHoldSinceMs) {
+        this._vHoldSinceMs = now;
+        this._vHoldStartDtL = player.records.thisReality.maxDT.pLog10();
+        if (!this._lastDilationStartOkMs) this._lastDilationStartOkMs = now;
+        return true;
+      }
+
+      if (!active && now - this._lastDilationStartOkMs > 60000) {
+        console.warn(`[V-HOLD] 膨胀连续 60 s 未能启动，放开现实（压现实 ${Math.round((now - this._vHoldSinceMs) / 1000)} s）`);
+        this._vHoldSinceMs = 0;
+        return false;
+      }
+
+      const dtL = player.records.thisReality.maxDT.pLog10();
+      if (now - this._vHoldSinceMs > 300000 && dtL - this._vHoldStartDtL < 6) {
+        console.warn(`[V-HOLD] 超时释放：压现实 ${Math.round((now - this._vHoldSinceMs) / 1000)} s，` +
+          `maxDT 仅从 1e${this._vHoldStartDtL.toFixed(1)} 涨到 1e${dtL.toFixed(1)}`);
+        this._vHoldSinceMs = 0;
+        return false;
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+
   tick() {
-    const result = { poured: false, entered: [], vUnlocked: false, unlocks: 0, stage: 0 };
+    const result = { poured: false, entered: [], vUnlocked: false, unlocks: 0, stage: 0, dilation: false };
     try {
       if (!player.auto.autobuyersOn) return result;
       if (Pelle.isDoomed) return result;
@@ -249,6 +435,17 @@ export const OrekiCelestialAutomation = {
       //      只能由真实的 Big Crunch / Eternity / Reality 触发。
       try {
         result.unlocks = this.buyEffarigUnlocks();
+      } catch (e) { /* 单点异常不击穿主循环 */ }
+
+      // 3.6) [Oreki R33] V 收尾阶段的膨胀（三段状态机 + 压现实护栏）。
+      //
+      // 历史教训（_r33-vchain2/3.jsonl）：只调 `startDilatedEternity(true)` 会死锁 ——
+      // 进了膨胀但速子粒子恒 0（`tpL=null`），DT 一秒都不涨（`dtRaw` 恒 0）。
+      // 因为速子粒子只在「膨胀状态下做一次永恒」时发放（eternity.js:99），
+      // 而膨胀把产量压到 0 之后自动永恒再也不会触发。所以必须由本模块在膨胀中
+      // **主动**做一次真实永恒把 TP 喂起来，然后再进膨胀让 DT 复利。
+      try {
+        result.dilation = this.tickDilation();
       } catch (e) { /* 单点异常不击穿主循环 */ }
 
       // 4) 进入天神 run（teresa/effarig/enslaved/v）。每神只进一次，随后由自动现实
@@ -328,6 +525,14 @@ Object.defineProperty(OrekiCelestialAutomation, "debugState", {
       realities: pick(() => player.realities),
       unlocksBought: this._unlocksBought,
       vUnlocked: this._vUnlocked,
+      // [Oreki R33] 膨胀观测：V 的 maxDT 判据只可能来自这里
+      dilationActive: pick(() => player.dilation.active === true),
+      dilationStarts: this._dilationStarts,
+      dilationTpSeeds: this._dilationTpSeeds,
+      tachyonL: pick(() => lg(Currency.tachyonParticles.value)),
+      maxDTL: pick(() => lg(player.records.thisReality.maxDT)),
+      holdRealityForV: pick(() => this.holdRealityForV === true),
+      vHoldSince: this._vHoldSinceMs,
     };
   },
   enumerable: true,
