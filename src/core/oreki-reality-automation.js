@@ -32,6 +32,8 @@ export const OrekiRealityAutomation = {
   _frame: 0,
   _lastRealityAt: 0,
   _realitiesFired: 0,
+  /** 「现实就绪」的起始时间戳（用于给膨胀研究 1 留窗口），0 表示当前未就绪 */
+  _readySince: 0,
 
   get active() {
     try {
@@ -61,9 +63,26 @@ export const OrekiRealityAutomation = {
    */
   shouldReality() {
     try {
-      if (!this.realityReady) return false;
+      if (!this.realityReady) {
+        this._readySince = 0;
+        return false;
+      }
       if (player.realities === 0) return true;
       const now = Date.now();
+      if (!this._readySince) this._readySince = now;
+      // [Oreki R26] 现实就绪后先给「膨胀研究 1」一个最多 10 秒的窗口。
+      //
+      // 事实：EC11 / EC12 一旦各满 5 次，`isRealityAvailable()` 立刻为真，而
+      // 膨胀研究 1 的要求恰好是「EC11 与 EC12 全满 + 231~234 之一 + 最大 TT ≥ 12900」
+      // （secret-formula/eternity/time-studies/dilation-time-studies.js:3-19）。
+      // 现实一旦触发就清空 `player.eternityChalls` 与时间研究 → 这个窗口在一帧内消失，
+      // 于是 `dilationUnlocked` 在 300 秒真新档里**一次都没成立过**：
+      // 没有膨胀时间 → `gainedGlyphLevel()` 只有 4~5 级 → RU18（4 个 ≥10 级符文）
+      // 永远拿不到 → 成就 147「购买所有现实升级」不成立 → Teresa 永远不出现。
+      // 这里只是把「就绪之后立刻按」改成「最多等 10 秒让 DS1 先买上」，有上限、
+      // 到点照常现实，不会卡死；DS1 买上后 `PlayerProgress.dilationUnlocked()` 为真，
+      // 之后每次现实都不再等待。
+      if (!PlayerProgress.dilationUnlocked() && now - this._readySince < 10000) return false;
       if (now - this._lastRealityAt < REALITY_MIN_INTERVAL_MS) return false;
       const gain = MachineHandler.gainedRealityMachines.times(simulatedRealityCount(false) + 1);
       const have = Currency.realityMachines.value;
