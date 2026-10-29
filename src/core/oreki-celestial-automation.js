@@ -30,7 +30,7 @@ import { RealityUpgrades, RealityUpgrade } from "./reality-upgrades.js";
 import { OrekiRealityAutomation } from "./oreki-reality-automation.js";
 import { OrekiEternityAutomation } from "./oreki-eternity-automation.js";
 import { PlayerProgress } from "./player-progress.js";
-import { startDilatedEternity } from "./dilation.js";
+import { startDilatedEternity, getTP } from "./dilation.js";
 import { OREKI_V_UNLOCK_DILATED_TIME } from "./secret-formula/celestials/v.js";
 
 /** 浇注系数：把 0.01 这一项乘 10，原本 ≈23.2s 真实按住降到 ≈2.3s 真实。保留手感不归零。 */
@@ -67,6 +67,8 @@ export const OrekiCelestialAutomation = {
   /** [Oreki R33] V 收尾压现实的起始时刻与起始 maxDT 指数，供护栏②超时兜底使用 */
   _vHoldSinceMs: 0,
   _vHoldStartDtL: 0,
+  /** [Oreki R34] 只读门禁计数（见 tickDilation 开头），用于定位播种被哪一道门挡住 */
+  _gates: { vUnlocked: 0, notUnlocked: 0, ecRunning: 0, ecEntryPending: 0, passed: 0 },
 
   /**
    * 是否存在「当前可购买且尚未购买」的现实升级（一次性或可重复）。
@@ -245,7 +247,7 @@ export const OrekiCelestialAutomation = {
   },
 
   /**
-   * [Oreki R33] V 收尾阶段：**压住现实，让膨胀真的把 `maxDT` 抬起来**。
+   * [Oreki R34] V 收尾阶段：**压住现实，让膨胀真的把 `maxDT` 抬起来**。
    *
    * ── 为什么必须分「压现实」和「启动膨胀」两件事 ────────────────────────
    * · `maxDT` 每个现实清零（`reality.js:696`），所以 V 的 `dilatedTime` 判据只能在
@@ -269,18 +271,49 @@ export const OrekiCelestialAutomation = {
    */
   tickDilation() {
     try {
-      if (VUnlocks.vAchievementUnlock.isUnlocked) return false;
+      // [Oreki R34] 只读门禁计数：用于定位「DS1 已解锁、TP=0」却仍然不播种的原因。
+      // 只自增、不参与任何判定（除 `ecBypass` 的日志意义外）。
+      const gates = this._gates;
+      if (VUnlocks.vAchievementUnlock.isUnlocked) { gates.vUnlocked++; return false; }
       const active = player.dilation.active === true;
-      if (!active && !PlayerProgress.dilationUnlocked()) return false;
-      if (EternityChallenge.isRunning) return false;
+      if (!active && !PlayerProgress.dilationUnlocked()) { gates.notUnlocked++; return false; }
+      // [Oreki R34] hold 成立期间放行 EC 门与 EC 入口等待：那时我们在收尾（压现实攒 DT），
+      // 不该被 EC 的等待态挡住。hold 不成立时保持原样（避免在正常刷现实时插入永恒）。
+      let holdCond = false;
+      try {
+        holdCond = PlayerProgress.dilationUnlocked() &&
+          Currency.realities.value >= OREKI_V_UNLOCK_REALITIES &&
+          !VUnlocks.vAchievementUnlock.isUnlocked &&
+          player.records.thisReality.maxDT.lt(OREKI_V_UNLOCK_DILATED_TIME) &&
+          Currency.tachyonParticles.value.gt(0);
+      } catch (e) { holdCond = false; }
+      if (EternityChallenge.isRunning) {
+        if (!holdCond) { gates.ecRunning++; return false; }
+        gates.ecBypass++;
+      }
       // EC 入口资源正在攒的时候绝不插永恒（eternity 会清掉 requirementCurrent 峰值缓存）
-      if (OrekiEternityAutomation.ecEntryPending()) return false;
+      if (OrekiEternityAutomation.ecEntryPending()) {
+        if (!holdCond) { gates.ecEntryPending++; return false; }
+        gates.ecBypass++;
+      }
+      gates.passed++;
 
       const now = Date.now();
       if (now - this._lastDilationTryMs < 3000) return false;
       this._lastDilationTryMs = now;
 
       const tpZero = Currency.tachyonParticles.value.eq(0);
+
+      // ── 阶段 0：`realities` 门只管「压现实」，不管「播种」──────────────────
+      //
+      // [Oreki R34] 原来这里整段 `if (realities < 200) return false;` 是错的：
+      // DS1（`dilationUnlocked`）只在「买完 DS6 → 现实落」之间的一两帧为真，
+      // 实测 263 次 ×5s 采样里只命中 4 次（t=150~165）。任何额外条件都会错过这个窗口。
+      // 于是 realities<200 时把播种一起挡掉，等于**永远等不到窗口**（t=998 才到 200，
+      // 那时 DS1 早就不在位）。现在的分工：
+      //   · 播种（阶段 1）：只判 `dilationUnlocked && !active && TP==0`，不限 realities；
+      //   · 压现实（hold）：才判 `realities >= 200`（见 holdRealityForV）。
+      // 六项判据一字未改。
 
       // ── 阶段 1「播种」：把速子粒子从 0 抬起来 ────────────────────────────
       // 不需要压现实，成本被限制在「进膨胀 → 立刻做一次真实永恒」这 3 秒内，
@@ -295,9 +328,17 @@ export const OrekiCelestialAutomation = {
           // `if (!Player.canEternity && requireEternity) return DC.D0;`（dilation.js:166）。
           // 刚进膨胀时 IP 被那次入场永恒清零，此时强按永恒只会拿到 TP = 0（实测
           // `tpSeeds=1` 但 `tpL=null`，`_r33-vseed.jsonl` t≈251 s）。
-          // 所以在膨胀里**等到本局真正够永恒**再按，这一次才是有效播种。
-          if (Player.canEternity) {
-            eternity(false, true);
+          //
+          // [Oreki R34] 光判 `canEternity` **还不够**，必须再判「这一次永恒真的能拿到 TP」：
+          //   `rewardTP()` 用的是 `bumpTo(getTP(thisEternity.maxAM, true))`，
+          //   而 `getBaseTP = (log10(maxAM)/400)^1.5` —— `maxAM` 还没爬起来时（刚进膨胀、
+          //   记录只有 1 或 1e10 量级）算出来可能 ≤ 当前 TP，`bumpTo` 于是**一点不涨**，
+          //   但旧代码照样 `_dilationTpSeeds++`，观测上就是「播种了却 tpL=null」，把真正的
+          //   失败掩盖成成功。这里改成「预计可得 TP 必须严格大于现有 TP」才按，且只有
+          //   真的按成功（`eternity` 没返回 false）才记数。
+          const willGainTp = Player.canEternity &&
+            getTP(player.records.thisEternity.maxAM, true).gt(Currency.tachyonParticles.value);
+          if (willGainTp && eternity(false, true) !== false) {
             this._dilationTpSeeds++;
           }
         } else if (startDilatedEternity(true) === true) {
@@ -311,7 +352,20 @@ export const OrekiCelestialAutomation = {
       // ── 阶段 2「放大」：TP > 0 之后才允许长时间待在膨胀里滚 DT ────────────
       // 这一段会把产量压到接近 0（antimatter-dimension.js:70-74 的 dilatedValueOf），
       // 所以**只在 V 收尾阶段**（压现实 + TP 已就绪）开启，绝不污染刷现实的主循环。
-      if (!this.holdRealityForV) return false;
+      if (!this.holdRealityForV) {
+        // [Oreki R34] **主动退出膨胀**，不要靠下一次现实来清 active。
+        // 事实：`maxDT` 一旦达标 `holdRealityForV` 就变假（375 行），于是阶段 2 什么都不做，
+        // 但 `player.dilation.active` 还是 true —— 产量继续被 `dilatedValueOf` 压着，
+        // 只能等下一次现实（reality.js:674）才解除。若此时 `shouldReality()` 恰好为假
+        // （例如 `GlyphSelection.active`，oreki-reality-automation.js:53），整局就会一直
+        // 停在膨胀态里空转。这里用**原版「退出膨胀」按钮的同一条路径**
+        // （dilation.js:23 `animateAndUndilate` → `eternity(false,false,{switchingDilation:true})`）
+        // 收尾，不伪造任何状态。
+        if (active && player.records.thisReality.maxDT.gte(OREKI_V_UNLOCK_DILATED_TIME)) {
+          eternity(false, false, { switchingDilation: true });
+        }
+        return false;
+      }
       if (player.records.thisReality.maxDT.gte(OREKI_V_UNLOCK_DILATED_TIME)) return false;
       if (!active && startDilatedEternity(true) === true) {
         this._dilationStarts++;
@@ -341,11 +395,24 @@ export const OrekiCelestialAutomation = {
    * ② **超时兜底**：压现实累计 > 300 秒而 maxDT 的 log10 增量 < 6
    *    （= 0.02 数量级/秒 × 300 s）时强制释放并打印 `[V-HOLD] 超时释放`；
    *    稳定增长不误杀。
+   *
+   * [Oreki R34] 护栏② 用的 `Decimal#pLog10()` 是「正部 log10」：**0、1、1e-30 一律返回 0**
+   * （R34-B 浏览器实测：`new Decimal(0).pLog10() === 0`）。所以 `maxDT === 0` 时起始值与
+   * 当前值都是 0，差值是 0 而不是 `-Infinity`/`NaN` —— 护栏② 在 DT 从 0 起步时**照样会触发**，
+   * 不会因为 `0 → -Infinity` 的算术而永久失效。R34-B 实测的 DT 增速是「一个现实内
+   * 0 → 1e174.7」，远大于 6 个数量级，所以这条兜底只在真的卡住时才会开火。
    */
   get holdRealityForV() {
     try {
       if (VUnlocks.vAchievementUnlock.isUnlocked) return false;
       if (Currency.realities.value < OREKI_V_UNLOCK_REALITIES) return false;
+      // [Oreki R34] **必须再要求 `dilationUnlocked`**：DS1 只在「买完 DS6 → 现实落」
+      // 之间的一两帧为真，而「压住现实」正是把这扇窗一直撑开的手段。
+      // 若只判 realities>=200，等到 200 时 DS1 早就没了，压住现实也攒不出 DT。
+      if (PlayerProgress.dilationUnlocked() !== true) {
+        this._vHoldSinceMs = 0;
+        return false;
+      }
       if (player.records.thisReality.maxDT.gte(OREKI_V_UNLOCK_DILATED_TIME)) return false;
       if (Currency.tachyonParticles.value.lte(0)) {
         this._vHoldSinceMs = 0;
@@ -533,6 +600,8 @@ Object.defineProperty(OrekiCelestialAutomation, "debugState", {
       maxDTL: pick(() => lg(player.records.thisReality.maxDT)),
       holdRealityForV: pick(() => this.holdRealityForV === true),
       vHoldSince: this._vHoldSinceMs,
+      /** [Oreki R34] 只读门禁计数：每个 tickDilation 的 return 点各记一次 */
+      gates: pick(() => JSON.parse(JSON.stringify(this._gates))),
     };
   },
   enumerable: true,
