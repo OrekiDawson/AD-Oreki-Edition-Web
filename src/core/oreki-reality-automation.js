@@ -39,7 +39,9 @@ export const OrekiRealityAutomation = {
     try {
       if (!player.auto.autobuyersOn) return false;
       if (Pelle.isDoomed) return false;
-      if (isInCelestialReality()) return false;
+      // [Oreki R27] 允许在天神现实（teresa/effarig/enslaved/v 等）中继续现实：
+      // 进入天神 run 后需要一次「带奖励」的现实来结算该 run（拿奖励并清 run），
+      // 否则会永久卡在天神削弱态、现实循环停摆。Pelle 有独立的毁灭现实流程，仍禁用。
       // 符文选择弹窗打开时不重置，否则会打断玩家的选择
       if (GlyphSelection.active) return false;
       return true;

@@ -9,6 +9,7 @@ import { OrekiBreakInfinityGate } from "./core/oreki-break-infinity-gate.js";
 import { OrekiEarlyAutomation } from "./core/oreki-early-automation.js";
 import { OrekiEternityAutomation } from "./core/oreki-eternity-automation.js";
 import { OrekiRealityAutomation } from "./core/oreki-reality-automation.js";
+import { OrekiCelestialAutomation } from "./core/oreki-celestial-automation.js";
 import { isOrekiBootstrapRun } from "./core/oreki-bootstrap.js";
 import { deepmergeAll } from "./utility/deepmerge.js";
 import { DEV } from "./env.js";
@@ -868,6 +869,10 @@ export function gameLoop(passDiff, options = {}) {
   // 原版现实没有无条件自动器（RealityAutobuyerState.isUnlocked 要求 RealityUpgrade 25，
   // 而 25 要 100000 RM），首次现实因此永远不会发生。详见 core/oreki-reality-automation.js。
   OrekiRealityAutomation.tick();
+
+  // [Oreki R27] 天神 / 特蕾莎浇注 / V 解锁 自动化：在现实自动化之后调用，先买 RU、再浇特蕾莎、
+  // 再进天神 run、最后解锁 V。详见 core/oreki-celestial-automation.js。
+  OrekiCelestialAutomation.tick();
 
   // IP generation is broken into a couple of places in gameLoop; changing that might change the
   // behavior of eternity farming.
