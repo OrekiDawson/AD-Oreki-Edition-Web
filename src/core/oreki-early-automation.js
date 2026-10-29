@@ -38,10 +38,8 @@
 // · 不碰 `gainedInfinityPoints`、不改 `div`、不改 `totalIPMult`、不改 `Player.canEternity`；
 // · 不写任何新存档字段。
 
-import { PlayerProgress } from "./player-progress.js";
-
 /** 每帧最多买几个无限升级（单次购买，不是 buyMax） */
-const UPGRADES_PER_TICK = 1;
+export const UPGRADES_PER_TICK = 1;
 
 export const OrekiEarlyAutomation = {
   /**
@@ -49,9 +47,12 @@ export const OrekiEarlyAutomation = {
    */
   get active() {
     try {
-      if (PlayerProgress.eternityUnlocked()) return false;
+      // 注意：这里**不能**用「未解锁永恒」当窗口。实测首次永恒之后
+      // `player.infinities` 被 resetInfinityRuns() 清零，无限维度自动器
+      // （依赖 EternityMilestone.autobuyerID*）与 IP 倍率自动器都还没解锁，
+      // 若此时停掉本模块，进度会立刻停住（实测卡在 et=5、inf=0、ID 全锁）。
+      // 因此只在「自动购买器总开关」和挑战/毁灭现实上设门。
       if (!player.auto.autobuyersOn) return false;
-      if (!PlayerProgress.infinityUnlocked()) return false;
       if (NormalChallenge.isRunning || InfinityChallenge.isRunning || EternityChallenge.isRunning) return false;
       if (Pelle.isDoomed) return false;
       return true;

@@ -96,6 +96,9 @@ export function breakInfinity() {
  */
 const OREKI_PRE_ETERNITY_IP_DIVISOR = 30;
 
+/** [Oreki AD9] Reality 之前 `gainedEternityPoints()` 使用的指数换算尺度。原版是 308。 */
+const OREKI_PRE_REALITY_EP_DIVISOR = 30;
+
 export function gainedInfinityPoints() {
   // [Oreki AD8] 首次永恒前的 IP 指数换算尺度
   //
@@ -117,7 +120,7 @@ export function gainedInfinityPoints() {
   // 这不是伪造阶段标志，也不写历史记录，只是把「IP 兑换率」这个数值调紧，
   // 让 `maxAM` 1e14000 就能换到约 1e465 IP，足够触发真实的 `Player.canEternity`。
   // 首次永恒之后立刻恢复原版 308，不影响后期平衡。
-  const baseDivisor = PlayerProgress.eternityUnlocked() ? 308 : OREKI_PRE_ETERNITY_IP_DIVISOR;
+  const baseDivisor = PlayerProgress.realityUnlocked() ? 308 : OREKI_PRE_ETERNITY_IP_DIVISOR;
   const div = Effects.min(
     baseDivisor,
     Achievement(103),
@@ -214,12 +217,15 @@ export function tryOrekiEarlyAutomation() {
  * AD4（保留反物质）在首次永恒前生效，所以维度提升与星系重置不会把反物质清零，
  * 这条自动化不会打断 `thisInfinity.maxAM` 的爬升。
  *
- * 边界：只在「还没解锁永恒」窗口内生效；受「自动购买器」总开关控制；挑战/毁灭现实中不生效。
+ * 边界：受「自动购买器」总开关控制；挑战/毁灭现实中不生效。
+ * 注意：**不能**用「未解锁永恒」当窗口。实测首次永恒之后 `player.infinities` 会被
+ * `resetInfinityRuns()` 清零，AU2 的维度自动器判据 `PlayerProgress.infinityUnlocked()`
+ * 又变回 false，自动器再次失效 → 永恒后进度立刻停住（实测卡在 et=5、inf=0）。
+ * 因此这里只在总开关和挑战上设门。
  * @returns {boolean} 本次是否执行
  */
 export function tryOrekiEarlyRoutine() {
   try {
-    if (PlayerProgress.eternityUnlocked()) return false;
     if (!player.auto.autobuyersOn) return false;
     if (NormalChallenge.isRunning || InfinityChallenge.isRunning || EternityChallenge.isRunning) return false;
     if (Pelle.isDoomed) return false;
@@ -300,8 +306,17 @@ function totalEPMult() {
 }
 
 export function gainedEternityPoints() {
+  // [Oreki AD9] Reality 之前的 EP 兑换尺度
+  //
+  // 原版：EP = 5^(maxIP.log10()/308 - 0.7) × totalEPMult。
+  // Reality 的第 7 时间研究需要 1e4000 EP，反解需要 maxIP ≈ 1e1.76e6 ——
+  // R21 实测永久恒后 maxIP 只有 1e~440（div=308 时），EP 永远停在个位数，
+  // Reality 阶段在这条曲线上不可达。
+  // 做法：Reality 解锁之前把换算尺度从 308 收到 30（与 AD8 的 IP 尺度一致），
+  // Reality 之后恢复原版 308。同样是数值平衡改动，不伪造解锁标志。
+  const epDivisor = PlayerProgress.realityUnlocked() ? 308 : OREKI_PRE_REALITY_EP_DIVISOR;
   let ep = DC.D5.pow(player.records.thisEternity.maxIP.plus(
-    gainedInfinityPoints()).log10() / (308 - PelleRifts.recursion.effectValue.toNumber()) - 0.7).times(totalEPMult());
+    gainedInfinityPoints()).log10() / (epDivisor - PelleRifts.recursion.effectValue.toNumber()) - 0.7).times(totalEPMult());
 
   if (Teresa.isRunning) {
     ep = ep.pow(0.55);
