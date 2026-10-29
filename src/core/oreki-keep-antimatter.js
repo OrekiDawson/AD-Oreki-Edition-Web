@@ -50,6 +50,13 @@ export const OrekiKeepAntimatter = {
       // R26 实测：现实后 maxAM 卡在 1e270 量级、ID1 需要的 1e1100 永远到不了、
       // `et` 从头到尾是 0，整个现实层直接停摆。
       // 现在改成：只在毁灭现实与天神现实里关闭（那里有各自的资源约束）。
+      // [Oreki R32] 鹿颈长 run 例外：阶段 1 的目标就是「真实把反物质打到 1.8e308
+      // 触发 Big Crunch」，而 run 内维度提升/星系重置同样会把当前反物质清零。
+      // R32 实测（_r32-nerf.jsonl）：关掉本窗口时 maxAM 在 t=245 起锁死 1e159 整整
+      // 350 秒零增长，而门槛是 1e308 —— 与 R19 首次无限前完全同构的死锁闭环。
+      // 这里只放开「鹿颈长 run 进行中」，毁灭现实、普通/无限/永恒挑战仍按原版清零
+      // （时序上把天神判断放在挑战判断之前，但只针对 effarig.run，不影响其他天神）。
+      if (player.celestials.effarig.run === true) return true;
       if (isInCelestialReality()) return false;
       if (NormalChallenge.isRunning || InfinityChallenge.isRunning) return false;
       if (EternityChallenge.isRunning) return false;

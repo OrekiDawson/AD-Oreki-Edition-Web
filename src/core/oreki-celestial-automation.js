@@ -23,7 +23,7 @@
 // 只要还有「当前可购买」的 RU（不管本帧买不买得起），就**不浇**，把 RM 留给 RU。
 
 import { Teresa, TeresaUnlocks } from "./celestials/teresa.js";
-import { Effarig } from "./celestials/effarig.js";
+import { Effarig, EffarigUnlock, EFFARIG_STAGES } from "./celestials/effarig.js";
 import { Enslaved } from "./celestials/enslaved.js";
 import { V, VUnlocks } from "./celestials/V.js";
 import { RealityUpgrades, RealityUpgrade } from "./reality-upgrades.js";
@@ -34,11 +34,24 @@ const OREKI_TERESA_POUR_RATE = 10;
 /** 真实帧间隔上限（毫秒）：防止后台/卡顿后一次性把 RM 全浇掉。 */
 const OREKI_MAX_REAL_FRAME_MS = 100;
 
+/**
+ * [Oreki R30] 鹿颈长解锁位的**购买顺序**（按 cost 升序，见
+ * `secret-formula/celestials/effarig.js`）：
+ *   adjuster 1e7 → glyphFilter 2e8 → setSaves 3e9 → run 5e11
+ * 后三个（infinity / eternity / reality）没有 cost，是**阶段解锁位**，
+ * 只能由真实的 Big Crunch / Eternity / Reality 触发（big-crunch.js:150、eternity.js:58），
+ * 本模块绝不购买、也绝不直接 `unlock()`。
+ */
+const OREKI_EFFARIG_BUY_ORDER = ["adjuster", "glyphFilter", "setSaves", "run"];
+
 export const OrekiCelestialAutomation = {
   _lastRealMs: 0,
   /** 已尝试进入过的天神（避免反复进入把生产卡在天神削弱态） */
   _entered: {},
+  /** [Oreki R30] 进入时的鹿颈长阶段快照（name -> EFFARIG_STAGES 值），用于阶段推进后重新进入 */
+  _enteredStage: {},
   _vUnlocked: false,
+  _unlocksBought: 0,
 
   /**
    * 是否存在「当前可购买且尚未购买」的现实升级（一次性或可重复）。
@@ -90,21 +103,77 @@ export const OrekiCelestialAutomation = {
     return false;
   },
 
+  /**
+   * [Oreki R30] 购买鹿颈长解锁位（按 cost 升序，买不起就跳过）。
+   *
+   * ── 为什么必须有这一步 ────────────────────────────────────────────────
+   * `EffarigUnlock.run`（「鹿颈长的现实」，cost 5e11 遗迹碎片）是**进入鹿颈长 run 的
+   * 真正入场券**：原版 UI 里不买它，`Entcelestials` 的入口按钮就是禁用的。
+   * R29 的 `_canEnter("effarig")` 只判 `TeresaUnlocks.effarig.isUnlocked`（特蕾莎浇到 1e24），
+   * 于是自动化**没买票就进了 run** —— 等于跳过了真实前置。
+   *
+   * ── 走真实路径 ──────────────────────────────────────────────────────
+   * `EffarigUnlockState.purchase()`（celestials/effarig.js:130）内部是
+   * `Currency.relicShards.purchase(this.cost)`（currency.js:159，真实扣款）→ `unlock()`
+   * （置 `player.celestials.effarig.unlockBits` 对应位）→ `config.onPurchased()`（原版回调）。
+   * 碎片不够时 `purchase()` 自己返回，**不伪造**。
+   *
+   * @returns {number} 本次真实买到的条数
+   */
+  buyEffarigUnlocks() {
+    let bought = 0;
+    for (const key of OREKI_EFFARIG_BUY_ORDER) {
+      try {
+        const unlock = EffarigUnlock[key];
+        if (!unlock || unlock.isUnlocked) continue;
+        // 买不起就跳过（`purchase()` 内部也会再判一次，这里只是省掉无意义的调用）
+        if (!Currency.relicShards.gte(unlock.cost)) continue;
+        unlock.purchase();
+        if (unlock.isUnlocked) bought++;
+      } catch (e) {
+        // ── onPurchased 的 UI 副作用可能在没有对应界面时抛错 ──
+        // 注意：`purchase()` 里 `unlock()` 在 `onPurchased()` **之前**执行
+        // （celestials/effarig.js:132-133），所以这里吞掉异常不会丢解锁位，
+        // 只需把位状态再确认一遍。
+        try {
+          if (EffarigUnlock[key].isUnlocked) bought++;
+        } catch (e2) { /* ignore */ }
+      }
+    }
+    this._unlocksBought += bought;
+    return bought;
+  },
+
   /** 某天神是否「可进入」（解锁位已亮、且尚未进入过、且当前不在其 run 中） */
   _canEnter(name) {
     try {
       if (Pelle.isDoomed) return false;
       if (player.celestials[name].run) return false;
-      if (this._entered[name]) return false;
       switch (name) {
-        case "teresa": return Teresa.isUnlocked;
+        case "teresa": return !this._entered[name] && Teresa.isUnlocked;
         // Effarig 没有自己的 isUnlocked getter；它的解锁位就是 TeresaUnlocks.effarig
         // （= 特蕾莎浇注到 1e24，teresa.js:15-20）。
-        case "effarig": return TeresaUnlocks.effarig.isUnlocked;
-        case "enslaved": return Enslaved.isUnlocked;
+        //
+        // [Oreki R30] **还必须持有入场券 `EffarigUnlock.run`**（cost 5e11 碎片）。
+        // 少了这一条，R29 的自动化在 170 s 就直接进了 run，绕过真实前置。
+        //
+        // 另外鹿颈长是**三阶段**的（INFINITY → ETERNITY → REALITY）：
+        // 每个阶段都由一次真实的重置推进，而推进函数内部会
+        // `beginProcessReality(getRealityProps(true))`（big-crunch.js:152 / eternity.js:60）
+        // → `finishProcessReality` → `clearCelestialRuns()`（reality.js:608）把 run 清掉。
+        // 所以「进入过就不再进」的旧规则会让 INFINITY 之后再也无法进入 ETERNITY 阶段。
+        // 这里改成**按阶段各进一次**：阶段没变就不重复进，阶段推进了就允许再进。
+        case "effarig": {
+          if (!TeresaUnlocks.effarig.isUnlocked) return false;
+          if (!EffarigUnlock.run.isUnlocked) return false;
+          const stage = Effarig.currentStage;
+          if (stage >= EFFARIG_STAGES.COMPLETED) return false;
+          return this._enteredStage.effarig !== stage;
+        }
+        case "enslaved": return !this._entered[name] && Enslaved.isUnlocked;
         // V 同样没有 isUnlocked getter；真实解锁位是 VUnlocks.vAchievementUnlock
         // （v.js:100-101 的 bits 读写 + v.js:174 canUnlockCelestial）。
-        case "v": return VUnlocks.vAchievementUnlock.isUnlocked;
+        case "v": return !this._entered[name] && VUnlocks.vAchievementUnlock.isUnlocked;
         default: return false;
       }
     } catch (e) {
@@ -114,6 +183,7 @@ export const OrekiCelestialAutomation = {
 
   _enterRun(name) {
     try {
+      const stageBefore = Effarig.currentStage;
       switch (name) {
         case "teresa": Teresa.initializeRun(); break;
         case "effarig": Effarig.initializeRun(); break;
@@ -122,6 +192,8 @@ export const OrekiCelestialAutomation = {
         default: return false;
       }
       this._entered[name] = true;
+      // 记录进入时的鹿颈长阶段：阶段推进后（run 被 clearCelestialRuns 清掉）才允许再进
+      if (name === "effarig") this._enteredStage.effarig = stageBefore;
       return true;
     } catch (e) {
       return false;
@@ -129,10 +201,13 @@ export const OrekiCelestialAutomation = {
   },
 
   tick() {
-    const result = { poured: false, entered: [], vUnlocked: false };
+    const result = { poured: false, entered: [], vUnlocked: false, unlocks: 0, stage: 0 };
     try {
       if (!player.auto.autobuyersOn) return result;
       if (Pelle.isDoomed) return result;
+      try {
+        result.stage = Effarig.currentStage;
+      } catch (e) { /* ignore */ }
 
       // 1) 先买现实升级（RU1~5 可重复 + RU6~25 一次性），幂等，留给 RU 的 RM 不能浇。
       try {
@@ -168,6 +243,14 @@ export const OrekiCelestialAutomation = {
         }
       } catch (e) { /* 单点异常不击穿主循环 */ }
 
+      // 3.5) [Oreki R30] 买鹿颈长解锁位（遗迹碎片，按 cost 升序）。
+      //      `run`（5e11）是进入鹿颈长现实的入场券，必须在第 4 步之前买到。
+      //      买不起就跳过；`infinity / eternity / reality` 三个阶段位不在购买列表里，
+      //      只能由真实的 Big Crunch / Eternity / Reality 触发。
+      try {
+        result.unlocks = this.buyEffarigUnlocks();
+      } catch (e) { /* 单点异常不击穿主循环 */ }
+
       // 4) 进入天神 run（teresa/effarig/enslaved/v）。每神只进一次，随后由自动现实
       //    完成该 run（拿奖励、清 run），避免长时间卡在天神削弱态拉低产量。
       //    同一时刻只进一个：新天神的 initializeRun 会 clearCelestialRuns 清掉正在
@@ -193,6 +276,63 @@ export const OrekiCelestialAutomation = {
     return result;
   }
 };
+
+/**
+ * [Oreki R30] 只读观测快照：主 Agent / 定向脚本可直接读
+ * `OrekiCelestialAutomation.debugState`，不需要自己拼十几个 getter。
+ * 全部字段都是**读真实状态**，不写入任何东西。
+ */
+Object.defineProperty(OrekiCelestialAutomation, "debugState", {
+  get() {
+    const lg = v => {
+      try {
+        const n = Number(v && typeof v === "object" && typeof v.toString === "function" ? v.toString() : v);
+        if (!Number.isFinite(n)) {
+          // Decimal 超大值走字符串指数拆解
+          const t = String(v);
+          const i = t.indexOf("e");
+          if (i < 0) return Number.isFinite(n) ? Math.log10(Math.abs(n)) : null;
+          return Math.log10(Math.abs(Number(t.slice(0, i)))) + Number(t.slice(i + 1));
+        }
+        return n === 0 ? null : Math.log10(Math.abs(n));
+      } catch (e) {
+        return null;
+      }
+    };
+    const pick = fn => { try { return fn(); } catch (e) { return null; } };
+    const unlock = key => pick(() => EffarigUnlock[key].isUnlocked === true);
+    return {
+      pouredAmount: pick(() => lg(Teresa.pouredAmount)),
+      pouredAmountRaw: pick(() => Teresa.pouredAmount),
+      relicShards: pick(() => lg(Currency.relicShards.value)),
+      relicShardsRaw: pick(() => Currency.relicShards.value),
+      shardsGainedPerReality: pick(() => Effarig.shardsGained),
+      glyphEffectAmount: pick(() => Effarig.glyphEffectAmount),
+      unlocks: {
+        adjuster: unlock("adjuster"),
+        glyphFilter: unlock("glyphFilter"),
+        setSaves: unlock("setSaves"),
+        run: unlock("run"),
+        infinity: unlock("infinity"),
+        eternity: unlock("eternity"),
+        reality: unlock("reality"),
+      },
+      effarigStage: pick(() => Effarig.currentStage),
+      effarigStageName: pick(() => Effarig.currentStageName),
+      effarigRunning: pick(() => Effarig.isRunning === true),
+      entered: pick(() => JSON.parse(JSON.stringify(this._entered))),
+      enteredStage: pick(() => JSON.parse(JSON.stringify(this._enteredStage))),
+      currentRun: pick(() => ["teresa", "effarig", "enslaved", "v"]
+        .filter(n => player.celestials[n] && player.celestials[n].run)),
+      inCelestialReality: pick(() => isInCelestialReality() === true),
+      realities: pick(() => player.realities),
+      unlocksBought: this._unlocksBought,
+      vUnlocked: this._vUnlocked,
+    };
+  },
+  enumerable: true,
+  configurable: true,
+});
 
 try {
   globalThis.OrekiCelestialAutomation = OrekiCelestialAutomation;
