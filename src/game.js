@@ -8,6 +8,8 @@ import { tryBuyBreakInfinityUpgrades } from "./core/oreki-autobuy-break-infinity
 import { OrekiBreakInfinityGate } from "./core/oreki-break-infinity-gate.js";
 import { OrekiEarlyAutomation } from "./core/oreki-early-automation.js";
 import { OrekiEternityAutomation } from "./core/oreki-eternity-automation.js";
+import { OrekiRealityAutomation } from "./core/oreki-reality-automation.js";
+import { isOrekiBootstrapRun } from "./core/oreki-bootstrap.js";
 import { deepmergeAll } from "./utility/deepmerge.js";
 import { DEV } from "./env.js";
 import { SpeedrunMilestones } from "./core/speedrun.js";
@@ -100,6 +102,17 @@ const OREKI_PRE_ETERNITY_IP_DIVISOR = 30;
 /** [Oreki AD9] Reality 之前 `gainedEternityPoints()` 使用的指数换算尺度。原版是 308。 */
 const OREKI_PRE_REALITY_EP_DIVISOR = 30;
 
+/**
+ * [Oreki R26] 「当前现实运行是否仍处于开局爬坡期」。
+ * 原来 AD8/AD9 用 `PlayerProgress.realityUnlocked()` 当阶段代理，但现实重置会把
+ * `player.break`、IP、STD/维度/星系、无限升级、无限维度（`InfinityDimensions.fullReset()`）
+ * 全部清零 —— 第二次爬坡的成本和第一轮**完全一样**，而永久进度标志永远为 true。
+ * R26 真新档 300 s 实测：第一次现实（45 s）之后 IP 尺度回到 308，
+ * `thisInfinity.maxAM` 只到 1e25.7、`thisEternity.maxAM` 冻结在 1e865.651 整整 200 秒，
+ * IP 停在 1e23，`et` 恒 0，无限维度全锁 → 现实层完全停摆。
+ * 判定实现集中到 `core/oreki-bootstrap.js`（EC 入口门槛、膨胀研究 TT 成本也要用同一个口径）。
+ */
+
 export function gainedInfinityPoints() {
   // [Oreki AD8] 首次永恒前的 IP 指数换算尺度
   //
@@ -121,7 +134,7 @@ export function gainedInfinityPoints() {
   // 这不是伪造阶段标志，也不写历史记录，只是把「IP 兑换率」这个数值调紧，
   // 让 `maxAM` 1e14000 就能换到约 1e465 IP，足够触发真实的 `Player.canEternity`。
   // 首次永恒之后立刻恢复原版 308，不影响后期平衡。
-  const baseDivisor = PlayerProgress.realityUnlocked() ? 308 : OREKI_PRE_ETERNITY_IP_DIVISOR;
+  const baseDivisor = isOrekiBootstrapRun() ? OREKI_PRE_ETERNITY_IP_DIVISOR : 308;
   const div = Effects.min(
     baseDivisor,
     Achievement(103),
@@ -306,7 +319,11 @@ export function tryFirstId1AutoUnlock() {
 function firstInfinityDimensionBoostActive(pendingIP) {
   try {
     if (!player.break) return false;
-    if (PlayerProgress.eternityUnlocked()) return false;
+    // [Oreki R26] 原来这里是 `if (PlayerProgress.eternityUnlocked()) return false;`。
+    // 现实重置会 `InfinityDimensions.fullReset()` 把 ID1 打回未解锁（infinity-dimension.js:236），
+    // 但永久进度标志永远为 true → 第一次现实之后这条兜底再也不生效。
+    // 下一行的 `InfinityDimension(1).isUnlocked` 本身就是「已经突破过」的真实状态，
+    // 只在现实重置时才会变回 false，用它判定与设计意图完全等价，且每次现实后自动重开。
     if (InfinityDimension(1).isUnlocked) return false;
     if (NormalChallenge.isRunning || InfinityChallenge.isRunning) return false;
     if (Pelle.isDoomed) return false;
@@ -345,7 +362,7 @@ export function gainedEternityPoints() {
   // Reality 阶段在这条曲线上不可达。
   // 做法：Reality 解锁之前把换算尺度从 308 收到 30（与 AD8 的 IP 尺度一致），
   // Reality 之后恢复原版 308。同样是数值平衡改动，不伪造解锁标志。
-  const epDivisor = PlayerProgress.realityUnlocked() ? 308 : OREKI_PRE_REALITY_EP_DIVISOR;
+  const epDivisor = isOrekiBootstrapRun() ? OREKI_PRE_REALITY_EP_DIVISOR : 308;
   let ep = DC.D5.pow(player.records.thisEternity.maxIP.plus(
     gainedInfinityPoints()).log10() / (epDivisor - PelleRifts.recursion.effectValue.toNumber()) - 0.7).times(totalEPMult());
 
@@ -846,6 +863,11 @@ export function gameLoop(passDiff, options = {}) {
   // 导致 EC3 要求的「单次运行内第八维度 17300」永远攒不到。
   // 前提已满足：AD11.1 修好「已满级 EC 不要重复买研究」后，研究链稳定为 22 个且含 171。
   OrekiEternityAutomation.tickEternity();
+
+  // [Oreki R26] 现实层自动化：首次现实 / 现实循环 / 现实升级 / 符文装备。
+  // 原版现实没有无条件自动器（RealityAutobuyerState.isUnlocked 要求 RealityUpgrade 25，
+  // 而 25 要 100000 RM），首次现实因此永远不会发生。详见 core/oreki-reality-automation.js。
+  OrekiRealityAutomation.tick();
 
   // IP generation is broken into a couple of places in gameLoop; changing that might change the
   // behavior of eternity farming.
