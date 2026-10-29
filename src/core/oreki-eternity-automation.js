@@ -191,7 +191,14 @@ export const OrekiEternityAutomation = {
       for (let id = 1; id <= 12; id++) {
         try {
           const study = TimeStudy.eternityChallenge(id);
-          if (study && !study.isBought) study.purchase();
+          if (!study || study.isBought) continue;
+          // 关键：**已经打满 5 次的 EC 不要再买它的研究**。
+          // 否则会出现死循环：买下已满级的 EC 研究 → 下一帧判定「已满」→ respec 清空研究树
+          // → 再把同一关买回来…… 实测后果是 TT 一直在退，但已买普通研究恒为 0，
+          // 整个时间研究链永远建立不起来（R23 实测：59 秒 TT 367 万、研究 0 个）。
+          const challenge = EternityChallenge(id);
+          if (challenge && challenge.completions >= challenge.maxCompletions) continue;
+          study.purchase();
         } catch (e) {
           // 该 EC 研究暂不可买
         }
