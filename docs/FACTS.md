@@ -1739,13 +1739,43 @@ grep 不到就不是这个项目的事实，无论它在我脑子里多「显然
 前者是内部观察，后者必须两侧对照（本作文件 vs 原版文件 diff 过）才能下结论。
 写差异表时，每一条都要能回答「原版那一侧我看了哪个文件的哪一行」。
 
-### 四、L3 有界调用落地（核验通过）
+### 四、L3 有界调用落地（**「有界」没做到声称的程度**）
 
-`OrekiAchAudit.smali:51` `const/16 v1, 0x258`（600 帧 ≈10 s）一次完整审计；
-`OrekiSpeed.smali:201` 每帧只剩一个 `invoke-static OrekiAchAudit;->tick()V`。
-改前是每帧 104 次 `A()` + `k.invoke()`（`invoke-interface`）。
+`OrekiAchAudit.smali:51` `const/16 v1, 0x258`（每 600 次 `tick()`）一次完整审计；
+`OrekiSpeed.smali:201` 每个 `apply(D)` 只剩一个 `invoke-static OrekiAchAudit;->tick()V`。
 
-**帧耗时为静态估算（< 0.1 µs/帧），不是设备实测**——AVD 实测值待补，补上之前不许写成实测。
+**但「600 次 = 600 帧 = 约 10 秒」这个换算是错的。**
+
+AVD 实测 5975 个 GATE 间隔：中位 **31 ms**、p90 51 ms、p99 115 ms。
+GATE 每 600 次 `tick()` 打一行 ⇒ 审计实际约 **32 Hz 在跑**，不是 0.1 Hz。
+即 `OrekiSpeed.apply(D)` 被调用的是**每秒约 1.9 万次**（600 / 0.031 s），不是「每帧一次」。
+
+> 算术自查：`600 / 0.031 = 19,355`，约 1.9 万/秒。
+> 报告里写「约 3.2 万次/秒」与这个中位数**对不上**（3.2 万需要约 18.75 ms 的间隔）。
+> 二者必有一错，须按原始 5975 个间隔重算，不许拿中位数和某个未说明的口径各说一套。
+
+⇒ 结论：
+- 开销量级仍可忽略（32 Hz × 104 谓词 ≈ 3,300 次接口调用/秒），
+  但**「按次数节流」等于「按调用频率节流」，而调用频率不是帧率** —— 这是设计错，不是数字偏差。
+- 正确做法：**按时间节流**（例如 `SystemClock.uptimeMillis()` 每 5000 ms 一次），
+  而不是按 `apply` 调用次数。次数节流在「apply 被高频调用」的实现下会自动退化成高频审计。
+- 帧耗时的静态估算（< 0.1 µs/帧）**从未被设备实测证实**，且「每帧」这个前提本身已被推翻。
+
+### 四·补 gfxinfo 在这台机器上对 SurfaceView 无效
+
+- 「审计关」组：`Total frames rendered: 1146 / Janky 56.89% / p50 17ms / p90 36ms / p99 109ms`
+- 「审计开」组：**`Total frames rendered: 0`**，p50/p90/p99 全是 4950 ms（空直方图默认值）
+
+环境已排除（`mWakefulness=Awake`、`mScreenState=ON`、`mCurrentFocus=…MainActivity`、
+进程存活、GATE 每 31 ms 仍在打）。主界面 Surface 在 SurfaceFlinger 里是
+`…MainActivity#1126/#1127` ⇒ 游戏画在 **SurfaceView** 上，**HWUI 的帧统计里没有它**。
+
+⇒ 那 1146 帧很可能根本不是游戏主界面（大概是首启更新日志弹窗在动），
+**这一组作废，不算交付**。
+
+⇒ 规则：**用测量工具前先证明它测的是被测对象。**
+`Total frames rendered > 0` 不构成「测到了游戏」的证据，
+必须能对上 SurfaceFlinger 里的那个 surface。
 
 ### 五、验收器必须能报红
 
