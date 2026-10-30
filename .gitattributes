@@ -31,3 +31,4 @@ scripts/check_agents_sync.py -text
 src/core/oreki-tutorial-data.json text eol=lf
 src/core/oreki-tutorial-data.gen.js text eol=lf
 src/core/oreki-smart-strategy.json text eol=lf
+src/core/oreki-route-model.json text eol=lf
