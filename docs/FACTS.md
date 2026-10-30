@@ -35,16 +35,6 @@
 | AVD 名称读取 | `getprop ro.boot.qemu.avd_name`（`ro.kernel.qemu.avd_name` 是空的） | `[实测]` |
 | 状态栏「No internet connection」 | 模拟器连不上 Google 连通性检查，**不代表真没网**；`ping oreki.net` 通就正常 | `[实测]` |
 
-### F.2 窄屏三个已修缺陷（2026-10-30，修复集中在 `public/stylesheets/oreki.css` 的 `@media (max-width:620px)`）
-
-| 缺陷 | 根因（文件:行） | 实测（392×676） |
-|---|---|---|
-| 维度行「倍率向上溢出」 | `new-ui-styles.css:659` 行高写死 `5.5rem` + `components.css:2960` 文本容器写死 `3.5rem`，而 620px 断点已把行改成两行网格 | 行高 55px（内容需 74px），文本顶出行框 **+19px**、行间距 0 → 压到上一行。修后 110px / **−5px** |
-| 自动购买器**横向**溢出 | `styles.css:4392` `.c-autobuyer-box-row { width: 96rem }` = **960px** | 行宽 960px、右缘溢出 **+573px**；修后 393px / **+1px** |
-| 同页控件偏小 | 无统一触控尺寸：挑战按钮 150×30、子页签 146×25、check 16×16、帮助图标 20×20 | 67 个可点元素中 20 个 <44×44；修后 **剩 1**（checkbox 本体 22×22，可点区域在 44×44 的 label 上） |
-
-**同类控件高度分布（挑战页，修复后）**：44px × 17 / 60px × 1 / 70px × 2。
-⇒ 「同页控件高度不一致」**尚未收敛**，是待决策项（见 `AGENTS.md §19` 的相对一致条款）。 `[实测]`
 
 ---
 
@@ -102,7 +92,12 @@ Oreki Edition 缩放后（`v.js:43-45`）：
 
 **纪律**：改阈值时 `requirement` 显示值与 `progress` 分母**必须同步**，否则 `progress` 永远到不了 1。 `[读码]`
 
-### C.4 V 卡死的真实链路（R35 定位，最值钱的一条）
+### C.4 V 卡死的真实链路（R35 定位，**R36 已修正**）
+
+> ⚠️ **R36 更正**：R35 把「EC9 的无限之力门槛 1e17498」判成唯一资源墙。
+> **R36 实测证明那是错的**：真实运行里无限之力早已到 `1.29e12931925`，
+> 比门槛高 **1.29e7 个数量级**。真正的卡点是**前置普通时间研究没被买**，
+> 见 **C.8**。R35 的「缩小 EC9 门槛」方向是无效改动，**不要再沿用**。
 
 ```
 EC11 5/5 + EC12 5/5   ← dilation-time-studies.js:1-16 的 ecRequirement
@@ -146,7 +141,168 @@ EC9~EC12 从来没被完成过（实测 `ecDone = "5,5,5,5,5,5,5,5,0,0,0,0"`）�
 补发奖励的正确模式（Web `src/core/oreki-instant-challenges.js`、Android `OrekiInstantChallenge.smali`）：
 临时抬高 `records.maxAM` 到 `goal` → 调**原版**收益函数 → **立刻还原**。还原本身就是幂等的一部分。 `[读码+实测]`
 
----
+### C.8 EC9~EC12 买不上的真正原因：**前置普通时间研究没被买**（R36 定位，★推翻 R35 结论★）
+
+> ⚠️ **R36 收尾更正（必读）**：本节「根因」结论**已被同轮 A 组的后续实测部分推翻**，
+> 见下方「C.8.1 根因更正」。**「资源不是墙」这一条结论仍然成立**（无限之力高出 1.29e7 个数量级）。
+> 本节的**修法本身有效且已被两次独立采样验证**（EC1~12 全部 5/5），
+> 但它**不是**「修复前 EC9 买不上」的根因 —— 详见 C.8.1。
+
+**实测证据**（`web/_tools/_r36a/_r36a-ec9.jsonl`，真实新档 330 秒连续采样）：
+
+| 字段 | 实测值 | 含义 |
+|---|---|---|
+| `infPowerL` | **12931925.9** | 无限之力 = `1.29e12931925` |
+| `ecReqTot9L` | **17498** | EC9 门槛 = `1e17498` |
+| `ec9StudyBought` | **false** | EC9 的前置普通时间研究**没买** |
+| `ecUnlocked` | **8** | 只解锁到 EC8，EC9 起全部买不上 |
+| `ecDone` | `[5,5,5,5,5,5,5,5,0,0,0,0]` | EC1~EC8 各 5/5，EC9~EC12 恒 0 |
+
+⇒ 无限之力比门槛高 **1.29e7 个数量级**，**资源根本不是墙**。 `[实测]`
+
+#### C.8.1 根因更正（A 组后续实测，2026-10-30）
+
+**修复前** `ec9StudyBought=false` / `ecUnlocked=8` / EC9~12 恒 0 的**真正原因是
+「普通时间研究自动购买器」没把 EC9 的前置研究 151 买上**，
+而不是「EC 购买逻辑不补前置」本身。
+`buyTimeStudies()` 会遍历整个 normal 研究库逐个 `purchaseUntil()`，
+正常情况下 151 会被自动买上；**它没被买上，是因为在那个采样窗口里
+普通研究购买循环没能跑到 151**（资源/时序问题）。 `[读码+实测]`
+
+**因此本轮修复的准确定位是**：
+- 修法**有效**（`web/AD-Oreki-Edition/src/core/oreki-eternity-automation.js`）：
+  EC 购买循环在 `!study.canBeBought` 时按 `study.config.requirement` **主动补齐前置研究**，
+  这让 EC 推进**不再依赖普通研究自动购买器的遍历顺序与时序**。
+- 效果实测：EC1~12 全部打满 5/5，**首次 t=73.21s（330s 采样）与 t=79.50s（420s 复跑）两次独立复现**；
+  `dilationUnlocked`=true（t=73.21s）、`maxDTL` 峰值 **11.6**、`realities≥10`（t=225.69s）。 `[实测]`
+- 但**不能说**「是本修复让 EC9 从买不上变成买得上」—— 修复前 A 组的另一份采样里
+  EC9 也在 t=22.38s 就完成了 5/5（那次普通研究自动购买器恰好买上了 151）。 `[实测]`
+
+**给下一轮的硬结论**：EC9~EC12 的购买**不是当前阻塞点**，R35 的「1e17498 资源墙」与
+本节的「前置研究没被买」都已被实测排除。**真正的阻塞在别处**，见 **C.10**。 `[实测]`
+
+**根因（逐行读码）**：`src/core/time-studies/ec-time-study.js:76-87`
+
+```js
+get canBeBought() {
+  if (!this.isAffordable) return false;                              // ① 资源
+  if (player.challenge.eternity.unlocked !== 0) return false;       // ② 同一时刻只开一关
+  if (!this.config.requirement.some(s => TimeStudy(s).isBought)) return false;  // ③ 前置普通研究 ← 真凶
+  return this.allSecondaryRequirementsMet;                           // ④ 二级资源
+}
+```
+
+- EC9 的 `requirement` = **[151]**（`secret-formula/eternity/time-studies/normal-time-studies.js:430`
+  「所有时间维度提升 1e4 倍」，cost 8 TT）；EC10/11/12 = **[181]**。
+  （`ec-time-studies.js:100-111` / `:113-122`）
+- `src/core/oreki-eternity-automation.js` 的 `buyEcStudiesAndStart()` 原来**只调 `study.purchase()`**，
+  **从不补前置研究** ⇒ 第③条恒为 false ⇒ `canBeBought` 恒 false
+  ⇒ EC9~EC12 永远买不上 ⇒ `unlocked` 停在 8
+  ⇒ EC11/EC12 永远开不了 ⇒ DS1 买不到 ⇒ V 不解锁 ⇒ **全局永远无法通关**。 `[读码]`
+- 讽刺的是**同方法的注释已经写对了方法论**（「官方购买入口不是 `purchase()` 而是 `purchaseUntil()`」），
+  **但实现没照做** —— 注释与实现不一致，这就是 bug 由来。 `[读码]`
+
+**R36 的修复**（`src/core/oreki-eternity-automation.js`，属主=主 Agent）：
+1. 循环开头 `if (player.challenge.eternity.unlocked !== 0) break;`（已开一关就别再烧 TT 补别的关的前置）；
+2. `study.canBeBought` 为 false 时，按 `study.config.requirement` 补齐前置普通研究链
+   （普通研究自带 `purchaseUntil()` → `buyStudiesUntil()`，连同整条前置一起买），再 `study.purchase()`。
+- **没有**动 EC 资源门槛、**没有**写任何解锁标志位。 `[读码]`
+
+**EC 门槛公式本身**（`ec-time-studies.js:108`）：
+`required: completions => DC.E2000.pow(Math.min(completions, 4)).times(DC.E17500)`
+⇒ completions 0→`1e17500`、1→`1e19500`、2→`1e21500`、3→`1e23500`、4→`1e25500`；
+AD15 的 `/100` 只把第 0 档变成 `1e17498`，**对第 1~4 档几乎无效**（`1e19500/100 = 1e19498`）。 `[读码+算术]`
+
+**双端差异（重要）**：Web 端 `oreki-eternity-automation.js` 有 `challenge.start(true)`（真 `challenge.start()`），
+所以 **Web 端会真的自动启动 EC**；而 R35 在 Android 实测「自动开打 100% 失效」
+（`OrekiChallengeAuto.smali:198` 传 `null` continuation）。
+⇒ **两端在这一环不等价**，Android 侧必须由 Agent B 对齐。 `[实测]`
+
+**已知次要缺陷**：`_ecTarget`（`oreki-eternity-automation.js:295`）只在 `:295`（定义，初值 1）
+与 `:368`（`shouldHoldReset`）出现，**从不推进**，恒为 1
+⇒ `shouldHoldReset()` 的大坍缩保护实际上只对 EC1 生效。 `[读码]`
+
+### C.9 真终局链与 IU 链（R36-C 读码 + 实测，**最重要的路线图**）
+
+```
+EC1~EC12 全通  →  Reality  →  天神 V（6 项 progress() ≥ 1）
+                              ↓ 其中 dilatedTime 恒 0 = 当前唯一未达标项
+                       IU15（莱特拉唯一入口）
+                          门A：IM 存量 ≥ 1e9 且 currentIMCap ≥ 1e9
+                          门B：maxID1 == 0（永不买第一无限维度）
+                            且 player.antimatter.exponent ≥ 1.5e12
+                          ↓
+                       莱特拉（Laitela.isRunning）
+                          ↓
+                       IU25「彻底抹除」cost 1.6e15
+                          硬性要求 Laitela.isRunning && Laitela.maxAllowedDimension === 0
+                          && Glyphs.activeWithoutCompanion.length <= 1
+                          && TimeStudy.reality.isBought
+                          ↓
+                       ★ 佩勒（Pelle）= 真终局 GameEnd
+```
+
+| 事实 | 值 | 等级 |
+|---|---|---|
+| `OREKI_IM_CAP_MULT = 10.6` **是必要的且 load-bearing** | 原版 IM 上限 **9.4517e7** < IU15 的 1e9 ⇒ 莱特拉直接买不到；×10.6 后 **1.0019e9 ≥ 1e9**，**余量仅 0.19%（极紧）** | `[读码]`+`[实测]` |
+| IU15 是**莱特拉唯一入口** | `src/core/secret-formula/celestials/laitela.js:11-13` | `[读码]` |
+| IU15 门 B 的机制 | `maxID1` 记录**第一无限维度的购买量**（`src/core/dimensions/infinity-dimension.js:385`）⇒ 从不买 ID1 则恒为 0；但不买 ID1 ⇒ 无限点数产出为 0（`infinity-dimension.js:127-140`）⇒ 唯一绕法是**现实机器项**（`antimatter-dimension.js:48` + `AlchemyResource.force`，`secret-formula/celestials/alchemy.js:310-318`，需炼金 tier 4 / Effarig L17） | `[读码]` |
+| 门 B 的达成方式 | `antimatter-dimension.js:600-607` 把 AD1 产出抬成 `10^(log10(P1)^k)`，被 `Decimal.MAX_VALUE`（指数 9e15）封顶 ⇒ 「打到反物质上限」即可。存档 `1123._Endgame.txt` 实测 `antimatter.exponent = 9.00000e+15` | `[读码]`+`[实测]` |
+| **Ra 记忆不是真终局阻塞** | 默认 10000× 下**上游原版曲线（尾乘 1e6）5 秒就到 Ra L20**，R35 的 ÷400 属过度缩放，保持原样即可；且 IU25 不依赖 Ra 宠物等级（IU23/IU24 才依赖 `Ra.isRunning`） | `[实测]` |
+| **V 六项没有第二道墙** | 真实新档 1319 秒内 6 项中 5 项已达标，`realities` 实测到 **240** 次（门槛 200）✔；唯一不达标是 `dilatedTime = 0.000` | `[实测]` |
+| IU25 还差 6 个数量级 | IM 上限 1.0019e9 vs IU25 cost 1.6e15；抬升来源是 `baseIMCap` 第二项（需 `log10(uncappedRM) > 1e5`，当前 10722）或 IU6（×1e100 硬上限）或 IU13 的倍率 | `[读码]`+`[实测]` |
+
+### C.10 ★ IU15 永久锁死死锁链（R36 主 Agent 读码定位，★此前所有轮次均未记录★）
+
+**这是莱特拉（从而佩勒）在当前自动化下不可达的根因。**
+
+| 环节 | 位置 | 事实 |
+|---|---|---|
+| 1 | `src/core/oreki-early-automation.js:68-80` | `buyInfinityDimensions()` 调 `InfinityDimensions.buyMax()` |
+| 2 | `src/core/dimensions/infinity-dimension.js:398-410` | `buyMax()` 里 `unlockedDimensions.forEach(d => d.buyMax(false))` ⇒ **买 ID1** |
+| 3 | `src/game.js:865` | `OrekiEarlyAutomation.tick()` **每帧调用** |
+| 4 | `src/core/dimensions/infinity-dimension.js:385` | `player.requirementChecks.reality.maxID1 = maxID1.clampMin(InfinityDimension(1).amount)` ⇒ 买过 ID1 即 **maxID1 > 0** |
+| 5 | `src/core/secret-formula/reality/imaginary-upgrades.js:161-162` | IU15「理想之构」`hasFailed: () => maxID1.gt(0)`；`checkRequirement: () => maxID1.eq(0) && player.antimatter.exponent >= 1.5e12` |
+| 6 | `src/core/imaginary-upgrades.js:72` | `get isPossible() { return this.config.hasFailed ? !this.config.hasFailed() : true; }` |
+| 7 | `src/core/secret-formula/celestials/navigation.js:1430` | `if (player.requirementChecks.reality.maxID1.neq(0)) return 0.5;` ⇒ **莱特拉进度被砍到 50%** |
+
+⇒ IU15 是莱特拉**唯一入口**（`laitela.js:11-13`），故 IU25「彻底抹除」与**佩勒不可达**。 `[读码]`
+
+**关键：这是可以按现实分阶段解决的，不是不可逆。**
+`maxID1` **每个现实会重置**：`src/core/player.js:1005-1020` 的
+`Player.resetRequirements("reality")` 把整个 `requirementChecks.reality` 换成新对象、`maxID1: DC.D0`。 `[读码]`
+
+**R36 已实施但未实测的修法**（commit `f223f63`）：
+`oreki-early-automation.js` 新增 `isIu15SprintActive()` ——
+在 IU15 具备解锁条件（`MachineHandler.isIMUnlocked` 且 `!ImaginaryUpgrade(15).isAvailableForPurchase`）
+且**本现实尚未买过 ID1**（`maxID1.eq(0)`）且反物质指数已接近门槛时，
+**暂停购买无限维度**，改走**现实机器（RM）路线**
+（`antimatter-dimension.js:48` 的 `Currency.realityMachines.value.powEffectOf(AlchemyResource.force)` 是原版
+为「不买 ID1 也能堆反物质」准备的路径；RM 上限 `MachineHandler.baseRMCap = DC.E1000`，
+而 V 的 realityMachines 门槛只要 1e60 ⇒ 量级绰绰有余）。
+**不写 `maxID1`、不伪造反物质、不改任何存档字段。** `[读码]`
+
+**符号可达性已核对**：`MachineHandler` / `ImaginaryUpgrade` 经
+`src/merge-globals.js` → `src/core/globals.js:98/102` 挂到 `window`，
+故在**无 import** 的 `oreki-early-automation.js` 中可直接引用。 `[读码]`
+
+⚠️ **本项尚未经真实新档实测**，下一轮第一件事必须验收它。 `[未知]`
+
+### C.11 R36 新发现的双端差异（Agent B 只读调研）
+
+| 事实 | 详情 | 等级 |
+|---|---|---|
+| **Android 原版有 ID 自动购买器，Web 原版没有** | Android：`autobuyer/InfinityDimensionsAutobuyerState.smali` 调 `dimension/infinity/a;->c()Z`（= Web 的 `InfinityDimensions.buyMax()`）。Web 原版源码注释明写 `// Called from "Max All" UI buttons and nowhere else` ⇒ **Web 是 Oreki 自己补的 AD6 模块在每帧买 ID** | `[读码]` |
+| ⇒ C.10 的 IU15 死锁**双端都有** | 两端都会买 ID1 ⇒ 两端 IU15 都被锁死。Web 侧已修（`f223f63`），**Android 侧本轮未修** | `[读码]` |
+| Android EC 自动开打是 **NPE 被吞**，不是「缺 continuation」 | `ContinuationImpl.<init>(null)` ⇒ `_context = null` ⇒ 后续 `getContext()` **抛 NPE** ⇒ 被 `tick()` 的 catch 吞掉 ⇒ **每帧静默失败**。这比「传 null 导致不执行」更精确 | `[读码]` |
+| 原版 `Parser$StartEcCommand` 传 `z=true` | `:360` 处 `const/4 v?, 0x1` ⇒ 走的是**静默 automator 模式**，不是弹确认框 | `[读码]` |
+| REA doctor 的 `healthy:false` **不等于不可用** | `healthy:false` 的原因是缺 Hopper/Ghidra/IDA **原生**反编译引擎；`workbuddy` 客户端注册是 `aligned`；`search-android-classes` 实测可用（JADX headless 成功加载 **20032 个类**） | `[实测]` |
+| Web 侧「膨胀从未启动」是错的 | 实测 `dilationUnlocked`=true、`player.dilation.studies.length`=6、`maxDTL` 峰值 **11.6**。R35 的「dilatedTime 恒 0」**被推翻** | `[实测]` |
+| `_ecTarget` 是**死变量** | 恒为 1 ⇒ `shouldHoldReset()` 只对 EC1 生效，不覆盖 EC2~EC12 | `[读码]` |
+| `emphasizeEnd` = 比值的 **10 次方** | `navigation.js:4-6` `Math.pow(fraction, 10)` ⇒ V 六项里除 `realities` 外**五项 progress 都不是线性比值**。实测基线：`dilatedTime` 1e11.6 ⇒ progress = **7.47e-05**（不是 0.387） | `[读码]+[实测]` |
+| 每现实会清空膨胀研究与 DT | `reality.js:673-676` 清 `player.dilation.studies` + `active=false`；`reality.js:696` 清零 `maxDT` | `[读码]` |
+
+
 
 ## D. Android 逆向事实（REA / smali）
 
@@ -213,12 +369,86 @@ curl http://127.0.0.1:9222/json/list
 
 ---
 
+### F.2 窄屏缺陷与修复（2026-10-30 R35 / 2026-10-30 R36）
+
+**R35 修的三处**（当时都放在 `public/stylesheets/oreki.css` 的 `@media (max-width:620px)` 里）：
+
+| 缺陷 | 根因（文件:行） | 实测（392×676） |
+|---|---|---|
+| 维度行「倍率向上溢出」 | `new-ui-styles.css:659` 行高写死 `5.5rem` + `components.css:2960` 文本容器写死 `3.5rem`，而 620px 断点已把行改成两行网格 | 行高 55px（内容需 74px），文本顶出行框 **+19px**、行间距 0 → 压到上一行。修后 110px / **−5px** |
+| 自动购买器**横向**溢出 | `styles.css:4392` `.c-autobuyer-box-row { width: 96rem }` = **960px** | 行宽 960px、右缘溢出 **+573px**；修后 393px / **+1px** |
+| 同页控件偏小 | 无统一触控尺寸：挑战按钮 150×30、子页签 146×25、check 16×16、帮助图标 20×20 | 67 个可点元素中 20 个 <44×44；修后 **剩 1**（checkbox 本体 22×22，可点区域在 44×44 的 label 上） |
+
+**R36 的关键结论：620px 断点不够，必须扩到 900px。** `[实测]`
+
+| 事实 | 值 | 等级 |
+|---|---|---|
+| `new-ui-styles.css` **不是**静态引入的 | 它由 `src/components/ui-modes/modern/ModernUi.js:56` 在 Vue 模板里以 `<link>` **运行时注入**，因此排在 `index.html` 静态引入的 `oreki.css` **之后**（同优先级时以它为准） | `[实测]` |
+| 它的窄屏断点原本也是 620px | 于是 **768px 竖屏平板**与 **676×392 手机横屏**上「头部无限按钮 / 维度行七列 / 选项页两列 / 重置按钮」全部没被适配：768 下 `.c-prestige-button-container` right=**817**（溢出 49px），676 横屏 right=**759**（溢出 83px） | `[实测]` |
+| 断点统一后的做法 | `oreki.css` 与 `new-ui-styles.css` 全部窄屏块统一改成 **`max-width: 900px`**；需要压过动态注入文件的规则继续用 `!important` | `[实测]` |
+| **高特异性覆盖陷阱**（本轮真实踩坑） | 上游 `components.css` 里大量规则带 `[data-v-*]` 属性选择器（特异性 0,2,0），**高于**我们 0,1,0 的裸类名规则 ⇒ `.l-tt-save-load-btn { min-width: 44px }` 被整条压掉。必须写成 `.l-tt-save-load-btn[data-v-time-study-save-load-button] { … }` 才生效 | `[实测]` |
+| 符文页溢出是**桌面端也有的**问题 | `.l-player-glyphs-column { width: 65rem }` = 650px 塞进 `.l-reality-button-column { width: 44rem }` = 440px ⇒ 无论桌面还是窄屏都溢出 210px。修法不限断点：列宽改 `width:100%; max-width:65rem` + 列内 `overflow-x:auto` 局部滚动 | `[实测]` |
+| 缓存击穿 | `index.html` 的 `oreki.css` 与 `ModernUi.js` 的 `new-ui-styles.css` 原本**都没有版本查询串**（对比 `styles.css?3`）⇒ 改样式后老用户拿不到新版。R36 两者都加了 `?R36` | `[实测]` |
+
+**R36 之后的触控档位（360px 挑战页实测）**：`AGENTS.md §19` 的「相对一致」条款已收敛 —— `[实测]`
+
+| 档位 | 类名 | 实测尺寸 |
+|---|---|---|
+| 主档 56px | `.o-challenge-btn` | 150×**56** |
+| 次档 48px | `.o-primary-btn` / `.o-primary-btn--subtab-option` / `.o-tab-btn` | 147×**48** / 48×**48** |
+| 绝对下限 44px | `.l-tab-btn-inner`（侧栏项） | 55×**44** |
+
+档差 56↔48 = **14.3%**、48↔44 = **8.3%**，均 ≤ §19 要求的 20%。 `[实测]`
+
+### F.3 R36 · 通知洪水治理（`src/core/notify.js`）
+
+| 事实 | 值 | 等级 |
+|---|---|---|
+| 根因 | 原版 `notify.js` 直接 `appendChild`，**无队列、无上限、无去重**。R35 实测峰值 **72 条**堆在右上角、遮挡 **143%** 视口 | `[实测]` |
+| 修法 | ① 同时最多 `MAX_VISIBLE = 3` 条；② 同文本重复**合并**成一条并显示 `×N`；③ 按优先级「现实/永恒/打击」挤掉最低级、低级折叠进「还有 N 条」；④ 折叠条可点击清零 | `[实测]` |
+| 优先级表 | `info`/`automator`=0，`success`/`error`=1，`infinity`/`eternity`/`black-hole`=2，`reality`/`strike`=3 | `[读码]` |
+| 副作用 | 窄屏下原版 `.o-notification { white-space: nowrap }` 会让长中文提示横向溢出，已在 ≤900px 改为 `normal` + `max-width: min(76vw, 26rem)` | `[实测]` |
+| 单元测试 | `web/_tools/_r36_notify_test.mjs`（**不需要浏览器、不需要构建**）：7 组用例 / 18 项断言全通过，退出码 0 | `[实测]` |
+| 浏览器实测 | 7 视口 × 10 页实测，容器内 `.o-notification` 元素数 **1~5**（含离场动画中的残留与汇总条），远低于原来的 72 | `[实测]` |
+
+### F.4 R36 · 多视口几何验收工具
+
+| 工具 | 作用 | 等级 |
+|---|---|---|
+| `web/_tools/_r36_viewports.mjs` | 7 视口（320/360/392/430/768/1280 + 676×392 横屏）× 10 页，逐页量整页横向溢出、右缘越界元素、按钮高度直方图、<44×44 清单、关键类名尺寸 | `[实测]` |
+| `web/_tools/_r36_notify_test.mjs` | 通知洪水单元测试（mock DOM，零浏览器依赖） | `[实测]` |
+| `web/_tools/_r36_cssdiag.mjs` | 查指定选择器的**计算样式**与样式表加载顺序，用于定位「覆盖没生效」类问题 | `[实测]` |
+| **测量坑 1**：可见性判定 | 只看元素自身的 `display`/`visibility` 会把 `display:none` 祖先下的**隐藏页签残留 DOM** 误判成可见。必须用 `e.getClientRects().length > 0` | `[实测]` |
+| **测量坑 2**：越界判定 | 局部滚动容器（`overflow:auto/scroll/hidden`）里的内容超出是**设计如此**，不能算「被裁」；要沿祖先链查 `overflowX` | `[实测]` |
+| **测量坑 3**：通知条 | `.o-notification` 入场动画用 `translateX`，动画期间 `rect` 会短暂出界 ⇒ 量越界时要排除带 `a-notification--enter/--leave` 的元素 | `[实测]` |
+| **测量坑 4**：页面解锁 | 新档只解锁 5 个侧栏页（维度/自动化/成就/统计数据/选项），挑战/无限/永恒/现实/天神页**根本不存在**。要量这些页必须临时把 `Tab[*].config.condition` 置为 `() => true`（**纯几何测量脚手架，不构成任何玩法/通关结论**） | `[实测]` |
+
+**R36 七视口最终实测结果** `[实测]`：
+
+| 视口 | 整页横向溢出 | 右缘越界元素 | <44×44 的按钮 |
+|---|---|---|---|
+| 320 | 无 | 0 | **0** |
+| 360 | 无 | 0 | **0** |
+| 392 | 无 | 0 | **0** |
+| 430 | 无 | 0 | **0** |
+| 768 | 无 | 0 | **0** |
+| 1280（桌面） | 无 | 0 | 17（**不在 §19 窄屏规则范围内**） |
+| 676×392 横屏 | 无 | 0 | **0** |
+
+---
+
 ## G. 仍未知 / 待证
 
 - Android 端 EC 研究自动购买链在真机上是否真的能推进（`OrekiChallengeAuto.tick()` R35 已修正 8 处极性并汇编通过，**装机实测进行中**）。 `[未知]`
 - Ra → Laitela → Pelle 全链在 180 分钟内是否物理可达（当前 Ra 只到 20 级需 `3.48e16` 记忆 vs 可产 `6.17e14`，差 56×）。 `[推断]`
 - V 的 `realities` 项（200 次，实测 80/200，节奏约 0.175 次/秒）在 `dilatedTime` 打通后能否在剩余预算内自然达标。 `[推断]`
 - Web 移动端「教程」弹窗内容与关闭、弹窗文本逐字换行 —— **未验证**。 `[未知]`
-- 360px 窄屏下 `.l-reality-button` 右缘被裁 23px —— **已实测存在，未修**（最小修法见
-  `handoff/R35-真Chrome验收-2026-10-30.md` §3②）。 `[未知]`
+- 360px 窄屏下 `.l-reality-button` 右缘被裁 23px —— **R35 实测存在，R36 已修**
+  （窄屏改为 `width:100%; max-width:100%`），但**修后的几何只在 headless Edge 上验过**，
+  **未在真 Chrome / AVD 上复测**。 `[推断]`
+- 1280px 桌面视口仍有 **17 个** <44×44 的控件（`.o-tab-btn.l-help-me` 20×20、
+  `.c-glyph-inventory-option` 190×27、`.l-glyph-equip-button` 106×35 等）。
+  §19 的绝对下限目前只约束 ≤900px 窄屏，**桌面档未纳入**。 `[实测]`
+- 通知洪水治理只改了 **Web**。Android 是原版 Kotlin 逻辑（smali 补丁改不动
+  `notify` 的 Kotlin 类），**两端通知条行为目前不等价**。 `[读码]`
 
