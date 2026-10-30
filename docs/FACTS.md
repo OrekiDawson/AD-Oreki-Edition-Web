@@ -1814,9 +1814,14 @@ spec 当前只有 2 条 blocker，现实阶段都不成立。
 
 235 秒里 IP 恒 0、`bigCrunches` 恒 0 ⇒ 间隔一级都买不起 ⇒ `brake` 不可能变真。
 
-### 二、根因不是「没写自动化」，是缺 Web 已有的两刀
+### 二、根因候选：两个已知缺失，但因果顺序**未定**（不许写死）
 
-**第一刀：`[Oreki AU4b]` 在 Android 侧 0 命中。**
+> 更正：本条初版断言「AU4b 缺失**导致** AM 卡在 1.8e308」。**顺序说反了。**
+> AU4b 改的是坍缩**策略**（AMOUNT → X_HIGHEST），它只在坍缩**真正发生过**之后才有意义。
+> 若自动坍缩一次都没 tick，AU4b 根本轮不到发挥作用。
+> 下面两条是**候选**，谁在前必须由 AVD 运行期门控表判定，不能靠读代码推。
+
+**候选一：`[Oreki AU4b]` 在 Android 侧 0 命中。**
 
 Web `src/core/autobuyers/big-crunch-autobuyer.js:19-26`：
 
@@ -1829,10 +1834,9 @@ if (unlocked && this.data.mode === AUTO_CRUNCH_MODE.AMOUNT && Decimal.lt(this.da
 }
 ```
 
-**AVD 读到的 `1.7976931348623277e308` 就是这里的 1.8e308 —— 同一个 bug 的指纹。**
-AM 作为 Number 饱和在 `Number.MAX_VALUE`，`canCrunch` 的比较卡在等号上，一次坍缩都不会发生。
+AVD 读到的 `1.7976931348623277e308` 与这里的 1.8e308 同值 —— **可疑，但同值不等于同因**。
 
-**第二刀：首次坍缩调用缺失。**
+**候选二：首次坍缩调用缺失。**
 
 Web `src/game.js:311`（`tryOrekiEarlyRoutine` 内）：
 ```js
@@ -1841,29 +1845,77 @@ if (!player.break && Player.canCrunch) bigCrunchResetRequest(true);
 原版大坍缩自动器间隔 150000 ms，且 `Time.thisInfinityRealTime` 是**真实时间**
 （速度倍率在 `realTimeMechanics` 里被除回去），所以开局第一次自动坍缩要干等 150 秒真实时间。
 
-**第三：这笔债 Android 自己的构建脚本早记着。**
-`scripts/build_mod.py:3121`：「需要先修默认模式（X_HIGHEST），留到下一轮单独处理。」
-—— 明确 defer 过，一直没回来做。本轮 AVD 实测把它从「待办」变成「有现场证据的阻塞点」。
+**已知待办（不是新发现）**：`scripts/build_mod.py:3121` 自己记着
+「需要先修默认模式（X_HIGHEST），留到下一轮单独处理」。
 
-### 三、为什么 AU4c 救不了第一环
+### 二·补 「g() 未解锁」这条被推翻
+
+一度有结论说 `CrunchAutobuyerState.g()` 未打 AU4 补丁、故 `c()` 恒 false。
+**该结论被推翻**：`work/mod`（2026-10-30 22:14）里 `g()` 是 `:810-:883`，
+AU4 分支在 `:865-:882`；引用者用的是 `:782-844`，**在 :844 截断**，
+而补丁永远加在方法末尾 `return` 之前 ⇒ 截断必然截掉补丁。
+
+按完整方法推演：全新档 `K()=false` → `hasInfinity()=false` → `orekiEarly()=true`
+⇒ `g()` 返回 **true**。
+
+⇒ 方法学：**判「这个方法里有没有 X」，行号区间一律不可用，必须按方法边界取全文。**
+```
+awk '/\.method public final g\(\)Z/,/\.end method/' 文件
+```
+`grep -A N` 同样会截断。这一条在 Web 侧一样适用。
+
+### 二·补二 判定的唯一办法：运行期门控表
+
+不读代码推，直接 dump 这 10 个值（60 s / 120 s / 200 s 各一次）：
+
+```
+Player.m()                          # brake
+CrunchAutobuyerState->g()Z          # 解锁门
+AutobuyerState->c()Z                # 运行门
+player.auto.bigCrunch.isActive      # 开关
+player.options.autobuyersOn         # 总开关
+player.auto.bigCrunch.mode          # AMOUNT / TIME / X_HIGHEST
+player.auto.bigCrunch.amount
+player.auto.bigCrunch.xHighest
+player.auto.bigCrunch.interval
+Player.canCrunch
+```
+
+哪一道门是 false 就是事实。**拿到这张表之前不许写补丁。**
+
+### 三、为什么 AU4c 救不了第一环（这条成立）
 
 `canBeUpgraded` 的实现是 `NormalChallenge(12).isCompleted`。
 而 AU4c 是「首次无限**之后**一次性启用」。首次无限之前 `canBeUpgraded` 为假、
 `PlayerProgress.infinityUnlocked()` 也为假 ⇒ **鸡生蛋**。
-所以「补 AU4c」不能解决首坍缩，必须补 AU4b + 首坍缩调用本身。
+所以「补 AU4c」不能解决首坍缩。
+但注意：AU4 **本身**已经给 `g()` 加了 `orekiEarly()` 分支（见上），
+所以「解锁门」在全新档应当已放行 —— 真正卡住的是哪一环，等门控表。
 
-### 四、结论：Android 此前从未可能到达终局
+### 四、结论：Android 实测到不了第一次无限 —— 但「从未可能」这句话过头了
 
-这不是「后期没跟上」，是**第一环缺失**：
+实测事实只有一条，很硬：**AVD 全新档 235 s，`bigCrunches=0`、IP 恒 0、`brake=false`。**
+也就是说，在这台 AVD + 这一份已装 APK 上，第一次无限没有自然发生。
+
+但**不许**由此推成「Android 任何版本都不可能出现首次无限」：
+- 已装 APK 与 `work/mod` 时间不同（`work/mod` 缺 `OrekiAchAudit`，说明它早于本轮 L3 工作）
+- `work/mod` 里 `g()` **有** AU4 分支（`:865-882`），全新档应返回 true
+- 也就是说「已装 APK」是否等于「当前代码」，尚未确认
+
+⇒ 已确认的结论（可以写）：
 ```
-AM 饱和在 1.8e308（缺 AU4b）
-→ canCrunch 恒不成立（缺首坍缩调用）
-→ IP 恒 0 → 间隔一级买不起 → brake 恒假
+在这台 AVD + 已装 APK 上，
+自动坍缩未发生 → IP 恒 0 → interval 一级买不起 → brake 恒假
 → 无限维度不可用 → 永恒/现实/佩勒全部不可达
 ```
 
-⇒ 此前任何「Android 端进度」的正面结论，都必须重审其前提。
-在 AU4b + 首坍缩补上并通过 AVD 实测之前，**不许写「Android 与 Web 机制等价」**。
+⇒ 未确认、不许写的：
+```
+「Android 代码层面不可能首次无限」（需要门控表 + 重编后复测才能定）
+```
+
+**在下一次重编 + 门控表出来之前，不许写「Android 与 Web 机制等价」，
+也不许写「Android 根本没写这个功能」——只能写「实测未发生，原因待判定」。**
 
 ### 五、方法学：判「Android 有没有某机制」不能用关键词 grep
 
