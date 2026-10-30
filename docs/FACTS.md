@@ -312,7 +312,11 @@ EC1~EC12 全通  →  Reality  →  天神 V（6 项 progress() ≥ 1）
 | Dalvik 跳转极性 | `if-eqz` = 值为 0 则跳；`if-nez` = 非 0 则跳；`if-gt A,B` = A>B 则跳。**R33/R34 共四次因写反导致「两条路都拒绝」** | `[实测]` |
 | `suspend` 不能进同步 tick | `commitToGameState`（`eternity/studies/e.smali` 的 `b(List,ZZ,Continuation)`）是 suspend；`fp3.D(Z,vh0)` 是普通方法可同步调 | `[读码]` |
 | 挑战真正的 start | **不是** `E(Z)Z`（那是「这一关研究还能不能买」），是 `D(Z,Continuation)`（`b.smali:472`，`:983` 是唯一写 `current` 非 0 的地方） | `[读码]` |
-| `y()` 语义 | `y() = I() == L()`，即「已满级」返回 1（`b.smali:3834`）—— 写跳转时最容易搞反 | `[读码]` |
+| `y()` 语义 | **同名不同类，别混**：`challenge/eternity/b.y()` = `I() == L()` 即「已满级」返回 1（`b.smali:3834`）；但 `challenge/antimatter/b.y()` = `K()` 即「已完成」（`antimatter/b.smali:1209`）。写跳转时最容易搞反 | `[读码]` |
+| `challenge/antimatter/b.K()Z` 真实语义 | = `H().e(id)`，**`true` 表示「这一关已完成」**。`H()` 返回完成位 BitSet：基类（`antimatter/b.smali:811`）返回 `PlayerInfinityChallenges.b()`；`normal/a` 覆盖（`normal/a.smali:854`）为 `PlayerNormalChallenges.f()`。**不能按方法名猜，也不能信注释** | `[读码]`+`[REA]` |
+| `normal|infinity/a.D(Z,Continuation)` 返回值 | 真正写入 `current` 之后返回 `Boolean.valueOf(true)`（`normal/a.smali` `:cond_5 → move p2,p1` 尾部）；解锁判据 `v()`/`B()` 为假时在失败出口返回 `Boolean.valueOf(false)`。⇒ **`true` = 成功进入**。真的挂起时返回 `CoroutineSingletons.a` | `[读码]` |
+| 挑战解锁判据 | 普通：`normal/a.B()Z`（`normal/a.smali:345`，id==1 或已完成 或 反物质 ≤ `lu.b` 即解锁）；无限：`g40.B()Z`（`g40.smali:116`，`PlayerInfinityChallenges.f() >= id`）。两者都**只读存档**，可安全当预检用 | `[读码]` |
+| 挑战 start 内含完整重置 | `challenge/antimatter/c;->a(Continuation)` → `prestige/e;->h(ZZ,Continuation)` = **完整大坍缩重置**。⇒ 每帧重复「进入挑战」＝每帧一次全量重置，游戏必然不可操作 | `[读码]` |
 | 自动购买器极性 bug | `build_mod.py` 三段放行补丁原本是 `if-nez X, :..._er`，而 `orekiEarly ≡ !hasInfinity` ⇒ **两条路都拒绝**。改 `if-eqz` 后：零点击 50 秒从 `[101,79,60,50,0,0,0,0]` 变 `[660,490,390,320,240,190,150,120]` | `[实测]` |
 | `setBackgroundTintList` 必崩 | `TutorialEntry.smali` 调 `Landroid/view/View;->setBackgroundTintList` → `NoSuchMethodError`；改 `TextView` 也一样。**整段移除 tint**，只留 `setBackgroundColor(#0078D7)` 才不崩 | `[实测]` |
 | 语言默认值三处 | 同一个 `language` 键被三处用不同默认值读：`attachBaseContext`(决定界面)、`onCreate`(写 `Ljw0->T`)、`jw0.<clinit>`(静态初值)。必须三处对齐 `zh_CN`，且加「紧跟 `const-string v5, "language"`」锚点断言 | `[实测]` |
@@ -330,6 +334,13 @@ EC1~EC12 全通  →  Reality  →  天神 V（6 项 progress() ≥ 1）
 5. **鹿颈长 run 内反物质被清零**：`oreki-keep-antimatter.js` 加
    `if (player.celestials.effarig.run === true) return true;`。 `[实测]`
 6. **无名氏跳过门票自锁**：自动化只判 `Enslaved.isUnlocked` 而不是 `ENSLAVED_UNLOCKS.RUN`。 `[实测]`
+7. **Android 进 IC1 后无法切换任何页面（软锁，R39）**：`OrekiChallengeAuto.tryNormal()/tryInfinity()` 里
+   4 处判据极性全反 —— `b.K()` 之后写成 `if-eqz`（＝未完成的跳过、**已完成的每帧重进**），
+   `D()` 的 Boolean 写成 `if-nez`（＝失败当成功、成功反而继续试下一关）。机制：
+   手动进 IC1 → `OrekiInstantChallenge` 同帧结算并清 `current` → 下一帧因 `K()==true` 把「已完成的 IC1」
+   当目标再调 `D()` → `D()` 内部 `challenge/antimatter/c;->a()` 是**完整大坍缩重置** → 再被清 `current`
+   ⇒ **每帧一次全量重置**，页面切不动。修法：`if-nez v3`（K 已完成跳过）+ `if-eqz v2`（D 返回 false 才试下一关）
+   + 解锁预检 `B()`。已加构建期断言 `build_mod.py::check_challenge_auto_polarity()`（指令三连匹配）。 `[读码]`
 
 ---
 
@@ -542,3 +553,121 @@ EternityChallenge(7).reward.applyEffect(p => InfinityDimension(8).amount += p * 
 **顺带一条会静默卡死终局的坑**：ID 自动购买器被关掉后如果没还原（`player.auto.infinityDims.*.isActive = false`），
 ID1 不再被买 ⇒ 无限之力归零 ⇒ EP 卡在 1e2974（现实要求 `maxEP >= 1e4000`）⇒ **现实永远做不了，整局死锁**。
 凡是临时关自动购买器的模块，必须「保存 / 还原 8 层逐层开关 + 组开关 + 要求锁」，三样都幂等还原。
+
+---
+
+## C.15 终局判据里 `TARGET` 就是「需要的反物质指数」本身，`OFFSET` 换任何值都一样（R38-M 单测）
+
+**公式**（`src/core/celestials/pelle/game-end.js`）：
+
+```js
+endState = (Math.log10(totalAM.plus(1).log10() + 1) - OFFSET) / (Math.log10(TARGET) - OFFSET)
+```
+
+令 `E = log10(totalAM)`（反物质指数）。`endState >= 1`
+⟺ `log10(E+1) - OFFSET >= log10(TARGET) - OFFSET`
+⟺ `log10(E+1) >= log10(TARGET)` ⟺ **`E >= TARGET`**。
+
+⇒ 两件反直觉但必须记住的事：
+
+1. **`TARGET` 不是「多少倍」也不是「多少反物质」，它是「反物质指数必须达到的数值」。**
+   原版 `TARGET = 9e15` 的真实含义是「指数要到 9e15」（≈ 反物质 `1e9e15`），不是「反物质 9e15」。
+2. **`OFFSET` 取什么值都改不了「`E >= TARGET`」这个交会点** —— 分子分母同减一个常数，
+   只在 `TARGET = E` 处相等。所以「把 OFFSET 留着、只缩小 TARGET」是**无效操作**。
+
+**`OFFSET` 唯一的作用是决定分母符号与单调性**：分母必须是 `log10(TARGET) - OFFSET > 0`。
+原版取 `8.7` 是因为配 `9e15`（分母 `7.25 > 0`）。一旦 `TARGET < 1e8.7 = 5.01e8`，
+分母变负 ⇒ **函数非单调，E 越大 endState 反而越小**，判据彻底失效。
+⇒ 想把 `TARGET` 降到 `1e8.7` 以下，**必须同时把 `OFFSET` 压下来**。
+本作现取 `OFFSET = 1`、`TARGET = 1e3`：分母 `= 2 > 0`，`E` 从 10 涨到 1000 时 `endState` 从 0 平滑升到 1。
+
+**实测单测**（`web/_tools/_r38m/endprobe.mjs`，内存里临时改写峰值字段后逐点读 `GameEnd.endState`，读完还原）：
+
+| `E` | 10 | 50 | 100 | 300 | 999 | 1000 | 2000 | 1e4 |
+|---|---|---|---|---|---|---|---|---|
+| `endState` | 0.0207 | 0.3538 | 0.5022 | 0.7393 | 1.0000 | 1.0002 | 1.1506 | 1.5000 |
+
+单调递增、`E = 1000` 过线、页面 0 控制台错误。
+
+**R37 注释里的两处事实错误（已更正，勿再沿用）**：
+- ❌「`TARGET = 1e9` 表示门槛从 +10.7 个数量级降到 +3.7 个数量级」——错，它表示「指数要到 1e9」；
+- ❌「`totalAntimatter` 初值就是 `1e180000`（`pelle.js:260`）」——错，那句在
+  `resetResourcesForDilation()` 里，只在佩勒内做膨胀重置时才跑；真实初值是
+  `player.js:712` 的 `DC.D0`（0）。
+
+---
+
+## C.16 佩勒阶段「反物质峰值涨不动」的真凶是重置竞争，不是产量（R38-M 实测）
+
+**症状**：进入佩勒后 `player.celestials.pelle.records.totalAntimatter` 的指数（下称 `pamE`）停住不动，
+看起来像「佩勒产量归零」。
+
+**原始采样**（`web/_tools/_r38a/lai6.jsonl`，真实新档，1 秒粒度）：
+
+| t(s) | `pamE` | `amE` | `ad1` |
+|---|---|---|---|
+| 323.6 | 316 | 154 | 6.86e130 |
+| 350.8 | 316 | 308 | 1.51e316 |
+| 420.2 | 316 | 308 | 1.96e316 |
+
+`pamE` **105 秒一动不动**，同期 `ad1` 涨了 186 个数量级 ⇒ **产量完全正常，是峰值被按住了**。
+
+**机制**（三行代码就能串起来）：
+
+1. 终局判据读的 `records.totalAntimatter` 是**历史峰值** —— `currency.js:216`
+   `player.celestials.pelle.records.totalAntimatter = ...max(value)`；
+2. `Player.canCrunch` 的门槛是 `Decimal.NUMBER_MAX_VALUE = 1.797e308`（`player.js:958`）；
+3. `Pelle.initializeRun` 会强制 `Autobuyer.bigCrunch.mode = AMOUNT`（`pelle.js:87`），
+   而 `big-crunch-autobuyer.js:107` 的 `canTick` 就是 `Player.canCrunch`。
+
+⇒ 反物质一过 `e308` **当帧就坍缩清零**，每周期峰值永远停在 e308 量级，峰值字段再也抬不动。
+旁证：`crunchL`（无限次数 log10）在同样 100 秒内从 0 涨到 3.59，即 **≈39 次/秒** ——
+远超任何自动化自己 3 秒级的节流，只能是原版自动购买器在打。
+
+**同理要停的还有两个**：
+- `Pelle.armageddon` → `finishProcessReality({ reset: true, armageddon: true })`（`pelle.js:149-155`），
+  整局现实重置，比坍缩更彻底；
+- `Autobuyer.eternity`（`Player.canEternity` 一到就重置换取 EP）。
+
+**正确做法**：佩勒阶段只做「全部最大 + 维度提升 + 星系 + 佩勒升级」这四件**不清空当前反物质**的事，
+把 `Autobuyer.bigCrunch.isActive` / `Autobuyer.eternity.isActive` 每帧强制置 false
+（`Pelle.initializeRun` 之后原版会重开，所以必须每帧检查）。落地：`oreki-endgame-automation.js::_stopDoomedResets()`。
+
+---
+
+## C.17 终局判据对称化后的精确边界：`endState >= 1 ⟺ 反物质指数 E >= 1000`（R39 实算）
+
+`game-end.js` 现式（`OREKI_PELLE_END_OFFSET = 1`、`OREKI_PELLE_END_TARGET_EXP = 1e3`）：
+
+```
+endState = (log10(log10(totalAM)+1) - OFFSET) / (log10(TARGET+1) - OFFSET)
+```
+
+令 `E = log10(totalAM)`：
+
+- 分子是 `log10(E+1) - 1`，分母是 `log10(1001) - 1 ≈ 2.000434`，**都带 `+1`，形状对称**；
+- `endState >= 1 ⟺ log10(E+1) >= log10(TARGET+1) ⟺ E >= TARGET = 1000`。
+
+**R39 用 node 实算的边界**（不是推导，是算出来的）：
+
+| `E` | `endState` | 是否过线 |
+|---|---|---|
+| 9 | 0.000000 | 否 |
+| 10 | 0.020692 | 否 |
+| 100 | 0.502052 | 否 |
+| 500 | 0.849734 | 否 |
+| 998 | 0.999566 | 否 |
+| 999 | 0.999783 | **否** |
+| 1000 | 1.000000 | **是** |
+| 1001 | 1.000217 | 是 |
+| 1e4 | 1.499696 | 是 |
+
+单调性：`[0,1,10,100,1000,1e4]` 全区间 `endState` 单调不减 → `true`。
+
+**为什么必须对称化**：分母原本是 `log10(TARGET)`（不带 `+1`），分子带 `+1`，交会点落在
+`E = TARGET - 1 = 999`，与玩家可见文案「反物质 1×10^1000」差一个数量级。这是 R38-C 指出的
+off-by-one，R39 已消掉。**改回不带 `+1` 的分母会立刻让文案与判据不一致，别改。**
+
+**另一个必须记住的约束**：`OFFSET` 不能随手调。`TARGET < 1e8.7 = 5.01e8` 时分母
+`log10(TARGET) - 8.7` 变负、函数**非单调**（E 越大 endState 越小）。所以「缩 TARGET」必须同时压 `OFFSET`。
+`[实算]`
