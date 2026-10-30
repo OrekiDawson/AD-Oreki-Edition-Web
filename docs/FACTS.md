@@ -1941,3 +1941,60 @@ Player.canCrunch
 
 ⇒ 方法学：**用两端夹逼代替单点猜测**。单点只能说「当时是 X」，
 两端才说得清「变化规律与边界」。
+
+## C.43 Android 缺 AD5b：interval 会升级，但没人按「打破无限」那一下 `[结构核实]`
+
+### 一、核实方式（这次是可接受的搜法）
+
+```
+$ grep -rn "Player;->x0(" scripts/payload/smali/
+（0 个文件）
+```
+
+这条可信度**高于**普通关键词 grep：`x0` 是 payload 那个命名空间里的**真实方法名**
+（`Player.smali:11103` 的 `x0(Z)V`，`brake` 的唯一写入口），不是被 R8 改过的外部名字。
+在同一个命名空间里搜它，不存在「改名叫别的」的问题。
+
+### 二、Web 有，Android 没有
+
+Web `src/game.js:203-220` 的 `[Oreki AD5b]`：
+
+```js
+if (!player.break && player.auto.autobuyersOn &&
+    Autobuyer.bigCrunch.hasMaxedInterval &&
+    !NormalChallenge.isRunning && !InfinityChallenge.isRunning && !EternityChallenge.isRunning &&
+    !Pelle.isDoomed) { /* 按一次 breakInfinity() */ }
+```
+
+守卫一条都不能少：`breakInfinity()` 是**开关**（`player.break = !player.break`），
+少 `!player.break` 会每帧来回翻转。
+
+Android 侧：`OrekiStageAuto.upgradeCrunchInterval()` 只做 interval 升级，
+文件头注释还写着「interval 自动升级（Break 的唯一前置）」——
+**它以为 break 由别人负责，而那个「别人」不存在。**
+
+### 三、这是「两段自动化中间断了一节」
+
+```
+interval 拉满（有，OrekiStageAuto.upgradeCrunchInterval）
+        ↓  [断]
+按下 breakInfinity（无）
+```
+
+这类断链比「整段没写」更难发现：
+每一段单独看都在，注释还互相声称对方负责。
+⇒ 规则：**凡是「A 是 B 的前置」的注释，必须同时指出 B 在哪个文件里。
+指不出来就是断链的征兆。**
+
+### 四、当前 Android 端断链清单（按执行顺序）
+
+| # | 环节 | 状态 |
+|---|---|---|
+| 1 | 自动大坍缩（首次） | **待 A0 门控表判定**（AU4 分支在 `g():865-882`，按完整方法推断应为 true） |
+| 2 | 坍缩策略 AMOUNT→X_HIGHEST（AU4b） | Android 侧 0 命中；`build_mod.py:3121` 自认待办 |
+| 3 | interval 升级 | 有（`OrekiStageAuto.upgradeCrunchInterval`） |
+| 4 | 按下 breakInfinity（AD5b） | **无**（`Player;->x0(` 全 payload 0 调用） |
+| 5 | 末日路径置 break | 有（`prestige/f;->o(...)` 与 `reality.js:748-752` 同构） |
+
+⇒ 结论：即使第 1、2 环修好，第 4 环不补，`brake` 仍恒假（除非走末日）。
+但**修的顺序必须由 A0 门控表定**，不许照着这张表从上往下盲补。
