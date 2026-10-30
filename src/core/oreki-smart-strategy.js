@@ -252,6 +252,20 @@ function findById(list, id) {
 }
 
 /**
+ * 用当前的 manualHolds 重算缓存决策里的 `manualHold`（其余字段不动）。
+ * 只做一件事实核对：这个 goal 现在到底还在不在让路窗口里。
+ */
+function withFreshHold(decision, now) {
+  if (!decision) return null;
+  const goalId = decision.goal?.id ?? decision.stage?.goal ?? null;
+  const until = goalId ? (manualHolds.get(goalId) ?? 0) : 0;
+  return {
+    ...decision,
+    manualHold: until > now ? { goalId, untilMs: until } : null,
+  };
+}
+
+/**
  * 求值，返回决策对象。**只读**。
  * @param {boolean} force 忽略 1 s 节流（状态变化时用）
  * @returns {object}
@@ -268,7 +282,10 @@ export function evaluate(force = false) {
     sig = `sig-error:${(e && e.message) || e}`;
   }
   if (!force && sig === lastSignature && now - lastEvalAt < EVAL_MIN_INTERVAL_MS) {
-    return lastKnownGood ?? { ok: false, reason: "no-decision-yet" };
+    // 节流期间不能整份照抄缓存：`manualHold` 是有寿命的，抄一份过期/已清空的 hold
+    // 会让面板显示「已暂停 58 秒」而实际早已恢复 —— 实测自测里 `clearManualHolds()`
+    // 之后缓存仍在让路，执行层整整 1 秒不动手，且面板时间不动。
+    return withFreshHold(lastKnownGood, now) ?? { ok: false, reason: "no-decision-yet" };
   }
   try {
     assertSpecLeaves();
@@ -348,6 +365,11 @@ export function noteManualAction(goalId) {
   if (holdMs > 0) manualHolds.set(goalId, Date.now() + holdMs);
 }
 
+/** 清空全部手动保护（面板「立即恢复自动」按钮 / 测试用）。 */
+export function clearManualHolds() {
+  manualHolds.clear();
+}
+
 /** 供面板/探针读取的内部状态。只读。 */
 export function debugState() {
   return {
@@ -372,7 +394,9 @@ export function debugState() {
   };
 }
 
-export const OrekiSmartStrategy = { evaluate, noteManualAction, debugState, evaluateCondition };
+export const OrekiSmartStrategy = {
+  evaluate, noteManualAction, clearManualHolds, debugState, evaluateCondition
+};
 
 // 与其它 oreki 模块一致：挂到 globalThis，便于探针/面板读取（本模块不持有任何购买权）
 globalThis.OrekiSmartStrategy = OrekiSmartStrategy;

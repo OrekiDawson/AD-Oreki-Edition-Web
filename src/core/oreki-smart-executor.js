@@ -62,6 +62,13 @@ import { OrekiSmartStrategy } from "./oreki-smart-strategy.js";
 const IDLE_FRAMES_BEFORE_ACT = 3;
 /** 同一 source 两次接管之间的最小墙钟间隔，防止模块长期无动作时每帧空转调用。 */
 const ACTION_MIN_INTERVAL_MS = 250;
+/**
+ * 某个 verb 试了但**没买到**，就冷却这么久，让 priority 里后面的动作有机会上。
+ * 没有这条会饿死：`realityPush` 的第一个 owned 是 `equipBestGlyph`，
+ * 而符文槽满时它恒定返回 0 —— 实测 409 次尝试里 370 次都花在它身上，
+ * `buyRealityUpgrade` / `runReality` 一次都没轮到（`r40s2-smoke2.jsonl`）。
+ */
+const NOOP_COOLDOWN_MS = 2000;
 
 /**
  * verb → 动作。`policy` 三态：
@@ -145,6 +152,8 @@ const STATE = {
   lastResult: Object.create(null), // source → 上一次摘要（只读展示用）
   lastAction: null,                // { at, verb, label, source, acted, detail }
   lastActionBySource: Object.create(null),
+  /** verbId → 冷却到期毫秒（试过但没买到就压一会儿，避免第一个 verb 饿死后面的） */
+  noopUntil: Object.create(null),
   actionCount: 0,
   attemptCount: 0,
   lastSwitch: null,                // { at, from, to, kind }
@@ -259,11 +268,12 @@ function installManualWatch() {
   STATE.watchInstalled = true;
 }
 
-/** 挑一个可执行的 verb：按 priority 顺序取第一个 owned 且 ready 的。 */
+/** 挑一个可执行的 verb：按 priority 顺序取第一个 owned、source 就绪、且不在冷却里的。 */
 function pickExecutable(priority, now) {
   for (const verbId of priority) {
     const spec = VERBS[verbId];
     if (!spec || spec.policy !== "owned") continue;
+    if ((STATE.noopUntil[verbId] ?? 0) > now) continue;
     if (!sourceReady(spec.source, now)) continue;
     return { verbId, spec };
   }
@@ -334,7 +344,12 @@ function tick(observed) {
   }
 
   const outcome = invoke(pick.verbId, pick.spec);
-  STATE.actionCount++;
+  // actionCount 只算**真的买到了**；空转尝试记在 attemptCount。两者分开，
+  // 否则面板上的「执行次数」会把每 250 ms 一次的空调用也算成动作，看着像在干活其实没有。
+  if (outcome.acted) STATE.actionCount++;
+  // 没买到就压 2 秒，把机会让给 priority 里后面的 verb（见 NOOP_COOLDOWN_MS 注释）
+  if (outcome.acted) delete STATE.noopUntil[pick.verbId];
+  else STATE.noopUntil[pick.verbId] = Date.now() + NOOP_COOLDOWN_MS;
   STATE.lastAction = {
     at: Date.now(),
     verb: pick.verbId,
@@ -386,6 +401,9 @@ function debugState() {
     // 诊断
     idle: idleSnapshot,
     lastResult: { ...STATE.lastResult },
+    noopUntil: Object.fromEntries(
+      Object.entries(STATE.noopUntil).map(([id, until]) => [id, Math.max(0, until - now)])
+    ),
     actionCount: STATE.actionCount,
     attemptCount: STATE.attemptCount,
     threshold: IDLE_FRAMES_BEFORE_ACT,
