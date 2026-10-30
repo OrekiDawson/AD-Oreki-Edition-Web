@@ -1187,6 +1187,28 @@ R38-M 记的「反物质峰值被大摁在 e316」正是这条策略的产物，
 
 **正确写法**：「累计 12900 时间之理的门槛不变，进入引导窗口后**只花 5 时间之理**」。
 
-同类提醒：本项目已有 `OREKI_PRE_ETERNITY_IP_DIVISOR = 30`、`OREKI_PRE_REALITY_EP_DIVISOR = 30`、
-`OREKI_DILATION_TT_DIVISOR = 1000` 三处 MOD 缩放，**每一处只作用于 cost，不作用于 requirement**。
-写教程数值时先确认「这个数是成本还是门槛」。
+### C.33.1 DS1 是三段与，只写门槛会让玩家「数够了但按钮是灰的」
+
+`secret-formula/eternity/time-studies/dilation-time-studies.js:6-18`：
+
+```
+Currency.timeTheorems.max >= 12900       // 历史最大值 max，不是当前余额
+&& [231, 232, 233, 234].some(isBought)   // 至少买一个
+&& EternityChallenge(11) 与 (12) 各 5 次全满   // Perk.bypassECDilation 可免
+```
+
+第一版只写了门槛，这是残缺的：玩家照着做没反应，只会以为教程写错了。**所有「解锁条件」都要回源码看
+`requirement()` 的完整布尔式，不要只抄其中一个比较式。**
+
+### C.33.2 更正一条我自己写错的过度概括：缩放**不**只作用于 cost
+
+C.33 初版我写了「本项目三处 MOD 缩放每一处只作用于 cost，不作用于 requirement」——**这条是错的**，
+已被实测推翻，此处明确更正，防止后来者拿它当依据：
+
+| 缩放 | 作用对象 | 是否碰 requirement |
+|---|---|---|
+| `OREKI_DILATION_TT_DIVISOR = 1000` | 膨胀研究**售价**（`dilation-time-study.js:48-51`） | **不碰**：DS1 门槛 12900 原样 |
+| EC 入口 `÷100`（`ec-time-study.js:119-125`） | EC 的**入口资源要求**（`secondary.required`） | **会碰**：EC1 20000 次永恒 → 窗口内 **200**；EC2 1300 计数频率升级 → **13**；EC3 17300 第八维度 → **173** |
+
+⇒ 正确的提法是：**每个缩放系数的适用范围必须逐处读源码确认，不能用一句话概括。**
+「成本 / 门槛 / 入口资源要求」是三个不同的东西，同一份 MOD 里缩放可能只碰其中一个、也可能碰两个。

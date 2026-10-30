@@ -30,3 +30,4 @@ scripts/check_agents_sync.py -text
 # 所以这两个文件钉死 LF，不参与 autocrlf 转换。
 src/core/oreki-tutorial-data.json text eol=lf
 src/core/oreki-tutorial-data.gen.js text eol=lf
+src/core/oreki-smart-strategy.json text eol=lf
