@@ -671,3 +671,68 @@ off-by-one，R39 已消掉。**改回不带 `+1` 的分母会立刻让文案与�
 **另一个必须记住的约束**：`OFFSET` 不能随手调。`TARGET < 1e8.7 = 5.01e8` 时分母
 `log10(TARGET) - 8.7` 变负、函数**非单调**（E 越大 endState 越小）。所以「缩 TARGET」必须同时压 `OFFSET`。
 `[实算]`
+
+---
+
+## C.18 Web 端 Pelle 之前的真正死锁在 EC 阶段：现实重置清空时间研究，而 `shouldHoldReset()` 要等研究已买才压现实（R39 实测）
+
+R39 新档长跑（`web/_tools/_r39b/r39b-full.jsonl`，1 s 采样）实测里程碑：
+IU15 **6.8 min**、莱特拉解锁 6.8 min、现实数 100 **9.1 min**、`laiTier=8` **9.6 min**；
+之后 25 分钟停在 EC，`pelleUnl` 恒 false、`isGameEnd` 恒 false。
+
+链条与断点（全部来自 CDP 只读探针 `_r39b/probe*.mjs`）：
+
+```
+EC1..EC12 各 5 次 → TimeStudy.reality（ds6）→ IU25 → Pelle → 反物质 1e1000 → GameEnd
+```
+
+- `EternityChallenge(1).completions == 5/5`，但 `TimeStudy.eternityChallenge(2).canBeBought == false`；
+  它的三条子条件实测为：`isAffordable=true`、`allSecondaryRequirementsMet=true`、
+  `config.requirement=[171]` 且 **`TimeStudy(171).isBought=false`**。
+- 171 买得上但**留不住**：`TimeStudy(71).purchaseUntil()` 实测能一次把 71 和 171 都买上，
+  一分钟后复查，11~200 号研究**全空**。原因是**现实重置清空时间研究**，而这一局 10~20 s 重置一次现实。
+- `oreki-eternity-automation.js:432` 的 `shouldHoldReset()` 要求
+  `primaryMet = config.requirement.some(s => TimeStudy(s).isBought)`。
+  现实刚重置时 171 必为 false ⇒ 不压现实 ⇒ 下一帧继续重置 ⇒ 171 永远买不上。
+  **这是自我维持的死锁，不是「跑得慢」**，所以调阈值/加数值都不会让它前进。
+- 连带后果：`ds6` 永远买不到（它的前置是 EC11/EC12 各 5 次），
+  `IU25` 的 `checkRequirement` 要求 `TimeStudy.reality.isBought`，
+  于是 `iu25q=false` / `iu25pos=false`，Pelle 无从谈起。
+
+**下一轮改法（有证据支撑，不是猜）**：给 `shouldHoldReset()` 加**有界准备期** ——
+当「目标 EC 的主研究未买、但 TT ≥ 100 且 `TimeStudy(71).canBeBought`」时也返回 true，
+并记 `_prepHoldUntil = now + 15~20 s`，到点无条件放手。
+回归指标用 `probe6.mjs`：`EternityChallenge(2).canBeBought` 变 true、`current` 变非 0。
+`[实测]`
+
+## C.19 同名坑第二次：`Currency.imaginaryMachines.value` 是普通 Number，没有 Decimal 方法（R39 实测）
+
+`oreki-endgame-automation.js` 里已经因为 `.lte(0)` 踩过一次（文件 176 行注释），
+R39 又在 `iu25ConditionsReady()` 末尾踩了 `.gte(OREKI_IU25_COST)`：
+
+- `Currency.imaginaryMachines.value` 是 **Number**，`.gte` 不存在 → TypeError；
+- 外层 `try/catch` 把它吞掉 → 函数**恒返回 false**；
+- 实测 `imLog10 = 10`（1e10 IM）、`OREKI_IU25_COST = 5e9` 时仍返回 false。
+
+⇒ **IU25 的前置判定永远是「不就位」**，即使 tier 8 / 研究 / 符文 / IM 全部满足。
+已改为 `Number(...) >= OREKI_IU25_COST`。
+
+**规则**：在这个代码库里对 `Currency.*.value` 一律先 `Number(...)` 或 `.toNumber()`，
+不要直接调 Decimal 方法；而且**不要用 `try/catch` 包住整个判定然后 `return false`**
+—— 那会把「代码写错」伪装成「条件不满足」，R38/R39 各踩一次。`[实测]`
+
+## C.20 `.gitattributes` 的规则顺序反了：`* text=auto` 写在末尾会盖掉前面所有 `-text`（R39 实测）
+
+两仓 `.gitattributes` 原本是「先 `-text` 规则，最后 `* text=auto`」。
+gitattributes 是**后面的规则覆盖前面的**，于是 `docs/FACTS.md`、`docs/AGENTS_GLOBAL.md`、
+`docs/SHARED_GAMEPLAY_STANDARD.md` 的 `-text` 保护**一直没生效**：
+
+```
+$ git check-attr -a docs/FACTS.md
+docs/FACTS.md: text: auto        ← 修之前
+docs/FACTS.md: text: unset       ← 修之后（把 * text=auto 移到最前面）
+```
+
+后果是这些**硬链接共享文件**在 checkout 时可能被 CRLF 改写、甚至被删除重建而断开硬链接，
+正是 AGENTS_GLOBAL §0-A 要防的事。R39 已把 `* text=auto` 提到文件最前面。
+**改 gitattributes 后必须用 `git check-attr` 复验，而不是看文件里有没有那行字。** `[实测]`
