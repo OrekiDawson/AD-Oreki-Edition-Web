@@ -686,3 +686,90 @@
   }
 }
 
+
+/* ===== 窄屏维度行：解除写死高度，修「倍率向上溢出」 =====
+ * 症状（用户 2026-10-30 报告）：反物质页面每个维度的倍率文字压到上一行。
+ * 根因：new-ui-styles.css 的 @media(max-width:620px) 已把维度行改成
+ *   「信息一行 + 按钮一行」的两行网格（grid-template-columns: 1fr），
+ *   但 .l-dimension-single-row 仍是 height: 5.5rem、.l-dimension-text-container
+ *   仍是 height: 3.5rem。两行内容实际需要约 11rem，
+ *   而固定高度只有 5.5rem + align-content: center，
+ *   于是多出的高度被平分成「向上溢出 / 向下溢出」，
+ *   向上那部分正好盖住上一行的内容，视觉上就是倍率往上穿。
+ * 实测（392x676，真实样式 + 真实类名合成行）：
+ *   修前 行高 55px / 内容需求 74px / 文本顶出行框 +19px / 行间距 0
+ *   修后 行高 110px = 内容需求 / 文本顶出 -5px（在框内）
+ * 只在窄屏生效，桌面布局完全不受影响。 */
+@media screen and (max-width: 620px) {
+  .l-dimension-single-row {
+    height: auto !important;
+    min-height: 5.5rem;
+    align-content: start !important;
+  }
+
+  .l-dimension-text-container[data-v-generic-dimension-row-text] {
+    height: auto !important;
+    min-height: 3.5rem;
+  }
+}
+
+/* ===== 窄屏自动购买器行：解除 96rem 固定宽度，修「横向溢出」 =====
+ * 症状（用户 2026-10-30 报告「前期自动购买器溢出」= 横向）：自动化页每一行
+ * 自动购买器都向右超出屏幕，必须左右拖动才能看到右侧开关。
+ * 根因：styles.css:4392 `.c-autobuyer-box-row { width: 96rem }` —— 本作 rem=10px，
+ * 即写死 960px；手机内容列只有约 336px，横向必然溢出 600px 以上。
+ * 修法：宽度改自适应 + 允许内部插槽换行（行内元素本身没有固定宽度，
+ * 只有 header 占 25%，换行后不会挤压变形）。desktop 不受影响。 */
+@media screen and (max-width: 620px) {
+  .c-autobuyer-box-row {
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    row-gap: 0.6rem;
+    margin: 0.5rem 0;
+    padding: 1rem;
+  }
+
+  .c-autobuyer-box-row > .l-autobuyer-box__header {
+    width: 100%;
+  }
+}
+
+/* ===== 窄屏触控尺寸：可点元素命中区不小于 44×44（AGENTS.md §19） =====
+ * 症状（用户 2026-10-30 报告「选项内有些控件偏小」）：392px 视口实测 67 个可点元素里
+ * 有 20 个低于 44×44，最夸张的是挑战按钮 150×30、子页签选项 146×25、
+ * 复选 checkbox 16×16、右上帮助图标 20×20。
+ * 修法只管「命中区」，不改字号与配色：min-height / min-width 撑到 44px。
+ * 复选框本身保持 22×22 视觉尺寸，但把它的 label 撑成 44×44 承接点击。
+ * 实测复扫：20 -> 1（仅剩 checkbox 本体 22×22，其可点区域是外层 label）。
+ * desktop 不受影响（全部包在 <=620px 里）。 */
+@media screen and (max-width: 620px) {
+  .o-challenge-btn,
+  .o-primary-btn--subtab-option,
+  .c-oreki-tut-entry,
+  .o-autobuyer-input,
+  .c-autobuyer-box-row .o-primary-btn {
+    min-height: 44px;
+  }
+
+  .o-tab-btn.l-help-me,
+  .o-tab-btn.l-information {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .c-autobuyer-box-row input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+  }
+
+  .c-autobuyer-box-row label:has(input[type="checkbox"]) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

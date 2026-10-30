@@ -1,5 +1,12 @@
 import { DC } from "./constants.js";
 
+/**
+ * [Oreki R35-C] 虚幻机器上限的统一缩放系数（见下方 baseIMCap 的说明）。
+ * 原版 = 1（不缩放）；Mod = 10.6，把实测可达上限 9.45e7 抬到 ≈1.0e9，
+ * 覆盖 IU14(3.5e8) 与 IU15(1e9，莱特拉入口)。
+ */
+export const OREKI_IM_CAP_MULT = 10.6;
+
 export const MachineHandler = {
   get baseRMCap() { return DC.E1000; },
 
@@ -37,9 +44,34 @@ export const MachineHandler = {
     return Currency.realityMachines.value.gte(this.hardcapRM) || Currency.imaginaryMachines.gt(0);
   },
 
+  /**
+   * [Oreki R35-C] 虚幻机器上限整体 ×10.6（`OREKI_IM_CAP_MULT`）。
+   *
+   * ── 原版式（未改形状）──────────────────────────────────────────────
+   *   (max(log10(uncappedRM) − 1000, 0))^2 × (max(log10(uncappedRM) − 1e5, 1))^0.2
+   * 其中 `uncappedRM.log10 = 3×(log10EP/4000 − 1)`（本文件 :26-34）。
+   *
+   * ── 为什么必须抬 ────────────────────────────────────────────────────
+   * 实测 EP 的 log10 天花板 ≈ **1.43e7**（`_r34b-final300` t=266 峰值；1300 s 长测末态反而只有
+   * 4.7e6/5.8e6/5.1e6，说明 EP 已饱和、不会随时间继续涨）→ log10RM = 10722 → **原版上限只有 9.45e7**。
+   * 而这条链上的虚幻升级成本是：IU13 5e7（刚好能买）、**IU14 3.5e8**、**IU15 1e9（莱特拉入口）**、
+   * IU20 3e12、IU25 1.6e15 —— 除 IU13 外**全部高于上限，改 cost 也买不到**。
+   * 也就是「莱特拉锁死」的根因不在门槛值，而在上限本身。
+   *
+   * ── 为什么是常数位移、不是改指数 ────────────────────────────────────
+   * ×10.6 把上限从 9.45e7 抬到 **≈1.0e9**，正好覆盖 IU14(3.5e8) 与 IU15(1e9)；
+   * 若改指数（2 → 3.81）虽然能一次覆盖到 IU25(1.6e15)，但会让 IM 在 EPlog 稍高时**暴涨**
+   * （EPlog 1.43e7→2e7 时上限从 1.6e15→2.3e17），「攒 IM」失去张力。
+   * 常数位移保留原版曲线形状与所有斜率，只做整体平移，且 IU25 仍保持「远超当前上限」的原版定位。
+   *
+   * ── 语义 ───────────────────────────────────────────────────────────
+   * 仍然只由 `updateIMCap()` 在「uncappedRM ≥ 1e1000」时真实刷新（本文件 :54-62），
+   * 不写任何解锁位、不发任何货币。
+   */
   get baseIMCap() {
     return (Math.pow(Math.clampMin(this.uncappedRM.log10() - 1000, 0), 2)) *
-      (Math.pow(Math.clampMin(this.uncappedRM.log10() - 100000, 1), 0.2));
+      (Math.pow(Math.clampMin(this.uncappedRM.log10() - 100000, 1), 0.2)) *
+      OREKI_IM_CAP_MULT;
   },
 
   get currentIMCap() {
