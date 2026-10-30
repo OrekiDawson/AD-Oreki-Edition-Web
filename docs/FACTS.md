@@ -1797,3 +1797,95 @@ spec 当前只有 2 条 blocker，现实阶段都不成立。
 
 ⇒ 与 C.38 §四 是同一类：**判据写错时的失败方向是「报出一个不存在的缺陷」或「报出恒真」**，
 两种都会骗过自己。凡是「差值」类断言，必须能打印被减的两个原值。
+
+## C.42 Android 连第一次无限都拿不到：缺 AU4b 与首次坍缩调用 `[AVD 实测 + 源码对照]`
+
+### 一、现场读数（AVD 全新档，`pm clear` 后，×10000）
+
+用 `adb exec-out cat /data/data/<pkg>/files/player.json` 逐次取样
+（`Player.smali:1033` 的序列化键就是 `brake`；`auto.bigCrunch.interval/cost` 在同一份 JSON，
+一次取样两值同源，零注入、不动内存）：
+
+| 时刻 | `brake` | `bigCrunch.interval` | `bigCrunch.cost` | IP | bigCrunches | infinities | AM |
+|---|---|---|---|---|---|---|---|
+| 46 s | **false** | **150000** | **1** | 0 | 0 | 0 | 3.41e171 |
+| 107 s | false | 150000 | 1 | 0 | 0 | 0 | **1.7976931348623277e308** |
+| 235 s（停） | false | 150000 | 1 | 0 | 0 | 0 | 1.797e308 |
+
+235 秒里 IP 恒 0、`bigCrunches` 恒 0 ⇒ 间隔一级都买不起 ⇒ `brake` 不可能变真。
+
+### 二、根因不是「没写自动化」，是缺 Web 已有的两刀
+
+**第一刀：`[Oreki AU4b]` 在 Android 侧 0 命中。**
+
+Web `src/core/autobuyers/big-crunch-autobuyer.js:19-26`：
+
+```js
+// [Oreki AU4b] 用默认策略（AMOUNT，amount = 1）开自动坍缩会把反物质永久卡在 1.8e308：
+// 实测 120 s 内 maxAM 恒为 1e25.7、Infinity Dimension 永远不可用，进度实际停滞。
+if (unlocked && this.data.mode === AUTO_CRUNCH_MODE.AMOUNT && Decimal.lt(this.data.amount, 10)) {
+  this.data.mode = AUTO_CRUNCH_MODE.X_HIGHEST;
+  this.data.xHighest = new Decimal(10);
+}
+```
+
+**AVD 读到的 `1.7976931348623277e308` 就是这里的 1.8e308 —— 同一个 bug 的指纹。**
+AM 作为 Number 饱和在 `Number.MAX_VALUE`，`canCrunch` 的比较卡在等号上，一次坍缩都不会发生。
+
+**第二刀：首次坍缩调用缺失。**
+
+Web `src/game.js:311`（`tryOrekiEarlyRoutine` 内）：
+```js
+if (!player.break && Player.canCrunch) bigCrunchResetRequest(true);
+```
+原版大坍缩自动器间隔 150000 ms，且 `Time.thisInfinityRealTime` 是**真实时间**
+（速度倍率在 `realTimeMechanics` 里被除回去），所以开局第一次自动坍缩要干等 150 秒真实时间。
+
+**第三：这笔债 Android 自己的构建脚本早记着。**
+`scripts/build_mod.py:3121`：「需要先修默认模式（X_HIGHEST），留到下一轮单独处理。」
+—— 明确 defer 过，一直没回来做。本轮 AVD 实测把它从「待办」变成「有现场证据的阻塞点」。
+
+### 三、为什么 AU4c 救不了第一环
+
+`canBeUpgraded` 的实现是 `NormalChallenge(12).isCompleted`。
+而 AU4c 是「首次无限**之后**一次性启用」。首次无限之前 `canBeUpgraded` 为假、
+`PlayerProgress.infinityUnlocked()` 也为假 ⇒ **鸡生蛋**。
+所以「补 AU4c」不能解决首坍缩，必须补 AU4b + 首坍缩调用本身。
+
+### 四、结论：Android 此前从未可能到达终局
+
+这不是「后期没跟上」，是**第一环缺失**：
+```
+AM 饱和在 1.8e308（缺 AU4b）
+→ canCrunch 恒不成立（缺首坍缩调用）
+→ IP 恒 0 → 间隔一级买不起 → brake 恒假
+→ 无限维度不可用 → 永恒/现实/佩勒全部不可达
+```
+
+⇒ 此前任何「Android 端进度」的正面结论，都必须重审其前提。
+在 AU4b + 首坍缩补上并通过 AVD 实测之前，**不许写「Android 与 Web 机制等价」**。
+
+### 五、方法学：判「Android 有没有某机制」不能用关键词 grep
+
+本次「payload 全树搜不到触发大坍缩的调用」这个结论**恰好是对的**，
+但方法是错的——R8 会把 `bigCrunchResetRequest` 改成无意义名字，
+`instantChallenge : 0` 就是现成反例（关键词 0 命中，类却有 304 行）。
+
+正确顺序：
+1. 先看 Web 实现调用的是什么 API、在哪个**类**里
+2. 到 Android 找那个**类**（不是找方法名），看结构上有没有对应调用点
+3. 交叉验证用 `build_mod.py` 里有没有对应补丁——补丁脚本是人类写的、不混淆的，
+   比 smali 可靠得多
+
+### 六、32767 悬案结案（AVD 两端夹逼）
+
+| 端点 | `interval` | `cost` | 结论 |
+|---|---|---|---|
+| 全新档 | 150000 | 1 IP | 第 0 级 |
+| 旧存档（10-30 14:21） | 100.0 | 32768 IP | 已买 15 级、累计正好 32767 IP |
+
+两边合起来证明：15 级、累计 32767 IP、`interval` 下限 100
+（`150000 × 0.6^15 ≈ 70.5`，被夹到 100）—— `OrekiStageAuto.smali:30` 的注释**是对的**。
+
+⇒ 方法学：**用两端夹逼代替单点猜测**。单点只能说「当时是 X」，
+两端才说得清「变化规律与边界」。
