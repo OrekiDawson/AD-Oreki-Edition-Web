@@ -6,8 +6,22 @@ import {
   TUTORIAL_CHAPTERS,
   TUTORIAL_LOCKED_PREFIX,
   TUTORIAL_SCHEMA_VERSION,
+  TutorialReadingPosition,
 } from "../../core/oreki-tutorial.js";
 import { ensureTutorialStyles } from "../tutorial/OrekiTutorialStyles.js";
+
+/**
+ * 上次读到的章节下标；没有记录或章节已被删掉时退回「当前阶段」定位。
+ * @returns {{index: number, resumed: boolean}}
+ */
+function resolveInitialIndex() {
+  const savedId = TutorialReadingPosition.chapterId;
+  if (savedId) {
+    const index = TUTORIAL_CHAPTERS.findIndex(chapter => chapter.id === savedId);
+    if (index >= 0) return { index, resumed: true };
+  }
+  return { index: getTutorialStartIndex(), resumed: false };
+}
 
 /**
  * AD: Oreki Edition — 内置教程弹窗
@@ -29,16 +43,19 @@ export default {
   },
   data() {
     ensureTutorialStyles();
+    const initial = resolveInitialIndex();
     return {
       chapters: TUTORIAL_CHAPTERS,
       schemaVersion: TUTORIAL_SCHEMA_VERSION,
-      index: getTutorialStartIndex(),
+      index: initial.index,
       stage: getTutorialStageSnapshot(),
       stageSig: "",
       frameTick: 0,
       lockedPrefix: TUTORIAL_LOCKED_PREFIX,
-      // 用户手动点过目录之后就不再让自动定位抢走焦点
-      navigated: false,
+      // 用户手动点过目录（或从上次位置续读）之后就不再让自动定位抢走焦点
+      navigated: initial.resumed,
+      // 由「玩家主动关闭」置真，用来区分「被别的弹窗顶掉」与「读完了」
+      closedByUser: false,
     };
   },
   computed: {
@@ -93,6 +110,15 @@ export default {
   },
   created() {
     this.stageSig = this.stageSignature(this.stage);
+    // 玩家主动关（× / 「关闭教程」 / Esc）才是「读完了」；被别的弹窗顶掉不会派发 CLOSE_MODAL，
+    // 所以这个监听同时充当「这次销毁是不是用户意图」的判据。
+    this.on$(GAME_EVENT.CLOSE_MODAL, () => {
+      this.closedByUser = true;
+    });
+  },
+  beforeDestroy() {
+    // 被更高优先级弹窗顶掉时，组件会被销毁再重建；记下章节，回来接着读。
+    TutorialReadingPosition.chapterId = this.closedByUser ? null : this.chapter.id;
   },
   mounted() {
     this.resetScroll();
@@ -147,6 +173,7 @@ export default {
   template: `
   <ModalWrapperChoice
     :show-confirm="false"
+    :use-enter-to-confirm="false"
     @cancel="close"
   >
     <template #header>

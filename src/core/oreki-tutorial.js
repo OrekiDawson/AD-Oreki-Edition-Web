@@ -291,6 +291,24 @@ function orFallback(index, fallback) {
 }
 
 /**
+ * 阅读位置（跨组件重建）。
+ *
+ * 为什么需要：弹窗在 `PopupModal` 里是 `<component :is="view.modal.current.component">`，
+ * 一旦有更高优先级的弹窗（例如成就的一次性说明，`Modal.message.show(..., {}, 3)`）
+ * 把 `current` 抢走，教程组件会被**销毁**；那条消息关掉后组件**重建**，
+ * `data()` 会重新跑一遍。若不记住位置，玩家读到第 10 章被一条成就提示打断，
+ * 回来就落回「当前阶段」那一章（实测：跳到 ch10 → 被打断 → 关掉消息 → 回到 ch06）。
+ *
+ * 只存章节 id，不写 player、不落 localStorage：
+ * - 不写 player 是为了守住「本模块只读存档」这条边界；
+ * - 不落 localStorage 是因为刷新后应该重新按当前阶段定位，而不是回到上次翻到的旧章。
+ *
+ * 语义：`chapterId === null` 表示「没有未完成的阅读」，下次打开按当前阶段定位。
+ */
+export const TutorialReadingPosition = { chapterId: null };
+
+
+/**
  * 某一章所属阶段的状态（entered / available / locked）。
  * 章节 stageKey 为 null（导览类章节）时返回 null，表示「不适用」。
  * @returns {{status: string, statusText: string, name: string} | null}
