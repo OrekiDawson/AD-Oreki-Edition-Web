@@ -14,6 +14,13 @@ export const TUTORIAL_STYLE_ID = "oreki-tutorial-injected-style";
 
 const CSS = `
 .c-oreki-tut__scroll { overflow-x: hidden; }
+/* 关闭方式的提示：只要「能找到」，不抢视觉注意力，所以压小字号、压透明度 */
+.c-oreki-tut__hint {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 1rem;
+  line-height: 1.4;
+  opacity: 0.55;
+}
 .c-oreki-tut__block { margin: 0 0 0.9rem; }
 .c-oreki-tut__label {
   margin-bottom: 0.25rem;
@@ -139,8 +146,7 @@ const CSS = `
 .c-oreki-tut__dot--entered { background: var(--color-good); }
 .c-oreki-tut__dot--available { background: var(--color-reality); }
 .c-oreki-tut__dot--locked { border: 0.1rem solid rgb(255 255 255 / 35%); }
-.c-oreki-tut__details { margin: 0 0 0.6rem; }
-.c-oreki-tut__summary {
+.c-oreki-tut__details { margin: 0 0 0.6rem; }.c-oreki-tut__summary {
   padding: 0.4rem 0.2rem;
   font-size: 1.3rem;
   font-weight: bold;

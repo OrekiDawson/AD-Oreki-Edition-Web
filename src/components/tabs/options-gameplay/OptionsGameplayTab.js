@@ -37,6 +37,7 @@ export default {
       smartRows: [],
       smartHold: "",
       smartNote: "",
+      smartAt: 0,
     };
   },
   computed: {
@@ -137,6 +138,11 @@ export default {
      * 不回落到上次的值（上次的值已经过期，显示出来比不显示更误导）。
      */
     refreshSmartRows() {
+      // 设置页的 update() 是 20 fps 调的，每帧重建 7 个对象会让这块每帧重渲染。
+      // 面板信息本身只有「秒级」意义，节流到 500 ms 足够，且不影响「已暂停 N 秒」的准确性。
+      const nowMs = Date.now();
+      if (nowMs - this.smartAt < 500) return;
+      this.smartAt = nowMs;
       const rows = [];
       let hold = "";
       let note = "";

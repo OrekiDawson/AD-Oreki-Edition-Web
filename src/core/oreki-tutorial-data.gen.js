@@ -2434,7 +2434,7 @@ export default {
       "entry": "第 14 章结束（薇与太阳神可以没做完，见本章最后一个坑）；现实机器达到硬上限 1e1000，开始产出虚幻机器（IM）。",
       "steps": [
         {
-          "text": "虚幻机器（IM）不是新按钮，它是现实机器到硬上限 1e1000 之后自然溢出的产物。IU 页签里的升级全部花 IM。",
+          "text": "虚幻机器（IM）不是新按钮：现实机器涨到硬上限 1e1000 之后，IM 开始按指数曲线逼近当前上限，上限随 RM 的对数增长（本作还乘了 100 倍系数）。IU 页签里的升级全部花 IM。",
           "auto": false
         },
         {
@@ -2446,19 +2446,19 @@ export default {
           "auto": false
         },
         {
-          "text": "难度层级是这条线的主轴：每次完成现实时真实用时 < 30 秒，层级 +1，最多 8 级。层级越高可用的普通维度越少（可用层数 = 8 − 层级），8 级就是「完全不稳定」，所有普通维度被禁。",
+          "text": "难度层级是这条线的主轴：每次完成现实时真实用时 < 30 秒，层级 +1。可用普通维度层数 = 8 − 层级，降到 0 就是「完全不稳定」，所有普通维度被禁。源码只做这一个减法，没有额外上限判断。",
           "auto": false
         },
         {
-          "text": "暗物质维度一共 4 层，分别由 IU15 / IU16 / IU17 / IU18 解锁。每层三种升级：间隔（10 暗物质起，价格 ×5，间隔 ×0.92，最多 10 级）、暗物质强度（10 暗物质起，价格 ×10）、暗能量强度（10 暗能量起，价格 ×1.65~×1.5 递减）。每高一层的起始价格 ×1200。",
+          "text": "暗物质维度一共 4 层，分别由 IU15 / IU16 / IU17 / IU18 解锁。每层三种升级：间隔（10 暗物质起、价格 ×5、间隔 ×0.92，最低压到 10 秒）、暗物质强度（10 暗物质起、价格 ×10）、暗能量强度（10 暗能量起、价格按层 ×1.65 / ×1.6 / ×1.55 / ×1.5）。四层的起始价不是同一条等比：分别是 10、10×1200²、10×1200⁵、10×1200¹³。",
           "auto": false
         },
         {
-          "text": "飞升的判据是「间隔已经买到上限 10 级」：这时点飞升，飞升次数 +1，暗物质强度与暗能量强度各 +500，然后间隔升级会立刻被重新买满。所以飞升是这条线的循环单位。",
+          "text": "飞升的判据是「间隔已经压到 10 秒下限」：这时点飞升，飞升次数 +1，暗物质强度与暗能量强度各 +500，然后程序把买得起的间隔升级一次性重买，直到重新压回 10 秒或暗物质不够。所以飞升是这条线的循环单位。",
           "auto": false
         },
         {
-          "text": "符文炼金与连续统都由 IU15 顺带解锁：炼金把符文的词条转成 21 种资源并让它们互相反应；连续统让游戏时间按固定速率推进，不再被产量波动卡住。两者都不是通关必需，但炼金会明显抬高暗物质产量。",
+          "text": "连续统由 IU15 顺带解锁：它让游戏时间按固定速率推进，不再被产量波动卡住。符文炼金不在这条线上——它要太阳神的「鹿颈长宠物 2 级」才开，开了之后精炼符文才能换炼金资源，能换的种类随鹿颈长等级增加。两者都不是通关必需。",
           "auto": false
         },
         {
@@ -2484,7 +2484,7 @@ export default {
         {
           "label": "莱特拉的解锁条件",
           "value": "IU15「消解存在」已买，价格 1e9 IM",
-          "src": "src/core/celestials/laitela/laitela.js:36-39"
+          "src": "src/core/celestials/laitela/laitela.js:36-38"
         },
         {
           "label": "IU15 的达成条件",
@@ -2494,12 +2494,12 @@ export default {
         {
           "label": "熵的增长公式",
           "value": "clamp((log10(反物质)/2e7)², 0, 100)/200，每秒最多 0.5；熵从 0 到 1 即完成",
-          "src": "src/core/celestials/laitela/laitela.js:8-33"
+          "src": "src/core/celestials/laitela/laitela.js:81-83 + src/core/celestials/laitela/laitela.js:30"
         },
         {
           "label": "难度层级与可用维度",
-          "value": "完成时真实用时 < 30 秒则层级 +1，最多 8 级；可用普通维度层数 = 8 − 层级",
-          "src": "src/core/celestials/laitela/laitela.js:52-62"
+          "value": "完成时真实用时 < 30 秒则层级 +1；可用普通维度层数 = 8 − 层级，到 0 即「完全不稳定」；源码无额外上限判断",
+          "src": "src/game.js:1134-1136 + src/core/celestials/laitela/laitela.js:53-55"
         },
         {
           "label": "暗物质维度层数",
@@ -2508,18 +2508,23 @@ export default {
         },
         {
           "label": "暗物质维度的升级价格",
-          "value": "间隔 10 DM 起、价格 ×5、间隔 ×0.92、最多 10 级；暗物质强度 10 DM 起、价格 ×10；暗能量强度 10 DE 起、价格 ×1.65/1.6/1.55/1.5；每层起始价 ×1200",
-          "src": "src/core/celestials/laitela/dark-matter-dimension.js:6-19"
+          "value": "间隔 10 DM 起、价格 ×5、间隔 ×0.92、最低压到 10 秒；暗物质强度 10 DM 起、价格 ×10；暗能量强度 10 DE 起、价格按层 ×1.65/×1.6/×1.55/×1.5；四层起始价分别是 10 / 10×1200² / 10×1200⁵ / 10×1200¹³",
+          "src": "src/core/celestials/laitela/dark-matter-dimension.js:6-19 + src/core/celestials/laitela/dark-matter-dimension.js:109-112"
         },
         {
           "label": "飞升的收益与判据",
-          "value": "间隔买到 10 级上限才能飞升；每次 +500 暗物质强度、+500 暗能量强度",
-          "src": "src/core/celestials/laitela/dark-matter-dimension.js:13-16, :215-221"
+          "value": "间隔压到 10 秒下限才能飞升；每次 +500 暗物质强度、+500 暗能量强度；飞升后把买得起的间隔升级一次性重买",
+          "src": "src/core/celestials/laitela/dark-matter-dimension.js:13-16, :215-221, :163"
+        },
+        {
+          "label": "符文炼金的解锁门槛",
+          "value": "太阳神的鹿颈长宠物到 2 级（不是 IU15，也不随莱特拉解锁）",
+          "src": "src/core/secret-formula/celestials/ra.js:112-117 + src/components/tabs/glyphs/sidebar/GlyphFilterPanel.js:78"
         },
         {
           "label": "炼金资源数量",
-          "value": "21 种（前 6 种对应六类基础符文：力量 / 无限 / 时间 / 复制 / 膨胀 / 鹿颈长）",
-          "src": "src/core/secret-formula/celestials/alchemy.js:8-192"
+          "value": "21 种；前 5 种与五类基础符文同名（力量 / 无限 / 时间 / 复制 / 膨胀），第 6 种是「基数」，鹿颈长对应第 11 种；能解锁多少种由鹿颈长等级决定",
+          "src": "src/core/secret-formula/celestials/alchemy.js:8-439"
         },
         {
           "label": "奇点的冷凝上限与收益",
@@ -2533,10 +2538,11 @@ export default {
         "IU15 的条件里「从未买过第一无限维度」只在本现实内有效：买到 ID1 就锁到下一次现实，不是永久锁死。真锁死的是成就 147 那条链。",
         "反物质指数 1e8 是「指数」不是「数值」——也就是反物质本身要到 1e100000000。这是本作对 IU15 的缩放，原版更高。",
         "暗物质维度只有 4 层，不是 8 层。「8 − 层级」说的是被禁用的普通反物质维度层数，两者不是一回事。",
-        "飞升不会重置暗物质维度本身，只重置间隔升级并立刻买满。所以在间隔没到 10 级时点飞升是没有意义的。",
+        "飞升不会重置暗物质维度本身，只重置间隔升级并立刻重买。所以间隔还没压到 10 秒下限时点飞升是没有意义的。",
         "难度层级只能靠「真实用时 < 30 秒完成」累积。把熵的增长速度拖慢，层级就永远停在低档——这也是奇点卡住的最常见原因。",
         "奇点冷凝会清空暗能量，但不会清空奇点里程碑。里程碑只在冷凝后按奇点数结算一次，冷凝前攒再多暗能量也不会多给里程碑。",
-        "薇与太阳神不是这条线的前置。终局链是 IU15 → 莱特拉 → IU25 → 佩勒，跳过第 14 章也能通关。"
+        "薇与太阳神不是这条线的前置。终局链是 IU15 → 莱特拉 → IU25 → 佩勒，跳过第 14 章也能通关。",
+        "符文炼金不在莱特拉这条线上：它要太阳神的鹿颈长宠物 2 级。也就是说跳过第 14 章就没有炼金，而炼金也不是通关必需——终局链只用到暗物质维度与奇点。"
       ],
       "table": {
         "head": [
@@ -2555,7 +2561,7 @@ export default {
           [
             "暗物质维度",
             "IU15~IU18",
-            "4 层，每层起始价 ×1200",
+            "4 层；四层起始价 10 / 10×1200² / 10×1200⁵ / 10×1200¹³",
             "产出暗物质与暗能量"
           ],
           [
@@ -2566,9 +2572,9 @@ export default {
           ],
           [
             "符文炼金",
-            "IU15",
+            "太阳神·鹿颈长宠物 2 级",
             "21 种资源",
-            "把符文词条转成资源与反应"
+            "把符文词条转成资源与反应（非通关必需）"
           ],
           [
             "连续统",
@@ -3093,6 +3099,11 @@ export default {
       "title": "附录 F　自动化总览",
       "auto": "automation",
       "body": "本附录由各章的「自动化配置」字段自动汇总，**不单独维护**——它和各章正文永远一致。\n\n按章节顺序排列，方便你确认「这件事到底要不要我手动做」。\n\n\n\n### 第 0 章　开始之前\n\n本 MOD 的自动购买器总开关默认开启（player.auto.autobuyersOn 初值 true）。开局阶段维度、计数频率、维度提升、星系、大坍缩五个购买器在首次无限后即可用，不需要做挑战解锁。\n\n### 第 1 章　开局：10 反物质到第一次维度提升\n\n本章不需要任何手动操作。每帧固定顺序为：买计数频率 → 能买就买维度提升 → 能买就买反物质星系 → 第 1~8 维度升序买最大（src/game.js:274-311 的 tryOrekiEarlyRoutine）。它只看一个开关：player.auto.autobuyersOn，默认开（src/core/player.js:63）。注意「自动化 / Automation」页签本身要等总反物质 ≥ 1e40 才出现（src/core/secret-formula/tabs.js:179），所以在开局这一分钟里你看不到那个开关，而它此时一定是开着的。这段自动化走的是原版购买函数（buyMaxDimension / buyMaxTickSpeed / requestDimensionBoost / requestGalaxyReset），不绕过成本、不写存档字段。速度倍率只放大产量，不放大购买次数（自动器每帧只动一次），所以本章的耗时由「每帧买一次」这个节拍决定，去调倍率不会带来数量级的差别。\n\n### 第 2 章　维度献祭与第一个反物质星系\n\n本章除了「维度献祭」那一下，其余全部自动：维度提升、反物质星系、8 个维度、计数频率都由 tryOrekiEarlyRoutine 每帧处理（src/game.js:274-311）。献祭在无限挑战 2 完成之前没有自动器，必须手动点（src/core/autobuyers/sacrifice-autobuyer.js:11-14，第 6 章会拿到这个自动器）。另外 AD4 让首次永恒之前的维度提升与星系重置不清反物质（src/core/dimboost.js:207-214、src/core/oreki-keep-antimatter.js），所以连续重置不会把反物质打回 0，这也是自动器能一路往上推的原因。\n\n### 第 3 章　第一次无限\n\n本章不需要手动操作，第一次大坍缩由 tryOrekiEarlyRoutine 在「还没打破无限 + Player.canCrunch 为真」时自动调用 bigCrunchResetRequest(true)（src/game.js:308-310）。前提只有一个：player.auto.autobuyersOn 为真（默认开）。原版路径下大坍缩自动器的默认间隔是 150000 毫秒，而且 thisInfinityRealTime 按真实时间算，所以开局要干等 150 秒；本 MOD 的这条自动化绕开的正是这段等待，不是绕开坍缩条件。\n\n### 第 4 章　无限升级与普通挑战\n\n本章不需要手动买任何升级：AD6 每帧替你买 1 个无限升级（src/core/oreki-early-automation.js:29、src/game.js:861-866），「无限点数 ×2」那一条也在这个范围内。间隔升级与打破无限由 AD5 / AD5b 接管：IP 补到 32767、逐级买满间隔、然后调用 breakInfinity()（src/core/oreki-break-infinity-gate.js:64-118、src/game.js:196-220）。两者都只看 player.auto.autobuyersOn（默认开）。挑战是本章唯一值得你手动点的东西，因为「进入即完成」的奖励白拿（src/core/oreki-instant-challenges.js:7-15）。\n\n### 第 5 章　打破无限\n\n整章不需要手动操作。按按钮的是 AD5b（src/game.js:203-220 的 tryOpenBreakInfinityGate 第二段），买 12 个升级的是 AU6（src/core/oreki-autobuy-break-infinity.js:39-55）。两者都受 player.auto.autobuyersOn 控制（默认开），并且在任何挑战里都不生效。注意 breakInfinity() 内部会先把所有自动购买器的间隔免费拉满再翻转 player.break（src/game.js:84-96），这是原版行为，不是本 MOD 加的。\n\n### 第 6 章　无限维度与无限挑战补全\n\n本章有两处自动化在顶着：AD3 把单次坍缩收益兜到 1e8 并在同窗口内自动买无限维度（src/game.js:182-193、:312-328），AD3b 在 IP ≥ 1e8 后暂停自动坍缩直到本纪最高反物质到 1e1100（src/core/autobuyers/big-crunch-autobuyer.js:154-167 的 waitingForId1Peak）。无限维度的持续购买由 AD6 每帧 InfinityDimensions.buyMax() 完成（src/core/oreki-early-automation.js），走的是「无限维度 → 全部购买」同一条路径。全程受 player.auto.autobuyersOn 控制。无限挑战没有自动器：要你自己点进去，但只有「点进去」这一个动作。\n\n### 第 7 章　复制器与首次永恒\n\n本章只有「解锁复制器」和三类复制器升级需要你点。自动永恒由 AD10 负责：Player.canEternity（本纪最高 IP ≥ 1.797e308）为真、且不在 EC 入口排队时立刻永恒（src/core/oreki-eternity-automation.js:579-592），不等任何间隔。复制器升级的自动器要到永恒里程碑才有——复制器星系 3 次、概率 50 次、间隔 60 次、星系上限 80 次永恒（src/core/secret-formula/eternity/eternity-milestones.js:11-13, :123-140），所以第一次永恒前后这三项必须手点。全部自动化仍受 player.auto.autobuyersOn 总开关控制（默认开）。\n\n### 第 8 章　时间研究与永恒里程碑\n\n本章几乎全自动。AD10 每帧做三件事：调 buyMaxTimeDimension 买时间维度 1~4、调 TimeTheorems.buyMax(true) 用 EP/IP/反物质买 TT、每 30 帧扫一遍时间研究数据库逐个尝试购买（src/core/oreki-eternity-automation.js:1-32）。它走的是原版购买函数，成本与前置一条不少，也不伪造解锁标志。自动永恒仍在跑：只有当本次收益 ≥ 当前 EP 的 10 倍时才重置（src/core/oreki-eternity-automation.js:591），避免把刚买的 TT 白扔。全部受 player.auto.autobuyersOn 控制。\n\n### 第 9 章　永恒挑战（EC1~EC12）\n\n整章不需要手动操作。oreki-eternity-automation.js 的 buyEcStudiesAndStart() 负责买挑战研究、补齐前置研究、满 5 次后重洗时间研究树；oreki-dilation-automation.js 在 EC11 或 EC12 未满时压住自动现实，并按 9→10→11→12 的顺序推进，因为现实一重置就会把完成次数与时间研究树一起清空。进入挑战后由 oreki-instant-challenges.js 的 _completeEternityChallenge() 立刻补满 5 次。你唯一要留意的是：一旦关掉自动购买器总开关，或手动退出某一关，链条会停在这一关等条件。\n\n### 第 10 章　时间膨胀\n\n本阶段由两条自动化接力。AD10 继续买时间维度、TT 与普通时间研究；`OrekiCelestialAutomation.tickDilation()` 在膨胀研究 1 到手后**真实启动膨胀**并播种起始超光速粒子，同时在「本纪最高膨胀时间 < 1e30」之前压住现实按钮（src/core/oreki-dilation-automation.js:33-40，压现实的共用判定见同文件 hold）。膨胀升级本身有原版自动购买器（解锁后可在「自动化 / Automation」里开）。全部受 player.auto.autobuyersOn 总开关控制。\n\n### 第 11 章　现实与符文\n\n现实按钮由 `oreki-reality-automation.js` 接管：现实次数为 0 时调 processManualReality(false)，之后调 autoReality()，两条都走原版的带奖励结算（src/core/oreki-reality-automation.js:156-160）。它只在 isRealityAvailable() 为真时动手，不伪造 EP、不伪造时间研究；符文选择弹窗打开时暂停（:53），毁灭现实（佩勒）与天神现实中另有规则。符文由同一模块每 30 帧装卸一次去满足 RU9/24/16/17/18 的「符文形态」要求（:424-440），五条全部拿到之后才回到「装评分最高的符文」的常规策略（:443-452）。现实升级本身也是自动买的（:220-233），但自动购买只买「已解锁且买得起」的那些，不会替你解锁；全部受「自动购买器总开关」控制。\n\n### 第 12 章　复兴树、自动机与黑洞\n\n复兴树与黑洞**没有** Oreki 自动化：`src/core/oreki-*.js` 里既没有买复兴节点的代码，也没有解锁或升级黑洞的代码，这两块必须手点。自动机（脚本层）同样要你自己写，但本 Mod 的主循环已经由 `oreki-early-automation.js`、`oreki-eternity-automation.js`、`oreki-reality-automation.js`、`oreki-dilation-automation.js` 在代码层接管，不写自动机脚本也能走完 180 分钟。黑洞的强度升级在原版里自带自动购买器，间隔与持续没有。\n\n### 第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏\n\n天神链由 `oreki-celestial-automation.js` 接管：它按真实 API 调 `Teresa.pourRM(diff)` 浇注（teresa.js:14）、买鹿颈长的四个碎片解锁位（内部仍走 `Currency.relicShards.purchase`）、按阶段进入各个天神的现实、以及在 V 的六项条件达标后调 `V.unlockCelestial()`。它不写任何解锁位、不发任何货币，买不起就下一帧再试。特蕾莎浇注在原版里只有 UI 的「按住」按钮，没有这个模块的话投入量会永远停在 0。全部受「自动购买器总开关」控制。\n\n### 第 14 章　天神（二）：薇、太阳神\n\n薇的解锁由 `oreki-celestial-automation.js` 负责：六项条件达标后它调 `V.unlockCelestial()`。但从 R37-A 起它**故意不再自动进入薇的现实**——进去会压低全局产量，而 180 分钟通关的终局链是「IU15 → 莱特拉 → IU25 → 佩勒」，完全不依赖薇或太阳神。同理，无名氏的现实只在持有入场券（1e40 年储藏时间 + 一个 5000 级符文 + 一个 100% 稀有度符文）时才会自动进入，因为无票进入会自锁：产量被压到 EC 重打不完，现实永远无法完成，run 清不掉。\n\n### 第 15 章　莱特拉\n\n莱特拉这一段由 `oreki-endgame-automation.js` 接管：它按原版 API 买 IU15（`ImaginaryUpgrade(15).purchase()`）、在「本现实真实时间 < 15 秒」时进 run 给熵增长留余量、飞升、以及在条件满足后买 IU25 进佩勒。`oreki-iu15-sprint.js` 专门负责「不买 ID1、把反物质指数推到 1e8」这一段。这两个模块都不写解锁位、不发货币，买不起就下一帧重试。奇点冷凝在原版里只有 UI 按钮，需要你手动点。\n\n### 第 16 章　佩勒与终局\n\nIU25、进入佩勒、佩勒升级与终局推进都由 `oreki-endgame-automation.js` 接管：它按原版 API 调 `ImaginaryUpgrade(25).purchase()`、`Pelle.initializeRun()`、`PelleUpgrade.all[i].purchase()`，买不起就下一帧重试，不写任何解锁位、不发货币。模块头注释明确写了「这条链在原版里全部只有 UI 调用点，自动化一概不碰」，所以没有这个模块时即使材料齐了也不会往前走。毁灭（进入佩勒）与末日（重置）仍要你自己确认，它们是不可逆操作。\n\n### 第 17 章　隐藏条件与成就总表\n\n隐藏成就一条都不会自动解锁。反过来，本 MOD 的自动化会主动破坏其中 3 条：26 需要一个永恒挑战连续失败 10 次，而挑战是进入即完成、不会失败；34 需要重洗一棵空的时间研究树，而自动化一直在买研究、树几乎不会空；42 需要以低于 0.001 倍的速度进入 EC12，而自动化始终全速。这 3 条必须手动做，做完再开自动购买器。"
+    },
+    {
+      "id": "apx_changes",
+      "title": "附录 G　本 MOD 与原版的差异清单",
+      "body": "用途：本作对原版做了十几处「尺度缩放」，目的都是把原本要几千小时的后期压进几个小时。这张表只列**有源码依据**的改动，一条一行：**表里没有出现的机制，就是原版原值**。\n\n### 一、门槛与价格的缩放\n\n| 机制 | 原版 → 本作 | 依据（本作文件:行号） |\n|---|---|---|\n| 首次永恒前的无限点数尺度 | 308 → 30 | `src/game.js:112` |\n| Reality 之前的永恒点数尺度 | 308 → 30 | `src/game.js:115` |\n| 永恒挑战的入口资源门槛（Reality 之前） | 全额 → ÷100 | `src/core/time-studies/ec-time-study.js:10,121-122` |\n| 膨胀研究的时间之理成本（现实后重建窗口内） | 全额 → ÷1000 | `src/core/time-studies/dilation-time-study.js:9,48-50` |\n| 一次性现实升级的价格 | 全额 → ÷1000 | `src/core/reality-upgrades.js:9` |\n| 鹿颈长的碎片产量除数 | 7500 → 30 | `src/core/celestials/effarig.js:191-193` |\n| 鹿颈长的解锁价格 | 全额 → ÷1e6 | `src/core/celestials/effarig.js:258` |\n| 鹿颈长的削弱强度 | 全额 → ÷1e6 | `src/core/celestials/effarig.js:215` |\n| 薇的三项门槛 | 10000 现实 / 1e320 膨胀时间 / 1e320000 复制器 → 60 / 1e30 / 1e20000 | `src/core/secret-formula/celestials/v.js:65-67` |\n| 虚幻升级 15 的反物质门槛 | 指数 1.5e12 → 1e8 | `src/core/secret-formula/reality/imaginary-upgrades.js:49` |\n| 虚幻升级 25 的成本 | 1.6e15 虚幻机器 → 5e9 虚幻机器 | `src/core/secret-formula/reality/imaginary-upgrades.js:21` |\n| 虚幻机器的产出上限 | ×1 → ×100 | `src/core/machines.js:14,80` |\n| 维度提升对第八维度的需求斜率 | 15 / 次 → 5 / 次 | `src/core/dimboost.js:125` |\n| 莱特拉的熵产量分母 | 1e11 → 2e7 | `src/core/celestials/laitela/laitela.js:30,81-83` |\n| 终局目标（佩勒） | 反物质指数 9e15 → 1e3，即反物质 1e1000 | `src/core/celestials/pelle/game-end.js:59-60` |\n\n### 二、明确**没有**改的\n\n| 机制 | 本作 = 原版 | 依据 |\n|---|---|---|\n| 膨胀研究 1 的累计时间之理门槛 | 12900，不缩放 | `src/core/time-studies/dilation-time-study.js:55` |\n| 暗物质维度的全部数值 | 层数 4；间隔升级 10 起、×5、×0.92、压到 10 秒；强度升级 10 起、×10；四层起始价 1200 的 0 / 2 / 5 / 13 次方；飞升 +500 / +500 | `src/core/celestials/laitela/dark-matter-dimension.js`（与原版逐行相同，只有 import 后缀不同） |\n| 奇点的全部数值 | 冷凝上限 200 × 10^扩容次数、扩容最多 50 次、收益 11^扩容次数 × 倍率 ×（1+虚幻升级 10） | `src/core/celestials/laitela/singularity.js`（与原版逐行相同，只有 import 后缀与一条提示文案不同） |\n| 大坍缩、永恒、现实的产出公式 | 形状不变，只换了上面那两处指数尺度 | `src/game.js:112,115` |\n\n### 三、怎么用这张表\n\n- 对着外部 wiki 抄数字时，先查一眼：**表里有的按本作写，表里没有的按原版写**。\n- 缩放只改**门槛与价格**，不改产出公式。所以「攒到某个数再重置」这类说法要按本作的门槛看，「每秒产多少」这类说法不用换算。\n- 想自己核对某一行的原文，把「依据」那一列的文件路径与行号拿去搜即可；每一行都能在源码里读到常数名与注释里写的「原版是多少」。\n\n出处：`src/game.js:110-116`、`src/core/time-studies/ec-time-study.js:10`、`src/core/time-studies/dilation-time-study.js:9,55`、`src/core/reality-upgrades.js:9`、`src/core/celestials/effarig.js:44,67,123,191-193,215,258`、`src/core/secret-formula/celestials/v.js:65-67`、`src/core/secret-formula/reality/imaginary-upgrades.js:21,49`、`src/core/machines.js:14`、`src/core/dimboost.js:125`、`src/core/celestials/laitela/laitela.js:30`、`src/core/celestials/pelle/game-end.js:59-60`；原版对照取自 `web/upstream/official/src/` 同路径文件。"
     }
   ]
 };

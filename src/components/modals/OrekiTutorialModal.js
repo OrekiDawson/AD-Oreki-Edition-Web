@@ -33,6 +33,7 @@ function resolveInitialIndex() {
  * 行为约定：
  * - 打开时定位到「当前阶段」对应的章节（getTutorialStartIndex），不再固定停在第 1 章；
  * - 切章时把内容区 scrollTop 归零；
+ * - 被更高优先级的弹窗顶掉时（组件销毁再重建）回到上次的章节**和**滚动位置；
  * - 所属阶段未解锁时，正文顶部显示 TUTORIAL_LOCKED_PREFIX，不把没解锁的机制写成可用；
  * - 阶段判定按「每 15 帧一次 + 状态签名未变就提前返回」执行，不每帧重写 DOM。
  */
@@ -54,8 +55,8 @@ export default {
       lockedPrefix: TUTORIAL_LOCKED_PREFIX,
       // 用户手动点过目录（或从上次位置续读）之后就不再让自动定位抢走焦点
       navigated: initial.resumed,
-      // 由「玩家主动关闭」置真，用来区分「被别的弹窗顶掉」与「读完了」
-      closedByUser: false,
+      // 只有「续读」才恢复滚动位置；正常打开一律从章首开始
+      resumeScroll: initial.resumed ? TutorialReadingPosition.scrollTop : 0,
     };
   },
   computed: {
@@ -110,18 +111,23 @@ export default {
   },
   created() {
     this.stageSig = this.stageSignature(this.stage);
-    // 玩家主动关（× / 「关闭教程」 / Esc）才是「读完了」；被别的弹窗顶掉不会派发 CLOSE_MODAL，
-    // 所以这个监听同时充当「这次销毁是不是用户意图」的判据。
-    this.on$(GAME_EVENT.CLOSE_MODAL, () => {
-      this.closedByUser = true;
-    });
   },
   beforeDestroy() {
-    // 被更高优先级弹窗顶掉时，组件会被销毁再重建；记下章节，回来接着读。
-    TutorialReadingPosition.chapterId = this.closedByUser ? null : this.chapter.id;
+    // 被更高优先级弹窗顶掉时组件会销毁再重建；记下章节与滚动位置，回来接着读。
+    //
+    // 判据用「自己是否还在 ui.view.modal.queue 里」而不是 CLOSE_MODAL 事件：
+    // Esc 走的是 hotkeys.js 的 Modal.hideAll()（清空队列但**不派发** CLOSE_MODAL），
+    // 只靠事件会把「按 Esc 关掉」误判成「被顶掉」，下次打开又跳回上次那一章。
+    //
+    // 滚动位置不在这里读 `$refs.scroll.scrollTop`：销毁时 ref 可能已被清掉（实测拿到 0），
+    // 所以改成滚动过程中就写进 TutorialReadingPosition，这里只负责在「用户主动关闭」时清零。
+    const keep = this.isStillQueued();
+    TutorialReadingPosition.chapterId = keep ? this.chapter.id : null;
+    if (!keep) TutorialReadingPosition.scrollTop = 0;
   },
   mounted() {
-    this.resetScroll();
+    // 续读时回到上次那一行；正常打开从章首开始
+    this.resetScroll(this.resumeScroll);
   },
   methods: {
     update() {
@@ -139,17 +145,35 @@ export default {
     stageSignature(stage) {
       return `${stage.key}|${stage.rows.map(row => row.status).join(",")}`;
     },
-    resetScroll() {
+    /**
+     * 销毁瞬间自己是否还在弹窗队列里。
+     * 在队列里 = 被更高优先级的弹窗顶掉（current 换人，队列没动）；
+     * 不在队列里 = 玩家关掉了（× / 「关闭教程」 走 Modal.hide，Esc 走 Modal.hideAll，都会出队）。
+     */
+    isStillQueued() {
+      if (typeof ui === "undefined" || !ui.view || !ui.view.modal) return false;
+      const queue = ui.view.modal.queue;
+      if (!Array.isArray(queue)) return false;
+      const name = this.$options.name;
+      return queue.some(item => item && item.component && item.component.name === name);
+    },
+    resetScroll(offset = 0) {
       this.$nextTick(() => {
         const box = this.$refs.scroll;
-        if (box) box.scrollTop = 0;
+        if (box) box.scrollTop = offset;
       });
+    },
+    /** 滚动过程中就把位置记下来：销毁时 ref 可能已经没了，那时再读会拿到 0 */
+    onScroll(event) {
+      const box = event && event.target;
+      if (box) TutorialReadingPosition.scrollTop = box.scrollTop;
     },
     goTo(index) {
       if (index < 0 || index >= this.chapters.length) return;
       this.navigated = true;
       this.index = index;
-      this.resetScroll();
+      TutorialReadingPosition.scrollTop = 0;
+      this.resetScroll(0);
     },
     prevChapter() {
       this.goTo(this.index - 1);
@@ -160,7 +184,8 @@ export default {
     backToCurrent() {
       this.navigated = false;
       this.index = getTutorialStartIndex();
-      this.resetScroll();
+      TutorialReadingPosition.scrollTop = 0;
+      this.resetScroll(0);
     },
     stageLabelOf(chapter) {
       if (!chapter.stageKey) return null;
@@ -209,6 +234,7 @@ export default {
           <div
             ref="scroll"
             class="c-oreki-tut__scroll"
+            @scroll="onScroll"
           >
             <div
               v-if="isLocked"
@@ -431,6 +457,9 @@ export default {
                 {{ chapter.note }}
               </div>
             </section>
+          </div>
+          <div class="c-oreki-tut__hint">
+            按 Esc 或点右上角的 × 关闭本窗口；按 Enter 不会关闭，换章用下面的按钮。
           </div>
           <div class="c-oreki-tut__footer">
             <button

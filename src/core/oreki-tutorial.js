@@ -299,13 +299,17 @@ function orFallback(index, fallback) {
  * `data()` 会重新跑一遍。若不记住位置，玩家读到第 10 章被一条成就提示打断，
  * 回来就落回「当前阶段」那一章（实测：跳到 ch10 → 被打断 → 关掉消息 → 回到 ch06）。
  *
- * 只存章节 id，不写 player、不落 localStorage：
+ * 除了章节，还要记住内容区的滚动位置：组件重建时 `scrollTop` 会归零，只保章节的话
+ * 玩家虽然还在第 10 章，却要从章首重读一遍。两者是同一类伤害，只是大小不同。
+ *
+ * 只存章节 id 与像素偏移，不写 player、不落 localStorage：
  * - 不写 player 是为了守住「本模块只读存档」这条边界；
  * - 不落 localStorage 是因为刷新后应该重新按当前阶段定位，而不是回到上次翻到的旧章。
  *
- * 语义：`chapterId === null` 表示「没有未完成的阅读」，下次打开按当前阶段定位。
+ * 语义：`chapterId === null` 表示「没有未完成的阅读」，下次打开按当前阶段定位，
+ * 同时把 `scrollTop` 视为 0。
  */
-export const TutorialReadingPosition = { chapterId: null };
+export const TutorialReadingPosition = { chapterId: null, scrollTop: 0 };
 
 
 /**
