@@ -62,6 +62,13 @@ const LAT_RUN_ENTER_MAX_REAL_MS = 15000;
 const LAT_RUN_MIN_AM_EXP = 1e10;
 /** run 进去后多久还没涨到 0.9 熵就放弃（真实毫秒），避免长期压住 ID8 */
 const LAT_RUN_ABORT_MS = 8000;
+/**
+ * [Oreki R38-A] 本现实真实时间的「压现实上限」（毫秒）。
+ *
+ * `game.js:1104` 的 `difficultyTier++` 只在 `thisRealityRealTime.totalSeconds < 30` 时发生，
+ * 所以压现实最多压到 28 s 就必须放手（留 2 s 给熵结算那一帧）。
+ */
+const LAT_TIER_WINDOW_MS = 28000;
 /** 莱特拉／佩勒动作节流（真实毫秒） */
 const SLOW_TICK_MS = 500;
 /** IM 购买节流（真实毫秒）：IM 是指数逼近上限，10 s 粒度完全够用 */
@@ -80,6 +87,10 @@ export const OrekiEndgameAutomation = {
   _iuBought: {},
   _laitelaRuns: 0,
   _laitelaTiers: 0,
+  /** [Oreki R38-A] 本次 tick 是否要求压住现实（供 `OrekiCelestialAutomation.holdReality` 读取） */
+  _laiHold: false,
+  /** [Oreki R38-A] tier 8 起 run 的时刻（真实毫秒），用于「买不上就撤 run」的兜底计时 */
+  _laiRunAtMs0: 0,
   _pelleUpgrades: 0,
   _pelleEntered: false,
   _lastDoomBuyMs: 0,
@@ -88,6 +99,19 @@ export const OrekiEndgameAutomation = {
   _lastArmageddonMs: 0,
   _armageddons: 0,
   _lastError: "",
+
+  /**
+   * [Oreki R38-A] 莱特拉刷层期间是否要压住现实。
+   *
+   * 事实链：
+   *   · `reality.js:766` 现实重置**保留**天体 run，但 `reality.js:701` 把熵清零；
+   *   · `game.js:1104` 只有 `thisRealityRealTime < 30 s` 才 `difficultyTier++`；
+   *   ⇒ 熵 0→1 必须落在**同一个现实的前 30 s**，中途被现实打断就前功尽弃。
+   * 只在「run 在位且还在 28 s 窗口内」或「正在爬 amE」时压，窗口一到立刻放手。
+   */
+  get holdForLaitela() {
+    return this._laiHold === true;
+  },
 
   get step() {
     try {
@@ -126,7 +150,11 @@ export const OrekiEndgameAutomation = {
     const now = Date.now();
     if (now - this._lastImMs < IM_TICK_MS) return;
     this._lastImMs = now;
-    if (Currency.imaginaryMachines.value.lte(0)) return;
+    // [Oreki R38-A] 这里**不能**写成 `.lte(0)`：本作的 IM 是普通数字（Number），
+    // 没有 Decimal 方法。R38-A 实测 `_r38a/diag-iu25.mjs` 报
+    // `Currency.imaginaryMachines.value.lte is not a function`，异常被外层 catch 吞掉，
+    // 结果整条 IU 购买链**一次都没执行过**（IU15 是冲刺模块自己买的，掩盖了这个 bug）。
+    if (!(Number(Currency.imaginaryMachines.value) > 0)) return;
     for (const id of [15, 25]) {
       try {
         const up = ImaginaryUpgrade(id);
@@ -167,40 +195,122 @@ export const OrekiEndgameAutomation = {
     if (now - this._lastSlowMs < SLOW_TICK_MS) return;
     this._lastSlowMs = now;
     try {
+      this._laiHold = false;
       if (Pelle.isDoomed || Pelle.isUnlocked) return;
       if (!Laitela.isUnlocked) return;
-      if (ImaginaryUpgrade(25).isBought) return;
-      const tier = Laitela.difficultyTier;
-      // 已经 8 级：只需要保持一个 run 在位，让 IU25 的 `Laitela.isRunning` 成立
-      if (tier >= 8) {
-        if (!Laitela.isRunning) Laitela.initializeRun();
+      if (ImaginaryUpgrade(25).isBought) {
+        // [Oreki R38-A] IU25 买到后必须把 run 撤掉：tier 8 时 `maxAllowedDimension = 0`，
+        // `infinity-dimension.js:127-133` 会让 **8 层无限维度全部停产**，继续留着 run
+        // 会把后续佩勒阶段的产量按死。
+        if (Laitela.isRunning) clearCelestialRuns();
         return;
       }
+      const tier = Laitela.difficultyTier;
+      const realMs = player.records.thisReality.realTime;
+      const ent = player.celestials.laitela.entropy;
+      const amE = Number(player.antimatter?.exponent ?? 0);
+
+      // 已经 8 级：这里**不能**无条件常驻一个 run。
+      //
+      // R38-A 实测 `_r38a/lai4.jsonl` + `_r38a/diag-iu25.mjs`：tier 8 时
+      // `maxAllowedDimension = 0`，8 层无限维度全部停产，EP 不再增长 ⇒
+      //   ① `TimeStudy.reality`（膨胀研究 6，「解锁现实」）永远买不到
+      //      （要 `thisReality.maxEP.exponent >= 4000`）；
+      //   ② 而 IU25 的 `checkRequirement` 又要求 `TimeStudy.reality.isBought`
+      //      —— 于是「常驻 run」把 IU25 自己锁死了（实测 180 s 里 iu25=false 恒定）。
+      // 正确时序：让现实照常循环，等现实研究买上、IM 攒够，**再**起 run、卸符文、买 IU25。
+      if (tier >= 8) {
+        const im = Number(Currency.imaginaryMachines.value);
+        if (!TimeStudy.reality.isBought) {
+          // 现实研究没买上：run 必须让开，否则 EP 涨不动、研究永远买不回来
+          if (Laitela.isRunning) clearCelestialRuns();
+          return;
+        }
+        if (im < OREKI_IU25_COST) return;             // 钱不够就不白停产
+        // 「至少 4 个符文槽为空」：先卸符文。卸不干净时补一刀「删除全部未保护符文」
+        // （与玩家点同名按钮走的是同一条 `deleteAllUnprotected()`），腾出仓库格再卸。
+        if (Glyphs.activeWithoutCompanion.length > 1) {
+          Glyphs.unequipAll(true);
+          if (Glyphs.activeWithoutCompanion.length > 1) {
+            try { Glyphs.deleteAllUnprotected(); } catch (e) { /* 无可用删除时忽略 */ }
+            Glyphs.unequipAll(true);
+          }
+        }
+        if (!Laitela.isRunning) Laitela.initializeRun();
+        // 原版的解锁位是 `player.reality.imaginaryUpgReqs`（`imaginary-upgrades.js:63`），
+        // 由 `tryUnlock()` 在条件成立时置位、**且跨现实保留**（`player.js:496` 只在
+        // 新存档初始化）。这里显式补一次 tryUnlock：它自己会再核一遍
+        // `checkRequirement()`，不成立就不置位，不存在绕过条件。
+        const iu25 = ImaginaryUpgrade(25);
+        if (!iu25.isAvailableForPurchase) iu25.tryUnlock();
+        this._laiHold = true;
+        // 同一次 tick 内立刻尝试真实购买：符文可能被现实自动化的 manageGlyphs
+        // 在下一帧重新装上，拖到下一个 IM tick（2 s）条件就可能又变了。
+        try {
+          if (iu25.purchase() === true) {
+            this._iuBought[25] = (this._iuBought[25] || 0) + 1;
+            console.log(`[R38-IU25] 已买入（tier=8 im=${im.toExponential(2)} ` +
+              `符文=${Glyphs.activeWithoutCompanion.length}）`);
+          } else {
+            // 诊断用：每 5 s 打一次「为什么没买成」
+            if (now - (this._iu25LogAt || 0) > 5000) {
+              this._iu25LogAt = now;
+              console.log(`[R38-IU25] 未买成：要求=${iu25.isAvailableForPurchase} ` +
+                `可能=${iu25.isPossible} 符文=${Glyphs.activeWithoutCompanion.length} ` +
+                `研究=${TimeStudy.reality.isBought} run=${Laitela.isRunning} ` +
+                `maxDim=${Laitela.maxAllowedDimension}`);
+            }
+            // run 在位会让 EP 彻底冻结；20 s 还买不上就撤掉，让现实循环推进再来一次
+            if (this._laiRunAtMs0 && now - this._laiRunAtMs0 > 20000) {
+              clearCelestialRuns();
+              this._laiRunAtMs0 = 0;
+              this._laiHold = false;
+            } else if (!this._laiRunAtMs0) {
+              this._laiRunAtMs0 = now;
+            }
+          }
+        } catch (e) { /* 购买失败下个 tick 重试 */ }
+        return;
+      }
+
+      // ── run 在位：30 s 硬窗口内压住现实，等 `game.js:1092~1112` 自己结算 ──
+      //
+      // 事实：现实重置会保留 run（`reality.js:766`），但把熵清零（`reality.js:701`）。
+      // ⇒ 「熵 0→1」必须在**同一个现实的前 30 s 内**完成，压现实就是为了不让
+      // 现实在半路把熵打回 0。
       if (Laitela.isRunning) {
-        // [Oreki R38-A] 见 LAT_RUN_MIN_AM_EXP 的说明：run 在位会让 ID8 停产，
-        // 「进得去但填不满」的 run 必须主动退出，让 ID8 复产、amE 回高位再来。
-        const ent = player.celestials.laitela.entropy;
-        const amE = Number(player.antimatter?.exponent ?? 0);
-        if (ent >= 0 && ent < 0.9 && amE < LAT_RUN_MIN_AM_EXP &&
-          this._laitelaRunAtMs && now - this._laitelaRunAtMs > LAT_RUN_ABORT_MS) {
+        if (ent >= 0 && realMs < LAT_TIER_WINDOW_MS) {
+          this._laiHold = true;
+          return;
+        }
+        // 窗口用尽 or 熵已经卡住（amE 掉到 1e9 以下时速率只有 0.02/s，47 s 才能满）：
+        // 主动退出 run，让 ID8 复产、amE 回到 1e10 以上再进，别占着 ID8 白等。
+        if (ent >= -1 && this._laitelaRunAtMs && now - this._laitelaRunAtMs > LAT_RUN_ABORT_MS) {
           clearCelestialRuns();
           this._laitelaAborts = (this._laitelaAborts || 0) + 1;
           this._laitelaRunAtMs = 0;
-          console.log(`[R38-LAI] 熵涨不动（amE=1e${amE.toExponential(2)} ent=${ent.toFixed(3)}），` +
-            `退出莱特拉 run 让 ID8 复产（累计退出 ${this._laitelaAborts} 次）`);
+          console.log(`[R38-LAI] 退出 run（tier=${tier} amE=1e${amE.toExponential(2)} ` +
+            `ent=${ent.toFixed(3)} 现实=${(realMs / 1000).toFixed(1)}s，累计 ${this._laitelaAborts} 次）`);
         }
-        return; // 熵自己在涨，等 game.js:1092 结算
+        return;
       }
-      // 只有「本现实真实时间 < 15 s」才进 run —— 结算时 game.js 用的是同一个
-      // `Time.thisRealityRealTime`，超过 30 s 就不会 +tier，白跑一次现实。
-      const realMs = player.records.thisReality.realTime;
-      if (!(realMs < LAT_RUN_ENTER_MAX_REAL_MS)) return;
-      // [Oreki R38-A] amE 不够高（熵 < 0.033/s）就别进，否则白压 ID8
-      if (!(Number(player.antimatter?.exponent ?? 0) >= LAT_RUN_MIN_AM_EXP)) return;
+
+      // ── run 不在位：先用**完整 8 层 ID** 把 amE 顶上去，再进 run ──────────
+      //
+      // 这是 R38-A 实测 `_r38a/full1.out` 的死结：tier≥1 时 run 在位会让 ID8 停产，
+      // amE 被按在 3.49e8，熵速率 0.0024/s（400 多秒），tier 从 522 s 到 800 s 一直是 1。
+      if (!(ent >= 0)) return; // 熵 = -1：本现实已完成，等现实重置清成 0
+      if (amE < LAT_RUN_MIN_AM_EXP) {
+        // 压住现实，让反物质在这个现实里继续涨（现实一重置 amE 就归零，白爬）
+        if (realMs < LAT_TIER_WINDOW_MS) this._laiHold = true;
+        return;
+      }
+      if (realMs >= LAT_RUN_ENTER_MAX_REAL_MS) return; // 时间不够，等下个现实
+      const before = tier;
       Laitela.initializeRun();
       this._laitelaRunAtMs = now;
       this._laitelaRuns++;
-      this._laitelaTiers = tier;
+      this._laitelaTiers = before;
     } catch (e) {
       this._lastError = `laitela: ${(e && e.message) || e}`;
     }
