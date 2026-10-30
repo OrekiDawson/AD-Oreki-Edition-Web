@@ -1625,3 +1625,59 @@
     min-width: 0;
   }
 }
+
+/* --------------------------------------------------------------------------
+   [Oreki R40-S2] 智能自动购买器状态面板（设置 → 游戏玩法）
+   七项：阶段 / 目标 / 策略 / 正在执行 / 下一步 / 阻塞 / 最近切换
+   加「让路原因」（手动操作后 60 秒内暂停必须写出来，不许静默暂停）。
+   放在设置页而不是 HUD：它解释「为什么自动层这样动」，与倍率设置同屏更合理。
+   -------------------------------------------------------------------------- */
+.c-oreki-smart__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding: 0.8rem 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  white-space: normal;
+}
+
+.c-oreki-smart__line {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  width: 100%;
+}
+
+.c-oreki-smart__key {
+  flex: 0 0 6.5rem;
+  opacity: 0.75;
+}
+
+.c-oreki-smart__value {
+  flex: 1 1 auto;
+  word-break: break-word;
+}
+
+.c-oreki-smart__line--hold {
+  color: var(--color-reality, #ffb84d);
+}
+
+.c-oreki-smart__line--note {
+  opacity: 0.8;
+  font-size: 0.85rem;
+}
+
+@media screen and (max-width: 600px) {
+  .c-oreki-smart__line {
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .c-oreki-smart__key {
+    flex: 0 0 auto;
+  }
+}

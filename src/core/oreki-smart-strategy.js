@@ -26,7 +26,7 @@
 // · `failSafe`：`evaluate()` 全程 try/catch；任一叶子抛错 ⇒ 整体停机，
 //   返回上一次成功的决策并标 `degraded: true`，绝不把异常抛给主循环。
 //
-// ── 叶子取值（16 个，逐个对到源码）──────────────────────────────────────
+// ── 叶子取值（18 个，逐个对到源码）──────────────────────────────────────
 // spec 的 `conditionGrammar.leaves` 只登记了名字，没写取值；取值在本文件的
 // `LEAVES` 表里，一个名字一行。**新增叶子必须先改 JSON 再改这里**，
 // 且 `assertSpecLeaves()` 会在首次求值时双向比对（JSON 多一个、这里多一个都会报）。
@@ -43,9 +43,7 @@ const LEAVES = {
   // ── 进度类：走 PlayerProgress 的三个静态判据（player-progress.js:35/43/47）
   "progress.infinityUnlocked": () => PlayerProgress.infinityUnlocked(),
   "progress.eternityUnlocked": () => PlayerProgress.eternityUnlocked(),
-  "progress.realityUnlocked": () => PlayerProgress.teresaUnlocked === undefined
-    ? PlayerProgress.realityUnlocked()
-    : PlayerProgress.realityUnlocked(),
+  "progress.realityUnlocked": () => PlayerProgress.realityUnlocked(),
 
   "player.break": () => player.break === true,
 
@@ -209,20 +207,22 @@ function stateSignature() {
 }
 
 /**
- * 找出第一个 detect 成立的阶段。
+ * 找出当前阶段：按 `precedence` **取最大者胜**（spec.conventions.stagePrecedence）。
  *
- * ⚠ 已知 spec 缺陷（已在 `_tools/_r40/R40S1-智能策略叶子取值表.md` §3 记录，等 team-lead 定）：
- * `stages` 只按数组顺序排列，没有 precedence 字段，而 `infinity` 的
- * `all[infinityUnlocked, !eternityUnlocked]` 与 `challenges` 的
- * `any[normalRunning, infinityRunning]` 会**同时成立**（未永恒时跑普通挑战就是这样）。
- * 本文件按「数组中第一个匹配」实现，因为这是唯一不含额外政策的确定性语义；
- * 但两端必须一致：若 Android 取「最后一个匹配」，同一个存档会判成不同阶段。
- * 建议 spec 增加 `precedence`（或把 `challenges`/`timeStudy` 这两个「打断型」阶段排到前面）。
+ * ⚠ 这里**不能**按数组顺序取第一个匹配。未永恒时跑普通挑战，`infinity` 与 `challenges`
+ * 会同时成立；按数组顺序会判成 `infinity`（spec 里它排在前面），于是挑战期间还去推永恒，
+ * 直接违背了 `challengeClear` 的「禁止沿用普通阶段购买顺序」。
+ *
+ * 相等 ⇒ **fail closed**：抛错交给 failSafe（返回 degraded、沿用上次决策），
+ * 不自己挑一个。两个阶段同票说明 spec 本身有缺陷，猜一边等于把缺陷藏进运行结果里。
+ *
+ * @returns {{stage: object|null, tied: string[]}}
  */
 function detectStage() {
+  const hits = [];
   for (const stage of spec.stages ?? []) {
     try {
-      if (evaluateCondition(stage.detect)) return stage;
+      if (evaluateCondition(stage.detect)) hits.push(stage);
     } catch (e) {
       // 单个阶段的条件不可求值（例如写成说明性字符串）不致命：跳过它继续下一个。
       // 这与 failSafe 的「整体停机」不冲突 —— failSafe 管的是致命错误，
@@ -230,7 +230,21 @@ function detectStage() {
       continue;
     }
   }
-  return null;
+  if (!hits.length) return { stage: null, tied: [] };
+
+  let best = -Infinity;
+  for (const stage of hits) {
+    const p = Number(stage.precedence);
+    if (!Number.isFinite(p)) {
+      throw new Error(`stage-missing-precedence: ${stage.id}`);
+    }
+    if (p > best) best = p;
+  }
+  const top = hits.filter(stage => Number(stage.precedence) === best);
+  if (top.length > 1) {
+    throw new Error(`stage-precedence-tie ${best}: [${top.map(s => s.id).join(",")}]`);
+  }
+  return { stage: top[0], tied: [] };
 }
 
 function findById(list, id) {
@@ -258,7 +272,7 @@ export function evaluate(force = false) {
   }
   try {
     assertSpecLeaves();
-    const stage = detectStage();
+    const { stage } = detectStage();
     if (!stage) throw new Error("no-stage-matched");
 
     const goal = findById(spec.goals, stage.goal);
@@ -344,6 +358,10 @@ export function debugState() {
     goals: (spec?.goals ?? []).length,
     leaves: Object.keys(LEAVES).length,
     declaredLeaves: (spec?.conditionGrammar?.leaves ?? []).length,
+    // 叶子**名字**也要暴露：只比数量是错的但绿的（改名前后条数一样）。
+    // 单测与探针必须用这份名单跟 spec 做集合比对，一个字符不同就要红。
+    leafIds: Object.keys(LEAVES).slice().sort(),
+    declaredLeafIds: (spec?.conditionGrammar?.leaves ?? []).slice().sort(),
     lastEvalAgoMs: lastEvalAt ? Date.now() - lastEvalAt : null,
     degradedCount,
     lastError,
