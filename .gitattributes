@@ -10,6 +10,8 @@
 # docs/SHARED_GAMEPLAY_STANDARD.md 同理（Web 与 Android 两仓库硬链接共享）。
 docs/AGENTS_GLOBAL.md -text
 docs/SHARED_GAMEPLAY_STANDARD.md -text
+# docs/FACTS.md 同理（工作区根 FACTS.md 与两仓 docs/FACTS.md 是三处硬链接）。
+docs/FACTS.md -text
 scripts/check_agents_sync.py -text
 
 # 其余文件沿用 git 的默认文本处理
