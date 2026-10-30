@@ -2368,3 +2368,246 @@ git 仓库里。**
 
 ⇒ 规则：以后报告要写「**到达某里程碑时的当前倍率**」，不能只写「默认 10000×」。
 
+---
+
+## C.50 Android 的 `OrekiStageAuto` 整类因多处极性反向而基本是死代码 `[读码 + 实机观测]`
+
+> 本节**撤回**「先 break 再升 interval 的环形死锁」那个说法。真实结构不是「A 等 B、B 等 A」，
+> 是**门链多处极性反向**：每个门单看都像在说一件合理的事，连起来后整类除
+> `applyCrunchPolicy()` 之外**零执行**。
+
+### 一、先撤回的那一条，错在哪
+
+`upgradeCrunchInterval()` 的门是 `if-nez v0, :oreki_sa_iv_done`（`v0 = Player->m()Z`，是否已 break）。
+`if-nez` = 非零才跳 ⇒ **break 为真才跳走 ⇒ 本方法只在尚未 break 时跑**。方向是**对的**。
+
+它错的是**前提**：`:177` 的注释写「已 break 时原版在 break 那一刻已把全部 interval 拉到最低」，
+而 `Player->x0(Z)V`（`work/base_decoded/.../player/Player.smali:11107-11116`）整个方法体 9 行，
+**只有一条 `iput-boolean p1 → ->brake:Z`**，不碰 interval、不碰 cost。
+⇒ 这处是「**设计前提错**」，不是「极性错」。两者要分开记，否则修法会错。
+
+### 二、判定基准
+
+见 C.51。`if-ltz` = 小于零才跳、`if-gez` = 大于等于零才跳、`if-nez` = 不等于零才跳、`if-eqz` = 等于零才跳。
+
+### 三、逐处核对（行号取 `a22c83f`，理由见 §六）
+
+| 位置 | 代码 | 真实语义 | 注释表达的意图 | 判定 |
+|---|---|---|---|---|
+| `onAutoBuyerTick:68` | `hasInfinity() → if-nez v0, :oreki_sa_early` | **有**无限才跳去 `enableEarly()` | 「首次无限**之前**开启开局自动化」 | **反** |
+| `onAutoBuyerTick:80` | `isDoomed() → if-nez v0, :oreki_sa_ret` | doomed 才返回 | 「Doomed → 不介入」 | **对** |
+| `onAutoBuyerTick:86` | `eternitiesZero() → if-nez v0, :oreki_sa_ret` | eternities==0 才返回 | 「已进入永恒 → 停止干预」 | **反** |
+| `upgradeCrunchInterval:190` | `m() → if-nez v0, :iv_done` | 已 break 才返回 | 「未 break 才继续」 | 极性**对**，前提**错** |
+| `upgradeCrunchInterval:225` | `IP.compareTo(cost) → if-gez v2, :iv_done` | IP **≥** cost 才返回 | 「IP<cost 买不起，停下」 | **反** |
+| `tryBuyId1:272` | `m() → if-eqz v0, :id_done` | 未 break 才返回 | 同 | **对** |
+| `tryBuyId1:283` | `p() → if-eqz v1, :id_done` | 门槛未达成才返回 | 「未达成就不碰」 | **对** |
+| `holdCrunch:320` | `IP.compareTo(1e8) → if-gez v0, :hc_no` | IP **≥** 1e8 才返回（不暂停） | 「IP<1e8 → 先正常坍缩攒 IP」 | **反** |
+| `enableEarly:365` | `sEarlyApplied → if-nez v0, :ee_go` | 已应用过才跳去应用 | 「已应用过就直接返回」 | **反**：首次调用就走 `return-void`，`:oreki_ee_go` **不可达** |
+| `applyCrunchPolicy:515` | `amount.compareTo(10) → if-ltz v1, :ret_p` | amount **<** 10 才返回 | 「a≥10 尊重玩家设置」 | **反** |
+| `OrekiAchAudit.tick:68` | `elapsed vs 5000 → if-ltz v6, :go` | elapsed **<** 5000 才跑审计 | 「不足 5000 ms 直接返回」 | **反** |
+
+`tryBuyId1` 的正文只有两个 `if-eqz`（`:272`、`:283`），**没有 `if-ltz`** —— 有说法称
+「`tryBuyId1` 的 `:320 if-ltz`」是把 `holdCrunch:320` 的 `if-gez` 误记到了它头上，
+两处的极性、方法、标签都不同。以本表为准。
+
+### 四、串起来才是致命的
+
+- **全新档**：`hasInfinity()` = false → `:68` 不跳 → 落入「已过首次无限」块 → 清 `sEarlyApplied`
+  → `isDoomed()` = false → `:80` 不跳 → `eternitiesZero()` = **true** → `:86` 跳走 → `return-void`。
+  ⇒ `enableIpMultAutobuyer()` / `upgradeCrunchInterval()` / `tryBuyId1()` **一次都不执行**。
+- **有无限的档**：`hasInfinity()` = true → `:68` 跳到 `:oreki_sa_early` → `enableEarly()`
+  → 而 `:365` 让它在**首次调用**就 `return-void`（`sEarlyApplied` 初值 false ⇒ 不跳 ⇒ 落到 return）
+  → 什么也没开，且 `sEarlyApplied` 永远为 false，下一帧同样什么都不做。
+
+⇒ **`OrekiStageAuto` 除 `applyCrunchPolicy()` 之外，整类是死代码。**
+
+### 五、现象与门的对应
+
+| 观测（agent-b 实机） | 对应哪一处 |
+|---|---|
+| `interval` 恒 150000 | `upgradeCrunchInterval()` 一次没跑过（`:86` 先 return）；即便跑到，`:225` 也会在买得起时退出 |
+| IP 只有 26 | `enableIpMultAutobuyer()` 没跑（`:86`），IP 倍率自动器始终是关的 |
+| `bigCrunches` 0 → 7 | **与本类无关**：那是原版大坍缩自动器在 AU4 极性修好后自己跑起来的 |
+| 审计约 32 Hz 而非 5 s 一次（C.40 §四 更正） | `OrekiAchAudit:68` 反了：elapsed<5000 才跑，而 `:go` 里每帧又把 `sLast` 刷成当前时刻 ⇒ elapsed 永远 <5000 ⇒ **永不节流** |
+
+### 六、行号为什么锁在 `a22c83f`
+
+`[实测]` 读本节时工作区 `git status` 显示 `M scripts/payload/smali/.../OrekiStageAuto.smali`，
+mtime `04:50:47`（读到的时间是 `04:50:49`）—— **agent-b 正在修这个文件**，行号每几分钟就变一次。
+所以本节所有行号取自 `a22c83f` 的 blob（修复前）。
+
+⇒ 修复落地后，本节要改成「已修 + 新 commit」，并注明「以下为修复前状态」，
+**不要留着旧结论当现状**。
+
+### 七、规则
+
+**凡是注释写了「只应用一次」「已 X 就返回」「未 X 才继续」这类语义的地方，极性必须逐处验。**
+不能因为同一文件里别的门碰巧对了就类推 —— `[实测]` 这个文件里 `:80`（isDoomed）是对的、
+`:68`（hasInfinity）是反的，**作者自己的理解前后不一致，所以没有任何一处可以类推**。
+
+---
+
+## C.51 判断 smali 分支极性前，必须先找一个语义已知的同型样本当基准 `[读码]`
+
+### 一、结论
+
+**这个项目里分支极性已经错了五次以上（`if-nez` 读反、`if-ltz` 用反、`if-gez` 用反），
+靠「再仔细看一遍」治不住。**
+
+### 二、可用的基准样本：`ju;->t(D)Z`（canAfford）
+
+`work/base_decoded/smali/ju.smali:314-350`，全文十几行，语义无歧义（「买得起吗」）：
+
+```smali
+invoke-virtual {p0, p1, p2}, Lkajfosz/antimatterdimensions/BigDouble;->compareTo(D)I
+move-result p0
+if-ltz p0, :cond_0      # 只有「小于零才跳」时，下面这行才可能成立
+const/4 p0, 0x1
+return p0               # IP >= cost → 返回 true
+:cond_0
+const/4 p0, 0x0
+return p0
+```
+
+反推出的对照表（**背表没用，要用它去校准每一处新代码**）：
+
+| 指令 | 跳转条件 |
+|---|---|
+| `if-ltz` | 值 **<** 0 |
+| `if-gez` | 值 **≥** 0 |
+| `if-lez` | 值 ≤ 0 |
+| `if-gtz` | 值 > 0 |
+| `if-nez` | 值 **≠** 0 |
+| `if-eqz` | 值 **=** 0 |
+
+用它校准过 `UpgradeableAutobuyerState->v()Z`（`cmpg` + `if-gtz`）、
+`UpgradeableAutobuyerState->A(Z)` 首行 `if-nez`、`autobuyer/a;->c()` 的 `if-nez`、
+`OrekiStageAuto:211` 等同型门，四处全部自洽。
+
+### 三、规则
+
+**任何要判断极性的新代码，先跑一遍这个基准，再下结论。** 不许凭记忆断言
+「`if-nez` 就是 if zero」，也不许采信别人（包括 lead）给的极性判断而不复核。
+
+> **补充（2026-10-31）**：本轮 lead 在把 C.50 交办出去时，自己违反了本条 ——
+> 直接采信了上游的极性判断，没有跑基准样本，于是产出了一条机制完全错误的结论
+> （「环形死锁」），写到一半才自己核出来。
+> **规则对所有人都适用，包括写规则的人。**
+
+---
+
+## C.52 构建期断言只证明「指令在」，不证明「行为对」 `[读码 + 实机]`
+
+### 一、结论
+
+**`verify_au4b()` 的构建期断言全绿，而 AU4b 在运行期是死的（`mode` 恒 0、`xHighest` 恒 1）。**
+
+`if-ltz` 用反之后（`OrekiStageAuto:515`），`amount < 10`（默认 `amount = 1`）时**直接 return**，
+恰好绕过它唯一该处理的场景。`[读码]` `android/AD_Oreki_Edition_Android/scripts/build_mod.py:3382-3412`
+的 `verify_au4b()` 共 **11 条 `assert`（其中一条在 `for` 循环里跑 3 次，合计 13 次检查）**，
+没有一条能发现这件事，因为它们检查的是「`applyCrunchPolicy` 被调用了」「指令序列里有
+`const/4 v1, 0x2`」这类**存在性**，不是**极性**。
+
+> 注：交接时这条被记成「8 条断言」，实测是 11 条。数目不影响结论，但按 C.51 的规矩，
+> 数字要写实测值。
+
+### 二、更彻底的例证：`OrekiStageAuto` 七处
+
+C.50 那七处（`:68` / `:86` / `:225` / `:320` / `:365` / `:515` / `AchAudit:68`）全是
+**代码存在、断言全绿、运行期零执行**。这比 AU4b 单个更彻底：
+整个类的代码都在包里，构建期检查一条都不会红，实机上它一次都没跑。
+
+⇒ **一条在已知错误实现上也全绿的断言，不是断言，是装饰。**
+
+### 三、规则（长期有效）
+
+1. **每一个注入的条件跳转，必须配一条运行期日志，证明这条分支被走过。**
+   门控表除数值外还要报**每类标记日志的行数**；没有分支日志的条件跳转，一律算未验证。
+2. 凡「未生效」类结论，必须同时给**观测值**与**预期值**两个数
+   （例：`mode` 观测 0 / 预期 2），否则下一轮无法判断是否修好。
+
+### 四、归因更正
+
+本轮曾把 `a22c83f` 里的 AU4b / 审计节流 / 144 位判成「agent-h 的成果」，
+实际是 **agent-b 工作树里未提交的内容被 `git add` 一并收进了提交**。归因错了。
+
+⇒ 规则：**`git add -A` 式提交会让「谁写的」与「谁提交的」彻底混淆，之后所有归因都失真。**
+提交时必须按文件显式 `add`；如果一次提交包含他人的改动，commit message 要写明「含 X 的改动」。
+
+
+## C.53 线上 `oreki.net` 实测 742.1 s 通关；线上与 HEAD 只差 4 个非玩法文件 `[线上实测]`
+
+**结论：用户现在打开 `https://oreki.net`，能在 180 分钟内通关。742.1 s（12.4 min），相对 180 min 有 14.5 倍余量，不需要为了通关重新部署。**
+
+`pelle-probe` 同款采样（1000 ms / 约 60 字段），直接访问线上域名，`localStorage.clear()` + reload 真实新档，10000×，上限 1800 s：
+
+| 事件 | 线上 | 本地基线 |
+|---|---|---|
+| `player.break` 首真 | 5.1 s | — |
+| 5 / 20 / 100 现实 | 69.1 / 228.0 / 668.1 s | 68.1 / 227.1 / 639.1 s |
+| 进毁灭 | 694.1 s | — |
+| **`isGameEnd` false→true** | **742.1 s** | 708~783 s |
+
+收尾：`endState = 7.0745`、`log10(totalAM) = 1056.786`、`realities = 100`、`smOk=true`、`smDeg` 样本 0、`smErr=""`。翻转后 **120 s 全部样本仍为 true**。
+
+### 一、线上与 HEAD 的差异：712 个文件全量比哈希
+
+`src/**` 711 + `index.html` 共 712 个，逐个抓下来比 SHA-256：
+
+| 结论 | 数量 |
+|---|---|
+| 去 CRLF 后哈希完全相同 | **702** |
+| 真实差异 | **4** |
+| 线上 404（HEAD 有、线上没有） | **6** |
+
+四个真实差异**全部与推进/通关无关**：
+`oreki-smart-executor.js`（只有注释 + `debugState` 的 `takeovers/takeoverWhileModuleActed/lastConflict` 三个计数器，`tick()` 执行路径未变）、
+`oreki-smart-strategy.js`（`debugState()` 多返回两个字段）、
+`OptionsGameplayTab.js`（阻塞空态文案）、
+`oreki-tutorial-data.gen.js`（教程正文，25 个 id 一致）。
+
+你点名的四项守卫**线上全在且与 HEAD 字节相同**：`oreki-break-infinity-gate.js:102` 的 `!Pelle.isDoomed`、`game.js:222` 的 AD5b、`oreki-endgame-automation.js`（38,794 B）、`game-end.js:59-60` 的 `OFFSET=1` / `TARGET_EXP=1e3`。
+
+六个 404：`oreki-smart-strategy.json`、`oreki-tutorial-data.json`、`oreki-route-model.{json,gen.js}`、`oreki-dilation-probe.js`、`oreki-ec-probe.js`。HEAD 全树 `grep -rn` 确认**只出现在注释里，无任何 import**（运行时读 `.gen.js` 外壳）。
+
+### 二、比对前必须先「让两边可比特」——CRLF 坑
+
+**线上是 CRLF 行尾，不去掉会误判成「10/10 全不同」**（第一版就踩了，差点得出"线上和 HEAD 完全不一样、必须重新部署"的反向结论）。
+
+⇒ 规则：**比对的第一个动作是「让两边可比特」，不是「直接比」。** 行尾、BOM、编码、路径分隔符都先归一化。
+
+⇒ 规则：**线上验收不能只看首页能不能开。** 全量比哈希 + 逐个 fetch，才能回答"线上跑的是哪一版代码"。
+
+### 三、线上真 bug：`version.txt` 路径错 + 没有 `.catch()`
+
+`src/core/intervals.js:67-76` 的 `checkForUpdates`：
+- `fetch("version.txt")` 从 `/index.html` 解析成 `/version.txt` → **404**；文件实际在 `/public/version.txt`（`curl` 实测 200 且是合法 JSON，`version: 11.5`）；
+- **没有 `.catch()`** → 每 60 s 一条 `Uncaught (in promise) SyntaxError: Unexpected token '<' ... is not valid JSON`；
+- ⇒ 线上「有新版本请刷新」这个功能等于死了。
+
+**副作用（对我们自己有害）**：它污染 `pageErrors` 计数。实测 **2 条 / 140 s，即每 60 s 一条**，全程 863 s 约 14 条。以后任何线上验收的 `pageErrors` 都要先扣掉这一项，否则会把噪声当成故障。
+
+⇒ 规则：**所有 `fetch` 必须有 `.catch()`。** 一个必然失败的请求如果不吞掉，就会长期污染错误计数，让后来的人分不清「真故障」和「已知噪声」。
+
+### 四、倍率口径（必须和秒数一起出现）
+
+`oreki-game-speed` 到 **t=733.1** 才第一次升档（20000），739.1 → 40000（`gameEnd` 就发生在这一档），800.1 → 80000。
+
+⇒ **742 s 里 733 s 是默认 10000×，只有最后 9 秒被动态速度抬到 2~4×；全程 10000× 会略晚一点。**
+**任何通关秒数都必须带这句，不能单独引用数字。**
+
+### 五、Web 端通关读数汇总（六次）
+
+| 来源 | 通关 | 采样 |
+|---|---|---|
+| `pelle-probe` 基线 | 708.1 s | 基线 |
+| S3 轻采样 教程开 | 721.5 s | 轻 |
+| 线上 `oreki.net` | **742.1 s** | `pelle-probe` 同款 |
+| S3 轻采样 无教程 | 769 s | 轻 |
+| R40-A5 `r40a5-arm2` | 783.1 s | 1 s |
+| R40A6 `run1`（HEAD） | 915.8 s | 1 s |
+
+跨度 708~915.8 s。**采样最密的那次（R40A6，958 条）最慢**，与 C.46「采样强度影响结论」一致。
+
+
+
