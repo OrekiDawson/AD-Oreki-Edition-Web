@@ -36,7 +36,7 @@
 // ── 三条防死锁护栏 ──────────────────────────────────────────────────
 // ① 总时长上限 240 s；② EC 完成总数 90 s 不动即放手一轮（60 s 冷却）；
 // ③ 达标后 20 s 宽限（让同帧稍后的 V 检查看到六项同时成立）后放手。
-// 早期（realities < V 门槛）最多演练 `MAX_EARLY_ATTEMPTS` 次，之后必须让现实跑起来，
+// 早期（realities < V 门槛）压现实有累计时长预算（EARLY_HOLD_BUDGET_MS），花完必须让现实跑起来，
 // 否则 `realities` 永远攒不到 V 的 200 次门槛 —— 这是 R33 的教训（压现实压死进度）。
 
 import { PlayerProgress } from "./player-progress.js";
@@ -56,8 +56,19 @@ const HOLD_STALL_MS = 90000;
 const HOLD_COOLDOWN_MS = 60000;
 /** 达标后继续压住现实的宽限（真实毫秒） */
 const HOLD_GRACE_MS = 20000;
-/** 早期（realities 未达 V 门槛）最多演练次数 */
-const MAX_EARLY_ATTEMPTS = 2;
+/**
+ * 早期（realities 未达 V 门槛）**累计**压现实的时长预算（真实毫秒）。
+ *
+ * [Oreki R37-A] 原来是「最多演练 2 次」（MAX_EARLY_ATTEMPTS=2）。实测
+ * `_r37a/r37a-long1.jsonl`：t=143 s 时 realities 已经 5 次、EC12 仍是 0、DS1 从未买到，
+ * 因为 2 次演练用完后再也不压现实，而每次现实都会把 EC 记录清空（reality.js:651），
+ * 于是「EC12 打满 → 买 DS1」这条链再没有任何机会。
+ * 改成「累计预算」：只要还没花完 120 s，就继续在 EC11 满的时候尝试；
+ * 花完就彻底放手让 realities 涨到 V 的门槛。既不会无限压死现实，也不会只赌两次。
+ */
+const EARLY_HOLD_BUDGET_MS = 120000;
+/** 早期单次压现实的上限（真实毫秒）：比终局期的 240 s 短，避免一次就吃掉半个预算 */
+const EARLY_HOLD_MAX_MS = 45000;
 /** 驱动节流：EC 入口/购买每 400 ms 一次，研究树补路每 1000 ms 一次，respec 每 6 s 一次 */
 const DRIVE_INTERVAL_MS = 400;
 const TREE_INTERVAL_MS = 1000;
@@ -72,7 +83,9 @@ export const OrekiDilationAutomation = {
   _progressMark: -1,
   _cooldownUntilMs: 0,
   _achieveAtMs: 0,
-  _earlyAttempts: 0,
+  /** [Oreki R37-A] 早期压现实已用时长 / 本次压现实是否为早期阶段 */
+  _earlyHoldUsedMs: 0,
+  _holdIsEarly: false,
   _deepRunAchieved: false,
   _lastDriveMs: 0,
   _lastTreeMs: 0,
@@ -115,7 +128,12 @@ export const OrekiDilationAutomation = {
   },
 
   _release(reason, cooldown = 0) {
-    if (this._holdSinceMs) this._releases++;
+    if (this._holdSinceMs) {
+      this._releases++;
+      // [Oreki R37-A] 早期压现实按「累计时长」记账（见 EARLY_HOLD_BUDGET_MS）
+      if (this._holdIsEarly) this._earlyHoldUsedMs += Date.now() - this._holdSinceMs;
+    }
+    this._holdIsEarly = false;
     this._holdSinceMs = 0;
     this._progressAtMs = 0;
     this._progressMark = -1;
@@ -151,14 +169,14 @@ export const OrekiDilationAutomation = {
       // 直接 `.gte()` 会抛 `is not a function` —— 第一次 300 s 真跑就是这么静默失效的，
       // 所以这里统一走 `Decimal.gte`，两种类型都能吃。
       const atGate = Decimal.gte(Currency.realities.value, OREKI_V_UNLOCK_REALITIES);
-      if (!atGate && this._earlyAttempts >= MAX_EARLY_ATTEMPTS) return this._release("grow-realities");
+      if (!atGate && this._earlyHoldUsedMs >= EARLY_HOLD_BUDGET_MS) return this._release("grow-realities");
 
       if (!this._holdSinceMs) {
         this._holdSinceMs = now;
         this._progressAtMs = now;
         this._progressMark = this._completionMark();
         this._achieveAtMs = 0;
-        if (!atGate) this._earlyAttempts++;
+        this._holdIsEarly = !atGate;
       }
 
       // 达标后的宽限：`game.js:884` 的现实自动化**先于** `:887` 的天神 tick，
@@ -174,7 +192,8 @@ export const OrekiDilationAutomation = {
       }
       this._achieveAtMs = 0;
 
-      if (now - this._holdSinceMs > HOLD_MAX_MS) {
+      const holdMax = this._holdIsEarly ? EARLY_HOLD_MAX_MS : HOLD_MAX_MS;
+      if (now - this._holdSinceMs > holdMax) {
         return this._release("timeout", HOLD_COOLDOWN_MS);
       }
 
@@ -336,10 +355,27 @@ export const OrekiDilationAutomation = {
       if (Pelle.isDoomed) return null;
       if (VUnlocks.vAchievementUnlock.isUnlocked) { this._phase = "idle"; return null; }
 
+      const now = Date.now();
+
+      // ── [Oreki R37-A] **不压现实时也要买 DS1** ────────────────────────────
+      //
+      // 事实（R37-A 120 s 真新档实测 `_r37a/r37a-smoke.jsonl`）：DS1 在 t=76.8 s
+      // 被买上、t=90 s 起 `maxDT` 已经到 1e11，DT 增速 = `rate × F`（F=10000）。
+      // 但在 realities < 200 的整个成长阶段里 `hold` 恒 false（`_release("grow-realities")`），
+      // 于是 `tick()` 在第 340 行直接返回，DS1 **一次都不会被买**——R36-D 实测
+      // `ds1.canBeBought=true` 而 `isBought=false` 连续 300+ 秒就是因为这一条。
+      // DS1 是 `PlayerProgress.dilationUnlocked()` 的唯一来源，也是 `game.js:921`
+      // 累积 `dilatedTime` 的唯一开关，所以这里把「买 DS1」从 hold 门禁里拆出来：
+      // 只要 EC11/EC12 已满（`ecDepthNeeded` 为假）就照常尝试，纯原版 `purchase()`。
+      // 买不上就返回，不影响任何其它链路。
+      if (!this.ecDepthNeeded && !PlayerProgress.dilationUnlocked()) {
+        const bought = this._buyDs1(now);
+        if (bought) { this._phase = "buy-ds1"; return bought; }
+      }
+
       // 注意：先读 hold —— 这个 getter 同时维护压现实的计时器/护栏。
       if (this.hold !== true) { this._phase = "idle"; return null; }
 
-      const now = Date.now();
       if (this.ecDepthNeeded) {
         this._phase = "deep-ec";
         return this._driveEcChain(now);
@@ -367,7 +403,7 @@ export const OrekiDilationAutomation = {
       holdForMs: this._holdSinceMs ? Date.now() - this._holdSinceMs : 0,
       achieved: pick(() => this.achieved),
       deepRunAchieved: this._deepRunAchieved,
-      earlyAttempts: this._earlyAttempts,
+      earlyHoldUsedMs: this._earlyHoldUsedMs,
       actions: this._actions,
       releases: this._releases,
       lastRelease: this._lastRelease,

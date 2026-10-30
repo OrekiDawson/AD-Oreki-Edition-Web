@@ -53,7 +53,7 @@ export default {
     <link
       rel="stylesheet"
       type="text/css"
-      href="./public/stylesheets/new-ui-styles.css?R36"
+      href="./public/stylesheets/new-ui-styles.css?R37"
     >
     <div
       :key="newGameKey"

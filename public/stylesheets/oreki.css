@@ -783,7 +783,7 @@
      · 容器加 max-height 安全网，防止极端情况溢出视口；
      · 「还有 N 条」折叠汇总条；
      · 同文合并时给一个轻微放大反馈（bumped）。
-   实际条数上限由 notify.js 的 MAX_VISIBLE = 3 控制。 */
+   实际条数上限由 notify.js 的 MAX_VISIBLE = 4 控制（R37 由 3 上调）。 */
 .l-notification-container {
   max-height: 60vh;
   overflow: hidden;
@@ -1229,5 +1229,264 @@
     min-width: var(--oreki-touch-minimum);
     height: auto;
     min-height: var(--oreki-touch-secondary);
+  }
+}
+
+/* ==========================================================================
+   R37 · 自动化页「自动购买器」按钮触控高度（实测 175×35）
+   症状：320/360/392/430/768/676×392 六个窄视口下，自动化页恒有 17 个
+        `.o-autobuyer-btn` 高度 35px（宽度 175px 正常），低于 44px 下限。
+   根因：R36 的触控档位清单里写的是 `.o-autobuyer-input`（输入框），
+        漏了同排的 `.o-autobuyer-btn`（模式切换按钮）；上游对它的高度
+        没有声明，内容撑多少就是多少。
+   修法：窄屏把它顶到次档 48px，宽度不动（175px 已够）。桌面不受影响。 */
+@media screen and (max-width: 900px) {
+  .o-autobuyer-btn {
+    height: auto;
+    min-height: var(--oreki-touch-secondary, 48px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+}
+
+/* ==========================================================================
+   R37 · 永恒页「时间定理商店」托盘横向溢出（实测 320 视口左右各出界）
+   症状：320/392 视口下永恒页（时间研究子页）右缘越界 16~18 个元素，
+        左缘越界 10 个；`ttshop-container` 右缘到 519px，屏幕只有 392px。
+   根因：styles.css:474 `.time-theorem-buttons { width: 55.5rem; position: absolute }`
+        （555px 定宽 + 绝对定位）+ `.ttshop-container { min-width: 60rem }`
+        ⇒ 在窄屏里必然横跨出屏，且左右都被裁。
+   修法：窄屏改成「侧栏右侧到屏幕右缘」的贴合托盘，内部允许换行与纵向滚动。
+        托盘仍可点右上角最小化按钮收起，不遮挡时不影响操作。 */
+@media screen and (max-width: 900px) {
+  .l-time-studies-tab__tt-shop,
+  .time-theorem-buttons {
+    left: calc(var(--sidebar-width, 5.6rem) + 0.4rem);
+    right: 0.4rem;
+    width: auto;
+    max-width: none;
+    max-height: 70vh;
+    align-items: stretch;
+  }
+
+  .time-theorem-buttons .ttshop-container {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  .time-theorem-buttons .ttbuttons-row {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: flex-start;
+  }
+
+  /* 保存/读取树的两栏在窄屏改为上下堆叠，否则各占 50% 时按钮挤成竖排 */
+  .time-theorem-buttons .ttbuttons-top-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .time-theorem-buttons .l-load-tree-area {
+    width: 100%;
+  }
+
+  .time-theorem-buttons .l-tree-load-button-wrapper {
+    justify-content: flex-start;
+  }
+}
+
+/* ==========================================================================
+   R37 · 窄屏侧栏货币数字被裁
+   症状：320 视口侧栏只有 56px 宽，`c-sidebar-resource` 内部数字有
+        114px 宽（1.9rem 字号，未触发上游 scale），实测左缘 -18px，
+        数字被屏幕左缘切掉一半，看起来像乱码。
+   取舍：窄屏隐藏侧栏货币块。反物质/IP/EP 在顶部信息区（HeaderCenter /
+        HeaderInfinity / HeaderEternity）已经完整显示，信息不丢失；
+        侧栏保留 10 个页签，不留空白占位。桌面（>900px）完全不受影响。 */
+@media screen and (max-width: 900px) {
+  .c-modern-sidebar .c-sidebar-resource {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   R37 · Oreki 新手教程（游戏帮助弹窗内的第一页）
+   位置：src/components/tutorial/OrekiTutorial.js（内容） + H2PModal.js（挂载）
+   设计：顶部「你现在该做什么」是唯一的高亮区（蓝 #0078D7 与 Android 教程按钮同色），
+        步骤三态 = 已完成（灰 + 删除线）/ 当前下一步（蓝底描边 + 加粗）/ 未开始（半透明）。
+        颜色用半透明叠加而不是写死底色，浅色 / 深色主题下都能读。 */
+.c-oreki-tut {
+  font-size: 1.4rem;
+  line-height: 1.65;
+}
+
+.c-oreki-tut__now {
+  padding: 0.9rem 1rem;
+  margin: 0 0 1.4rem;
+  border-left: 0.4rem solid #0078d7;
+  border-radius: 0.4rem;
+  background-color: rgba(0, 120, 215, 12%);
+}
+
+.c-oreki-tut__now-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #0078d7;
+}
+
+.c-oreki-tut__now-stage {
+  margin-top: 0.2rem;
+  opacity: 0.85;
+}
+
+.c-oreki-tut__now-next {
+  margin-top: 0.7rem;
+  font-weight: bold;
+}
+
+.c-oreki-tut__steps {
+  margin: 0.7rem 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.c-oreki-tut__step {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.3rem;
+  opacity: 0.72;
+}
+
+.c-oreki-tut__step--done {
+  opacity: 0.5;
+}
+
+.c-oreki-tut__step--done .c-oreki-tut__steptext {
+  text-decoration: line-through;
+}
+
+.c-oreki-tut__step--now {
+  opacity: 1;
+  font-weight: bold;
+  background-color: rgba(0, 120, 215, 18%);
+  outline: 0.1rem solid rgba(0, 120, 215, 55%);
+}
+
+.c-oreki-tut__mark {
+  min-width: 1.4rem;
+  text-align: center;
+  color: #0078d7;
+}
+
+.c-oreki-tut__h3 {
+  margin: 1.5rem 0 0.4rem;
+  font-size: 1.6rem;
+}
+
+.c-oreki-tut__body ul,
+.c-oreki-tut__body ol {
+  margin: 0.4rem 0;
+  padding-left: 1.8rem;
+}
+
+.c-oreki-tut__body li {
+  margin: 0.25rem 0;
+}
+
+.c-oreki-tut__body p {
+  margin: 0.5rem 0;
+}
+
+.c-oreki-tut__hint,
+.c-oreki-tut__note {
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+.c-oreki-tut__hint {
+  margin-top: 0.6rem;
+}
+
+.c-oreki-tut__note {
+  margin-top: 1.4rem;
+  padding-top: 0.7rem;
+  border-top: 0.1rem solid rgba(128, 128, 128, 35%);
+}
+
+@media screen and (max-width: 900px) {
+  .c-oreki-tut__now {
+    padding: 0.7rem 0.8rem;
+  }
+
+  .c-oreki-tut__now-title {
+    font-size: 1.6rem;
+  }
+}
+
+/* ==========================================================================
+   R37 · 游戏帮助弹窗窄屏布局（教程页在手机上必须能读）
+   症状：320 视口下 `.l-h2p-modal` 宽 = 100vw − 20vh = 192px，而左侧搜索/页签栏
+        固定 15rem = 150px，正文只剩约 154px，中文一行只放得下 7~8 个字，
+        教程的「下一步」一句话要折成 5~6 行（实测 now 区块 1138px 高）。
+   修法：≤900px 时把「左侧页签栏 + 右侧正文」改成上下堆叠：
+        搜索框与页签条占上方（可滚动，≤28vh），正文占满剩余宽度。
+        页签按钮同时顶到 44px 触控高度。桌面布局完全不变。 */
+@media screen and (max-width: 900px) {
+  .l-h2p-modal {
+    /* 320 实测：弹窗左右各被父级推 23px，宽度按 100vw − 4.6rem 取才不会右缘出屏 */
+    width: calc(100vw - 4.6rem);
+    max-width: calc(100vw - 4.6rem);
+    height: calc(100vh - 4rem);
+    margin: 0;
+  }
+
+  .l-h2p-container {
+    flex-direction: column;
+    margin: 0.8rem 0;
+    min-height: 0;
+  }
+
+  .l-h2p-search-tab {
+    width: 100%;
+    max-height: 28vh;
+    flex: 0 0 auto;
+  }
+
+  .l-h2p-tab-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0.4rem 0 0;
+  }
+
+  .l-h2p-info {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .l-h2p-body {
+    margin: 0.4rem 0.4rem 0;
+  }
+
+  .o-h2p-tab-button {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  .c-h2p-title {
+    font-size: 2.2rem;
+  }
+
+  .c-h2p-body--title {
+    font-size: 2rem;
   }
 }

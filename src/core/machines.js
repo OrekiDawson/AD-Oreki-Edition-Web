@@ -2,10 +2,16 @@ import { DC } from "./constants.js";
 
 /**
  * [Oreki R35-C] 虚幻机器上限的统一缩放系数（见下方 baseIMCap 的说明）。
- * 原版 = 1（不缩放）；Mod = 10.6，把实测可达上限 9.45e7 抬到 ≈1.0e9，
- * 覆盖 IU14(3.5e8) 与 IU15(1e9，莱特拉入口)。
+ * 原版 = 1（不缩放）。
+ *
+ * [Oreki R37-A] 10.6 → 100。实测 log10(uncappedRM) 稳定在 10722（EP log10 天花板 1.43e7），
+ * 原版曲线给出的上限只有 9.45e7；10.6 倍刚好只够 IU15(1e9)，余量 0.19%（R36 记录），
+ * 任何一点倍率扰动都会失手。100 倍把上限抬到 **≈9.45e9**：
+ *   · IU15 1e9（莱特拉入口）→ 只需攒到上限的 10.6%，约 11 s；
+ *   · IU25 5e9（佩勒入口，OREKI_IU25_COST 已同步缩放）→ 约 65 s；
+ *   · IU20 3e12 / IU22~24 6e14 仍然远在上限之外，终局链以外的内容不被打开。
  */
-export const OREKI_IM_CAP_MULT = 10.6;
+export const OREKI_IM_CAP_MULT = 100;
 
 export const MachineHandler = {
   get baseRMCap() { return DC.E1000; },

@@ -38,6 +38,9 @@
 // · 不碰 `gainedInfinityPoints`、不改 `div`、不改 `totalIPMult`、不改 `Player.canEternity`；
 // · 不写任何新存档字段。
 
+// [Oreki R38-A] IU15 冲刺状态机必须**被 import 才会执行**（纯 globalThis 引用不会加载模块）
+import { OrekiIu15Sprint } from "./oreki-iu15-sprint.js";
+
 /** 每帧最多买几个无限升级（单次购买，不是 buyMax） */
 export const UPGRADES_PER_TICK = 1;
 
@@ -105,11 +108,17 @@ export const OrekiEarlyAutomation = {
    */
   tick() {
     if (!this.active) return { ids: 0, upgrades: false };
-    // 【R36 修复 · IU15 冲刺模式】
-    // 见下方 isIu15SprintActive() 的完整说明：莱特拉（IU15）要求
-    // 「本现实内从未持有过 ID1」，而买 ID 会把 maxID1 抬到 >0 并**永久锁死** IU15。
-    // 因此当 IU15 具备解锁条件时，必须停止买 ID，改走现实机器（RM）路线。
-    if (this.isIu15SprintActive()) {
+    // 【R38-A】IU15 冲刺状态机（新模块 oreki-iu15-sprint.js）。
+    // 为什么放在最前面：它必须在**任何 ID 购买之前**把 8 层无限维度的 buyMax/buySingle
+    // 换成 no-op。晚一帧都不行 —— ID2~ID8 会 produceDimensions 到 ID1
+    // （infinity-dimension.js:377-379），只要有一层被买过，maxID1 立刻 > 0，IU15 永久失败。
+    try {
+      OrekiIu15Sprint.tick();
+    } catch (e) { /* 状态机异常不影响其它自动化 */ }
+    // 【R38-A】把 R36/R37 的旧「冲刺判定」降级为只读委托：
+    // 真正的封锁/冻结/购买全部由 OrekiIu15Sprint 负责，这里只决定「还要不要买 ID」。
+    const sprint = this.isIu15SprintActive();
+    if (sprint) {
       const upgrades = this.buyInfinityUpgrades();
       return { ids: 0, upgrades, iu15Sprint: true };
     }
@@ -163,21 +172,28 @@ export const OrekiEarlyAutomation = {
    * · 一旦 IU15 真的解锁（`isAvailableForPurchase` 变 true），冲刺自动结束，
    *   下一帧恢复买 ID（此时 `maxID1` 已经被 IU15 记录在案，不再影响解锁）。
    */
+  /**
+   * 【R38-A】是否应当暂停购买无限维度。**只读委托**，真正的状态机在
+   * `src/core/oreki-iu15-sprint.js`（OrekiIu15Sprint）。
+   *
+   * 历史：R36/R37 在这里自己写了一套触发条件，但两版都从未触发过 ——
+   * 关键是「只挡 ID1」在物理上无效：ID2~ID8 会 produceDimensions 到 ID1
+   * （infinity-dimension.js:377-379），必须把 8 层全部锁死；
+   * 且反物质会被大坍缩/永恒清零，必须同时冻结二者（见新模块顶部注释）。
+   */
   isIu15SprintActive() {
     try {
-      // 1) 虚幻机器没解锁 ⇒ IU15 不在候选列表里，没必要牺牲 ID 推进速度
-      if (!MachineHandler.isIMUnlocked) return false;
-      // 2) IU15 已经解锁/买过了 ⇒ 冲刺结束
-      if (ImaginaryUpgrade(15).isAvailableForPurchase) return false;
-      // 3) 本现实已经买过 ID1 ⇒ 这个现实已经废了（maxID1 > 0 永久锁死 IU15），
-      //    此时停买 ID 毫无意义，照常推进、等下一个现实重置
-      if (player.requirementChecks.reality.maxID1.neq(0)) return false;
-      // 4) 反物质还差得远 ⇒ 没必要现在就开始停买 ID
-      //    （门槛 1.5e12 是 `antimatter.exponent`，即 1e1500000000000 反物质）
-      if (!(player.antimatter.exponent >= 1.5e12 * 0.01)) return false;
-      return true;
+      return OrekiIu15Sprint.active === true;
     } catch (e) {
       return false;
     }
   },
 };
+
+// [Oreki R37-A] 与其它 oreki 模块一致：挂到 globalThis，供 `holdReality` 读取冲刺状态
+// （避免 celestial-automation ↔ early-automation 直接 import 成环）。
+try {
+  globalThis.OrekiEarlyAutomation = OrekiEarlyAutomation;
+} catch (e) {
+  // 非浏览器环境忽略
+}

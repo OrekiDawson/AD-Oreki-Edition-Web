@@ -11,7 +11,7 @@ export const notify = (function() {
    * 窄屏下还因为 `.o-notification { white-space: nowrap }` 横向溢出屏幕。
    *
    * 修法（只改这一份文件，所有调用方零改动）：
-   *   1) 同时最多显示 MAX_VISIBLE = 3 条；
+   *   1) 同时最多显示 MAX_VISIBLE = 4 条（R37 由 3 上调）；
    *   2) 同一文本重复 → 合并成一条并显示 ×N，不新增元素（去重）；
    *   3) 重要事件优先：现实/永恒/无限/黑洞/打击为高优先级，
    *      满员时挤掉最低优先级且最早的一条；
@@ -19,7 +19,7 @@ export const notify = (function() {
    *   4) 被折叠的条数汇总成一条可点击的汇总条，点击即清零。
    *
    * 优先级不影响任何玩法判定，只影响「谁先被看到 / 谁被折叠」。 */
-  const MAX_VISIBLE = 3;
+  const MAX_VISIBLE = 4;
   const PRIORITY = {
     "o-notification--info": 0,
     "o-notification--automator": 0,

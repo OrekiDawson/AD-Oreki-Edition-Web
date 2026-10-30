@@ -291,8 +291,16 @@ export const OrekiEternityAutomation = {
    * 进入挑战后由既有的 core/oreki-instant-challenges.js「进入即完成」接管，
    * 这里只负责按下「开始」那一下，不重复实现完成逻辑。
    */
-  /** 下一个要打的 EC 序号（1~12），只前进不后退 */
-  _ecTarget: 1,
+  /**
+   * [Oreki R37-A] 删除了死变量 `_ecTarget`（恒为 1，中间没有任何赋值）。
+   *
+   * 原缺陷（R36-A 报告点出）：`shouldHoldReset()` 读 `this._ecTarget`（旧 :404），
+   * 而它从定义（旧 :295）到读取之间**没有任何写入点**，所以「暂停自动永恒
+   * 让 EC 入口资源爬满」这条保护**只对 EC1 生效**；EC2~EC12 全程被自动永恒打断，
+   * 入口资源的峰值缓存（`ECTimeStudyState.invalidateCachedRequirements()`）反复清零。
+   * 现在直接读 `nextUnfinishedEcId()`（本对象已有的真实实现，按 1→12 找第一个未满的），
+   * 与 `_driveEcChain` 的目标完全一致，不再有第二份状态。
+   */
 
   /**
    * E) 推进永恒挑战（EC1→EC12），为 Reality 的膨胀研究 1 铺路。
@@ -401,7 +409,8 @@ export const OrekiEternityAutomation = {
     try {
       if (!this.active) return false;
       if (player.challenge.eternity.unlocked !== 0) return false;
-      const id = this._ecTarget;
+      // [Oreki R37-A] 这里原先读死变量 `_ecTarget`（恒 1）→ 只保护 EC1。改读真实目标。
+      const id = this.nextUnfinishedEcId();
       if (!id || id > 12) return false;
       const challenge = EternityChallenge(id);
       if (!challenge) return false;
@@ -449,7 +458,19 @@ export const OrekiEternityAutomation = {
    */
   nextUnfinishedEcId() {
     try {
+      // [Oreki R38-A] IU15 冲刺期间**永远不重打 EC7**。
+      // 事实：`TimeDimensions.tick()` 末尾
+      //   EternityChallenge(7).reward.applyEffect(p => InfinityDimension(8).amount += p * diff/1000)
+      // （time-dimension.js:331-335）只要 EC7 有完成次数就会持续生产 ID8，
+      // 而 `InfinityDimensions.tick()` 又把 ID8→ID7→…→ID1 逐层生产
+      // （infinity-dimension.js:373-375）。⇒ 只要 EC7 完成过，ID1 的 amount 必然 > 0，
+      // `player.requirementChecks.reality.maxID1` 同帧变正，IU15 永久失败。
+      // 现实重置会清空 EC 完成记录，所以「不重打 EC7」= ID1 全程恒 0。
+      const skipEc7 = (() => {
+        try { return globalThis.OrekiIu15Sprint?.skipEc7 === true; } catch (e) { return false; }
+      })();
       for (let id = 1; id <= 12; id++) {
+        if (id === 7 && skipEc7) continue;
         const challenge = EternityChallenge(id);
         if (challenge && challenge.completions < challenge.maxCompletions) return id;
       }
@@ -490,6 +511,11 @@ export const OrekiEternityAutomation = {
   tickEternity() {
     try {
       if (!this.active) return false;
+      // [Oreki R38-A] IU15 冲刺期间禁止永恒：永恒会把反物质指数打回 0，
+      // 而 IU15 要求 `antimatter.exponent >= 1.5e12`，只能在同一个大坍缩周期内连续增长。
+      try {
+        if (globalThis.OrekiIu15Sprint?.freezeResets === true) return false;
+      } catch (e) { /* 读取失败不改变既有行为 */ }
       if (!Player.canEternity) return false;
       // [Oreki R26] 现实升级 10「生存延续」的解锁条件是
       //   `Currency.infinityPoints.exponent >= 400 && player.requirementChecks.reality.noEternities`
