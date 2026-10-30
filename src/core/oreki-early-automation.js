@@ -105,8 +105,79 @@ export const OrekiEarlyAutomation = {
    */
   tick() {
     if (!this.active) return { ids: 0, upgrades: false };
+    // 【R36 修复 · IU15 冲刺模式】
+    // 见下方 isIu15SprintActive() 的完整说明：莱特拉（IU15）要求
+    // 「本现实内从未持有过 ID1」，而买 ID 会把 maxID1 抬到 >0 并**永久锁死** IU15。
+    // 因此当 IU15 具备解锁条件时，必须停止买 ID，改走现实机器（RM）路线。
+    if (this.isIu15SprintActive()) {
+      const upgrades = this.buyInfinityUpgrades();
+      return { ids: 0, upgrades, iu15Sprint: true };
+    }
     const ids = this.buyInfinityDimensions();
     const upgrades = this.buyInfinityUpgrades();
     return { ids, upgrades };
+  },
+
+  /**
+   * 【R36 · IU15 冲刺模式】是否应当暂停购买无限维度。
+   *
+   * ── 死锁链（全部已核实行号）────────────────────────────────────────
+   * 1. `InfinityDimensions.buyMax()`（src/core/dimensions/infinity-dimension.js:398-410）
+   *    会 `unlockedDimensions.forEach(d => d.buyMax(false))` ⇒ **会买 ID1**。
+   * 2. `src/core/dimensions/infinity-dimension.js:385`
+   *    `player.requirementChecks.reality.maxID1 = maxID1.clampMin(InfinityDimension(1).amount)`
+   *    ⇒ 只要买过 ID1，**maxID1 > 0**。
+   * 3. IU15「理想之构」（src/core/secret-formula/reality/imaginary-upgrades.js:161-162）
+   *    `hasFailed: () => player.requirementChecks.reality.maxID1.gt(0)`
+   *    `checkRequirement: () => maxID1.eq(0) && player.antimatter.exponent >= 1.5e12`
+   * 4. `src/core/imaginary-upgrades.js:72` `get isPossible() { return !hasFailed(); }`
+   * 5. `src/core/secret-formula/celestials/navigation.js:1430`
+   *    `if (player.requirementChecks.reality.maxID1.neq(0)) return 0.5;`
+   *    ⇒ 莱特拉进度被砍到 **50%**，永远开不了。
+   *
+   * ── 为什么可以按现实分阶段处理 ─────────────────────────────────────
+   * `player.requirementChecks.reality.maxID1` **每个现实会重置**：
+   * `src/core/player.js:1005-1020` 的 `Player.resetRequirements("reality")`
+   * 把整个 `requirementChecks.reality` 换成新对象，`maxID1: DC.D0`。
+   * ⇒ 只要**某一个现实内**从头到尾不买 ID1，IU15 就有机会解锁。
+   *
+   * ── 触发条件（必须严格，宁可晚触发也不能误触发）────────────────────
+   * 只有当以下全部满足才进入冲刺模式：
+   *  · 虚幻机器已解锁（`MachineHandler.isIMUnlocked`）—— 否则 IU15 根本不在候选列表里；
+   *  · IU15 还没买到（`!ImaginaryUpgrade(15).isAvailableForPurchase`）；
+   *  · **本现实尚未买过 ID1**（`maxID1.eq(0)`）—— 一旦为真就说明这个现实已经废了，
+   *    此时再停买 ID 也没用（还得多等一个现实），不如照常推进；
+   *  · 反物质指数已接近门槛（`antimatter.exponent >= 1.5e12 * 0.01`）——
+   *    太早冲刺没有意义（要停买 ID 很久才攒得到反物质）。
+   *
+   * 反物质怎么来？**现实机器（RM）**：
+   * `src/core/dimensions/antimatter-dimension.js:48`
+   * `multiplier = multiplier.times(Currency.realityMachines.value.powEffectOf(AlchemyResource.force))`
+   * ⇒ RM 数量直接乘进反物质维度产出。这正是原版为「不买 ID1 也能堆反物质」准备的路线。
+   * RM 上限 `MachineHandler.baseRMCap = DC.E1000`（src/core/machines.js:11），
+   * 而 V 的 realityMachines 门槛只要 1e60 ⇒ 量级绰绰有余。
+   *
+   * ── 纪律 ─────────────────────────────────────────────────────────
+   * · 只**暂停买 ID**，不写 `maxID1`、不伪造反物质、不改任何存档字段；
+   * · 冲刺期间仍然买无限升级（IP 倍率对反物质与无限次数都有用）；
+   * · 一旦 IU15 真的解锁（`isAvailableForPurchase` 变 true），冲刺自动结束，
+   *   下一帧恢复买 ID（此时 `maxID1` 已经被 IU15 记录在案，不再影响解锁）。
+   */
+  isIu15SprintActive() {
+    try {
+      // 1) 虚幻机器没解锁 ⇒ IU15 不在候选列表里，没必要牺牲 ID 推进速度
+      if (!MachineHandler.isIMUnlocked) return false;
+      // 2) IU15 已经解锁/买过了 ⇒ 冲刺结束
+      if (ImaginaryUpgrade(15).isAvailableForPurchase) return false;
+      // 3) 本现实已经买过 ID1 ⇒ 这个现实已经废了（maxID1 > 0 永久锁死 IU15），
+      //    此时停买 ID 毫无意义，照常推进、等下一个现实重置
+      if (player.requirementChecks.reality.maxID1.neq(0)) return false;
+      // 4) 反物质还差得远 ⇒ 没必要现在就开始停买 ID
+      //    （门槛 1.5e12 是 `antimatter.exponent`，即 1e1500000000000 反物质）
+      if (!(player.antimatter.exponent >= 1.5e12 * 0.01)) return false;
+      return true;
+    } catch (e) {
+      return false;
+    }
   },
 };
