@@ -40,7 +40,9 @@ const data = {
       "pelle.canArmageddon",
       "autobuyer.bigCrunchMaxedInterval",
       "reality.shards",
-      "pelle.keepAutobuyersBought"
+      "pelle.keepAutobuyersBought",
+      "player.dimensionBoosts",
+      "game.endState"
     ],
     "comparators": [
       "gte",
@@ -57,13 +59,23 @@ const data = {
       "id": "early",
       "title": "初始维度阶段",
       "detect": {
-        "not": {
-          "leaf": "progress.infinityUnlocked"
-        }
+        "all": [
+          {
+            "not": {
+              "leaf": "progress.infinityUnlocked"
+            }
+          },
+          {
+            "leaf": "player.dimensionBoosts",
+            "op": "lt",
+            "value": 1
+          }
+        ]
       },
       "goal": "unlock-first-infinity",
       "strategy": "growth",
-      "precedence": 20
+      "precedence": 20,
+      "note": "「初始维度」：还没买过任何维度提升，就靠 IM1 往上堆。"
     },
     {
       "id": "preInfinity",
@@ -71,18 +83,21 @@ const data = {
       "detect": {
         "all": [
           {
-            "leaf": "progress.infinityUnlocked"
+            "not": {
+              "leaf": "progress.infinityUnlocked"
+            }
           },
           {
-            "leaf": "player.infinities",
-            "op": "lt",
+            "leaf": "player.dimensionBoosts",
+            "op": "gte",
             "value": 1
           }
         ]
       },
       "goal": "unlock-first-infinity",
       "strategy": "fastUnlock",
-      "precedence": 30
+      "precedence": 30,
+      "note": "「无限前」：已经有维度提升、正在攒第一个反物质星系，还没做出第一次无限。"
     },
     {
       "id": "infinity",
