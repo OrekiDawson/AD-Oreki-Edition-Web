@@ -186,6 +186,36 @@ export const TUTORIAL_DATA = tutorialData;
 /** 章节数组，顺序即阅读顺序（JSON 里已按 ch00、ch01… 排好） */
 export const TUTORIAL_CHAPTERS = tutorialData.chapters;
 
+/**
+ * 附录数组，与 chapters 平级。
+ *
+ * 与章节的区别（渲染层必须守住）：
+ * - 没有十字段，只有 `id / title / body`（`body` 是 Markdown 子集）；
+ * - **不参与进度链**：不显示阶段徽标、不参与 `stageKey` 的 entered / available / locked 判定、
+ *   不影响「下一步」；
+ * - `body` 在 `apx_automation` 那条是构建期由各章 `automation` 聚合的（见 gen_tutorial_module.mjs），
+ *   运行时要当作普通正文读，不要在这里再算一遍。
+ */
+export const TUTORIAL_APPENDICES = Array.isArray(tutorialData.appendices) ? tutorialData.appendices : [];
+
+/**
+ * 按 id 解析「上次读到哪」：先查章节，再查附录。
+ *
+ * 为什么必须查附录：玩家读到附录 D → 被顶掉或关掉 → 再打开时，如果只按 chNN 查，
+ * 会跳回某章正文，玩家的感受就是「附录没了」。
+ *
+ * @param {string|null} id
+ * @returns {{kind: "chapter"|"appendix", index: number}|null}
+ */
+export function findTutorialEntry(id) {
+  if (!id) return null;
+  const chapterIndex = TUTORIAL_CHAPTERS.findIndex(chapter => chapter.id === id);
+  if (chapterIndex >= 0) return { kind: "chapter", index: chapterIndex };
+  const appendixIndex = TUTORIAL_APPENDICES.findIndex(apx => apx.id === id);
+  if (appendixIndex >= 0) return { kind: "appendix", index: appendixIndex };
+  return null;
+}
+
 /** 结构版本：渲染层发现不认识的版本时宁可显示警告，也不猜字段 */
 export const TUTORIAL_SCHEMA_VERSION = tutorialData.schemaVersion;
 

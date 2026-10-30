@@ -146,7 +146,38 @@ const CSS = `
 .c-oreki-tut__dot--entered { background: var(--color-good); }
 .c-oreki-tut__dot--available { background: var(--color-reality); }
 .c-oreki-tut__dot--locked { border: 0.1rem solid rgb(255 255 255 / 35%); }
-.c-oreki-tut__details { margin: 0 0 0.6rem; }.c-oreki-tut__summary {
+.c-oreki-tut__details { margin: 0 0 0.6rem; }
+/* 目录里的「附录」分组标题：它不是按钮，只是分隔，所以压小、压淡、不可点 */
+.c-oreki-tut__nav-label {
+  margin: 0.8rem 0 0.2rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  opacity: 0.6;
+}
+/* 附录按钮与章节按钮同形，但用虚线边区分「不是主线」 */
+.c-oreki-tut__nav-btn--apx { border-style: dashed; }
+/* ── 附录正文（Markdown 渲染结果）────────────────────────────────────
+   表格复用 .c-oreki-tut__table，列表复用 .c-oreki-tut__list，
+   这里只补标题、段落、行内代码、分隔线。字号与正文一致，避免两套排版。 */
+.c-oreki-tut__md { font-size: 1.25rem; line-height: 1.6; }
+.c-oreki-tut__md h2 { margin: 1.2rem 0 0.6rem; font-size: 1.45rem; color: var(--color-reality); }
+.c-oreki-tut__md h3 { margin: 1.1rem 0 0.5rem; font-size: 1.3rem; color: var(--color-reality); }
+.c-oreki-tut__md-p { margin: 0 0 0.7rem; overflow-wrap: anywhere; }
+.c-oreki-tut__md code {
+  padding: 0 0.25rem;
+  font-size: 1.1rem;
+  background: rgb(255 255 255 / 10%);
+  border-radius: 0.2rem;
+  word-break: break-all;
+}
+.c-oreki-tut__md hr {
+  margin: 1rem 0;
+  border: 0;
+  border-top: 0.1rem solid rgb(255 255 255 / 15%);
+}
+.c-oreki-tut__md table { margin: 0 0 0.9rem; }
+.c-oreki-tut__md ul,
+.c-oreki-tut__md ol { margin: 0 0 0.9rem; }.c-oreki-tut__summary {
   padding: 0.4rem 0.2rem;
   font-size: 1.3rem;
   font-weight: bold;

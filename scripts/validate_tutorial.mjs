@@ -455,6 +455,34 @@ function main() {
     }
   }
 
+  // ── E3 章号引用：所有「第 N 章」的 N 必须真实存在 ────────────────────
+  // 为什么要这条：正文里保留「见第 9 章」这种写法（可读、能对应目录），代价是一旦插章，
+  // 所有写死的章号都会指向别的章。重编号脚本能在插章时统一改写，但脚本本身也会出错，
+  // 而「第 20 章」这种越界引用是**指向不存在的东西**，必须在构建期拦住。
+  // 0 合法：ch00 的标题就是「第 0 章　开始之前」，判 0 越界会把导览章判红。
+  const chapterRefPattern = /第\s*(\d+)\s*章/gu;
+  const refScopes = chapters.map((chapter, i) => ({
+    where: `${chapter.id}（chapters[${i}]）`,
+    // title 单独是为了让报错能定位到「标题写着第 N 章」这种最典型的错位
+    text: `${chapter.title || ""}\n${JSON.stringify(chapter)}`,
+  }));
+  for (const apx of appendices) {
+    if (typeof apx.body === "string") refScopes.push({ where: `${apx.id}.body`, text: apx.body });
+  }
+  for (const scope of refScopes) {
+    const outOfRange = [];
+    for (const match of scope.text.matchAll(chapterRefPattern)) {
+      const n = Number(match[1]);
+      if (n < 0 || n > chapters.length - 1) outOfRange.push(match[0]);
+    }
+    const unique = [...new Set(outOfRange)];
+    record(
+      "E3 章号",
+      unique.length === 0,
+      `${scope.where} 引用了不存在的章号 ${unique.join("、")}（当前只有 第 0 章 ~ 第 ${chapters.length - 1} 章）`
+    );
+  }
+
   // ── 汇总 ──────────────────────────────────────────────────────────
   const failed = results.filter(item => !item.ok);
   const rules = [...new Set(results.map(item => item.rule))];

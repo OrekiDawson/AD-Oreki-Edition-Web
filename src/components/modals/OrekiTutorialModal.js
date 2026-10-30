@@ -1,26 +1,29 @@
 import ModalWrapperChoice from "./ModalWrapperChoice.js";
 import {
+  findTutorialEntry,
   getChapterGaps,
   getTutorialStageSnapshot,
   getTutorialStartIndex,
+  TUTORIAL_APPENDICES,
   TUTORIAL_CHAPTERS,
   TUTORIAL_LOCKED_PREFIX,
   TUTORIAL_SCHEMA_VERSION,
   TutorialReadingPosition,
 } from "../../core/oreki-tutorial.js";
 import { ensureTutorialStyles } from "../tutorial/OrekiTutorialStyles.js";
+import { renderTutorialMarkdown } from "../tutorial/oreki-tutorial-markdown.js";
 
 /**
- * 上次读到的章节下标；没有记录或章节已被删掉时退回「当前阶段」定位。
- * @returns {{index: number, resumed: boolean}}
+ * 上次读到的位置；没有记录、或那一章/那篇附录已经被删掉时，退回「当前阶段」定位的章节。
+ * @returns {{kind: "chapter"|"appendix", index: number, resumed: boolean}}
  */
 function resolveInitialIndex() {
   const savedId = TutorialReadingPosition.chapterId;
   if (savedId) {
-    const index = TUTORIAL_CHAPTERS.findIndex(chapter => chapter.id === savedId);
-    if (index >= 0) return { index, resumed: true };
+    const hit = findTutorialEntry(savedId);
+    if (hit) return { ...hit, resumed: true };
   }
-  return { index: getTutorialStartIndex(), resumed: false };
+  return { kind: "chapter", index: getTutorialStartIndex(), resumed: false };
 }
 
 /**
@@ -47,8 +50,11 @@ export default {
     const initial = resolveInitialIndex();
     return {
       chapters: TUTORIAL_CHAPTERS,
+      appendices: TUTORIAL_APPENDICES,
       schemaVersion: TUTORIAL_SCHEMA_VERSION,
-      index: initial.index,
+      // index 始终指向章；appendixIndex >= 0 表示当前在看附录（正文与章节互斥）
+      index: initial.kind === "chapter" ? initial.index : getTutorialStartIndex(),
+      appendixIndex: initial.kind === "appendix" ? initial.index : -1,
       stage: getTutorialStageSnapshot(),
       stageSig: "",
       frameTick: 0,
@@ -63,11 +69,35 @@ export default {
     chapter() {
       return this.chapters[this.index] || this.chapters[0];
     },
+    /** 当前正在看的附录；null 表示在看章节 */
+    appendix() {
+      if (this.appendixIndex < 0) return null;
+      return this.appendices[this.appendixIndex] || null;
+    },
+    isAppendix() {
+      return this.appendix !== null;
+    },
+    appendixHtml() {
+      return this.appendix ? renderTutorialMarkdown(this.appendix.body) : "";
+    },
+    headTitle() {
+      return this.appendix ? this.appendix.title : this.chapter.title;
+    },
+    headSubtitle() {
+      // 附录与主线无关，副标题直接写明，避免玩家以为读附录会推进阶段
+      return this.appendix ? "附录 · 不参与主线进度" : this.chapter.subtitle;
+    },
+    /** 跨组件重建时记的是这个 id：章是 chNN，附录是 apx_xxx */
+    currentId() {
+      return this.appendix ? this.appendix.id : this.chapter.id;
+    },
     isFirst() {
-      return this.index === 0;
+      return this.isAppendix ? this.appendixIndex === 0 : this.index === 0;
     },
     isLast() {
-      return this.index === this.chapters.length - 1;
+      return this.isAppendix
+        ? this.appendixIndex === this.appendices.length - 1
+        : this.index === this.chapters.length - 1;
     },
     chapterStage() {
       // 用已经算好的 stage 快照，避免每次渲染再判定一遍阶段
@@ -111,19 +141,31 @@ export default {
   },
   created() {
     this.stageSig = this.stageSignature(this.stage);
+    // 只用来区分「点 × / 点关闭教程」与「按 Esc」：
+    //   × 与关闭教程都走 ModalWrapperChoice → CLOSE_MODAL；Esc 走 Modal.hideAll()，不派发事件。
+    // 这个区别只对附录有意义（见 beforeDestroy）：附录是查阅型内容，收起来应该记住；
+    // 章节是进度引导，关掉后下次按当前阶段定位。
+    this.closedByCloseEvent = false;
+    this.on$(GAME_EVENT.CLOSE_MODAL, () => {
+      this.closedByCloseEvent = true;
+    });
   },
   beforeDestroy() {
-    // 被更高优先级弹窗顶掉时组件会销毁再重建；记下章节与滚动位置，回来接着读。
+    // 被更高优先级弹窗顶掉时组件会销毁再重建；记下位置，回来接着读。
     //
-    // 判据用「自己是否还在 ui.view.modal.queue 里」而不是 CLOSE_MODAL 事件：
-    // Esc 走的是 hotkeys.js 的 Modal.hideAll()（清空队列但**不派发** CLOSE_MODAL），
+    // 判据用「自己是否还在 ui.view.modal.queue 里」而不是只看 CLOSE_MODAL 事件：
+    // Esc 走 hotkeys.js 的 Modal.hideAll()（清空队列但**不派发** CLOSE_MODAL），
     // 只靠事件会把「按 Esc 关掉」误判成「被顶掉」，下次打开又跳回上次那一章。
     //
     // 滚动位置不在这里读 `$refs.scroll.scrollTop`：销毁时 ref 可能已被清掉（实测拿到 0），
-    // 所以改成滚动过程中就写进 TutorialReadingPosition，这里只负责在「用户主动关闭」时清零。
+    // 所以改成滚动过程中就写进 TutorialReadingPosition，这里只负责在「不记」时清零。
     const keep = this.isStillQueued();
-    TutorialReadingPosition.chapterId = keep ? this.chapter.id : null;
-    if (!keep) TutorialReadingPosition.scrollTop = 0;
+    // 附录额外享受「点 × 收起后仍记得」：玩家点开附录通常是查一张表，
+    // 关掉再开会希望回到同一篇。章节不享受这条 —— 章节的「关掉后再打开」按当前阶段定位，
+    // 这是之前验收过的行为（关掉 ch10 再打开不该粘在 ch10）。
+    const remember = keep || (this.closedByCloseEvent && this.isAppendix);
+    TutorialReadingPosition.chapterId = remember ? this.currentId : null;
+    if (!remember) TutorialReadingPosition.scrollTop = 0;
   },
   mounted() {
     // 续读时回到上次那一行；正常打开从章首开始
@@ -139,8 +181,8 @@ export default {
       if (sig === this.stageSig) return;
       this.stageSig = sig;
       this.stage = next;
-      // 玩家还没自己翻过章时，跟着阶段变化重新定位
-      if (!this.navigated) this.index = getTutorialStartIndex();
+      // 玩家还没自己翻过章时，跟着阶段变化重新定位；看附录时不抢
+      if (!this.navigated && !this.isAppendix) this.index = getTutorialStartIndex();
     },
     stageSignature(stage) {
       return `${stage.key}|${stage.rows.map(row => row.status).join(",")}`;
@@ -172,17 +214,28 @@ export default {
       if (index < 0 || index >= this.chapters.length) return;
       this.navigated = true;
       this.index = index;
+      this.appendixIndex = -1;
       TutorialReadingPosition.scrollTop = 0;
       this.resetScroll(0);
     },
-    prevChapter() {
-      this.goTo(this.index - 1);
+    goToAppendix(index) {
+      if (index < 0 || index >= this.appendices.length) return;
+      this.navigated = true;
+      this.appendixIndex = index;
+      TutorialReadingPosition.scrollTop = 0;
+      this.resetScroll(0);
     },
-    nextChapter() {
-      this.goTo(this.index + 1);
+    prevPage() {
+      if (this.isAppendix) return this.goToAppendix(this.appendixIndex - 1);
+      return this.goTo(this.index - 1);
+    },
+    nextPage() {
+      if (this.isAppendix) return this.goToAppendix(this.appendixIndex + 1);
+      return this.goTo(this.index + 1);
     },
     backToCurrent() {
       this.navigated = false;
+      this.appendixIndex = -1;
       this.index = getTutorialStartIndex();
       TutorialReadingPosition.scrollTop = 0;
       this.resetScroll(0);
@@ -225,17 +278,36 @@ export default {
               :class="'c-oreki-tut__dot--' + stageLabelOf(item)"
             />
           </button>
+          <div class="c-oreki-tut__nav-label">
+            附录（不参与主线进度）
+          </div>
+          <button
+            v-for="(apx, ai) in appendices"
+            :key="apx.id"
+            class="c-oreki-tut__nav-btn c-oreki-tut__nav-btn--apx"
+            :class="{ 'c-oreki-tut__nav-btn--active': ai === appendixIndex }"
+            @click="goToAppendix(ai)"
+          >
+            <span class="c-oreki-tut__nav-index">附</span>
+            <span class="c-oreki-tut__nav-title">{{ apx.title }}</span>
+          </button>
         </nav>
         <div class="c-oreki-tut__main">
           <div class="c-oreki-tut__head">
-            <span class="c-oreki-tut__head-title">{{ chapter.title }}</span>
-            <span class="c-oreki-tut__head-subtitle">{{ chapter.subtitle }}</span>
+            <span class="c-oreki-tut__head-title">{{ headTitle }}</span>
+            <span class="c-oreki-tut__head-subtitle">{{ headSubtitle }}</span>
           </div>
           <div
             ref="scroll"
             class="c-oreki-tut__scroll"
             @scroll="onScroll"
           >
+            <div
+              v-if="isAppendix"
+              class="c-oreki-tut__md"
+              v-html="appendixHtml"
+            ></div>
+            <template v-else>
             <div
               v-if="isLocked"
               class="c-oreki-tut__locked"
@@ -457,6 +529,7 @@ export default {
                 {{ chapter.note }}
               </div>
             </section>
+            </template>
           </div>
           <div class="c-oreki-tut__hint">
             按 Esc 或点右上角的 × 关闭本窗口；按 Enter 不会关闭，换章用下面的按钮。
@@ -465,9 +538,9 @@ export default {
             <button
               class="o-primary-btn c-oreki-tut__nav-move"
               :class="{ 'c-oreki-tut__nav-move--disabled': isFirst }"
-              @click="prevChapter"
+              @click="prevPage"
             >
-              上一章
+              {{ isAppendix ? "上一篇" : "上一章" }}
             </button>
             <button
               class="o-primary-btn c-oreki-tut__nav-move"
@@ -475,13 +548,15 @@ export default {
             >
               回到当前进度
             </button>
-            <span class="c-oreki-tut__counter">{{ index }} / {{ chapters.length - 1 }}</span>
+            <span class="c-oreki-tut__counter">
+              {{ isAppendix ? "附 " + (appendixIndex + 1) + " / " + appendices.length : index + " / " + (chapters.length - 1) }}
+            </span>
             <button
               class="o-primary-btn c-oreki-tut__nav-move"
               :class="{ 'c-oreki-tut__nav-move--disabled': isLast }"
-              @click="nextChapter"
+              @click="nextPage"
             >
-              下一章
+              {{ isAppendix ? "下一篇" : "下一章" }}
             </button>
           </div>
         </div>
