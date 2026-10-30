@@ -483,6 +483,32 @@ function main() {
     );
   }
 
+  // ── E4 automation 可达性：玩家能不能顺着这句话找到那个开关 ─────────────
+  // 由来：Android 侧 oreki_tutorial_gen.py:517-525 早就有这条门控（≥120 字，且出现
+  // 「总开关 / 自动购买器 / 自动化页」之一），Web 侧一直没有。Android 是消费者、Web 是唯一
+  // 内容源——权威源比消费者松，就会出现「Web 2111 项全绿、Android 构建被拦下 10 章」。
+  // automation 是单段字符串，最容易被写成「已自动化，不用管」一句交差，而玩家读完这句
+  // 依然不知道该去哪里确认那个开关到底开着没有。
+  // 分两条判据而不是一条：「字数够」与「说清了去哪确认」是两件事，混在一起报错说不清。
+  // 草稿章跳过，与 Android 的 allow_draft 口径一致。
+  const AUTOMATION_MIN_CHARS = 120;
+  const AUTOMATION_UI_HINTS = ["总开关", "自动购买器", "自动化页"];
+  for (const chapter of chapters) {
+    if (chapter.draft !== false) continue;
+    const auto = typeof chapter.automation === "string" ? chapter.automation : "";
+    const chars = auto.trim().length;
+    record(
+      "E4 automation",
+      chars >= AUTOMATION_MIN_CHARS,
+      `${chapter.id}.automation 只有 ${chars} 字（下限 ${AUTOMATION_MIN_CHARS}），像一句话交差`
+    );
+    record(
+      "E4 automation",
+      AUTOMATION_UI_HINTS.some(hint => auto.includes(hint)),
+      `${chapter.id}.automation 没提到「总开关 / 自动购买器 / 自动化页」，玩家不知道去哪个开关确认`
+    );
+  }
+
   // ── 汇总 ──────────────────────────────────────────────────────────
   const failed = results.filter(item => !item.ok);
   const rules = [...new Set(results.map(item => item.rule))];
