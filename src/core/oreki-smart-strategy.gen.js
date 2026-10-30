@@ -14,7 +14,9 @@ const data = {
     "conditionGrammar": "见 condition-grammar 段；两端解释器必须实现同一套算子，语义以本段为准",
     "evaluationPeriod": "不得逐帧全量求值。默认 1 秒一次；状态变化（解锁/进入挑战/阶段切换）立即重算",
     "manualOverride": "玩家手动操作后 60 秒内不得被自动策略覆盖同一目标，见 manualOverride",
-    "failSafe": "任一条件求值抛错时，策略层必须整体停机并回落到 lastKnownGoodStrategy，禁止抛到主循环"
+    "failSafe": "任一条件求值抛错时，策略层必须整体停机并回落到 lastKnownGoodStrategy，禁止抛到主循环",
+    "stagePrecedence": "阶段识别按 precedence 取最大者胜，不按数组顺序、不按文案。两个阶段同时命中且 precedence 相等 ⇒ 视为 spec 缺陷，解释器必须 fail closed（返回 degraded，不猜）。doomed 最高：毁灭态下其它阶段的判据全部无意义。",
+    "blockerDetection": "blockers 只放「能由叶子机器判定」的阻塞状态，detect 必须是 conditionGrammar 表达式。没有对应叶子的建议放进 advisories —— 不允许用自然语言字符串冒充条件，那会让解释器无法求值又看不出是空的。"
   },
   "conditionGrammar": {
     "operators": [
@@ -35,7 +37,7 @@ const data = {
       "challenge.eternityRunning",
       "celestial.teresaUnlocked",
       "pelle.doomed",
-      "pelle.armageddonUnlocked",
+      "pelle.canArmageddon",
       "autobuyer.bigCrunchMaxedInterval",
       "reality.shards",
       "pelle.keepAutobuyersBought"
@@ -60,7 +62,8 @@ const data = {
         }
       },
       "goal": "unlock-first-infinity",
-      "strategy": "growth"
+      "strategy": "growth",
+      "precedence": 20
     },
     {
       "id": "preInfinity",
@@ -78,7 +81,8 @@ const data = {
         ]
       },
       "goal": "unlock-first-infinity",
-      "strategy": "fastUnlock"
+      "strategy": "fastUnlock",
+      "precedence": 30
     },
     {
       "id": "infinity",
@@ -96,7 +100,8 @@ const data = {
         ]
       },
       "goal": "unlock-eternity",
-      "strategy": "infinityOptimize"
+      "strategy": "infinityOptimize",
+      "precedence": 40
     },
     {
       "id": "challenges",
@@ -112,7 +117,8 @@ const data = {
         ]
       },
       "goal": "finish-current-challenge",
-      "strategy": "challengeClear"
+      "strategy": "challengeClear",
+      "precedence": 80
     },
     {
       "id": "eternity",
@@ -135,7 +141,8 @@ const data = {
         ]
       },
       "goal": "unlock-reality",
-      "strategy": "eternityPush"
+      "strategy": "eternityPush",
+      "precedence": 50
     },
     {
       "id": "timeStudy",
@@ -144,7 +151,8 @@ const data = {
         "leaf": "challenge.eternityRunning"
       },
       "goal": "finish-current-challenge",
-      "strategy": "challengeClear"
+      "strategy": "challengeClear",
+      "precedence": 90
     },
     {
       "id": "reality",
@@ -162,7 +170,8 @@ const data = {
         ]
       },
       "goal": "unlock-celestials",
-      "strategy": "realityPush"
+      "strategy": "realityPush",
+      "precedence": 60
     },
     {
       "id": "celestials",
@@ -180,7 +189,8 @@ const data = {
         ]
       },
       "goal": "unlock-doomed",
-      "strategy": "celestial"
+      "strategy": "celestial",
+      "precedence": 70
     },
     {
       "id": "doomed",
@@ -189,7 +199,8 @@ const data = {
         "leaf": "pelle.doomed"
       },
       "goal": "reach-end-state",
-      "strategy": "pelleEndgame"
+      "strategy": "pelleEndgame",
+      "precedence": 100
     }
   ],
   "goals": [
@@ -418,23 +429,37 @@ const data = {
     {
       "id": "shardsTooLow",
       "title": "现实碎片不足 5e6，买不起 keepAutobuyers",
-      "detect": "末日态下 realityShards < 5e6",
+      "detect": {
+        "all": [
+          {
+            "leaf": "pelle.doomed"
+          },
+          {
+            "leaf": "reality.shards",
+            "op": "lt",
+            "value": 5000000
+          }
+        ]
+      },
       "advice": "碎片只来自末日：remnants 仅在 armageddon() 增加。不要停掉末日循环。",
-      "source": "src/core/secret-formula/celestials/pelle-upgrades.js:73"
-    },
-    {
-      "id": "challengeRewardMissing",
-      "title": "下一个解锁要求某项挑战奖励",
-      "detect": "由执行层读取原版解锁判据",
-      "advice": "先去把该挑战做掉，不要在主线里硬堆资源",
-      "source": "各阶段 requirement()"
+      "source": "src/core/secret-formula/celestials/pelle-upgrades.js:73",
+      "note": "realityShards 在非毁灭态读出来恒为 0，那是「读不到」不是「没有」，所以判定必须先要求 pelle.doomed。"
     }
   ],
   "manualOverride": {
     "holdSeconds": 60,
     "scope": "同一目标（goal id）",
     "note": "玩家手动执行了某目标对应的动作后，该目标 60 秒内不受自动策略驱动；其他目标照常。目的是「我点了就别跟我抢」"
-  }
+  },
+  "advisories": [
+    {
+      "id": "challengeRewardMissing",
+      "title": "下一个解锁要求某项挑战奖励",
+      "advice": "先去把该挑战做掉，不要在主线里硬堆资源",
+      "source": "各阶段 requirement()",
+      "note": "这条无法用叶子判定：原版各阶段 requirement() 的判据形态各异，没有统一的「下一个解锁需要哪个挑战奖励」查询入口。因此它只是提示文案，不参与阻塞判定。"
+    }
+  ]
 };
 
 export default data;

@@ -70,11 +70,73 @@ export function readTutorialJson() {
   return fs.readFileSync(SRC, "utf-8");
 }
 
+/** 环境变量名两端必须同名（见 docs/AGENTS_GLOBAL.md 发布门控一节） */
+export const ALLOW_DRAFT_ENV = "OREKI_TUTORIAL_ALLOW_DRAFT";
+
+/**
+ * 列出所有 `draft: true` 的章节。发布门控的唯一判据。
+ * @returns {{id: string, title: string}[]}
+ */
+export function listDraftChapters(data) {
+  const chapters = Array.isArray(data?.chapters) ? data.chapters : [];
+  return chapters
+    .filter(chapter => chapter.draft === true)
+    .map(chapter => ({ id: chapter.id, title: chapter.title }));
+}
+
+/**
+ * 发布门控：默认 fail closed。
+ *
+ * 为什么必须有这个函数，而不是靠「记得检查」：
+ * 草稿章在界面上会渲染成「本章尚未写完（草稿）」占位卡。开发期这样是合理的
+ * （至少玩家知道这章存在、正在写），但如果带着草稿发布，教程就变成一份
+ * 缺了终局的质量不合格文档 —— 而**没有任何人会因此报错**。这正是「静默故障」，
+ * 必须由机器卡住。
+ *
+ * 判据只有一条：存在 draft 章 ⇒ 非零退出，除非显式 `OREKI_TUTORIAL_ALLOW_DRAFT=1`。
+ * 默认严格，不默认放行。
+ *
+ * @returns {{ok: boolean, drafts: {id: string, title: string}[], allowed: boolean}}
+ */
+export function checkReleaseGate(data, env = process.env) {
+  const drafts = listDraftChapters(data);
+  const allowed = env[ALLOW_DRAFT_ENV] === "1";
+  return { ok: drafts.length === 0 || allowed, drafts, allowed };
+}
+
 function main() {
-  const source = buildModuleSource(readTutorialJson());
+  const raw = readTutorialJson();
+  const data = JSON.parse(raw);
+  const checkOnly = process.argv.slice(2).includes("--check");
+  const gate = checkReleaseGate(data);
+
+  if (checkOnly) {
+    // 只检查、不写盘：供发布流程在拷贝到 _deploy/site 之前调用。
+    if (!gate.ok) {
+      console.error(`[gen] 发布被拒绝：还有 ${gate.drafts.length} 章是草稿（玩家会看到「尚未写完」占位卡）`);
+      for (const d of gate.drafts) console.error(`  - ${d.id}  ${d.title}`);
+      console.error(`[gen] 写完后再发布；确需带草稿出包时设置 ${ALLOW_DRAFT_ENV}=1（两端同名）。`);
+      process.exit(1);
+    }
+    // 放行时必须说清放行了什么。「通过」三个字单独出现会让人误以为教程已经写完，
+    // 所以这里把「是带草稿放行的」和数量都写出来 —— 日志不能比事实更乐观。
+    if (gate.drafts.length === 0) {
+      console.log(`[gen] 发布门控通过（草稿 0 章）`);
+    } else {
+      console.warn(`[gen] 发布门控被 ${ALLOW_DRAFT_ENV}=1 显式放行：将带 ${gate.drafts.length} 章草稿发布`);
+      for (const d of gate.drafts) console.warn(`  - ${d.id}  ${d.title}`);
+    }
+    return;
+  }
+
+  const source = buildModuleSource(raw);
   fs.writeFileSync(OUT, source, "utf-8");
-  const chapters = JSON.parse(readTutorialJson()).chapters;
-  console.log(`[gen] ${path.relative(ROOT, OUT)} 已生成（${chapters.length} 章，${source.length} 字节）`);
+  console.log(`[gen] ${path.relative(ROOT, OUT)} 已生成（${data.chapters.length} 章，${source.length} 字节）`);
+  if (gate.drafts.length > 0) {
+    // 开发期允许生成（否则根本没法预览已完稿的章节），但必须每次都说清楚。
+    console.warn(`[gen] 注意：${gate.drafts.length} 章仍是草稿，发布前请用 --check 复核：`);
+    for (const d of gate.drafts) console.warn(`  - ${d.id}  ${d.title}`);
+  }
 }
 
 const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
