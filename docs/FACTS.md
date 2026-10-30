@@ -1212,3 +1212,49 @@ C.33 初版我写了「本项目三处 MOD 缩放每一处只作用于 cost，�
 
 ⇒ 正确的提法是：**每个缩放系数的适用范围必须逐处读源码确认，不能用一句话概括。**
 「成本 / 门槛 / 入口资源要求」是三个不同的东西，同一份 MOD 里缩放可能只碰其中一个、也可能碰两个。
+
+## C.34 双端自动化覆盖差距实测：Web 12 个模块 vs Android 2 个类 `[实测]`
+
+2026-10-30 23:50，用户指出「安卓前期中期也有很多没跟上的」，实测核对，**成立且差距远大于预期**。
+
+### 一、模块数对照
+
+| Web `src/core/oreki-*.js`（自动化相关，共 2,962 行） | 行数 | Android 等价实现 |
+|---|---:|---|
+| `oreki-early-automation.js` | 199 | 部分（`OrekiStageAuto.enableEarly`） |
+| `oreki-eternity-automation.js` | 758 | **未见** |
+| `oreki-dilation-automation.js` | 458 | 1 处零星引用 |
+| `oreki-reality-automation.js` | 473 | 仅 `StageAssist.realityUpgradesAll()` |
+| `oreki-celestial-automation.js` | 817 | 仅 `unlock147` / `ach147` |
+| `oreki-instant-challenges.js` | 225 | **未见** |
+| `oreki-autobuy-break-infinity.js` | 32 | 部分（`OrekiStageAuto.upgradeCrunchInterval`） |
+
+Android `oreki` 包机制类只有两个：`StageAssist.smali`（1,394 行 / 32 方法）、
+`OrekiStageAuto.smali`（440 行 / 8 方法）。
+
+### 二、关键词覆盖探测（`grep -ril` 限定 oreki 包）
+
+| 关键词 | 提及文件数 | 备注 |
+|---|---:|---|
+| `replicanti`（复制器） | 0 | 复制器自动化未见 |
+| `eternityChall`（永恒挑战） | 0 | EC 未见 |
+| `instantChallenge`（进入即完成） | 0 | 核心加速机制未见 |
+| `sacrifice`（维度献祭） | 0 | 献祭自动化未见 |
+| `dilation`（膨胀） | 1 | 零星 |
+| `realityUpgrade`（现实升级） | 1 | 仅一个方法 |
+| `celestial` | 4 | 主要是成就解锁，不等于机制已做 |
+
+### 三、方法学结论：**grep 0 命中 ≠ 缺失**（本条的真正价值）
+
+同一天实测反例：`player.break` 在 Android DEX 里是 **`Player.brake:Z`**
+（序列化键仍是 `"break"`，setter `Player;->x0(Z)V` @11107，getter `m()Z` @10746）；
+`Pelle` 类是 **`.../pelle/c`**。按 Web 字段名搜索 → 0 命中，但逻辑原样存在。
+
+⇒ 在本项目里，关键词搜索 **0 命中只能记为「未找到」**。要断言「确认缺失」，
+必须给出反证：该阶段 tick 的调用链里只有 A/B/C 三个动作、没有目标动作的调用点，
+并贴调用链原文。三态记法固定为 **已有 / 确认缺失 / 未知**，禁止把「未知」写成「缺失」。
+
+### 四、由此产生的排期变更
+
+佩勒破无限循环**暂缓**，Android 先补前中期。理由：Android 若走不到佩勒门口，
+打通最后一道门没有意义。顺序错了不是优先级问题，是路线问题。

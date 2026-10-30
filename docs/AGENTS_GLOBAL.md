@@ -1304,3 +1304,50 @@ R40 深夜实测事故：`android/.../scripts/oreki_tutorial_gen.py` 在两小�
 规范：新增「玩家可见但不在内容源里」的中文文案时，必须同时把它登记进扫描面
 （Web：`validate_tutorial.mjs` 的 `PLAYER_VISIBLE_SOURCES`；Android：smali 全包旁路扫描）。
 扫描面宁可宽——106 条全扫的代价可以忽略，漏一个文件的代价是不可见缺陷。
+
+---
+
+## §27 双端功能对等（Android 不得停滞的落地检查法）
+
+用户长期要求：「Web 与 Android 必须同步推进功能开发，Android 不得沦为被动移植端」，
+且明确「不允许用 UI 微调、文档更新、测试工具开发或单纯修复旧问题冒充功能开发进度」。
+
+### 27.1 判定只有三态，禁止第四种写法
+
+每个 Web 机制模块在 Android 侧的状态只允许三种记法：
+
+| 记法 | 含义 | 证据要求 |
+|---|---|---|
+| **已有** | Android 有等价实现且在真实路径上生效 | 给出类/方法与调用点 |
+| **确认缺失** | 调用链里确实没有这个动作 | **必须反证**：贴出该阶段 tick 的调用链原文，说明只有 A/B/C 动作 |
+| **未知** | 搜过但无法判定 | 写明搜了什么、为什么判不了 |
+
+**禁止**把 grep 0 命中写成「缺失」，也禁止把「有 4 处字符串提及」写成「已实现」。
+
+### 27.2 为什么这条必须写死
+
+同一天两个真实反例：
+- `player.break` 在 Android 是 `Player.brake:Z`（setter `x0(Z)` @11107 / getter `m()Z` @10746）；
+- `Pelle` 类在 DEX 里是 `.../pelle/c`，按原名 `inspect-android-method` 直接报
+  `Exact class not found`，**不是 APK 缺类，是混淆改名**。
+
+按 Web 的名字搜 Android，0 命中是常态。**「搜不到 ≠ 不存在」是这个项目最容易误判的一条。**
+
+### 27.3 每轮必须做的一件事
+
+每轮开发开始前读 `WEB_ANDROID_DIFFERENCES.md`，结束后把本轮涉及的机制差异写回去
+（双端实现状态、数值差异、以及**Android 侧独立发现的事实**）。
+
+后者尤其重要：R40 实测 Android 的 `prestige/f::o` L7445-7530 写的是中间值 `v15`，
+**比 Web 版 `player.break = true` 更保守** —— 这是 Android 反向提供的信息，
+不是移植产物。允许并鼓励 Android 先发现 Web 不知道的事，这才是「对等开发」而不是「跟随」。
+
+### 27.4 覆盖差距必须量化，不能凭感觉
+
+R40 实测基线（2026-10-30）：Web 自动化相关模块 **12 个 / 2,962 行**，
+Android `oreki` 包机制类 **2 个 / 1,834 行**；`replicanti` / `eternityChall` /
+`instantChallenge` / `sacrifice` 在 Android oreki 包内 **0 提及**。
+细节见 `FACTS.md C.34`。
+
+后续每轮用同一组命令复测（`ls src/core/oreki-*`、`grep -ril` 限定 oreki 包），
+把数字写进差异表，而不是写「大致对齐」。
