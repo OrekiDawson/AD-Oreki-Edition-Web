@@ -619,6 +619,16 @@ Reality、天神阶段、Pelle 出现、阶段解锁、界面显示成功，**�
    三处是同一 inode，**只改工作区根那一份**；不得用「另存为 / 新建同名文件」替换镜像（会断硬链接）。
    校验与重建统一走 `python scripts/check_agents_sync.py` / `--fix`（该脚本现已同时守护
    `AGENTS.md` 与 `FACTS.md` 两组文件）。
+
+   ⚠ **上述「三处」之外的所有 `FACTS.md` 都是检出副本，不是权威源，禁止编辑。**
+   `git worktree` 目录会各自检出一份**独立 inode** 的 `FACTS.md`，最容易误当成镜像去改：
+   ```
+   2026-10-31 实测：web/_wt_deploy/docs/FACTS.md  inode 844424933070372  ← 独立副本，非硬链接
+                    web/AD-Oreki-Edition/docs/FACTS.md  inode 3940649674859546  ← 硬链接三处之一
+   git worktree list  →  _wt_deploy (detached HEAD 6e90ede) / _wt_head (detached HEAD df6ef9d)
+   ```
+   在这些 worktree 里改 `FACTS.md` 会产生一条**分叉的历史**，且因为不在权威 inode 上，
+   `check_agents_sync.py` 查不出来。**要改事实，先 `cd` 回工作区根。**
 2. **什么必须写进去**（满足任一条即写）：
    - 同一个坑踩了**两次以上**，或排查耗时 **20 分钟以上**才搞清的机制；
    - 一旦被改回就会**静默返工**的根因（例如跳转极性、语言三处默认值、`pLog10(0)=0`）；
