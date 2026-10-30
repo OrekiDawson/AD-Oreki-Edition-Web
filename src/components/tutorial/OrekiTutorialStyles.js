@@ -13,6 +13,7 @@
 export const TUTORIAL_STYLE_ID = "oreki-tutorial-injected-style";
 
 const CSS = `
+.c-oreki-tut__scroll { overflow-x: hidden; }
 .c-oreki-tut__block { margin: 0 0 0.9rem; }
 .c-oreki-tut__label {
   margin-bottom: 0.25rem;
@@ -21,7 +22,7 @@ const CSS = `
   letter-spacing: 0.02em;
   color: var(--color-reality);
 }
-.c-oreki-tut__text { font-size: 1.25rem; line-height: 1.6; }
+.c-oreki-tut__text { font-size: 1.25rem; line-height: 1.6; overflow-wrap: anywhere; }
 .c-oreki-tut__list {
   margin: 0;
   padding-left: 1.6rem;
@@ -52,9 +53,14 @@ const CSS = `
   text-align: left;
   vertical-align: top;
   border-bottom: 0.1rem solid rgb(255 255 255 / 12%);
+  /* 360px 实测：1.7976931348623157e308 这类长数值会把单元格撑到 159px，
+     整张表 318px > 容器 314px，页面右侧出现横向滚动条。允许任意断行即可。 */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .c-oreki-tut__table th { font-weight: bold; color: var(--color-reality); }
-.c-oreki-tut__key { width: 32%; white-space: nowrap; }
+/* 原来是 nowrap，窄屏下会把「标签」列顶成固定 32% 且不可压缩，连带把数值列挤出容器 */
+.c-oreki-tut__key { width: 32%; }
 .c-oreki-tut__src {
   display: block;
   margin-top: 0.1rem;
@@ -62,6 +68,37 @@ const CSS = `
   opacity: 0.55;
   word-break: break-all;
 }
+/* 360px 实测：src/core/dimboost.js:100-107 在西文长串上仍撑出 4px，
+   和单元格的 anywhere 一起兜住，保证窄屏不出横向滚动条 */
+.c-oreki-tut__src,
+.c-oreki-tut__text,
+.c-oreki-tut__list,
+.c-oreki-tut__trap,
+.c-oreki-tut__done,
+.c-oreki-tut__placeholder-body { overflow-wrap: anywhere; }
+/* 正文里的西文长标识符（如 1e10500、oreki-instant-challenges.js）不给任何元素
+   撑宽容器的机会：教程容器本身也裁掉横向溢出，纵向滚动不受影响。
+   __scroll 必须单独写：overflow-y: auto 会把 overflow-x 一并算成 auto，
+   内容一旦超宽就会出现横向滚动条（360px 实测 ch02/ch03 各有一条）。 */
+.c-oreki-tut { max-width: 100%; overflow-x: hidden; }
+.c-oreki-tut__scroll { overflow-x: hidden; }
+.c-oreki-tut__placeholder {
+  margin: 0 0 0.9rem;
+  padding: 0.8rem 1rem;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  background: rgb(255 255 255 / 5%);
+  border: 0.1rem solid var(--color-reality);
+  border-radius: 0.4rem;
+}
+.c-oreki-tut__placeholder-title {
+  margin-bottom: 0.4rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--color-reality);
+}
+.c-oreki-tut__placeholder-body p { margin: 0 0 0.4rem; }
+.c-oreki-tut__placeholder-body p:last-child { margin-bottom: 0; }
 .c-oreki-tut__trap {
   margin: 0 0 0.9rem;
   padding: 0.6rem 0.8rem;

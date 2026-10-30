@@ -189,6 +189,47 @@ export const TUTORIAL_CHAPTERS = tutorialData.chapters;
 /** 结构版本：渲染层发现不认识的版本时宁可显示警告，也不猜字段 */
 export const TUTORIAL_SCHEMA_VERSION = tutorialData.schemaVersion;
 
+/**
+ * 十个内容字段的中文名，只用于「本章还缺什么」的占位卡。
+ * 顺序与 `docs/TUTORIAL_SCHEMA.md` 的表格一致。
+ */
+export const TUTORIAL_FIELD_LABELS = [
+  ["stageGoal", "阶段目标"],
+  ["entry", "进入条件"],
+  ["steps", "具体操作"],
+  ["buyOrder", "购买优先级"],
+  ["automation", "自动化配置"],
+  ["challenges", "挑战攻略"],
+  ["numbers", "关键数值"],
+  ["done", "完成判据"],
+  ["next", "下一步"],
+  ["traps", "常见卡点"],
+];
+
+/**
+ * 草稿章的缺口清单：哪些字段已经有内容、哪些还是空的。
+ *
+ * 为什么要这个函数：`draft: true` 的章节只有 `stageGoal / entry / done / next` 四句话，
+ * 直接渲染出来只有 160~380 字，玩家会以为教程坏了。渲染层据此画一张「本章编写中」的占位卡，
+ * 明确说明现在只有骨架、还缺哪几块。
+ *
+ * 只做字段存在性判断，不生成、不补齐任何正文。
+ * @param {object} chapter
+ * @returns {{ready: string[], pending: string[], isEmpty: boolean}}
+ */
+export function getChapterGaps(chapter) {
+  const ready = [];
+  const pending = [];
+  for (const [key, label] of TUTORIAL_FIELD_LABELS) {
+    const value = chapter ? chapter[key] : undefined;
+    const filled = Array.isArray(value)
+      ? value.length > 0
+      : typeof value === "string" && value.trim() !== "";
+    (filled ? ready : pending).push(label);
+  }
+  return { ready, pending, isEmpty: ready.length === 0 };
+}
+
 /** 当前阶段在 STAGE_DEFS 里的下标 → 章节列表里第一个属于该阶段的章节下标 */
 function firstChapterIndexByStage(stageKey) {
   return TUTORIAL_CHAPTERS.findIndex(chapter => chapter.stageKey === stageKey);

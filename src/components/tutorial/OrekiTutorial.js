@@ -1,4 +1,5 @@
 import {
+  getChapterGaps,
   getTutorialStageSnapshot,
   getTutorialStartIndex,
   TUTORIAL_CHAPTERS,
@@ -61,6 +62,8 @@ function numbersBlock(numbers) {
 
 function tableBlock(table) {
   if (!table || !Array.isArray(table.head) || !Array.isArray(table.rows)) return "";
+  // 空表不要渲染成一个只有边框的空壳：头或体任一为空就当作没有表
+  if (table.head.length === 0 || table.rows.length === 0) return "";
   const head = table.head.map(cell => `<th>${esc(cell)}</th>`).join("");
   const body = table.rows
     .map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join("")}</tr>`)
@@ -68,6 +71,28 @@ function tableBlock(table) {
   return `<div class="c-oreki-tut__block">
     <div class="c-oreki-tut__label">对照表</div>
     <table class="c-oreki-tut__table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
+  </div>`;
+}
+
+/**
+ * 草稿章的占位卡。
+ *
+ * 触发条件：`draft === true` 且 `steps` 为空 —— 也就是正文还没进来的章节。
+ * 这类章节直接渲染只有「阶段目标 / 进入条件 / 完成判据 / 下一步」四句话（实测 160~380 字），
+ * 玩家点进去会以为教程加载失败。占位卡把「现在有什么、还缺什么」一次说清，不造假内容。
+ */
+function placeholderBlock(chapter) {
+  const gaps = getChapterGaps(chapter);
+  if (!chapter.draft || !gaps.pending.length) return "";
+  const pending = gaps.pending.join("、");
+  const ready = gaps.ready.length ? gaps.ready.join("、") : "无";
+  return `<div class="c-oreki-tut__placeholder">
+    <div class="c-oreki-tut__placeholder-title">本章正在编写中</div>
+    <div class="c-oreki-tut__placeholder-body">
+      <p>这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。</p>
+      <p>已有内容：${esc(ready)}</p>
+      <p>还缺内容：${esc(pending)}</p>
+    </div>
   </div>`;
 }
 
@@ -112,12 +137,14 @@ function renderAllChapters(currentIndex) {
     const lockedBar = locked
       ? `<div class="c-oreki-tut__locked">${esc(TUTORIAL_LOCKED_PREFIX)}本章机制现在还不能用。</div>`
       : "";
-    const draftBar = chapter.draft
+    const placeholder = placeholderBlock(chapter);
+    // 占位卡已经把「还没写完」说清楚了，再叠一条草稿条只是重复噪音
+    const draftBar = chapter.draft && !placeholder
       ? `<div class="c-oreki-tut__draft">本章尚未写完（草稿）。</div>`
       : "";
     return `<details class="c-oreki-tut__details" ${isCurrent ? "open" : ""}>
       <summary class="${summaryClass}">${esc(chapter.title)}　<span style="font-size: 1.1rem; opacity: 0.7;">${esc(chapter.subtitle)}</span></summary>
-      ${lockedBar}${draftBar}${renderChapterBody(chapter)}
+      ${lockedBar}${draftBar}${placeholder}${renderChapterBody(chapter)}
     </details>`;
   }).join("");
 }

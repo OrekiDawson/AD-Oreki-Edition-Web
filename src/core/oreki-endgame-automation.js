@@ -37,6 +37,7 @@ import { maxAll } from "./dimensions/antimatter-dimension.js";
 import { requestDimensionBoost } from "./dimboost.js";
 import { requestGalaxyReset } from "./galaxy.js";
 import { Autobuyer } from "./autobuyers/autobuyers.js";
+import { bigCrunchResetRequest } from "./big-crunch.js";
 import { Laitela } from "./celestials/laitela/laitela.js";
 import { OREKI_IU25_COST } from "./secret-formula/reality/imaginary-upgrades.js";
 
@@ -123,6 +124,8 @@ const IM_TICK_MS = 2000;
  * ── 结论 ────────────────────────────────────────────────────────────
  * 佩勒阶段必须让反物质**单调增长**：关 `Autobuyer.bigCrunch` / `Autobuyer.eternity`，
  * 本文件也不再主动调 `bigCrunchResetRequest` / `eternity` / `Pelle.armageddon`。
+ * （[R40-A5b] 其中「不调 `bigCrunchResetRequest`」这条只对**非末日**成立：
+ *  末日态为了拉满 15 级间隔必须有真实 IP，见 `_pulseDoomedCrunch()`。）
  * 大灾变同样要停：`Pelle.armageddon` → `finishProcessReality({ reset: true, armageddon: true })`
  * （pelle.js:149-155），那是整局现实重置，比坍缩更彻底。
  * 只保留「全部最大 + 维度提升 + 星系 + 佩勒升级」——这四件都不清空当前反物质。
@@ -481,12 +484,15 @@ export const OrekiEndgameAutomation = {
       const keepAuto = PelleUpgrade.keepAutobuyers;
       // ⓪ 重置购买器策略（R40-A5 起按阶段切换，见 `_stopDoomedResets()`）
       //
-      // 「已经买到 keepAutobuyers、但间隔还没拉满」这一段**必须放行大坍缩**：
-      // 拉满 15 级间隔要 32767 真实 IP，而毁灭态里 IP 的唯一来源就是坍缩。
-      // 其余时间仍然关掉，让反物质单调增长（R38-M 的结论在这一段依然成立）。
-      const needIpForIntervals = !player.break && keepAuto.isBought && !Autobuyer.bigCrunch.hasMaxedInterval;
-      this._stopDoomedResets(!needIpForIntervals);
-      if (needIpForIntervals) this._doomCrunchesOn++;
+      // 「已经买到 keepAutobuyers、但间隔还没拉满」这一段需要真实 IP 买那 15 级间隔，
+      // 而毁灭态里 IP 的唯一来源就是大坍缩 —— 但**不能指望大坍缩自动器**：
+      // 它在毁灭态要求先吃过「无限冲击」（`big-crunch-autobuyer.js:14-18`），
+      // 也就是必须有一次真坍缩才会解锁（`big-crunch.js:58`）。
+      // 实测（R40-A5 `r40a5-arm1` t≈1411 s）放开 `isActive` 后 557 s 内 `ip` 恒为 0、
+      // `bcUnlocked=false`、`ivl=150000`，就是这么卡住的。
+      // ⇒ 改成 `_pulseDoomedCrunch()` 自己按一次 UI 大坍缩按钮，自动器全程保持关闭
+      //   （开着会按 AMOUNT 模式把反物质反复清零，而我们要的是「单调增长」）。
+      this._stopDoomedResets();
 
       // ① 反物质维度 + 计数频率：原版「全部最大」
       maxAll();
@@ -505,7 +511,9 @@ export const OrekiEndgameAutomation = {
         if (up === keepAuto) continue;
         if (!up.isBought && up.canBeBought && up.purchase() === true) this._pelleUpgrades++;
       }
-      // ④ 末日循环（R40-A5）
+      // ④ 拉满间隔所需真实 IP（只在这一段按大坍缩，R40-A5b）
+      this._pulseDoomedCrunch(keepAuto);
+      // ⑤ 末日循环（R40-A5）：必须**最后**跑（先买、后末日），理由见 `_maybeArmageddon()`
       this._maybeArmageddon(now, keepAuto);
     } catch (e) {
       this._lastError = `doomed: ${(e && e.message) || e}`;
@@ -577,20 +585,64 @@ export const OrekiEndgameAutomation = {
   },
 
   /**
+   * [Oreki R40-A5b] 毁灭态里「拉满大坍缩自动器间隔」所需的真实 IP。
+   *
+   * ── 为什么需要单独一手 ──────────────────────────────────────────────
+   * `reality.js:749-752` 开 Break 的第三个前提是 `Autobuyer.bigCrunch.hasMaxedInterval`，
+   * 而间隔在进毁灭那一帧被打回 150000（`autobuyer.js:185-189` + `reality.js:643` 清永恒次数），
+   * 要拉满 15 级需要 32767 IP。毁灭态里 IP 的唯一来源是坍缩。
+   *
+   * ── 为什么不能靠自动器（实测更正）────────────────────────────────────
+   * `big-crunch-autobuyer.js:14-18`：`if (Pelle.isDoomed) return PelleStrikes.infinity.hasStrike;`
+   * 没吃过「无限冲击」的毁灭态里它**根本没解锁**，`isActive = true` 是纯空转。
+   * `r40a5-arm1` 实测：放开 `isActive` 后 557 s 内 `ip` 恒 0、`bcUnlocked=false`、`ivl=150000`。
+   * 而 `big-crunch.js:55-59` 的 `bigCrunchReset()` 在 `Pelle.isDoomed` 时会
+   * `PelleStrikes.infinity.trigger()` —— 也就是说**按一次大坍缩按钮本身就是解锁自动器的那一步**。
+   *
+   * ── 所以这里做的是 ──────────────────────────────────────────────────
+   * 按一次 `bigCrunchResetRequest(true)`（= `BigCrunchButton.js:18` 的同一路径，禁动画版），
+   * 收益是 `gainedInfinityPoints()`（实测单次 6.2e9 IP，≫ 32767，一次就够买满 15 级），
+   * 副作用只有幂等的 `PelleStrikes.infinity.unlock()`（`strikes.js:33-45`，只解锁不重置）。
+   * 触发条件收得很紧，避免无谓重置：
+   *   · 已经 `player.break`：不需要；
+   *   · `keepAutobuyers` 没买：不需要 IP（这时候按坍缩只会拖慢残迹增长）；
+   *   · 间隔已满：不需要；
+   *   · IP 已经买得起下一级：交给 `OrekiBreakInfinityGate` 的 A 段去买，不必再坍缩；
+   *   · `!Player.canCrunch`：反物质还没到 1.797e308，按了也是空操作。
+   */
+  _pulseDoomedCrunch(keepAuto) {
+    try {
+      if (player.break) return;
+      if (!keepAuto.isBought) return;
+      const bc = Autobuyer.bigCrunch;
+      if (bc.hasMaxedInterval) return;
+      if (Currency.infinityPoints.value.gte(bc.cost)) return;
+      if (!Player.canCrunch) return;
+      bigCrunchResetRequest(true);
+      this._doomCrunchesOn++;
+    } catch (e) {
+      this._lastError = `doomed-crunch: ${(e && e.message) || e}`;
+    }
+  },
+
+  /**
    * [Oreki R38-M / R40-A5] 佩勒阶段重置购买器的开关。
    *
    * 只置 `isActive`，走选项页开关的同一条路径，不碰任何公式；
    * `Pelle.initializeRun` 之后原版会强制 `Autobuyer.bigCrunch.mode = AMOUNT`
    * （pelle.js:87），所以我们每帧检查一次、被重开就再关。
    *
-   * [R40-A5] 新增 `allowCrunch`：`keepAutobuyers` 已买、但间隔还没拉满时，
-   * 需要真实 IP 买那 15 级间隔，而毁灭态 IP 只能靠坍缩产 —— 这一段放行大坍缩自动器。
+   * [R40-A5b] 参数 `allowCrunch` 已删除：它假设「放开 `isActive` 就能产 IP」，
+   * 而毁灭态里自动器要 `PelleStrikes.infinity.hasStrike` 才解锁（`big-crunch-autobuyer.js:15`），
+   * 实测放开 557 s 零收益。产 IP 改由 `_pulseDoomedCrunch()` 直接按按钮完成，
+   * 自动器**全程关闭**：开着会按 AMOUNT 模式（pelle.js:87）在反物质刚到 1.797e308 时反复清零，
+   * 正好破坏 R38-M 要的「单调增长」。
    * 永恒自动器**任何时候都关**：它会给 EP，但也会把 EC/时间研究清掉，
    * 与 `isRealityAvailable()` 无关，却会让后续阶段更难。
    */
-  _stopDoomedResets(allowCrunch = false) {
+  _stopDoomedResets() {
     try {
-      if (!allowCrunch && Autobuyer.bigCrunch.isActive) {
+      if (Autobuyer.bigCrunch.isActive) {
         Autobuyer.bigCrunch.isActive = false;
         this._doomResetsOff++;
       }
@@ -627,6 +679,11 @@ export const OrekiEndgameAutomation = {
       doomShardsL: pick(() => Currency.realityShards.value.log10()),
       doomRemnants: pick(() => player.celestials.pelle.remnants),
       doomRemnantsGain: pick(() => Pelle.remnantsGain),
+      // [Oreki R40-A5b] 间隔 / IP / 冲击：诊断「卡在拉满 15 级」那一段的三个数
+      doomBcInterval: pick(() => Autobuyer.bigCrunch.interval),
+      doomBcCost: pick(() => Autobuyer.bigCrunch.cost),
+      doomIpL: pick(() => Currency.infinityPoints.value.log10()),
+      doomStrikeInfinity: pick(() => PelleStrikes.infinity.hasStrike),
     };
   }
 };

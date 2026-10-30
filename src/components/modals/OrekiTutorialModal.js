@@ -1,5 +1,6 @@
 import ModalWrapperChoice from "./ModalWrapperChoice.js";
 import {
+  getChapterGaps,
   getTutorialStageSnapshot,
   getTutorialStartIndex,
   TUTORIAL_CHAPTERS,
@@ -79,7 +80,15 @@ export default {
     },
     hasTable() {
       const table = this.chapter.table;
-      return Boolean(table && Array.isArray(table.head) && Array.isArray(table.rows));
+      return Boolean(table && Array.isArray(table.head) && Array.isArray(table.rows)
+        && table.head.length > 0 && table.rows.length > 0);
+    },
+    /** 草稿章（有 draft 标记且没有 steps）显示「本章正在编写中」占位卡 */
+    chapterGaps() {
+      return getChapterGaps(this.chapter);
+    },
+    showPlaceholder() {
+      return Boolean(this.chapter.draft) && this.chapterGaps.pending.length > 0;
     },
   },
   created() {
@@ -181,10 +190,25 @@ export default {
               {{ lockedPrefix }}{{ chapterStage.name }}的机制现在还不能用，本章只是提前告诉你它长什么样。
             </div>
             <div
-              v-if="chapter.draft"
+              v-if="chapter.draft && !showPlaceholder"
               class="c-oreki-tut__draft"
             >
               本章尚未写完（草稿），内容可能只有骨架。
+            </div>
+            <div
+              v-if="showPlaceholder"
+              class="c-oreki-tut__placeholder"
+            >
+              <div class="c-oreki-tut__placeholder-title">
+                本章正在编写中
+              </div>
+              <div class="c-oreki-tut__placeholder-body">
+                <p>
+                  这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。
+                </p>
+                <p>已有内容：{{ chapterGaps.ready.length ? chapterGaps.ready.join("、") : "无" }}</p>
+                <p>还缺内容：{{ chapterGaps.pending.join("、") }}</p>
+              </div>
             </div>
             <div class="c-oreki-tut__current">
               <div class="c-oreki-tut__current-label">
