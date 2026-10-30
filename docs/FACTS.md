@@ -1316,11 +1316,130 @@ C.33 初版我写了「本项目三处 MOD 缩放每一处只作用于 cost，�
 2. **能力覆盖仍是未知**。已知 Android 有 `OrekiSpeed` / `OrekiChallengeAuto` / `OrekiAuto` /
    `OrekiInstantChallenge` / `StageAssist` / `OrekiStageAuto` 六个自动层，但**具体覆盖到哪一步、
    哪一步只做了一半，没有逐项核对过**。这才是真正待办的事。
-3. **待查风险**：`oreki/AchievementUnlocker.smali`（188 行）名字听起来像「直接解锁成就」。
-   若它绕过原版成就条件，就违反「不得伪造完成位」的硬约束（见 C.31 同类原则），**必须优先核查**。
+3. **已验证（原「待查风险」已关闭）**：`oreki/AchievementUnlocker.smali`（188 行）是**死代码**——
+   `requestStage(I)V` 方法体只有 `return-void`、`unlockStage(I)I` 返回 `-0x3`，
+   运行时引用数 0（`build_mod.py:1098-1106` 有 `au_refs == 0` 断言自卫）。
+   依赖它的 `scripts/verify_row18.py` 本身已坏（找不到 `:s1..:s8` 标签），不能当保留理由。
+   ⇒ 定案删除，作为独立的纯删除改动提交，不夹进功能轮。
+
+4. **同一个类里真正危险的是 `StageAssist.unlockRows()`（必须单列）**
+   它调 `achievements/a;->E(ZZ)V`（`:718`），而 `E()` 第一句 `if (A()) return;`，
+   `A()`（`:482`）**只读「是否已解锁」的 BitSet，不求值任何条件**，随后直接置位。
+   ⇒ **这是绕过原版条件强制写完成位**，性质等同「伪造完成位」。
+   成就是 Reality 解锁的唯一剩余闸门（C.33），所以它能直接跳过主线。
+   触发链唯一入口是 `StageConfirmListener` 的人工对话框确认（全树 1 处），
+   `pending` 无人工确认时恒空 ⇒ 自动化路径不会碰它（已用调用链证明，非 grep）。
+   处置：不删（已有功能不回退），改为「默认关 + 使用写永久标记 + 验收三层拒判」，见 C.36。
+
+## C.36 助战面板（StageAssist）的三条硬约束与验收拒判规则 `[定案]`
+
+`StageAssist.unlockRows()` 能绕过成就条件直接置位（见 C.34 第 4 条）。保留功能，但必须：
+
+### 一、三条硬约束（缺一不可）
+
+1. **默认关闭**，`oreki_prefs` 里默认 `false`，须玩家显式开启。
+2. **使用留痕**：调用过 `unlockRows` 就写一个**独立键**（`stage_assist_used`），
+   不复用队列键 `stage_assist`（那个会被 `clearFlag()` 清掉，留不住痕）。
+3. **自动化永不调用**：`StageAssist;->request` 全树只有 `StageConfirmListener.smali:32`
+   一个调用点，而它是 `DialogInterface$OnClickListener`，`onClick` 只能由按钮触发
+   ⇒ 无人确认时 `pending` 恒空，`onTick` 不会进 `run()`。
+
+### 二、现有文案是假的，必须一起改
+
+`dialogMessage0`（`StageAssist.smali:1008-1143`）三处都写「写入走原版解锁流程，不可撤销」，
+但 `E(ZZ)` **恰恰不校验条件**；按钮还写「确认点亮」（`SettingsClickListener:211`）。
+⇒ 文案必须改为明说「跳过真实条件、会写永久标记、该存档将无法用于真实通关验收」。
+
+### 三、验收拒判：三层，第三层不依赖标记
+
+| 层 | 做法 | 强度 |
+|---|---|---|
+| L1 | `pm clear` 全新档，贴命令与输出 | 弱（只证明这次是新开） |
+| L2 | 读 `stage_assist_used` 标记 | 中（标记可被清） |
+| L3 | **逐位重算全部成就** | 强（不依赖任何标记） |
+
+L3 原理：原版 `achievements/a;->D(Z)V`（`:650-716`）本身就是「求条件 → 真才解锁」，
+谓词存在字段 `k:Lui1`（null 视为 true）。验收脚本对每个已解锁位比对
+`A()`（BitSet 说已解锁）与 `k.invoke()`（条件重算结果）：
+**`A()==true && k()==false` ⇒ 该位是被强制置位的**。只读、不写档、覆盖全部 104 位。
+
+⇒ 规则：**任何 Android 通关验收，L3 必须跑，且结果必须为 0 处不一致。** 只跑 L1/L2 不算过。
 
 ### 六、由此产生的排期变更（结论未变，但理由换了）
 
 佩勒破无限循环**暂缓**，Android 先做前中期**能力逐项核对**（不是「补」——补什么还没确定）。
 理由不是「Android 落后」，而是：Android 若走不到佩勒门口，打通最后一道门没有意义；
 而走到哪一步、卡在哪个机制，现在**只有猜测没有证据**。
+
+---
+
+## C.35 Web 端从全新存档真实通关：`gameEnd` 首次为真 = 708.1 s `[实测]`
+
+2026-10-31，原始数据 `web/_tools/_r40/r40s1-full.jsonl`（892 条逐秒采样，跑满 900 s）。
+**这条是「180 分钟真实通关」在 Web 侧的第一个可核验证据**，判据只看「首次过线」那一刻。
+
+### 一、过线瞬间（逐条对照，不是取最大值）
+
+| t | gameEnd | endState | totAML | amE |
+|---|---|---|---|---|
+| 707.1 | false | 0.99075 | 958.248 | 750 |
+| **708.1** | **true** | **1.028735** | **1032.015** | **1031** |
+
+`gameEnd` 全程**只翻转 1 次**，之后 191 条采样全部为 true，**从未回退**。
+前一段 `totAML=958`、后一段 `1032`，跨过 1000 的判据线（见 C.31 的 `OREKI_PELLE_END_TARGET_EXP`），
+`endState` 0.99 → 1.03 与之同帧。
+
+### 二、墙钟分段
+
+| 段 | 时刻 |
+|---|---|
+| 0 → 进毁灭（`doomed=true`） | 662.2 s |
+| 进毁灭 → `gameEnd` | 46 s |
+| **合计** | **708.1 s ≈ 11.8 min** |
+
+参考判据是 180 min（10,800 s），**余量约 15 倍**。
+
+### 三、起点是全新存档（从数据判，不是听报告）
+
+t=0.1 的现场值：`amE=21`、`totAM=0`、`realities=0`、`bcUnl=false`、`ivl=150000`、`strike=false`。
+与全新档一致；若是续档，`totAM` 与 `bcUnl` 不会同时是这个状态。
+
+### 四、一个必须更正的口径：`player.break` 有两条来源
+
+本次跑的 `brk` 变化**4 次**，不止末日那一次：
+
+| t | brk | 阶段 | 判定 |
+|---|---|---|---|
+| 0.1 → 4.1 | false→true | idle | **自动买 Break Infinity 升级**（`ivl 150000→100`、`bcUnl false→true`） |
+| 4.1 → 68.1 | true→false | idle | 永恒重置 |
+| 68.1 → 72.1 | false→true | idle | 再次买到（`ipL=25.7`、`ivl=100`） |
+| 72.1 → 662.2 | true→false | wait-remnants | 末日（现实重置清 break） |
+| 662.2 → 706.1 | false→true | broken | **这一次才是 `finishProcessReality` 置真**（C.31） |
+
+⇒ 正确表述：**早期靠买升级，末日路径靠 `finishProcessReality` 置真。**
+此前「`break` 只能由 `finishProcessReality` 置真」是过度概括，会让 Android 侧误以为
+break 只能从末日拿到，从而漏掉「间隔拉满后应该自动买 break」这一步。
+
+### 五、副产品：一条 spec 设计被实测确认
+
+同批 `r40s1-smoke2` 里阶段序列：
+`early(0.1s) → preInfinity(1s) → infinity(4.1s) → eternity(6.1s) → reality(68.1s) → timeStudy(93.1s)`，
+全程 `smDeg=0/139`。`preInfinity` 命中时 `realities=0`、`brk=false`、`amE=96`
+—— 正是「买完第一次维度提升、还没做无限」，与 C.34 之后的判据修改（改用 `player.dimensionBoosts`）一致。
+
+### 六、安全降级的实测价值
+
+同一次 900 s 跑里，策略层因叶子改名**全程降级**（`smDeg=30371`、
+`smErr=leaf-mismatch missing=[pelle.canArmageddon] extra=[pelle.armageddonUnlocked]`），
+游戏仍 708.1 s 通关、`eErr` 为空。
+
+⇒ 两条结论：
+1. **failSafe「整层停机、不抛主循环」是安全降级**，不是崩溃 —— 实测坐实。
+2. **策略层当前尚未参与通关**（它全程降级）。所以「708.1 s」这个数字，
+   证明的是既有 6 个阶段自动化模块的能力上限，**不是策略层的功劳**。策略层的收益要等它自己跑通再单独量。
+
+### 七、本条的未知项
+
+- 是否**全程 10000×**、中途有无调倍率：jsonl 里 `ticksPsL` 抖动过大（0 → 243 → 36），
+  **无法从数据判定**，待 agent-a 确认。若中途调速，本条应改写为「非恒速跑」。
+- 只有 1 次成功样本，前置段方差未知（另一次同链路跑是 783.1 s，差 75 s）。
