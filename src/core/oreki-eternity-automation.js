@@ -320,6 +320,11 @@ export const OrekiEternityAutomation = {
       // 1) 能买的 EC 研究都买掉（canBeBought 会自己校验：unlocked 为 0 / 主研究已买 / 二级资源达标）
       for (let id = 1; id <= 12; id++) {
         try {
+          // 【R36 修复】已经解锁了某一关就不能再买别的 EC 研究
+          // （ec-time-study.js:80 `if (player.challenge.eternity.unlocked !== 0) return false;`）。
+          // 不 break 的话，后面的 id 会白跑一轮「补前置研究」，白白烧掉 TT。
+          if (player.challenge.eternity.unlocked !== 0) break;
+
           const study = TimeStudy.eternityChallenge(id);
           if (!study || study.isBought) continue;
           // 关键：**已经打满 5 次的 EC 不要再买它的研究**。
@@ -328,6 +333,37 @@ export const OrekiEternityAutomation = {
           // 整个时间研究链永远建立不起来（R23 实测：59 秒 TT 367 万、研究 0 个）。
           const challenge = EternityChallenge(id);
           if (challenge && challenge.completions >= challenge.maxCompletions) continue;
+
+          // 【R36 关键修复 · 真正的全局阻塞点】
+          // EC9~EC12 买不上的真正原因**不是资源**，而是**前置普通时间研究没买**。
+          // ECTimeStudyState.canBeBought（src/core/time-studies/ec-time-study.js:76-87）有三条：
+          //   ① this.isAffordable                      —— 资源
+          //   ② player.challenge.eternity.unlocked !== 0 —— 同一时刻只能开着一关
+          //   ③ this.config.requirement.some(s => TimeStudy(s).isBought)  ← **前置研究**
+          //      EC9 的 requirement 是 [151]（normal-time-studies.js:430「所有时间维度提升 1e4 倍」），
+          //      EC10/11/12 是 [181]。
+          // 原实现只调 study.purchase()，**从不补前置** ⇒ 第③条恒为 false ⇒
+          // canBeBought 恒 false ⇒ EC9~EC12 永远买不上。
+          // R36 实测（web/_tools/_r36a/_r36a-ec9.jsonl）：
+          //   infPowerL = 1.29e12931925  ≫ 门槛 1e17498（资源早就够了）
+          //   ecReqTot9L = 17498、ecUnlocked = 8、ecDone = [5,5,5,5,5,5,5,5,0,0,0,0]
+          //   ec9StudyBought = false
+          // ⇒ R35「EC9 是无限之力 1e17498 墙」的结论**是错的**，
+          //   真正卡住的是「研究 151 没被买」。
+          //
+          // 修法：买不动时，按 EC 配置里的 requirement 补齐前置普通研究链
+          // （普通研究自带 purchaseUntil() → buyStudiesUntil()，会连同整条前置一起买）。
+          // 买不上就等下一帧（TT 会继续涨），不跳关、不伪造。
+          if (!study.canBeBought) {
+            for (const sid of (study.config?.requirement || [])) {
+              try {
+                const pre = TimeStudy(sid);
+                if (pre && !pre.isBought) pre.purchaseUntil();
+              } catch (e) {
+                // 该前置研究暂时不可买，等下一帧
+              }
+            }
+          }
           study.purchase();
         } catch (e) {
           // 该 EC 研究暂不可买
