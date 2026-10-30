@@ -1593,3 +1593,54 @@ C.37 的根因分析（被 priority 3 顶掉、组件销毁但仍在队列、重
 被推翻的只有 C.37 §三-3「不改 `core/modal.js`」这一条决策。
 `ModalWrapperChoice.useEnterToConfirm` 与 `TutorialReadingPosition` 两项修法仍然有效且必要：
 priority 4 挡住的是「成就说明」，挡不住 Esc / × 误关，也挡不住玩家自己切走再回来。
+
+## C.39 七篇附录在 Web 端零渲染入口：数据资产 ≠ 玩家能看的内容 `[实测]`
+
+### 一、实测：`appendices` 只被校验器和生成器消费，没进任何 UI
+
+```
+$ grep -rn "appendices" src --include=*.js | grep -v oreki-tutorial-data.gen.js
+（零命中）
+$ grep -rn "TUTORIAL_APPENDICES" src scripts
+（零命中）
+```
+
+`data.appendices` 实际存在 **7 篇**（不是 6 篇，此前多处口径写错）：
+`apx_terms` / `apx_achievements` / `apx_notation` / `apx_bilingual` /
+`apx_blockers` / `apx_automation` / `apx_changes`。
+
+消费方只有两处，都不面向玩家：
+- `scripts/validate_tutorial.mjs` 规则 9（数条数与字段完整性）
+- `scripts/gen_tutorial_module.mjs`（聚合 `apx_automation`）
+
+`OrekiTutorialModal` 里没有附录区，`oreki-tutorial.js` 也没导出 `TUTORIAL_APPENDICES`。
+
+### 二、为什么这条严重
+
+用户目标是「完全不读外部攻略的纯新手，180 分钟真实通关」。
+七篇附录里，术语表、卡点速查、成就表、记数法这四篇**正是新手在没有攻略时唯一的信息来源**：
+正文讲的是「按什么顺序做什么」，附录讲的是「这个词是什么意思、卡住了查哪一条」。
+
+18 章正文写得再准，附录不可达 = 新手遇到第一个不认识的词就断线。
+校验器 2087 项全绿**不能说明交付完整**——它验的是数据，不是可达性。
+
+⇒ 规则：**「数据存在 + 校验通过」永远不构成「玩家能看到」的证据。**
+任何内容类交付，验收必须包含一条「从玩家入口点进去，页面里有字」的实测。
+
+### 三、连带发现：核对数量口径时要数一遍
+
+此前摘要与报告里反复出现「18 章 + **6** 附录」。实际是 **7** 篇。
+多出来的那篇是 `apx_changes`（本轮新加）。这说明凡是「N 章 + M 附录」这类数字，
+只要没人真去 `JSON.parse` 数一遍，就会在多个文档里同时出错并互相引用为证。
+
+⇒ 规则：凡引用数量（章节数、附录数、检查项数、文件数），一律给出来源命令，
+不接受「以报告为准」。
+
+### 四、另一处口径更正：`a5142cf` 的标题少写了一章
+
+`a5142cf` 标题为「教程第14章事实修正」，但其中
+「第 14 章结束（薇与太阳神可以没做完…）」这句位于 **`ch15`（莱特拉）的 `entry` 字段**。
+该提交同时改动 ch14 与 ch15，标题只写 ch14 是漏的。
+
+已推送的提交不改写历史（不 `--amend`、不强推）。
+后续引用该提交时以本条为准：**它动的是 ch14 + ch15**。
