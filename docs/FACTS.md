@@ -1395,6 +1395,46 @@ L3 原理：原版 `achievements/a;->D(Z)V`（`:650-716`）本身就是「求条
 理由不是「Android 落后」，而是：Android 若走不到佩勒门口，打通最后一道门没有意义；
 而走到哪一步、卡在哪个机制，现在**只有猜测没有证据**。
 
+### 七、更正：本轮的验收判据自己报假红
+
+> **更正记录：C.36 相关的两条判据按字面必然 FAIL，不是故障。** `[实测 + 读码]`
+>
+> **判据一：「300 s 内教程章节标题不变」。**
+> 按字面必然 FAIL —— `OrekiTutorialModal.update()`（`:175-190`）就是**设计成跟阶段自动跳章**：
+> 每 15 帧取一次 `getTutorialStageSnapshot()`，阶段签名一变就 `index = getTutorialStartIndex()`。
+> 实测跳变序列 7 → 11 → 13，与 `eternity → reality → celestials` 一一对应。
+> 这不是故障，是设计行为。
+>
+> **判据二：「20 现实时的 `totAML`」。**
+> 按字面**不可求值**：`player.celestials.pelle.records.totalAntimatter` 只有进毁灭后才有值
+> （`src/core/celestials/pelle/pelle.js:260` 才第一次赋值 `1e180000`）。
+> 两组和基线都到 **t ≈ 660~675 s** 才非空，所以「20 现实时」这个采样点根本读不到它。
+>
+> ⇒ 方法学：**判据必须能区分「设计行为」与「故障」。**
+> 判不出来的判据会自己报假红，比没有判据更坏 —— 它会训练人忽略红色。
+>
+> 替代口径（两条）：
+>
+> 1. 标题**必须与当前阶段匹配**，而不是「不许变」。
+>    映射来自 `oreki-tutorial-data.json` 的 `stageKey` + `oreki-tutorial.js:294-318` 的
+>    `getTutorialStartIndex()`。注意 `early` 与 `infinity` 两段**不是**固定首章：
+>
+>    | 阶段 `stageKey` | 定位规则（读码自 `getTutorialStartIndex()`） | 可能落在 |
+>    |---|---|---|
+>    | `early` | `galaxies ≥ 1` → ch03；`dimensionBoosts ≥ 1` → ch02；否则 ch01 | ch01~ch03 |
+>    | `infinity` | `!player.break` → ch04；`break` 且 IP 指数 < 11 → ch05；否则 ch06 | ch04~ch06 |
+>    | `eternity` | 该阶段首章 | ch07（覆盖 ch07~ch10） |
+>    | `reality` | 该阶段首章 | ch11（覆盖 ch11~ch12） |
+>    | `celestials` | 该阶段首章 | ch13（覆盖 ch13~ch15） |
+>    | `doomed` | 该阶段首章 | ch16 |
+>    | `stageKey` 为 null | ch00（导览章）、ch17（总结章）不参与定位 | — |
+>
+>    判据写法：`当前章 index` 落在该 `stageKey` 的「可能落在」区间内，且区间端点由数据算、
+>    不写死章号；`eternity` 及以上必须精确等于首章（走的是 `firstChapterIndexByStage` 的 fallback）。
+>
+> 2. 进度用「**N 个现实的到达时刻**」而不是 `totAML` —— 前者全程可读，后者只在毁灭后存在。
+
+
 ---
 
 ## C.35 Web 端从全新存档真实通关：`gameEnd` 首次为真 = 708.1 s `[实测]`
@@ -2155,3 +2195,176 @@ interval 拉满（有，OrekiStageAuto.upgradeCrunchInterval）
 
 ⇒ 规则：**验收脚本的地址必须是参数，不许硬编码。**
 硬编码的结果是「线上验收」这一步会被悄悄降级成「本地再跑一遍」。
+
+---
+
+## C.45 引文层把整个弹窗层顶掉，`priority` 在引文面前无效 `[实测]`
+
+### 一、结论
+
+**`ui.view.quotes` 与 `ui.view.modal` 是两个独立队列，引文不参与 `sortModalQueue`。
+教程的 `priority = 4` 只能压住 modal 队列内部，压不住引文。**
+
+`src/components/GameUiComponentFixed.js:75-88` 是一条 `v-if / v-else-if` 互斥链：
+
+```
+ModalProgressBar            v-if="view.modal.progressBar"
+CelestialQuoteModal         v-else-if="view.quotes.current"
+CelestialQuoteHistoryDisplay v-else-if="view.quotes.history"
+PopupModal                  v-else-if="view.modal.current"
+```
+
+`Quote.addToQueue()`（`src/core/celestials/quotes.js:5-8`）只做一件事：入队，`current` 为空就
+`advanceQueue()` 置顶；它**不查 modal 队列**，也没有任何 priority 概念。
+
+### 二、实测采样（消失瞬间前后，`r40s3-why-tut.jsonl`）
+
+```
+cur:      OrekiTutorialModal -> OrekiTutorialModal    队列首位没变
+qLen:     2 -> 2      qNames: 'OrekiTutorialModal#4|MessageModal#2' -> 同一串
+nTut:     234 -> 0    nModal: 1 -> 0    nMsg: 1 -> 0
+pb:       False -> False
+qCur:     None -> 1   nQuoteDom: 0 -> 1
+```
+
+`nModal` 与 `nMsg` 同时归零 ⇒ 不是「被盖住」（`.c-modal` 还在，R40T 那次是另一种形态），
+是**整片弹窗层不渲染**。
+
+### 三、触发点与触发面
+
+触发点：`realities` 到 20、切 celestials 那一帧，特蕾莎首次引文入队。
+四次跑落在 **264.0 / 255.9 / 239.1 / 228.8 s**，都在「进 celestials 后第一次现实重置」附近，
+差异来自帧率。
+
+**触发面比教程大**：`PopupModal` 在这条链**末尾**，意味着任何 priority 1 的阻塞式确认框
+（`Modal` 实例里 priority = 1 共 **28 个**，逐实例读 `_priority` 实测；优先级口径见 C.38）
+在引文出现时同样消失。
+
+### 四、定级：不是「教程读不完」，是「会不会软锁」
+
+S3 已实测教程开着 721.5 s 能通关（见 C.47）⇒ **不影响通关**。
+所以按「引文结束后 modal 层是否回来」定级，判据写死：
+
+- `view.quotes.current` 由非空变 null 后 **≤ 2 s 内** `nModal > 0` 且 `cur === "OrekiTutorialModal"` ⇒ 回来了；
+- **10 s 仍为 0** ⇒ 判软锁。
+
+**此判定截至 2026-10-31 03:10 未实测，状态 = 待判定。**
+
+---
+
+## C.46 采样强度能改变通关结论，比教程效应大一个量级 `[实测]`
+
+### 一、结论
+
+**同一份代码、同一份全新档，只换采样强度，通关时刻能从 769 s 变成「未达」。**
+
+| 跑法 | 20 现实 | 100 现实 | 通关 |
+|---|---|---|---|
+| `pelle-probe` 基线 | 227.1 s | 639.1 s | **708.1 s** |
+| 轻采样 无教程 | 230.0 s | 687.4 s | **769 s** |
+| 轻采样 教程开 | 226.7 s | 650.6 s | **721.5 s** |
+| 重采样 教程开 | 261.7 s | 876.5 s | 未达 |
+| 重采样 对照 | 249.8 s | 868.5 s | 未达 |
+
+### 二、机制
+
+重采样脚本每秒多跑一次 `strategy.evaluate()`（1 s 节流正好踩满）+ 两次 DOM `querySelectorAll`
+→ 帧率下降 → 「每帧只 tick 一次」的自动购买器触发次数下降 → 整体慢 **10~15%**（早期）、
+**35%+**（到 100 现实）。
+
+⇒ 规则（长期有效）：**任何「多少秒通关」的数字必须注明采样方式**；基线一律用 `pelle-probe`
+的采样强度；**每帧调 `evaluate()` 的重采样脚本不得用于产出通关时间**。
+否则会把验证脚本的开销记到产品头上。
+
+---
+
+## C.47 Web 端四次独立通关，跨度 708~783 s `[实测]`
+
+### 一、四个读数（全部 `isGameEnd = true`）
+
+| 来源 | 通关时刻 | 采样 |
+|---|---|---|
+| `pelle-probe` 基线 | 708.1 s | 基线 |
+| S3 轻采样 教程开 | 721.5 s | 轻 |
+| S3 轻采样 无教程 | 769 s | 轻 |
+| R40-A5 `r40a5-arm2` | 783.1 s | 1 s |
+
+A5 那次细节：`endState = 1.043171`、`log10(totalAM) = 1034.092`、`player.break = true`、
+跑满 1800 s / 1784 条采样、`isGameEnd` 只翻转 1 次（false→true）、之后 1017 条全 true 从未回退、
+`OrekiEndgameAutomation._lastError` 空串 0 条。
+
+### 二、复现口径
+
+**采样方式一致的前提下，通关时刻落在 700~800 s 区间即视为稳定。** 距离 180 min（10800 s）
+预算约 **14 倍余量**。
+
+⚠ **不要把「714 s 到佩勒」当「180 分钟能通关」**——它只证明前 12 分钟不构成瓶颈，
+真正的通关验证是上面这四个 `isGameEnd`。
+
+---
+
+## C.48 Web 的「拉满间隔」是一次性阶段奖励 + 真实扣钱，不是产能异常 `[实测 + 读码]`
+
+### 一、结论
+
+**`bcCost` 从 1 跳到 32768 不是「4 秒赚到 32767 IP」，是一次性补贴。**
+
+`src/core/oreki-break-infinity-gate.js`：
+
+- `:103-110` —— `if (!this.grantedThisSession && !Pelle.isDoomed)`：
+  `need = BREAK_INTERVAL_TOTAL_COST - Currency.infinityPoints.value`，`need > 0` 就把 IP 补到
+  `BREAK_INTERVAL_TOTAL_COST`（`:51` 定义为 **32767 = 2^15 − 1 = 15 级间隔总成本**），
+  置 `grantedThisSession = true`；
+- `:115-122` —— `while (!bc.hasMaxedInterval && guard < 64)`，走真实的 `upgradeInterval(false)`
+  **真扣钱**；
+- 补完之后由 `src/game.js:210-233` 的 AD5b 按一次 `breakInfinity()`（原版只有 UI 按钮会调，
+  `BreakInfinityButton.js`）。
+
+日志铁证：`bcCost` 1 → 32768 = 2^15，恰好 15 级。
+
+### 二、定性与边界
+
+**这是 MOD 偏差，不是原版等价，不许说成「还原原版通路」。**
+
+相关：`bcUnl` 被 AU4 改成 `canBeUpgraded || infinityUnlocked()`，不是挑战 12。
+
+**毁灭态不发这段补贴**：原版给佩勒安排的开 break 通路是 `src/core/reality.js:750-752`
+（`Pelle.isDoomed && keepAutobuyers.canBeApplied && hasMaxedInterval` 时置 `player.break = true`）。
+毁灭态补 IP 等于替玩家付账。
+
+---
+
+## C.49 `web/_tools` 从未在版本控制之下 `[实测]`
+
+### 一、结论
+
+**产出「783.1 s 通关」那次跑分脚本事后无法追踪——不是被删，是 `web/_tools` 从来不在任何
+git 仓库里。**
+
+原因：`AD-Oreki-Unified` 不是仓库，唯一仓库根是 `web/AD-Oreki-Edition`，而 `web/_tools`
+在它**外面**。⇒ 每一条「已实测」都缺了「哪个脚本、哪一版」这一环。
+
+### 二、处理（2026-10-31）
+
+`web/_tools` 建独立仓库，孤儿分支 `verify-tools` 推到
+`https://github.com/OrekiDawson/AD-Oreki-Edition-Web.git`。
+只版本化 `.mjs` / `.md` / `.py` / `lib/`，`*.jsonl` / `*.log` / `shots*/` / `node_modules/` /
+`__pycache__/` 全部 gitignore（137 MB → 约 15 MB）。
+首次收录 **648 个文件**，`9ec9bcd`；`README.md` 见 `17011eb`（收录后 649 个）。
+
+⇒ 规则：**报告里的每个数字都要能追到「哪个脚本、哪个 commit」**，引用写 `_tools@<短 hash>`。
+追不到的数字下一轮必须重跑，不能引用。
+**只 `git add` 自己这一轮的文件，不许 `git add -A`。**
+
+---
+
+## 口径补充：倍率必须写「到达那一刻的当前倍率」
+
+`localStorage["oreki-game-speed"]`（`src/core/speed-config.js:16`，默认
+`GAME_SPEED_DEFAULT = 10000`、上限 `100000`）在 `r40s3-attrib900` 里到 **t = 760 s**
+才出现第一个动态升档（20000），之后 40000 / 80000 / 100000。
+
+⇒ **700 s 级通关全程是 10000×，动态速度只在通关后参与。**
+
+⇒ 规则：以后报告要写「**到达某里程碑时的当前倍率**」，不能只写「默认 10000×」。
+
