@@ -1515,3 +1515,81 @@ t=3100ms  queue=2  current=MessageModal        dom=false
 ⇒ 规则：**拦响应式对象只能用于「记录谁在写」，不能在同一轮里做 DOM 断言**；
 要么只在 `show()` 之前装桩并只读日志、DOM 断言另跑一轮，要么改包方法
 （`removeFromQueue` / `Modal.hide` / `Modal.hideAll`）而不碰访问器。
+
+## C.38 推翻 C.37 §三-3：`core/modal.js` 必须改，教程 `priority` 0 → 4 `[实测]`
+
+### 一、我上一轮判断错了，错在只看了「打断一次可接受」
+
+C.37 §三-3 我写的是「不改 `core/modal.js`，接受被打断一次，点掉就回来」。
+这条判断只算了「打断」的代价，没算**打断后重建的代价**——而真正的伤害在重建里：
+`data()` 重跑，`index: getTutorialStartIndex()` 把读到第 10 章的进度重置回第 7 章（C.37 §二）。
+
+于是形成这样一条链：
+```
+第 10 章正在读 → 成就说明顶掉 → 组件销毁 → 玩家点掉提示 → 组件重建
+→ data() 重跑 → index 从 10 掉到 7 → 玩家发现自己在第 7 章
+→ 再读到第 10 章 → 又解锁一个成就 → 再被顶掉 …
+```
+在默认 10000× 下成就解锁是**密集事件**（成就是在游戏循环里判的，不是按墙钟），
+所以这不是「被打断一次」，而是「在读完之前会被反复打断」。C.37 §三-3 的假设不成立。
+
+### 二、改法与位置
+
+`src/core/modal.js:246`：
+```js
+Modal.orekiTutorial = new Modal(OrekiTutorialModal, 4);   // 原为不传 priority（= 0）
+```
+4 高于全部既有值：玩法确认弹窗 `1`（`dimensionBoost` / `bigCrunch` / `eternity` / `reality` …
+一二十个）、成就与特殊说明 `3`（`normal-achievement.js:64` 的
+`Modal.message.show(text, {}, 3)`）。`modalQueue.sort((x,y) => y.priority - x.priority)`
+（`modal.js:152`）⇒ 最大者胜，4 是当前最高，够用且没有越权到「超过一切」的地步
+（真要更高就会盖住硬重置确认这类必须立刻处理的东西，4 刚好压在它们之上、成就说明之下无对手）。
+
+「教程是玩家主动发起的阅读会话，被任何东西顶掉都是错的」——这是这条改动的唯一理由。
+不是「教程更重要」，是「玩家已经明确表示此刻在读书」。
+
+### 三、验收：真跑，逐 100 ms 采样
+
+探针 `web/_tools/_r40/t-tut-priority.mjs`。被测入口是真实路径：
+`OptionsGameplayTab.js:362` 的按钮就是 `onclick="Modal.orekiTutorial.show()"`，
+所以调 `show()` 等于玩家点按钮，不是绕过 UI。
+
+先空跑 20 s 让提示堆积，实测现场：
+
+```
+queueLen: 1     queueNames: ["MessageModal"]     current: "MessageModal"
+```
+—— 队列里**正好压着一条消息弹窗**，这就是改之前必然被顶掉的场景。
+
+`show()` 之后逐 100 ms 采样 6 s：
+
+| 指标 | 值 |
+|---|---|
+| `firstVisibleMs` | **0** |
+| `zeroSamples`（tutNodes 为 0 的采样数） | **0** |
+| `current` 全程取值 | 只有 `OrekiTutorialModal` |
+| 章节标题全程取值 | 只有 `第 0 章　开始之前` |
+| `pageErrors` | 只有一条 CSP 拦截 googletagmanager，与本次无关 |
+
+判定 `pass: true`（出现 ≤ 1 s ∧ 6 s 内零跌落 ∧ 章节未变）。
+
+### 四、方法学陷阱（第二例）：读了不存在的字段，断言会变成恒真
+
+第一版探针的 `chapterStable` 判据写的是
+`window.Modal.orekiTutorial._component?.chapter?.id`，实测**全程 `null`**。
+理由：Vue 挂载后 `_component` 上拿不到 `data` 字段。
+
+于是 `chapterStable` 的判据变成「历史集合里非空值 ≤ 1 个」，
+而集合是 `[null]` ⇒ **永远为真**。这不是「通过」，这是**根本没有判**。
+
+⇒ 规则：**任何「没变化」类断言，必须先证明「读到了东西」**。
+做法是断言里同时要求 `历史集合.size >= 1 且 集合里不含 null`，
+或者干脆换一个有内容的读取面（本处改为从 DOM 读章节标题文本）。
+凡是「结果恒为默认值」的检查，都要先怀疑字段路径写错了，而不是先庆祝通过。
+
+### 五、与 C.37 的关系
+
+C.37 的根因分析（被 priority 3 顶掉、组件销毁但仍在队列、重建重跑 `data()`）**全部成立**，保留。
+被推翻的只有 C.37 §三-3「不改 `core/modal.js`」这一条决策。
+`ModalWrapperChoice.useEnterToConfirm` 与 `TutorialReadingPosition` 两项修法仍然有效且必要：
+priority 4 挡住的是「成就说明」，挡不住 Esc / × 误关，也挡不住玩家自己切走再回来。
