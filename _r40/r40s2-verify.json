@@ -1,0 +1,72 @@
+{
+ "tag": "r40s2-verify",
+ "durationSec": 220.5,
+ "samples": 199,
+ "smOk": true,
+ "smDeg": false,
+ "smDegN": 0,
+ "smErr": "",
+ "smDegSamples": 0,
+ "panelMissing": [
+  "blockers"
+ ],
+ "panelLines": [
+  "① 阶段 现实阶段（reality）",
+  "② 目标 解锁天神（未完成）",
+  "③ 策略 现实推进策略（realityPush）",
+  "④ 正在执行 现实重置 → 无可买｜reality 1 秒前",
+  "⑤ 下一步 装备最优符文",
+  "⑥ 阻塞 无",
+  "⑦ 最近切换 timeStudy/challengeClear → reality/realityPush（14 秒前）"
+ ],
+ "panelFound": true,
+ "panelRect": {
+  "w": 700,
+  "h": 150
+ },
+ "panelOverflowX": false,
+ "consoleRelevant": 0,
+ "consoleRelevantSample": [],
+ "consoleAllErrors": 1,
+ "pageErrors": 0,
+ "pageErrorSample": [],
+ "takeovers": 195,
+ "takeoverWhileModuleActed": 0,
+ "click": {
+  "at": 150.4,
+  "clicked": {
+   "ok": true,
+   "text": "购买解锁现实的时间研究以解锁现实",
+   "cls": "c-reality-button infotooltip c-reality-button--locked"
+  },
+  "before": {
+   "actN": 4,
+   "goal": "unlock-celestials"
+  }
+ },
+ "holdSamples": 57,
+ "holdFirstSec": 59,
+ "holdLastSec": 1,
+ "actDuringHold": {
+  "from": 151.5,
+  "to": 210.1,
+  "delta": 4,
+  "samplesWithHold": 57
+ },
+ "hasPredictionText": false,
+ "stage": "reality",
+ "goal": "unlock-celestials",
+ "strategy": "realityPush",
+ "doomed": false,
+ "brk": true,
+ "amE": 1849179972,
+ "realities": 15,
+ "spdSet": [
+  null
+ ],
+ "gameEnd": false,
+ "nav": {
+  "ok": true
+ },
+ "screenshot": "C:\\Users\\Oreki\\WorkBuddy\\AD-Oreki-Unified\\web\\_tools\\_r40\\r40s2-verify-panel.png"
+}

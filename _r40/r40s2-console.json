@@ -1,0 +1,81 @@
+{
+ "tag": "r40s2-console",
+ "durationSec": 91.4,
+ "samples": 90,
+ "smOk": true,
+ "smDeg": false,
+ "smDegN": 0,
+ "smErr": "",
+ "smDegSamples": 0,
+ "panelMissing": [
+  "blockers"
+ ],
+ "panelLines": [
+  "① 阶段 现实阶段（reality）",
+  "② 目标 解锁天神（未完成）",
+  "③ 策略 现实推进策略（realityPush）",
+  "④ 正在执行 现实重置 → 无可买｜reality 1 秒前",
+  "⑤ 下一步 装备最优符文",
+  "⑥ 阻塞 无",
+  "⑦ 最近切换 timeStudy/challengeClear → reality/realityPush（3 秒前）"
+ ],
+ "panelFound": true,
+ "panelRect": {
+  "w": 700,
+  "h": 150
+ },
+ "panelOverflowX": false,
+ "consoleRelevant": 0,
+ "consoleRelevantSample": [],
+ "consoleAllErrors": 1,
+ "consoleAll": [
+  {
+   "type": "error",
+   "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src http://me.kis.v2.scr.kaspersky-labs.com ws://me.kis.v2.scr.kaspersky-labs.com 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-"
+  }
+ ],
+ "pageErrors": 0,
+ "pageErrorSample": [],
+ "takeovers": 54,
+ "takeoverWhileModuleActed": 0,
+ "click": {
+  "at": 20.5,
+  "clicked": {
+   "ok": true,
+   "text": "获得 4.22e1,027,790 永恒点数 在",
+   "cls": "o-prestige-button o-eternity-button"
+  },
+  "before": {
+   "actN": 0,
+   "goal": "unlock-reality"
+  }
+ },
+ "holdSamples": 46,
+ "holdFirstSec": 59,
+ "holdLastSec": 13,
+ "actDuringHold": {
+  "from": 21.6,
+  "to": 67.8,
+  "delta": 0,
+  "actNFirst": 0,
+  "actNLast": 0,
+  "violations": [],
+  "samplesWithHold": 46
+ },
+ "hasPredictionText": false,
+ "stage": "reality",
+ "goal": "unlock-celestials",
+ "strategy": "realityPush",
+ "doomed": false,
+ "brk": true,
+ "amE": 1137034,
+ "realities": 5,
+ "spdSet": [
+  null
+ ],
+ "gameEnd": false,
+ "nav": {
+  "ok": true
+ },
+ "screenshot": "C:\\Users\\Oreki\\WorkBuddy\\AD-Oreki-Unified\\web\\_tools\\_r40\\r40s2-console-panel.png"
+}

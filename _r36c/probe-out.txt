@@ -1,0 +1,235 @@
+PASS  游戏启动就绪（CDP 9342）
+
+
+==============================================================================
+### 1123._Endgame.txt
+==============================================================================
+
+[A1] Ra.requiredMemoriesForLevel 运行时 vs 公式：命中上游(1e6) 0/24 级；命中 R35(2.5e3) 24/24 级
+     L=1 runtime=4230  L=19 runtime=5.170e+13  L=20 runtime=1.241e+14  L=24 runtime=3.430e+15
+
+[A2] IM cap 链：uncappedRM=— (log10=—)
+     baseIMCap=2.852e+14  currentIMCap=2.852e+14  iMCap(stored)=2.852e+14
+     OREKI_IM_CAP_MULT=10.6  上游同式=—  比值=0.0000e+0
+     isIMUnlocked=true  IM存量=2.852e+14  RM=— / hardcapRM=—
+
+[B] IU 链：
+     iu13  信息之瞬     cost=  5.000e+7  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu14  入侵之忆     cost=  3.500e+8  bought=true  canBuy=true  possible=true  checkReq=false hasFailed=false
+     iu15  理想之构     cost=  1.000e+9  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu16  无质动量     cost=  3.500e+9  bought=true  canBuy=true  possible=true  checkReq=true  hasFailed=false
+     iu20  真空加速     cost= 3.000e+12  bought=true  canBuy=true  possible=true  checkReq=true  hasFailed=false
+     iu21  消解存在     cost= 1.000e+13  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu22  全面终结     cost= 1.500e+14  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu23  共面纯化     cost= 6.000e+14  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu24  绝对废止     cost= 6.000e+14  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu25  彻底抹除     cost= 1.600e+15  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     Laitela: isUnlocked=true continuumUnlocked=false isRunning=false maxAllowedDim=0 tier=8
+     Ra: isUnlocked=true spaceTheorems=66 totalPetLevel=100 remembrance=true
+     IU15 两重门：maxID1=— (==0? false)  player.antimatter.exponent=9.00000e+15 (>=1.5e12? true)  Currency.antimatter.log10=9.00000e+15
+
+[C] V 六项运行时 progress：
+     realities       progress=   5.8508e+4  requirement=200  resource=1.170e+7
+     eternities      progress=  1.2063e-12  requirement=1.000e+70  resource=31645
+     infinities      progress=   0.0000e+0  requirement=1.000e+160  resource=0
+     dilatedTime     progress=   4.4395e+5  requirement=[object Object]  resource=1.309e+110
+     replicanti      progress=  4.4302e-14  requirement=[object Object]  resource=—
+     realityMachines progress=  9.5367e+13  requirement=1.000e+60  resource=—
+     all>=1: false   V.isUnlocked=false  spaceTheorems=66  raUnlock=true
+
+[D] 宠物快照（productionPerMemoryChunk=2.56040e+2）：
+     Teresa             L=25 unlocked=true  mem=   8.879e+23 chunks=   8.152e+13 rawCPS=   1.999e+16 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=11(×8.650e+1) remem=false
+     Effarig            L=25 unlocked=true  mem=   1.929e+21 chunks=   1.738e+11 rawCPS=           4 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=11(×8.650e+1) remem=false
+     The Nameless Ones  L=25 unlocked=true  mem=   4.174e+20 chunks=   3.617e+10 rawCPS=    1.539e+9 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=10(×5.767e+1) remem=false
+     V                  L=25 unlocked=true  mem=   4.086e+20 chunks=   3.595e+10 rawCPS=    5.506e+6 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=10(×5.767e+1) remem=true
+     环境：F=10000 EP.log10=1.70968e+9 IP.log10=1.51136e+11 TS.log10=7.28490e+9 shards=1 glyphLevel=42384 totalTimePlayed=2.393e+251 achPower=1.0000e+0
+
+==============================================================================
+### 1105._6.7e11DT+Cel7+3.9e44RS.txt
+==============================================================================
+
+[A1] Ra.requiredMemoriesForLevel 运行时 vs 公式：命中上游(1e6) 0/24 级；命中 R35(2.5e3) 24/24 级
+     L=1 runtime=4230  L=19 runtime=5.170e+13  L=20 runtime=1.241e+14  L=24 runtime=3.430e+15
+
+[A2] IM cap 链：uncappedRM=2.642e+9 (log10=9.421988e+0)
+     baseIMCap=0  currentIMCap=1.999e+14  iMCap(stored)=1.999e+14
+     OREKI_IM_CAP_MULT=10.6  上游同式=0  比值=—
+     isIMUnlocked=true  IM存量=1.999e+14  RM=— / hardcapRM=—
+
+[B] IU 链：
+     iu13  信息之瞬     cost=  5.000e+7  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu14  入侵之忆     cost=  3.500e+8  bought=true  canBuy=true  possible=true  checkReq=false hasFailed=false
+     iu15  理想之构     cost=  1.000e+9  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu16  无质动量     cost=  3.500e+9  bought=true  canBuy=true  possible=true  checkReq=true  hasFailed=false
+     iu20  真空加速     cost= 3.000e+12  bought=true  canBuy=true  possible=true  checkReq=true  hasFailed=false
+     iu21  消解存在     cost= 1.000e+13  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu22  全面终结     cost= 1.500e+14  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu23  共面纯化     cost= 6.000e+14  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu24  绝对废止     cost= 6.000e+14  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu25  彻底抹除     cost= 1.600e+15  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     Laitela: isUnlocked=true continuumUnlocked=false isRunning=false maxAllowedDim=0 tier=8
+     Ra: isUnlocked=true spaceTheorems=66 totalPetLevel=100 remembrance=true
+     IU15 两重门：maxID1=— (==0? false)  player.antimatter.exponent=2.61203e+6 (>=1.5e12? false)  Currency.antimatter.log10=2.61203e+6
+
+[C] V 六项运行时 progress：
+     realities       progress=   5.8508e+4  requirement=200  resource=1.170e+7
+     eternities      progress=  1.1904e-12  requirement=1.000e+70  resource=31215
+     infinities      progress=   0.0000e+0  requirement=1.000e+160  resource=0
+     dilatedTime     progress=   1.0536e-4  requirement=[object Object]  resource=1.013e+12
+     replicanti      progress=   2.5336e-8  requirement=[object Object]  resource=—
+     realityMachines progress=  9.5367e+13  requirement=1.000e+60  resource=—
+     all>=1: false   V.isUnlocked=false  spaceTheorems=66  raUnlock=true
+
+[D] 宠物快照（productionPerMemoryChunk=2.56040e+2）：
+     Teresa             L=25 unlocked=true  mem=   7.794e+23 chunks=   8.152e+13 rawCPS=    2.715e-4 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=11(×8.650e+1) remem=false
+     Effarig            L=25 unlocked=true  mem=   1.697e+21 chunks=   1.738e+11 rawCPS=14.733179545412476 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=11(×8.650e+1) remem=false
+     The Nameless Ones  L=25 unlocked=true  mem=   3.692e+20 chunks=   3.617e+10 rawCPS=    9.690e-5 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=10(×5.767e+1) remem=false
+     V                  L=25 unlocked=true  mem=   3.608e+20 chunks=   3.595e+10 rawCPS=    1.265e-4 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=10(×5.767e+1) remem=true
+     环境：F=10000 EP.log10=4.07900e+2 IP.log10=1.00004e+4 TS.log10=1.47657e+3 shards=4.596e+5 glyphLevel=42384 totalTimePlayed=2.393e+251 achPower=1.0000e+0
+
+==============================================================================
+### 1000._9.73e14iM+Cel6+1.84e45SG.txt
+==============================================================================
+
+[A1] Ra.requiredMemoriesForLevel 运行时 vs 公式：命中上游(1e6) 0/24 级；命中 R35(2.5e3) 24/24 级
+     L=1 runtime=4230  L=19 runtime=5.170e+13  L=20 runtime=1.241e+14  L=24 runtime=3.430e+15
+
+[A2] IM cap 链：uncappedRM=— (log10=—)
+     baseIMCap=4.084e+15  currentIMCap=4.554e+16  iMCap(stored)=4.084e+15
+     OREKI_IM_CAP_MULT=10.6  上游同式=—  比值=0.0000e+0
+     isIMUnlocked=true  IM存量=4.554e+16  RM=— / hardcapRM=—
+
+[B] IU 链：
+     iu13  信息之瞬     cost=  5.000e+7  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu14  入侵之忆     cost=  3.500e+8  bought=true  canBuy=true  possible=true  checkReq=false hasFailed=false
+     iu15  理想之构     cost=  1.000e+9  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu16  无质动量     cost=  3.500e+9  bought=true  canBuy=true  possible=true  checkReq=true  hasFailed=false
+     iu20  真空加速     cost= 3.000e+12  bought=true  canBuy=true  possible=true  checkReq=true  hasFailed=false
+     iu21  消解存在     cost= 1.000e+13  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu22  全面终结     cost= 1.500e+14  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu23  共面纯化     cost= 6.000e+14  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu24  绝对废止     cost= 6.000e+14  bought=true  canBuy=true  possible=false checkReq=false hasFailed=true
+     iu25  彻底抹除     cost= 1.600e+15  bought=false canBuy=false possible=false checkReq=false hasFailed=true
+     Laitela: isUnlocked=true continuumUnlocked=true isRunning=false maxAllowedDim=0 tier=8
+     Ra: isUnlocked=true spaceTheorems=66 totalPetLevel=100 remembrance=true
+     IU15 两重门：maxID1=— (==0? false)  player.antimatter.exponent=3.06508e+12 (>=1.5e12? true)  Currency.antimatter.log10=3.06508e+12
+
+[C] V 六项运行时 progress：
+     realities       progress=   6.0019e+4  requirement=200  resource=1.200e+7
+     eternities      progress=   4.6054e+9  requirement=1.000e+70  resource=—
+     infinities      progress=   1.9744e+8  requirement=1.000e+160  resource=—
+     dilatedTime     progress=  6.9319e+16  requirement=[object Object]  resource=—
+     replicanti      progress=  9.1920e+21  requirement=[object Object]  resource=—
+     realityMachines progress=  9.5367e+13  requirement=1.000e+60  resource=—
+     all>=1: true   V.isUnlocked=false  spaceTheorems=66  raUnlock=true
+
+[D] 宠物快照（productionPerMemoryChunk=2.97958e+2）：
+     Teresa             L=25 unlocked=true  mem=   1.437e+23 chunks=   8.152e+13 rawCPS=   7.407e+17 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=11(×8.650e+1) remem=false
+     Effarig            L=25 unlocked=true  mem=   3.424e+20 chunks=   1.738e+11 rawCPS=   3.440e+11 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=11(×8.650e+1) remem=false
+     The Nameless Ones  L=25 unlocked=true  mem=   8.720e+19 chunks=   3.617e+10 rawCPS=           0 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=10(×5.767e+1) remem=false
+     V                  L=25 unlocked=true  mem=   8.048e+19 chunks=   3.595e+10 rawCPS=           0 CPS=           0 memUpg=22(×3.212e+2) chunkUpg=10(×5.767e+1) remem=true
+     环境：F=10000 EP.log10=5.69989e+9 IP.log10=1.44299e+11 TS.log10=2.53672e+10 shards=2.213e+109 glyphLevel=40936 totalTimePlayed=8.980e+250 achPower=8.9951e+26
+
+==============================================================================
+### 424._8.4e1412EP+4.9e10DT.txt
+==============================================================================
+
+[A1] Ra.requiredMemoriesForLevel 运行时 vs 公式：命中上游(1e6) 0/24 级；命中 R35(2.5e3) 24/24 级
+     L=1 runtime=4230  L=19 runtime=5.170e+13  L=20 runtime=1.241e+14  L=24 runtime=3.430e+15
+
+[A2] IM cap 链：uncappedRM=74 (log10=1.869232e+0)
+     baseIMCap=0  currentIMCap=0  iMCap(stored)=0
+     OREKI_IM_CAP_MULT=10.6  上游同式=0  比值=—
+     isIMUnlocked=false  IM存量=0  RM=0 / hardcapRM=—
+
+[B] IU 链：
+     iu13  信息之瞬     cost=  5.000e+7  bought=false canBuy=false possible=false checkReq=false hasFailed=true
+     iu14  入侵之忆     cost=  3.500e+8  bought=false canBuy=false possible=true  checkReq=false hasFailed=false
+     iu15  理想之构     cost=  1.000e+9  bought=false canBuy=false possible=false checkReq=false hasFailed=true
+     iu16  无质动量     cost=  3.500e+9  bought=false canBuy=false possible=true  checkReq=false hasFailed=false
+     iu20  真空加速     cost= 3.000e+12  bought=false canBuy=false possible=true  checkReq=false hasFailed=false
+     iu21  消解存在     cost= 1.000e+13  bought=false canBuy=false possible=true  checkReq=false hasFailed=false
+     iu22  全面终结     cost= 1.500e+14  bought=false canBuy=false possible=false checkReq=false hasFailed=true
+     iu23  共面纯化     cost= 6.000e+14  bought=false canBuy=false possible=false checkReq=false hasFailed=true
+     iu24  绝对废止     cost= 6.000e+14  bought=false canBuy=false possible=false checkReq=false hasFailed=true
+     iu25  彻底抹除     cost= 1.600e+15  bought=false canBuy=false possible=false checkReq=false hasFailed=true
+     Laitela: isUnlocked=false continuumUnlocked=false isRunning=false maxAllowedDim=8 tier=0
+     Ra: isUnlocked=false spaceTheorems=0 totalPetLevel=1 remembrance=false
+     IU15 两重门：maxID1=— (==0? false)  player.antimatter.exponent=7.33132e+7 (>=1.5e12? false)  Currency.antimatter.log10=7.33132e+7
+
+[C] V 六项运行时 progress：
+     realities       progress=   0.0000e+0  requirement=200  resource=0
+     eternities      progress=  1.9067e-11  requirement=1.000e+70  resource=8.531e+5
+     infinities      progress=  1.2747e-13  requirement=1.000e+160  resource=1.644e+8
+     dilatedTime     progress=   3.7228e-5  requirement=[object Object]  resource=6.600e+10
+     replicanti      progress=   2.8252e-2  requirement=[object Object]  resource=—
+     realityMachines progress=   0.0000e+0  requirement=1.000e+60  resource=0
+     all>=1: false   V.isUnlocked=false  spaceTheorems=0  raUnlock=false
+
+[D] 宠物快照（productionPerMemoryChunk=1.00000e+0）：
+     Teresa             L= 1 unlocked=true  mem=           0 chunks=           0 rawCPS=    8.451e+5 CPS=           0 memUpg= 0(×1.000e+0) chunkUpg= 0(×1.000e+0) remem=false
+     Effarig            L= 0 unlocked=false mem=           0 chunks=           0 rawCPS=           0 CPS=           0 memUpg= 0(×1.000e+0) chunkUpg= 0(×1.000e+0) remem=false
+     The Nameless Ones  L= 0 unlocked=false mem=           0 chunks=           0 rawCPS=           0 CPS=           0 memUpg= 0(×1.000e+0) chunkUpg= 0(×1.000e+0) remem=false
+     V                  L= 0 unlocked=false mem=           0 chunks=           0 rawCPS=           0 CPS=           0 memUpg= 0(×1.000e+0) chunkUpg= 0(×1.000e+0) remem=false
+     环境：F=10000 EP.log10=5.95601e+5 IP.log10=4.86891e+6 TS.log10=8.75972e+4 shards=0 glyphLevel=0 totalTimePlayed=3.833e+8 achPower=2.7967e+2
+
+
+==============================================================================
+### Ra 记忆真实仿真（真实代码驱动）
+==============================================================================
+
+墙钟预算 10800s（180 分钟）  F=10000  √F=100  ⇒ Ra 侧有效 1,080,000 秒（1080 步）
+资源指纹：EP.log10=1.22667e+6  IP.log10=—  TS.log10=—  RM.log10=—
+
+最终 totalPetLevel=25  remembrance=true  productionPerMemoryChunk=1.00000e+0
+
+宠物                    等级           记忆          记忆块 memUpg chunkUpg    memMult  chunkMult          CPS         下一级门槛
+Teresa                25    1.855e+22    3.060e+14     18        9  1.1246e+2  3.8443e+1     2.838e+8             —
+Effarig                0            0            0      0        0  1.0000e+0  1.0000e+0            0             0
+The Nameless Ones      0            0            0      0        0  1.0000e+0  1.0000e+0            0             0
+V                      0            0            0      0        0  1.0000e+0  1.0000e+0            0             0
+
+过程轨迹（Ra 有效秒 / 折合墙钟秒 / 各宠等级 / totalPetLevel）：
+  ra=     1000  wall=    10  Teresa:L16/mem7.762e+11  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=16
+  ra=    91000  wall=   910  Teresa:L25/mem1.264e+20  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   181000  wall=  1810  Teresa:L25/mem5.113e+20  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   271000  wall=  2710  Teresa:L25/mem1.155e+21  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   361000  wall=  3610  Teresa:L25/mem2.057e+21  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   451000  wall=  4510  Teresa:L25/mem3.217e+21  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   541000  wall=  5410  Teresa:L25/mem4.636e+21  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   631000  wall=  6310  Teresa:L25/mem6.314e+21  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   721000  wall=  7210  Teresa:L25/mem8.250e+21  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   811000  wall=  8110  Teresa:L25/mem1.044e+22  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   901000  wall=  9010  Teresa:L25/mem1.290e+22  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=   991000  wall=  9910  Teresa:L25/mem1.561e+22  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+  ra=  1080000  wall= 10800  Teresa:L25/mem1.855e+22  Effarig:L0/mem0  The Nameless Ones:L0/mem0  V:L0/mem0  total=25
+
+分级门槛（真实运行时 Ra.requiredMemoriesForLevel）：
+  L= 1  req=          4230
+  L= 2  req=      3.138e+5
+  L= 3  req=      4.577e+6
+  L= 4  req=      3.372e+7
+  L= 5  req=      1.692e+8
+  L= 6  req=      6.608e+8
+  L= 7  req=      2.163e+9
+  L= 8  req=      6.196e+9
+  L= 9  req=     1.600e+10
+  L=10  req=     3.799e+10
+  L=11  req=     8.415e+10
+  L=12  req=     1.759e+11
+  L=13  req=     3.497e+11
+  L=14  req=     6.658e+11
+  L=15  req=     1.221e+12
+  L=16  req=     3.247e+12
+  L=17  req=     8.382e+12
+  L=18  req=     2.107e+13
+  L=19  req=     5.170e+13
+  L=20  req=     1.241e+14
+  L=21  req=     2.920e+14
+  L=22  req=     6.748e+14
+  L=23  req=     1.533e+15
+  L=24  req=     3.430e+15
+
+已写入 C:\Users\Oreki\WorkBuddy\AD-Oreki-Unified\web\_tools\_r36c\probe-report.json
+
+无页面未捕获异常。

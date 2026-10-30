@@ -1,0 +1,159 @@
+{
+  "steps": [
+    {
+      "step": "关闭弹窗",
+      "modalText": "Ϟ 特蕾莎 我会让你进入我的现实，不要被它击垮。",
+      "button": null
+    },
+    {
+      "step": "关闭后",
+      "modalOpen": true
+    },
+    {
+      "step": "逐项真实触摸",
+      "visited": [
+        {
+          "tap": "维度",
+          "activeAfter": [],
+          "heading": "你拥有 7.65e2,132,345 永恒点数。 达到 1.80e308 无限点数 你拥有 5.00e25 反物质。 你",
+          "modal": true
+        },
+        {
+          "tap": "自动化",
+          "activeAfter": [],
+          "heading": "你拥有 5.63e2,878,270 永恒点数。 达到 1.80e308 无限点数 你拥有 5.00e25 反物质。 你",
+          "modal": true
+        },
+        {
+          "tap": "挑战",
+          "activeAfter": [],
+          "heading": "你拥有 1.67e2,891,261 永恒点数。 获得 6.90e1,034,802 永恒点数 你拥有 2.43e921",
+          "modal": true
+        },
+        {
+          "tap": "无限",
+          "activeAfter": [],
+          "heading": "你拥有 6.56e2,944,748 永恒点数。 获得 1.65e357 永恒点数 你拥有 1.82e301,445 反",
+          "modal": true
+        },
+        {
+          "tap": "永恒",
+          "activeAfter": [],
+          "heading": "你拥有 8.98e3,166,409 永恒点数。 达到 1.80e308 无限点数 你拥有 5.00e25 反物质。 你",
+          "modal": true
+        },
+        {
+          "tap": "现实",
+          "activeAfter": [],
+          "heading": "你拥有 7.30e3,189,037 永恒点数。 获得 6.24e358 永恒点数 你拥有 3.59e302,929 反",
+          "modal": true
+        },
+        {
+          "tap": "天神",
+          "activeAfter": [],
+          "heading": "你拥有 2.99e3,258,252 永恒点数。 达到 1.80e308 无限点数 你拥有 5.00e25 反物质。 你",
+          "modal": true
+        },
+        {
+          "tap": "成就",
+          "activeAfter": [],
+          "heading": "你拥有 1.18e3,266,267 永恒点数。 获得 1.18e59 永恒点数 你拥有 2.06e19283 反物质。",
+          "modal": true
+        },
+        {
+          "tap": "统计数据",
+          "activeAfter": [],
+          "heading": "你拥有 3.82e3,344,809 永恒点数。 获得 9.51e191 永恒点数 你拥有 2.43e149,811 反",
+          "modal": true
+        },
+        {
+          "tap": "选项",
+          "activeAfter": [],
+          "heading": "你拥有 7.20e3,514,476 永恒点数。 获得 1.15e2,282,208 永恒点数 你拥有 1.49e2.3",
+          "modal": true
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "sidebar": {
+    "count": 10,
+    "names": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "永恒",
+      "现实",
+      "天神",
+      "成就",
+      "统计数据",
+      "选项"
+    ]
+  },
+  "scroll": {
+    "before": {
+      "tag": "HTML",
+      "scrollTop": 0,
+      "scrollH": 676,
+      "clientH": 676
+    },
+    "after": {
+      "scrollTop": 0,
+      "scrollH": 676,
+      "clientH": 676
+    }
+  },
+  "narrow": {
+    "vw": 360,
+    "vh": 640,
+    "docScrollW": 360,
+    "docClientW": 360,
+    "bodyScrollW": 360,
+    "overflowX": false,
+    "overflowing": [
+      {
+        "cls": "c-reality-container",
+        "right": 383
+      },
+      {
+        "cls": "l-reality-button",
+        "right": 383
+      },
+      {
+        "cls": "c-reality-button infotooltip c-reality-b",
+        "right": 383
+      },
+      {
+        "cls": "l-reality-button__contents",
+        "right": 375
+      },
+      {
+        "cls": "l-player-glyphs-column",
+        "right": 672
+      },
+      {
+        "cls": "l-equipped-glyphs-and-effects-container",
+        "right": 672
+      },
+      {
+        "cls": "l-glyph-info-wrapper",
+        "right": 672
+      },
+      {
+        "cls": "l-glyph-color-box",
+        "right": 447
+      }
+    ]
+  },
+  "notation": {
+    "option": "Scientific",
+    "label": [],
+    "antimatter": "5e4.020e9",
+    "sampleBig": "1"
+  },
+  "news": {
+    "visibleNews": [],
+    "modalOpen": true
+  }
+}

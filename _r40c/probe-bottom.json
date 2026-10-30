@@ -1,0 +1,326 @@
+[
+  {
+    "view": "320x640",
+    "tab": "维度",
+    "vw": 320,
+    "vh": 640,
+    "scrollTop": 2783,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 120,
+        "h": 17,
+        "bottom": 640
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 251,
+        "y": 586,
+        "w": 63,
+        "h": 48,
+        "bottom": 634
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "已锁定",
+      "x": 113,
+      "y": 398,
+      "w": 150,
+      "h": 56,
+      "bottom": 454,
+      "right": 263
+    }
+  },
+  {
+    "view": "320x640",
+    "tab": "选项",
+    "vw": 320,
+    "vh": 640,
+    "scrollTop": 2783,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 120,
+        "h": 17,
+        "bottom": 640
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 251,
+        "y": 586,
+        "w": 63,
+        "h": 48,
+        "bottom": 634
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "已锁定",
+      "x": 113,
+      "y": 398,
+      "w": 150,
+      "h": 56,
+      "bottom": 454,
+      "right": 263
+    }
+  },
+  {
+    "view": "320x640",
+    "tab": "自动化",
+    "vw": 320,
+    "vh": 640,
+    "scrollTop": 2768,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 120,
+        "h": 17,
+        "bottom": 640
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 251,
+        "y": 586,
+        "w": 63,
+        "h": 48,
+        "bottom": 634
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "已锁定",
+      "x": 113,
+      "y": 398,
+      "w": 150,
+      "h": 56,
+      "bottom": 454,
+      "right": 263
+    }
+  },
+  {
+    "view": "392x676",
+    "tab": "维度",
+    "vw": 392,
+    "vh": 676,
+    "scrollTop": 2443,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 120,
+        "h": 17,
+        "bottom": 676
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 323,
+        "y": 622,
+        "w": 63,
+        "h": 48,
+        "bottom": 670
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "已锁定",
+      "x": 149,
+      "y": 449,
+      "w": 150,
+      "h": 56,
+      "bottom": 505,
+      "right": 299
+    }
+  },
+  {
+    "view": "392x676",
+    "tab": "选项",
+    "vw": 392,
+    "vh": 676,
+    "scrollTop": 2443,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 120,
+        "h": 17,
+        "bottom": 676
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 323,
+        "y": 622,
+        "w": 63,
+        "h": 48,
+        "bottom": 670
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "已锁定",
+      "x": 149,
+      "y": 449,
+      "w": 150,
+      "h": 56,
+      "bottom": 505,
+      "right": 299
+    }
+  },
+  {
+    "view": "392x676",
+    "tab": "自动化",
+    "vw": 392,
+    "vh": 676,
+    "scrollTop": 2443,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 120,
+        "h": 17,
+        "bottom": 676
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 323,
+        "y": 622,
+        "w": 63,
+        "h": 48,
+        "bottom": 670
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "已锁定",
+      "x": 149,
+      "y": 449,
+      "w": 150,
+      "h": 56,
+      "bottom": 505,
+      "right": 299
+    }
+  },
+  {
+    "view": "430x932",
+    "tab": "维度",
+    "vw": 430,
+    "vh": 932,
+    "scrollTop": 2101,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 915,
+        "w": 120,
+        "h": 17,
+        "bottom": 932
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 361,
+        "y": 878,
+        "w": 63,
+        "h": 48,
+        "bottom": 926
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "已锁定",
+      "x": 168,
+      "y": 705,
+      "w": 150,
+      "h": 56,
+      "bottom": 761,
+      "right": 318
+    }
+  },
+  {
+    "view": "430x932",
+    "tab": "选项",
+    "vw": 430,
+    "vh": 932,
+    "scrollTop": 2101,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 915,
+        "w": 120,
+        "h": 17,
+        "bottom": 932
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 361,
+        "y": 878,
+        "w": 63,
+        "h": 48,
+        "bottom": 926
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "已锁定",
+      "x": 168,
+      "y": 705,
+      "w": 150,
+      "h": 56,
+      "bottom": 761,
+      "right": 318
+    }
+  },
+  {
+    "view": "430x932",
+    "tab": "自动化",
+    "vw": 430,
+    "vh": 932,
+    "scrollTop": 2157,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 915,
+        "w": 120,
+        "h": 17,
+        "bottom": 932
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 361,
+        "y": 878,
+        "w": 63,
+        "h": 48,
+        "bottom": 926
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "已锁定",
+      "x": 168,
+      "y": 705,
+      "w": 150,
+      "h": 56,
+      "bottom": 761,
+      "right": 318
+    }
+  }
+]

@@ -1,0 +1,77 @@
+PASS  游戏启动就绪（CDP 9342）
+
+存档：424._8.4e1412EP+4.9e10DT.txt
+参考资源：EP.log10 / RM.log10 见下表；仿真 = 真实 pet.tick() + 真实 levelUp/purchase* API
+
+════ ① A/B：原版曲线(1e6) vs R35 曲线(2.5e3)，同一资源、同一 180 分钟、F=10000 ════
+tail=上游1e6  F=10000  180min                    | teresaL= 1  total=  1  remem=false | teresaMem=2912.8831464866357  memUpg= 2 chunkUpg= 0 | ppc=1.000e+0  t_L20(wall)=未达成
+tail=R35 2.5e3  F=10000  180min                | teresaL= 2  total=  2  remem=false | teresaMem=3220.8506572801953  memUpg= 1 chunkUpg= 0 | ppc=1.000e+0  t_L20(wall)=未达成
+
+════ ② 对照：同样场景但 F=1（验证 √F 时间缩放对记忆侧的真实影响）════
+tail=上游1e6  F=1     180min                     | teresaL= 1  total=  1  remem=false | teresaMem=2.25656893385319  memUpg= 0 chunkUpg= 0 | ppc=1.000e+0  t_L20(wall)=未达成
+tail=R35 2.5e3  F=1     180min                 | teresaL= 1  total=  1  remem=false | teresaMem=2.25656893385319  memUpg= 0 chunkUpg= 0 | ppc=1.000e+0  t_L20(wall)=未达成
+
+════ ③ 特蕾莎原始块速率扫描（内存块/秒）：找「达到 20 级」的临界速率 ════
+
+--- tail=上游1e6 ---
+  teresaCPS=1e+4  F=10000  180min              | teresaL= 7  total=  7  remem=false | teresaMem=  2.039e+10  memUpg=13 chunkUpg= 6 | ppc=1.000e+0  t_L20(wall)=未达成
+  teresaCPS=1e+5  F=10000  180min              | teresaL=10  total= 11  remem=false | teresaMem=  3.092e+12  memUpg=14 chunkUpg= 7 | ppc=1.000e+0  t_L20(wall)=未达成
+  teresaCPS=3e+5  F=10000  180min              | teresaL=12  total= 13  remem=false | teresaMem=  5.688e+12  memUpg=15 chunkUpg= 7 | ppc=1.000e+0  t_L20(wall)=未达成
+  teresaCPS=1e+6  F=10000  180min              | teresaL=14  total= 15  remem=false | teresaMem=  2.463e+13  memUpg=16 chunkUpg= 8 | ppc=1.000e+0  t_L20(wall)=未达成
+  teresaCPS=3e+6  F=10000  180min              | teresaL=16  total= 17  remem=false | teresaMem=  3.105e+14  memUpg=17 chunkUpg= 8 | ppc=1.000e+0  t_L20(wall)=未达成
+  teresaCPS=1e+7  F=10000  180min              | teresaL=18  total= 19  remem=false | teresaMem=  1.671e+15  memUpg=18 chunkUpg= 9 | ppc=1.000e+0  t_L20(wall)=未达成
+  teresaCPS=3e+7  F=10000  180min              | teresaL=20  total= 21  remem=true  | teresaMem=  2.809e+15  memUpg=19 chunkUpg= 9 | ppc=1.000e+0  t_L20(wall)=9s
+  teresaCPS=1e+8  F=10000  180min              | teresaL=21  total= 22  remem=true  | teresaMem=  5.313e+16  memUpg=20 chunkUpg=10 | ppc=1.000e+0  t_L20(wall)=6s
+  teresaCPS=3e+8  F=10000  180min              | teresaL=22  total= 23  remem=true  | teresaMem=  1.899e+17  memUpg=21 chunkUpg=10 | ppc=1.000e+0  t_L20(wall)=4s
+
+--- tail=R35 2.5e3 ---
+  teresaCPS=1e+4  F=10000  180min              | teresaL=13  total= 14  remem=false | teresaMem=  2.121e+11  memUpg=12 chunkUpg= 6 | ppc=1.000e+0  t_L20(wall)=未达成
+  teresaCPS=1e+5  F=10000  180min              | teresaL=17  total= 18  remem=false | teresaMem=  3.690e+11  memUpg=15 chunkUpg= 7 | ppc=1.000e+0  t_L20(wall)=未达成
+  teresaCPS=3e+5  F=10000  180min              | teresaL=19  total= 20  remem=true  | teresaMem=  2.913e+13  memUpg=15 chunkUpg= 7 | ppc=1.000e+0  t_L20(wall)=10s
+  teresaCPS=1e+6  F=10000  180min              | teresaL=20  total= 21  remem=true  | teresaMem=  1.232e+14  memUpg=16 chunkUpg= 8 | ppc=1.000e+0  t_L20(wall)=7s
+  teresaCPS=3e+6  F=10000  180min              | teresaL=22  total= 23  remem=true  | teresaMem=  3.100e+14  memUpg=17 chunkUpg= 8 | ppc=1.000e+0  t_L20(wall)=4s
+  teresaCPS=1e+7  F=10000  180min              | teresaL=24  total= 25  remem=true  | teresaMem=  8.415e+14  memUpg=18 chunkUpg= 9 | ppc=1.000e+0  t_L20(wall)=3s
+  teresaCPS=3e+7  F=10000  180min              | teresaL=25  total= 26  remem=true  | teresaMem=  9.665e+15  memUpg=18 chunkUpg= 9 | ppc=1.000e+0  t_L20(wall)=3s
+  teresaCPS=1e+8  F=10000  180min              | teresaL=25  total= 26  remem=true  | teresaMem=  6.366e+16  memUpg=18 chunkUpg= 9 | ppc=1.000e+0  t_L20(wall)=2s
+  teresaCPS=3e+8  F=10000  180min              | teresaL=25  total= 26  remem=true  | teresaMem=  2.730e+17  memUpg=18 chunkUpg= 9 | ppc=1.000e+0  t_L20(wall)=2s
+
+════ ④ 二分：R35 曲线(2.5e3) 下，达到 teresa 20 级所需的最小特蕾莎块速率 ════
+  tail=R35 2.5e3  F=10000  → teresa 到 20 级所需最小原始块速率 = 3.861e+5 块/秒
+     折算特蕾莎所需 EP.log10 = 4.5871e+5  （rawCPS=4·(EP.log10/1e4)^3）
+  tail=上游1e6  F=10000  → teresa 到 20 级所需最小原始块速率 = 3.762e+7 块/秒
+     折算特蕾莎所需 EP.log10 = 2.1108e+6  （rawCPS=4·(EP.log10/1e4)^3）
+  tail=R35 2.5e3  F=    1  → teresa 到 20 级所需最小原始块速率 = 1.000e+9 块/秒
+     折算特蕾莎所需 EP.log10 = 6.2996e+6  （rawCPS=4·(EP.log10/1e4)^3）
+  tail=上游1e6  F=    1  → teresa 到 20 级所需最小原始块速率 = 1.000e+9 块/秒
+     折算特蕾莎所需 EP.log10 = 6.2996e+6  （rawCPS=4·(EP.log10/1e4)^3）
+
+════ ⑤ 尾乘 k 扫描（固定 teresaCPS，R35 曲线的 k=2.5e3；找最小可用 k）════
+  teresaCPS=1e+6  F=10000  → 达到 teresa 20 级所需最小尾乘 k = 1.0002e+0（即 ÷999789.2）
+  teresaCPS=1e+6  F=    1  → 达到 teresa 20 级所需最小尾乘 k = 1.0000e+6（即 ÷1.0）
+  teresaCPS=1e+7  F=10000  → 达到 teresa 20 级所需最小尾乘 k = 1.0002e+0（即 ÷999789.2）
+  teresaCPS=1e+7  F=    1  → 达到 teresa 20 级所需最小尾乘 k = 1.0000e+6（即 ÷1.0）
+
+════ ⑥ 详细：R35 曲线 + 真实存档资源，180 分钟 F=10000 的完整轨迹 ════
+资源指纹：EP.log10=1.41293e+3  RM.log10=—  glyphLevel=0  totalTimePlayed=3.813e+8
+最终：totalPetLevel=2  remembrance=false  ppc=1.00000e+0
+  Teresa             L= 2 unlocked=true  mem=3220.8506572801953 ch=12.41112913619254 memUpg= 1(×1.300e+0) chunkUpg= 0(×1.000e+0) rawCPS=0.011282844669265948 cps=0.011282844669265948 memCapped=false chunkCapped=false
+  Effarig            L= 0 unlocked=false mem=           0 ch=           0 memUpg= 0(×1.000e+0) chunkUpg= 0(×1.000e+0) rawCPS=           0 cps=           0 memCapped=false chunkCapped=false
+  The Nameless Ones  L= 0 unlocked=false mem=           0 ch=           0 memUpg= 0(×1.000e+0) chunkUpg= 0(×1.000e+0) rawCPS=0.0014526235347875457 cps=           0 memCapped=false chunkCapped=false
+  V                  L= 0 unlocked=false mem=           0 ch=           0 memUpg= 0(×1.000e+0) chunkUpg= 0(×1.000e+0) rawCPS=0.0405200718363506 cps=           0 memCapped=false chunkCapped=false
+
+轨迹（wall 秒 / Ra 有效秒 / 各宠等级与记忆 / totalPetLevel / ppc）：
+  wall=     1  ra=     100  Teresa:L1/m56.41422334632974  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=1  ppc=1.000e+0
+  wall=     2  ra=     200  Teresa:L1/m225.65689338531897  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=1  ppc=1.000e+0
+  wall=     3  ra=     300  Teresa:L1/m507.72801011696765  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=1  ppc=1.000e+0
+  wall=     4  ra=     400  Teresa:L1/m902.6275735412758  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=1  ppc=1.000e+0
+  wall=     5  ra=     500  Teresa:L1/m410.3555836582434  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=1  ppc=1.000e+0
+  wall=     6  ra=     600  Teresa:L1/m1217.0789775107587  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=1  ppc=1.000e+0
+  wall=     7  ra=     700  Teresa:L1/m2170.4793520637313  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=1  ppc=1.000e+0
+  wall=     8  ra=     800  Teresa:L1/m3270.5567073171615  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=1  ppc=1.000e+0
+  wall=     9  ra=     900  Teresa:L2/m287.31104327104913  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=2  ppc=1.000e+0
+  wall=    10  ra=    1000  Teresa:L2/m1680.7423599253937  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=2  ppc=1.000e+0
+  wall=    11  ra=    1100  Teresa:L2/m3220.8506572801953  Effarig:L0/m0  The Nameless Ones:L0/m0  V:L0/m0  total=2  ppc=1.000e+0
+
+已写入 C:\Users\Oreki\WorkBuddy\AD-Oreki-Unified\web\_tools\_r36c\probe2-report.json
+
+无页面未捕获异常。

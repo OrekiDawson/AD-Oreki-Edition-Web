@@ -1,0 +1,1665 @@
+{
+  "freshInfo": {
+    "reset": true,
+    "url": "http://127.0.0.1:8288/index.html",
+    "head": "你拥有 5.33e228 反物质。 你每秒获得 2.04e30 反物质。 每个计数频率使反物质维度的生产效率 ×1.165 计数频率：1.000 / 秒 买到 10 个 维度献祭已禁用（加成为 ×1） 购买最大数量（M） 购买10个维度的加成倍数：×2.00 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数",
+    "err": null,
+    "am": "5.33054988e+228",
+    "dim1": "760",
+    "speed": "undefined",
+    "before": "你拥有 9.81e983,799 永恒点数。\n获得 3.60e6132 永恒点数\n在点击前，你该到处看看新内容！\n你拥有"
+  },
+  "results": [
+    {
+      "view": "320x640",
+      "tab": "维度",
+      "clicked": true,
+      "vw": 320,
+      "vh": 640,
+      "cw": 320,
+      "ch": 640,
+      "sw": 320,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "320x640",
+      "tab": "挑战",
+      "clicked": true,
+      "vw": 320,
+      "vh": 640,
+      "cw": 320,
+      "ch": 640,
+      "sw": 320,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "320x640",
+      "tab": "自动化",
+      "clicked": true,
+      "vw": 320,
+      "vh": 640,
+      "cw": 320,
+      "ch": 640,
+      "sw": 320,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 3,
+      "small": [
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "320x640",
+      "tab": "成就",
+      "clicked": true,
+      "vw": 320,
+      "vh": 640,
+      "cw": 320,
+      "ch": 640,
+      "sw": 320,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "320x640",
+      "tab": "统计数据",
+      "clicked": true,
+      "vw": 320,
+      "vh": 640,
+      "cw": 320,
+      "ch": 640,
+      "sw": 320,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "320x640",
+      "tab": "选项",
+      "clicked": true,
+      "vw": 320,
+      "vh": 640,
+      "cw": 320,
+      "ch": 640,
+      "sw": 320,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "360x640",
+      "tab": "维度",
+      "clicked": true,
+      "vw": 360,
+      "vh": 640,
+      "cw": 360,
+      "ch": 640,
+      "sw": 360,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "360x640",
+      "tab": "挑战",
+      "clicked": true,
+      "vw": 360,
+      "vh": 640,
+      "cw": 360,
+      "ch": 640,
+      "sw": 360,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "360x640",
+      "tab": "自动化",
+      "clicked": true,
+      "vw": 360,
+      "vh": 640,
+      "cw": 360,
+      "ch": 640,
+      "sw": 360,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 3,
+      "small": [
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "360x640",
+      "tab": "成就",
+      "clicked": true,
+      "vw": 360,
+      "vh": 640,
+      "cw": 360,
+      "ch": 640,
+      "sw": 360,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "360x640",
+      "tab": "统计数据",
+      "clicked": true,
+      "vw": 360,
+      "vh": 640,
+      "cw": 360,
+      "ch": 640,
+      "sw": 360,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "360x640",
+      "tab": "选项",
+      "clicked": true,
+      "vw": 360,
+      "vh": 640,
+      "cw": 360,
+      "ch": 640,
+      "sw": 360,
+      "pageH": 640,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "390x844",
+      "tab": "维度",
+      "clicked": true,
+      "vw": 390,
+      "vh": 844,
+      "cw": 390,
+      "ch": 844,
+      "sw": 390,
+      "pageH": 844,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "390x844",
+      "tab": "挑战",
+      "clicked": true,
+      "vw": 390,
+      "vh": 844,
+      "cw": 390,
+      "ch": 844,
+      "sw": 390,
+      "pageH": 844,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "390x844",
+      "tab": "自动化",
+      "clicked": true,
+      "vw": 390,
+      "vh": 844,
+      "cw": 390,
+      "ch": 844,
+      "sw": 390,
+      "pageH": 844,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 3,
+      "small": [
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "390x844",
+      "tab": "成就",
+      "clicked": true,
+      "vw": 390,
+      "vh": 844,
+      "cw": 390,
+      "ch": 844,
+      "sw": 390,
+      "pageH": 844,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "390x844",
+      "tab": "统计数据",
+      "clicked": true,
+      "vw": 390,
+      "vh": 844,
+      "cw": 390,
+      "ch": 844,
+      "sw": 390,
+      "pageH": 844,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "390x844",
+      "tab": "选项",
+      "clicked": true,
+      "vw": 390,
+      "vh": 844,
+      "cw": 390,
+      "ch": 844,
+      "sw": 390,
+      "pageH": 844,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "392x676",
+      "tab": "维度",
+      "clicked": true,
+      "vw": 392,
+      "vh": 676,
+      "cw": 392,
+      "ch": 676,
+      "sw": 392,
+      "pageH": 676,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "392x676",
+      "tab": "挑战",
+      "clicked": true,
+      "vw": 392,
+      "vh": 676,
+      "cw": 392,
+      "ch": 676,
+      "sw": 392,
+      "pageH": 676,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "392x676",
+      "tab": "自动化",
+      "clicked": true,
+      "vw": 392,
+      "vh": 676,
+      "cw": 392,
+      "ch": 676,
+      "sw": 392,
+      "pageH": 676,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 3,
+      "small": [
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "392x676",
+      "tab": "成就",
+      "clicked": true,
+      "vw": 392,
+      "vh": 676,
+      "cw": 392,
+      "ch": 676,
+      "sw": 392,
+      "pageH": 676,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "392x676",
+      "tab": "统计数据",
+      "clicked": true,
+      "vw": 392,
+      "vh": 676,
+      "cw": 392,
+      "ch": 676,
+      "sw": 392,
+      "pageH": 676,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "392x676",
+      "tab": "选项",
+      "clicked": true,
+      "vw": 392,
+      "vh": 676,
+      "cw": 392,
+      "ch": 676,
+      "sw": 392,
+      "pageH": 676,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "430x932",
+      "tab": "维度",
+      "clicked": true,
+      "vw": 430,
+      "vh": 932,
+      "cw": 430,
+      "ch": 932,
+      "sw": 430,
+      "pageH": 932,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "430x932",
+      "tab": "挑战",
+      "clicked": true,
+      "vw": 430,
+      "vh": 932,
+      "cw": 430,
+      "ch": 932,
+      "sw": 430,
+      "pageH": 932,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "430x932",
+      "tab": "自动化",
+      "clicked": true,
+      "vw": 430,
+      "vh": 932,
+      "cw": 430,
+      "ch": 932,
+      "sw": 430,
+      "pageH": 932,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 3,
+      "small": [
+        {
+          "el": "input.o-clickable",
+          "w": 17,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 17,
+          "h": 22,
+          "text": ""
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "430x932",
+      "tab": "成就",
+      "clicked": true,
+      "vw": 430,
+      "vh": 932,
+      "cw": 430,
+      "ch": 932,
+      "sw": 430,
+      "pageH": 932,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "430x932",
+      "tab": "统计数据",
+      "clicked": true,
+      "vw": 430,
+      "vh": 932,
+      "cw": 430,
+      "ch": 932,
+      "sw": 430,
+      "pageH": 932,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "430x932",
+      "tab": "选项",
+      "clicked": true,
+      "vw": 430,
+      "vh": 932,
+      "cw": 430,
+      "ch": 932,
+      "sw": 430,
+      "pageH": 932,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x1024",
+      "tab": "维度",
+      "clicked": true,
+      "vw": 768,
+      "vh": 1024,
+      "cw": 768,
+      "ch": 1024,
+      "sw": 768,
+      "pageH": 1024,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x1024",
+      "tab": "挑战",
+      "clicked": true,
+      "vw": 768,
+      "vh": 1024,
+      "cw": 768,
+      "ch": 1024,
+      "sw": 768,
+      "pageH": 1024,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x1024",
+      "tab": "自动化",
+      "clicked": true,
+      "vw": 768,
+      "vh": 1024,
+      "cw": 768,
+      "ch": 1024,
+      "sw": 768,
+      "pageH": 1024,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 2,
+      "small": [
+        {
+          "el": "input.o-clickable",
+          "w": 20,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 22,
+          "h": 22,
+          "text": ""
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x1024",
+      "tab": "成就",
+      "clicked": true,
+      "vw": 768,
+      "vh": 1024,
+      "cw": 768,
+      "ch": 1024,
+      "sw": 768,
+      "pageH": 1024,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x1024",
+      "tab": "统计数据",
+      "clicked": true,
+      "vw": 768,
+      "vh": 1024,
+      "cw": 768,
+      "ch": 1024,
+      "sw": 768,
+      "pageH": 1024,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x1024",
+      "tab": "选项",
+      "clicked": true,
+      "vw": 768,
+      "vh": 1024,
+      "cw": 768,
+      "ch": 1024,
+      "sw": 768,
+      "pageH": 1024,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "1280x800",
+      "tab": "维度",
+      "clicked": true,
+      "vw": 1280,
+      "vh": 800,
+      "cw": 1280,
+      "ch": 800,
+      "sw": 1280,
+      "pageH": 800,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 5,
+      "small": [
+        {
+          "el": "button.o-primary-btn",
+          "w": 120,
+          "h": 30,
+          "text": "买到 10 个"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 480,
+          "h": 25,
+          "text": "维度献祭（×1.24）"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 120,
+          "h": 30,
+          "text": "购买最大数量（M）"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 300,
+          "h": 25,
+          "text": "计数频率价格: 3e318"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 100,
+          "h": 25,
+          "text": "购买最大数量"
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 127,
+        "h": 45
+      }
+    },
+    {
+      "view": "1280x800",
+      "tab": "挑战",
+      "clicked": true,
+      "vw": 1280,
+      "vh": 800,
+      "cw": 1280,
+      "ch": 800,
+      "sw": 1280,
+      "pageH": 800,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 14,
+      "small": [
+        {
+          "el": "button.o-primary-btn",
+          "w": 146,
+          "h": 25,
+          "text": "自动重试挑战： 关闭"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 172,
+          "h": 25,
+          "text": "显示所有已知挑战： 关闭"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "重试"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 127,
+        "h": 45
+      }
+    },
+    {
+      "view": "1280x800",
+      "tab": "自动化",
+      "clicked": true,
+      "vw": 1280,
+      "vh": 800,
+      "cw": 1280,
+      "ch": 800,
+      "sw": 1280,
+      "pageH": 800,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 23,
+      "small": [
+        {
+          "el": "button.o-primary-btn",
+          "w": 112,
+          "h": 25,
+          "text": "暂停自动购买器"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 138,
+          "h": 25,
+          "text": "禁用所有自动购买器"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 242,
+          "h": 25,
+          "text": "将反物质维度自动购买器设为购买单个"
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 16,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 16,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 16,
+          "h": 16,
+          "text": ""
+        },
+        {
+          "el": "button.o-autobuyer-btn",
+          "w": 175,
+          "h": 35,
+          "text": "购买单个"
+        },
+        {
+          "el": "button.o-autobuyer-btn",
+          "w": 175,
+          "h": 35,
+          "text": "×1 ➜ ×2 批量购买\n价格：16 无"
+        },
+        {
+          "el": "button.o-autobuyer-btn",
+          "w": 175,
+          "h": 35,
+          "text": "购买最大数量"
+        },
+        {
+          "el": "button.o-autobuyer-btn",
+          "w": 175,
+          "h": 35,
+          "text": "×1 ➜ ×2 批量购买\n价格：16 无"
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 127,
+        "h": 45
+      }
+    },
+    {
+      "view": "1280x800",
+      "tab": "成就",
+      "clicked": true,
+      "vw": 1280,
+      "vh": 800,
+      "cw": 1280,
+      "ch": 800,
+      "sw": 1280,
+      "pageH": 800,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 1,
+      "small": [
+        {
+          "el": "button.o-primary-btn",
+          "w": 211,
+          "h": 25,
+          "text": "隐藏成就中全部解锁的行： 关闭"
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 127,
+        "h": 45
+      }
+    },
+    {
+      "view": "1280x800",
+      "tab": "统计数据",
+      "clicked": true,
+      "vw": 1280,
+      "vh": 800,
+      "cw": 1280,
+      "ch": 800,
+      "sw": 1280,
+      "pageH": 800,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 1,
+      "small": [
+        {
+          "el": "button.o-primary-btn",
+          "w": 99,
+          "h": 25,
+          "text": "查看内容摘要"
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 127,
+        "h": 45
+      }
+    },
+    {
+      "view": "1280x800",
+      "tab": "选项",
+      "clicked": true,
+      "vw": 1280,
+      "vh": 800,
+      "cw": 1280,
+      "ch": 800,
+      "sw": 1280,
+      "pageH": 800,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 17,
+      "small": [
+        {
+          "el": "button.o-primary-btn",
+          "w": 73,
+          "h": 25,
+          "text": "放弃挑战"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 146,
+          "h": 25,
+          "text": "自动重试挑战： 关闭"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 172,
+          "h": 25,
+          "text": "显示所有已知挑战： 关闭"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 73,
+          "h": 25,
+          "text": "重试挑战"
+        },
+        {
+          "el": "button.o-primary-btn",
+          "w": 73,
+          "h": 25,
+          "text": "放弃挑战"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "进行中"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已完成"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        },
+        {
+          "el": "button.o-challenge-btn",
+          "w": 150,
+          "h": 30,
+          "text": "已锁定"
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 127,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x360横屏",
+      "tab": "维度",
+      "clicked": true,
+      "vw": 768,
+      "vh": 360,
+      "cw": 768,
+      "ch": 360,
+      "sw": 768,
+      "pageH": 360,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x360横屏",
+      "tab": "挑战",
+      "clicked": true,
+      "vw": 768,
+      "vh": 360,
+      "cw": 768,
+      "ch": 360,
+      "sw": 768,
+      "pageH": 360,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x360横屏",
+      "tab": "自动化",
+      "clicked": true,
+      "vw": 768,
+      "vh": 360,
+      "cw": 768,
+      "ch": 360,
+      "sw": 768,
+      "pageH": 360,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 3,
+      "small": [
+        {
+          "el": "input.o-clickable",
+          "w": 22,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 22,
+          "h": 22,
+          "text": ""
+        },
+        {
+          "el": "input.o-clickable",
+          "w": 22,
+          "h": 22,
+          "text": ""
+        }
+      ],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x360横屏",
+      "tab": "成就",
+      "clicked": true,
+      "vw": 768,
+      "vh": 360,
+      "cw": 768,
+      "ch": 360,
+      "sw": 768,
+      "pageH": 360,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x360横屏",
+      "tab": "统计数据",
+      "clicked": true,
+      "vw": 768,
+      "vh": 360,
+      "cw": 768,
+      "ch": 360,
+      "sw": 768,
+      "pageH": 360,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    },
+    {
+      "view": "768x360横屏",
+      "tab": "选项",
+      "clicked": true,
+      "vw": 768,
+      "vh": 360,
+      "cw": 768,
+      "ch": 360,
+      "sw": 768,
+      "pageH": 360,
+      "docOverflow": 0,
+      "bodyOverflow": 0,
+      "overflowCount": 0,
+      "overflow": [],
+      "smallCount": 0,
+      "small": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "occlusionCount": 0,
+      "occlusions": [],
+      "tabMin": 45,
+      "tab0": {
+        "t": "维度",
+        "w": 55,
+        "h": 45
+      }
+    }
+  ]
+}

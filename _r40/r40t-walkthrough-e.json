@@ -1,0 +1,2204 @@
+{
+  "url": "http://127.0.0.1:8288/index.html",
+  "startedAt": "2026-10-30T15:21:31.687Z",
+  "entry": {
+    "exists": true,
+    "text": "?\n教程",
+    "box": {
+      "x": 1211,
+      "y": 758,
+      "w": 64,
+      "h": 36
+    },
+    "position": "fixed",
+    "zIndex": "5",
+    "visible": true
+  },
+  "desktop": [
+    {
+      "mode": "desk",
+      "index": 0,
+      "shot": "r40t-desk-00.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 0 章　开始之前",
+          "activeIdx": 0,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 0 章　开始之前",
+      "subtitle": "这是什么版本、教程怎么用、哪些事不用你做",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 4,
+      "autoBadges": 0,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 11,
+      "traps": 3,
+      "doneText": "反物质数值开始上升，且第一反物质维度数量在自动增加。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 11,
+      "textLen": 1318,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "10000×\nsrc/core/speed-config.js:32 GAME_",
+        "w": 340
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 1,
+      "shot": "r40t-desk-01.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 1 章　开局：10 反物质到第一次维度提升",
+          "activeIdx": 1,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 1 章　开局：10 反物质到第一次维度提升",
+      "subtitle": "第 1~4 维度与计数频率",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 9,
+      "autoBadges": 3,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 16,
+      "traps": 3,
+      "doneText": "「维度 / Dimensions」页出现第 5 个反物质维度框（等价于 play",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2195,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "10\nsrc/core/player.js:12",
+        "w": 340
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 2,
+      "shot": "r40t-desk-02.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 2 章　维度献祭与第一个反物质星系",
+          "activeIdx": 2,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 2 章　维度献祭与第一个反物质星系",
+      "subtitle": "1e13 ~ 1e130 反物质",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 11,
+      "autoBadges": 4,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 16,
+      "traps": 3,
+      "doneText": "「维度 / Dimensions」页的反物质星系数量 ≥ 1。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2076,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "说明",
+        "w": 344
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 3,
+      "shot": "r40t-desk-03.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 3 章　第一次无限",
+          "activeIdx": 3,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 3 章　第一次无限",
+      "subtitle": "把反物质推到 1.8e308，点大坍缩",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 5,
+      "autoBadges": 1,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 10,
+      "traps": 3,
+      "doneText": "无限次数 ≥ 1，且顶部「无限点数」显示 > 0。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 11,
+      "textLen": 1818,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1.7976931348623157e308（= Number.MAX_VALU",
+        "w": 340
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 4,
+      "shot": "r40t-desk-04.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 4 章　无限升级与普通挑战",
+          "activeIdx": 4,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 4 章　无限升级与普通挑战",
+      "subtitle": "1 ~ 3e4 IP",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "挑战攻略",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 17,
+      "autoBadges": 3,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 23,
+      "traps": 3,
+      "doneText": "「无限 / Infinity → 打破无限 / Break Infinity」页",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 13,
+      "textLen": 2886,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1 / 2 / 3 / 5 / 7 / 10 / 20 / 40 / 80 / ",
+        "w": 340
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 5,
+      "shot": "r40t-desk-05.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 5 章　打破无限",
+          "activeIdx": 5,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 5 章　打破无限",
+      "subtitle": "3e4 ~ 5e11 IP",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 16,
+      "autoBadges": 3,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 20,
+      "traps": 3,
+      "doneText": "「无限 / Infinity → 打破无限 / Break Infinity」的",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2608,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "大坍缩自动器间隔 ≤ 100 毫秒\nsrc/game.js:85",
+        "w": 340
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 6,
+      "shot": "r40t-desk-06.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 6 章　无限维度与无限挑战补全",
+          "activeIdx": 6,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 6 章　无限维度与无限挑战补全",
+      "subtitle": "5e11 ~ 1e140 IP",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "挑战攻略",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 10,
+      "autoBadges": 2,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 24,
+      "traps": 4,
+      "doneText": "「无限 / Infinity → 无限维度 / Infinity Dimensi",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 13,
+      "textLen": 3105,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1e1100 / 1e1900 / 1e2400 / 1e10500 / 1e3",
+        "w": 340
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 7,
+      "shot": "r40t-desk-07.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 7 章　复制器与首次永恒",
+          "activeIdx": 7,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 7 章　复制器与首次永恒",
+      "subtitle": "1e140 IP → 第一次永恒（EP 约 4.9e6）",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 12,
+      "autoBadges": 1,
+      "tables": 2,
+      "tableHeadCells": 4,
+      "tableBodyRows": 12,
+      "traps": 4,
+      "doneText": "永恒次数 ≥ 1，顶部出现永恒点数（首次约 4.9e6 EP），「永恒 / Et",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2411,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1e140 IP（一次性扣款）\nsrc/core/replicanti.js:5",
+        "w": 340
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 8,
+      "shot": "r40t-desk-08.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 8 章　时间研究与永恒里程碑",
+          "activeIdx": 8,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 8 章　时间研究与永恒里程碑",
+      "subtitle": "约 22 TT → 12900 TT（EP 约 1e3883）",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 11,
+      "autoBadges": 3,
+      "tables": 2,
+      "tableHeadCells": 2,
+      "tableBodyRows": 18,
+      "traps": 4,
+      "doneText": "时间维度 1~8 全部买下，且时间之理总数（含已花在研究上的）≥ 12900。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2318,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "里程碑解锁",
+        "w": 423
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 9,
+      "shot": "r40t-desk-09.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 9 章　永恒挑战（EC1~EC12）",
+          "activeIdx": 9,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 9 章　永恒挑战（EC1~EC12）",
+      "subtitle": "12 关 × 5 次：入口门槛、respec 冲突、自动进关",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "挑战攻略",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 10,
+      "autoBadges": 4,
+      "tables": 2,
+      "tableHeadCells": 4,
+      "tableBodyRows": 18,
+      "traps": 4,
+      "doneText": "永恒挑战 12 关全部 5/5，且时间之理总数 ≥ 12900（配合第 8 章）",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 13,
+      "textLen": 2982,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        },
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1 ~ 550 TT（EC1 30、EC2 35、EC3 40、EC4 70、E",
+        "w": 340
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 10,
+      "shot": "r40t-desk-10.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 10 章　时间膨胀",
+          "activeIdx": 10,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 10 章　时间膨胀",
+      "subtitle": "解锁膨胀到 1e4300 EP",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "无限升级 25 已购买（现实解锁条件）。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 318,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 11,
+      "shot": "r40t-desk-11.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 11 章　现实与符文",
+          "activeIdx": 11,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 11 章　现实与符文",
+      "subtitle": "1 RM ~ 1e4 RM",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "现实次数 ≥ 1，至少装备 1 个符文。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 342,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 12,
+      "shot": "r40t-desk-12.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 12 章　复兴树、自动机与黑洞",
+          "activeIdx": 12,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 12 章　复兴树、自动机与黑洞",
+      "subtitle": "1e4 ~ 1e6 RM",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "自动机与黑洞已解锁并可持续运转。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 347,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 13,
+      "shot": "r40t-desk-13.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏",
+          "activeIdx": 13,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏",
+      "subtitle": "1e6 ~ 1e49 RM",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 1,
+      "doneText": "无名氏已被击败（其现实完成）。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步、常见卡点 还缺内容：具体操作、购",
+      "blockCount": 6,
+      "textLen": 412,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 14,
+      "shot": "r40t-desk-14.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 14 章　天神（二）：薇、太阳神、莱特拉",
+          "activeIdx": 14,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 14 章　天神（二）：薇、太阳神、莱特拉",
+      "subtitle": "1e49 RM ~ 1e9 iM",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "莱特拉层级 ≥ 8（或暗物质指数达到进入佩勒的门槛）。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 367,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 15,
+      "shot": "r40t-desk-15.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 15 章　佩勒与终局",
+          "activeIdx": 15,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 15 章　佩勒与终局",
+      "subtitle": "毁灭现实 → 反物质 1e1000 → 通关",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "关键数值",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 1,
+      "tableHeadCells": 0,
+      "tableBodyRows": 1,
+      "traps": 0,
+      "doneText": "isGameEnd 变为 true（endState ≥ 1）。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、关键数值、完成判据、下一步 还缺内容：具体操作、购",
+      "blockCount": 6,
+      "textLen": 493,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 500,
+          "sw": 500,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "反物质指数 ≥ 1000（即反物质 ≥ 1e1000）\nsrc/core/cel",
+        "w": 340
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    },
+    {
+      "mode": "desk",
+      "index": 16,
+      "shot": "r40t-desk-16.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 16 章　隐藏条件与成就总表",
+          "activeIdx": 16,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 16 章　隐藏条件与成就总表",
+      "subtitle": "容易被忽略、且不影响主线的条件",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "读完即可，无游戏内判据。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 279,
+      "scrollBoxW": 504,
+      "scrollBoxSW": 504,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 298,
+        "y": 193.5,
+        "w": 684,
+        "h": 400
+      }
+    }
+  ],
+  "narrow": [
+    {
+      "mode": "narrow",
+      "index": 0,
+      "shot": "r40t-narrow-00.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 0 章　开始之前",
+          "activeIdx": 0,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 0 章　开始之前",
+      "subtitle": "这是什么版本、教程怎么用、哪些事不用你做",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 4,
+      "autoBadges": 0,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 11,
+      "traps": 3,
+      "doneText": "反物质数值开始上升，且第一反物质维度数量在自动增加。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 11,
+      "textLen": 1318,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "10000×\nsrc/core/speed-config.js:32 GAME_",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 1,
+      "shot": "r40t-narrow-01.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 1 章　开局：10 反物质到第一次维度提升",
+          "activeIdx": 1,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 1 章　开局：10 反物质到第一次维度提升",
+      "subtitle": "第 1~4 维度与计数频率",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 9,
+      "autoBadges": 3,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 16,
+      "traps": 3,
+      "doneText": "「维度 / Dimensions」页出现第 5 个反物质维度框（等价于 play",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2195,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "10\nsrc/core/player.js:12",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 2,
+      "shot": "r40t-narrow-02.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 2 章　维度献祭与第一个反物质星系",
+          "activeIdx": 2,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 2 章　维度献祭与第一个反物质星系",
+      "subtitle": "1e13 ~ 1e130 反物质",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 11,
+      "autoBadges": 4,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 16,
+      "traps": 3,
+      "doneText": "「维度 / Dimensions」页的反物质星系数量 ≥ 1。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2076,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1e9 / 1e13 / 1e18 / 1e24 反物质\nsrc/core/di",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 3,
+      "shot": "r40t-narrow-03.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 3 章　第一次无限",
+          "activeIdx": 3,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 3 章　第一次无限",
+      "subtitle": "把反物质推到 1.8e308，点大坍缩",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 5,
+      "autoBadges": 1,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 10,
+      "traps": 3,
+      "doneText": "无限次数 ≥ 1，且顶部「无限点数」显示 > 0。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 11,
+      "textLen": 1818,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1.7976931348623157e308（= Number.MAX_VALU",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 4,
+      "shot": "r40t-narrow-04.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 4 章　无限升级与普通挑战",
+          "activeIdx": 4,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 4 章　无限升级与普通挑战",
+      "subtitle": "1 ~ 3e4 IP",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "挑战攻略",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 17,
+      "autoBadges": 3,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 23,
+      "traps": 3,
+      "doneText": "「无限 / Infinity → 打破无限 / Break Infinity」页",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 13,
+      "textLen": 2886,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1 / 2 / 3 / 5 / 7 / 10 / 20 / 40 / 80 / ",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 5,
+      "shot": "r40t-narrow-05.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 5 章　打破无限",
+          "activeIdx": 5,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 5 章　打破无限",
+      "subtitle": "3e4 ~ 5e11 IP",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 16,
+      "autoBadges": 3,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 20,
+      "traps": 3,
+      "doneText": "「无限 / Infinity → 打破无限 / Break Infinity」的",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2608,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "大坍缩自动器间隔 ≤ 100 毫秒\nsrc/game.js:85",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 6,
+      "shot": "r40t-narrow-06.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 6 章　无限维度与无限挑战补全",
+          "activeIdx": 6,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 6 章　无限维度与无限挑战补全",
+      "subtitle": "5e11 ~ 1e140 IP",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "挑战攻略",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 10,
+      "autoBadges": 2,
+      "tables": 2,
+      "tableHeadCells": 3,
+      "tableBodyRows": 24,
+      "traps": 4,
+      "doneText": "「无限 / Infinity → 无限维度 / Infinity Dimensi",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 13,
+      "textLen": 3105,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1e1100 / 1e1900 / 1e2400 / 1e10500 / 1e3",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 7,
+      "shot": "r40t-narrow-07.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 7 章　复制器与首次永恒",
+          "activeIdx": 7,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 7 章　复制器与首次永恒",
+      "subtitle": "1e140 IP → 第一次永恒（EP 约 4.9e6）",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 12,
+      "autoBadges": 1,
+      "tables": 2,
+      "tableHeadCells": 4,
+      "tableBodyRows": 12,
+      "traps": 4,
+      "doneText": "永恒次数 ≥ 1，顶部出现永恒点数（首次约 4.9e6 EP），「永恒 / Et",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2411,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1e140 IP（一次性扣款）\nsrc/core/replicanti.js:5",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 8,
+      "shot": "r40t-narrow-08.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 8 章　时间研究与永恒里程碑",
+          "activeIdx": 8,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 8 章　时间研究与永恒里程碑",
+      "subtitle": "约 22 TT → 12900 TT（EP 约 1e3883）",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 11,
+      "autoBadges": 3,
+      "tables": 2,
+      "tableHeadCells": 2,
+      "tableBodyRows": 18,
+      "traps": 4,
+      "doneText": "时间维度 1~8 全部买下，且时间之理总数（含已花在研究上的）≥ 12900。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 12,
+      "textLen": 2318,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "里程碑解锁",
+        "w": 260
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 9,
+      "shot": "r40t-narrow-09.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 9 章　永恒挑战（EC1~EC12）",
+          "activeIdx": 9,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 9 章　永恒挑战（EC1~EC12）",
+      "subtitle": "12 关 × 5 次：入口门槛、respec 冲突、自动进关",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "具体操作",
+        "购买优先级",
+        "自动化配置（哪些事不用你做）",
+        "挑战攻略",
+        "关键数值",
+        "对照表",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 10,
+      "autoBadges": 4,
+      "tables": 2,
+      "tableHeadCells": 4,
+      "tableBodyRows": 18,
+      "traps": 4,
+      "doneText": "永恒挑战 12 关全部 5/5，且时间之理总数 ≥ 12900（配合第 8 章）",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": false,
+      "placeholderText": null,
+      "blockCount": 13,
+      "textLen": 2982,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        },
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "1 ~ 550 TT（EC1 30、EC2 35、EC3 40、EC4 70、E",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 10,
+      "shot": "r40t-narrow-10.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 10 章　时间膨胀",
+          "activeIdx": 10,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 10 章　时间膨胀",
+      "subtitle": "解锁膨胀到 1e4300 EP",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "无限升级 25 已购买（现实解锁条件）。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 318,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 11,
+      "shot": "r40t-narrow-11.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 11 章　现实与符文",
+          "activeIdx": 11,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 11 章　现实与符文",
+      "subtitle": "1 RM ~ 1e4 RM",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "现实次数 ≥ 1，至少装备 1 个符文。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 342,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 12,
+      "shot": "r40t-narrow-12.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 12 章　复兴树、自动机与黑洞",
+          "activeIdx": 12,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 12 章　复兴树、自动机与黑洞",
+      "subtitle": "1e4 ~ 1e6 RM",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "自动机与黑洞已解锁并可持续运转。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 347,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 13,
+      "shot": "r40t-narrow-13.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏",
+          "activeIdx": 13,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏",
+      "subtitle": "1e6 ~ 1e49 RM",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步",
+        "常见卡点"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 1,
+      "doneText": "无名氏已被击败（其现实完成）。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步、常见卡点 还缺内容：具体操作、购",
+      "blockCount": 6,
+      "textLen": 412,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 125.765625,
+        "w": 314,
+        "h": 495.46875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 14,
+      "shot": "r40t-narrow-14.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 14 章　天神（二）：薇、太阳神、莱特拉",
+          "activeIdx": 14,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 14 章　天神（二）：薇、太阳神、莱特拉",
+      "subtitle": "1e49 RM ~ 1e9 iM",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "莱特拉层级 ≥ 8（或暗物质指数达到进入佩勒的门槛）。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 367,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 15,
+      "shot": "r40t-narrow-15.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 15 章　佩勒与终局",
+          "activeIdx": 15,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 15 章　佩勒与终局",
+      "subtitle": "毁灭现实 → 反物质 1e1000 → 通关",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "关键数值",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 1,
+      "tableHeadCells": 0,
+      "tableBodyRows": 1,
+      "traps": 0,
+      "doneText": "isGameEnd 变为 true（endState ≥ 1）。",
+      "hasDraftBar": false,
+      "hasLockedBar": true,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、关键数值、完成判据、下一步 还缺内容：具体操作、购",
+      "blockCount": 6,
+      "textLen": 493,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [
+        {
+          "w": 310,
+          "sw": 310,
+          "over": 0
+        }
+      ],
+      "widestCell": {
+        "text": "反物质指数 ≥ 1000（即反物质 ≥ 1e1000）\nsrc/core/cel",
+        "w": 211
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    },
+    {
+      "mode": "narrow",
+      "index": 16,
+      "shot": "r40t-narrow-16.png",
+      "attempts": {
+        "ok": true,
+        "st": {
+          "tutorialPresent": true,
+          "otherModal": false,
+          "headTitle": "第 16 章　隐藏条件与成就总表",
+          "activeIdx": 16,
+          "navCount": 17
+        }
+      },
+      "navCount": 17,
+      "headTitle": "第 16 章　隐藏条件与成就总表",
+      "subtitle": "容易被忽略、且不影响主线的条件",
+      "labels": [
+        "阶段目标",
+        "进入条件",
+        "完成判据",
+        "下一步"
+      ],
+      "steps": 0,
+      "autoBadges": 0,
+      "tables": 0,
+      "tableHeadCells": 0,
+      "tableBodyRows": 0,
+      "traps": 0,
+      "doneText": "读完即可，无游戏内判据。",
+      "hasDraftBar": false,
+      "hasLockedBar": false,
+      "hasPlaceholder": true,
+      "placeholderText": "本章正在编写中 这一章只写到骨架，还没有可执行的操作步骤。下面是已经写好的部分，可以照它判断自己走到哪一步；缺的部分补完后会自动出现在这里，不需要你另找攻略。 已有内容：阶段目标、进入条件、完成判据、下一步 还缺内容：具体操作、购买优先级、",
+      "blockCount": 5,
+      "textLen": 279,
+      "scrollBoxW": 314,
+      "scrollBoxSW": 314,
+      "scrollOver": 0,
+      "tableOverflow": [],
+      "widestCell": {
+        "text": "",
+        "w": 0
+      },
+      "pageOver": 0,
+      "layoutBox": {
+        "x": 23,
+        "y": 138.140625,
+        "w": 314,
+        "h": 470.71875
+      }
+    }
+  ],
+  "h2p": {
+    "modalOpen": false,
+    "tabNames": [
+      "新手教程\n          \n            本弹窗\n          \n            时间统计口径\n          \n            本版本的改动\n          \n            你的存档\n          \n            个性化\n          \n            离线进度\n          \n            效果作用\n          \n            常用缩写\n          \n            反物质维度\n          \n            计数频率\n          \n            维度提升\n          \n            反物质星系\n          \n            维度献祭\n          \n            成就\n          \n            无限\n          \n            普通挑战\n          \n            自动购买器\n          \n            打破无限\n          \n            无限维度\n          \n            无限挑战\n          \n            复制器\n          \n            永恒\n          \n            永恒里程碑\n          \n            时间维度\n          \n            时间研究\n          \n            永恒挑战\n          \n            时间膨胀\n          \n            现实\n          \n            符文\n          \n            复兴树",
+      "新手教程",
+      "本弹窗",
+      "时间统计口径",
+      "本版本的改动",
+      "你的存档",
+      "个性化",
+      "离线进度",
+      "效果作用",
+      "常用缩写",
+      "反物质维度",
+      "计数频率",
+      "维度提升",
+      "反物质星系",
+      "维度献祭",
+      "成就",
+      "无限",
+      "普通挑战",
+      "自动购买器",
+      "打破无限",
+      "无限维度",
+      "无限挑战",
+      "复制器",
+      "永恒",
+      "永恒里程碑",
+      "时间维度",
+      "时间研究",
+      "永恒挑战",
+      "时间膨胀",
+      "现实",
+      "符文",
+      "复兴树"
+    ],
+    "tutorialHtmlPresent": false,
+    "detailsCount": 0,
+    "openDetails": 0,
+    "placeholderCount": 0,
+    "draftBarCount": 0,
+    "tableCount": 0,
+    "bodyScrollOver": 0,
+    "tabClicked": true
+  },
+  "console": [
+    {
+      "type": "error",
+      "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src http://me.kis.v2.scr.kaspersky-labs.com ws://me.kis.v2.scr.kaspersky-labs.com 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+    }
+  ],
+  "pageErrors": [
+    "REQFAIL https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer csp",
+    "REQFAIL http://127.0.0.1:8288/public/images/stars-bg.webm net::ERR_ABORTED",
+    "REQFAIL http://127.0.0.1:8288/public/images/realityanimbg.webm net::ERR_ABORTED"
+  ],
+  "finishedAt": "2026-10-30T15:21:56.147Z"
+}

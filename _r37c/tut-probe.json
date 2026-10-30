@@ -1,0 +1,112 @@
+{
+  "pageErrors": [],
+  "desktop": {
+    "error": "no modal"
+  },
+  "mobile320": {
+    "tabCount": 16,
+    "firstTabs": [
+      "新手教程",
+      "本弹窗",
+      "时间统计口径",
+      "本版本的改动",
+      "你的存档"
+    ],
+    "title": "Oreki 新手教程",
+    "hasNowBlock": true,
+    "nowStage": "当前阶段：逼近第一次无限　·　已完成 4 / 16 个里程碑",
+    "nowNext": "▶ 下一步：第 8 维度达到需求数量后买「反物质星系」，它会按倍率提升全部维度",
+    "nowRect": {
+      "x": 32,
+      "y": 296,
+      "w": 256,
+      "h": 571
+    },
+    "nowColor": "rgb(0, 120, 215)",
+    "stepCount": 5,
+    "stepsDone": 0,
+    "stepsNow": 1,
+    "stepsNowText": "▶\n4. 第 8 维度达到需求数量后买「反物质星系」，它会按倍率提升全部维度",
+    "chapters": [
+      "⓪ 界面速查",
+      "① 开局 30 秒：先买下第一个维度",
+      "② 维度、维度提升、反物质星系、大坍缩",
+      "③ 无限：无限点数、打破无限、无限维度、复制器",
+      "④ 永恒：时间维度、时间定理、时间研究、膨胀",
+      "⑤ 现实：符文、现实机器、现实升级、黑洞",
+      "⑥ 挑战：普通 → 无限 → 永恒",
+      "⑦ 后期：七位天神与佩勒"
+    ],
+    "bodyTextLen": 2403,
+    "bodyHasPlaceholderToken": false,
+    "bodyOverflowX": false,
+    "modalRect": {
+      "x": 23,
+      "w": 274,
+      "h": 600,
+      "right": 297
+    },
+    "bodyRect": {
+      "w": 266,
+      "h": 321
+    },
+    "fits": true
+  },
+  "mobile392": {
+    "tabCount": 16,
+    "firstTabs": [
+      "新手教程",
+      "本弹窗",
+      "时间统计口径",
+      "本版本的改动",
+      "你的存档"
+    ],
+    "title": "Oreki 新手教程",
+    "hasNowBlock": true,
+    "nowStage": "当前阶段：逼近第一次无限　·　已完成 5 / 16 个里程碑",
+    "nowNext": "▶ 下一步：反物质顶到 1.8e308（界面显示为「无限」）后点「大坍缩」，完成第一次无限",
+    "nowRect": {
+      "x": 32,
+      "y": 306,
+      "w": 328,
+      "h": 455
+    },
+    "nowColor": "rgb(0, 120, 215)",
+    "stepCount": 5,
+    "stepsDone": 0,
+    "stepsNow": 1,
+    "stepsNowText": "▶\n5. 反物质顶到 1.8e308（界面显示为「无限」）后点「大坍缩」，完成第一次无限",
+    "chapters": [
+      "⓪ 界面速查",
+      "① 开局 30 秒：先买下第一个维度",
+      "② 维度、维度提升、反物质星系、大坍缩",
+      "③ 无限：无限点数、打破无限、无限维度、复制器",
+      "④ 永恒：时间维度、时间定理、时间研究、膨胀",
+      "⑤ 现实：符文、现实机器、现实升级、黑洞",
+      "⑥ 挑战：普通 → 无限 → 永恒",
+      "⑦ 后期：七位天神与佩勒"
+    ],
+    "bodyTextLen": 2408,
+    "bodyHasPlaceholderToken": false,
+    "bodyOverflowX": false,
+    "modalRect": {
+      "x": 23,
+      "w": 346,
+      "h": 636,
+      "right": 369
+    },
+    "bodyRect": {
+      "w": 338,
+      "h": 347
+    },
+    "fits": true
+  },
+  "search": {
+    "tabs": [
+      "新手教程"
+    ]
+  },
+  "switchTab": {
+    "error": "no second tab"
+  }
+}

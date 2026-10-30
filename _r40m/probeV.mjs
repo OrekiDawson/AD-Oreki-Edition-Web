@@ -1,0 +1,26 @@
+import puppeteer from "puppeteer-core";
+const b = await puppeteer.connect({ browserURL: "http://127.0.0.1:9372", defaultViewport: null });
+const pages = await b.pages();
+const page = pages.find(p => p.url().includes("8882")) || pages[0];
+const out = await page.evaluate(() => {
+  const o = {};
+  const safe = (k, f) => { try { o[k] = f(); } catch (e) { o[k] = "ERR:" + (e && e.message); } };
+  safe("dilUnl", () => PlayerProgress.dilationUnlocked());
+  safe("dsBought", () => [1,2,3,4,5,6].map(i => { try { return DilationTimeStudyState.studies[i].isBought ? 1 : 0; } catch (e) { return "x"; } }).join(""));
+  safe("dsBuyable", () => [1,2,3,4,5,6].map(i => { try { const s = DilationTimeStudyState.studies[i]; return s.isBought ? "B" : (s.canBeBought ? "C" : "-"); } catch (e) { return "x"; } }).join(""));
+  safe("ds1req", () => JSON.stringify((DilationTimeStudyState.studies[1].config.requirement || []).map(r => ({ id: r.id ?? r, ec: r.ec ?? null }))));
+  safe("maxDT", () => String(player.records.thisReality.maxDT));
+  safe("hasDil", () => { try { return player.dilation.studies; } catch (e) { return "ERR"; } });
+  safe("Vunlocks", () => JSON.stringify({ v: VUnlocks.vAchievementUnlock.isUnlocked, ra: VUnlocks.raUnlock.isUnlocked }));
+  safe("dilAuto", () => JSON.stringify(globalThis.OrekiDilationAutomation?.debugState ?? null));
+  safe("dilHold", () => globalThis.OrekiDilationAutomation?.hold === true);
+  safe("celHoldV", () => globalThis.OrekiCelestialAutomation?.holdRealityForV === true);
+  safe("celHold", () => globalThis.OrekiCelestialAutomation?.holdReality === true);
+  safe("allAch", () => { try { return Achievements.preReality.every(a => a.isUnlocked); } catch (e) { return "ERR"; } });
+  safe("pendingAch", () => { try { return Achievements.preReality.filter(a => !a.isUnlocked).map(a => a.id).join(","); } catch (e) { return "ERR"; } });
+  safe("ecDone", () => [1,2,3,4,5,6,7,8,9,10,11,12].map(i => EternityChallenge(i).completions).join("/"));
+  safe("realities", () => player.realities);
+  return o;
+});
+console.log(JSON.stringify(out, null, 1));
+b.disconnect();

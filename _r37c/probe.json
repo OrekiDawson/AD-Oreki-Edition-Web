@@ -1,0 +1,270 @@
+{
+  "notifyByViewport": [
+    {
+      "vp": "320",
+      "innerWidth": 320,
+      "docScrollW": 320,
+      "clientW": 320,
+      "container": {
+        "x": 172,
+        "right": 314,
+        "w": 142,
+        "position": "absolute",
+        "maxWidth": "275.2px",
+        "parent": "c-game-ui--fixed"
+      },
+      "count": 5,
+      "items": [
+        {
+          "text": "你已解锁无限挑战 1 ×2",
+          "x": 172,
+          "right": 314,
+          "w": 142,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "你已解锁无限挑战 2 ×2",
+          "x": 172,
+          "right": 314,
+          "w": 142,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "你已解锁无限挑战 3",
+          "x": 191,
+          "right": 314,
+          "w": 123,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "成就：不存在的成就",
+          "x": 344,
+          "right": 465,
+          "w": 121,
+          "h": 31,
+          "offRight": 145,
+          "anim": "leave"
+        },
+        {
+          "text": "成就：永恒的一英里",
+          "x": 174,
+          "right": 295,
+          "w": 121,
+          "h": 31,
+          "offRight": -25,
+          "anim": "enter"
+        }
+      ]
+    },
+    {
+      "vp": "360",
+      "innerWidth": 360,
+      "docScrollW": 360,
+      "clientW": 360,
+      "container": {
+        "x": 174,
+        "right": 354,
+        "w": 180,
+        "position": "absolute",
+        "maxWidth": "309.6px",
+        "parent": "c-game-ui--fixed"
+      },
+      "count": 4,
+      "items": [
+        {
+          "text": "第一优先维度路径未选定。 ×17",
+          "x": 174,
+          "right": 354,
+          "w": 180,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "窄屏通知长度测试第 1 条",
+          "x": 203,
+          "right": 354,
+          "w": 151,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "窄屏通知长度测试第 2 条",
+          "x": 203,
+          "right": 354,
+          "w": 151,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "窄屏通知长度测试第 3 条",
+          "x": 203,
+          "right": 354,
+          "w": 151,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        }
+      ]
+    },
+    {
+      "vp": "392",
+      "innerWidth": 392,
+      "docScrollW": 392,
+      "clientW": 392,
+      "container": {
+        "x": 206,
+        "right": 386,
+        "w": 180,
+        "position": "absolute",
+        "maxWidth": "337.12px",
+        "parent": "c-game-ui--fixed"
+      },
+      "count": 4,
+      "items": [
+        {
+          "text": "第二优先维度路径未选定。 ×10",
+          "x": 206,
+          "right": 386,
+          "w": 180,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "成就：5 个永恒后更新",
+          "x": 419,
+          "right": 553,
+          "w": 134,
+          "h": 31,
+          "offRight": 161,
+          "anim": "leave"
+        },
+        {
+          "text": "成就：200万次无限",
+          "x": 268,
+          "right": 386,
+          "w": 118,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "成就：扭曲时间？",
+          "x": 286,
+          "right": 396,
+          "w": 110,
+          "h": 31,
+          "offRight": 4,
+          "anim": "enter"
+        }
+      ]
+    },
+    {
+      "vp": "800",
+      "innerWidth": 800,
+      "docScrollW": 800,
+      "clientW": 800,
+      "container": {
+        "x": 652,
+        "right": 794,
+        "w": 142,
+        "position": "absolute",
+        "maxWidth": "688px",
+        "parent": "c-game-ui--fixed"
+      },
+      "count": 4,
+      "items": [
+        {
+          "text": "你已解锁无限挑战 1 ×2",
+          "x": 652,
+          "right": 794,
+          "w": 142,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "你已解锁无限挑战 2 ×2",
+          "x": 652,
+          "right": 794,
+          "w": 142,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "你已解锁无限挑战 3",
+          "x": 671,
+          "right": 794,
+          "w": 123,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        },
+        {
+          "text": "你已解锁无限挑战 4",
+          "x": 671,
+          "right": 794,
+          "w": 123,
+          "h": 31,
+          "offRight": -6,
+          "anim": ""
+        }
+      ]
+    }
+  ],
+  "h2p320": {
+    "before": {
+      "modalCurrent": "none",
+      "hasH2PEl": false,
+      "modalEls": [],
+      "modalId": null,
+      "bodyText": "你拥有 2.39e48 反物质。\n你每秒获得 8.37e33 反物质。\n\n\n每个计数频率使反物质维度的生产效率 ×1.125\n计数频率：248.367 / 秒\n"
+    },
+    "err": null,
+    "after": {
+      "modalCurrent": "Modal",
+      "hasH2PEl": true,
+      "modalEls": [
+        {
+          "cls": "c-modal l-modal",
+          "rect": {
+            "x": 46,
+            "y": 46,
+            "w": 228,
+            "h": 548
+          }
+        },
+        {
+          "cls": "l-h2p-modal",
+          "rect": {
+            "x": 64,
+            "y": 64,
+            "w": 192,
+            "h": 512
+          }
+        }
+      ],
+      "modalId": null,
+      "bodyText": "你拥有 4.39e161 反物质。\n你每秒获得 4.97e24 反物质。\n\n\n每个计数频率使反物质维度的生产效率 ×1.145\n计数频率：1.000 / 秒\n\n"
+    }
+  },
+  "h2p320Click": {
+    "btn": {
+      "x": 252,
+      "y": 45,
+      "w": 48,
+      "h": 48
+    },
+    "clickable": true
+  }
+}

@@ -1,0 +1,7 @@
+ docs/FACTS.md                                   | 131 +++++++++++++++++++++++-
+ src/components/tabs/celestial-pelle/PelleTab.js |   8 ++
+ src/components/tutorial/OrekiTutorial.js        |  10 +-
+ src/core/celestials/pelle/game-end.js           |  59 +++++++----
+ src/core/oreki-endgame-automation.js            |  98 ++++++++++++------
+ src/core/oreki-tutorial.js                      |   5 +-
+ 6 files changed, 255 insertions(+), 56 deletions(-)

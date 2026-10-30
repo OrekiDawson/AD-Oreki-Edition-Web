@@ -1,0 +1,55 @@
+// 连接活页面做只读诊断（R38-A）
+import puppeteer from "puppeteer-core";
+const port = process.env.OREKI_CDP_PORT || "9352";
+const b = await puppeteer.connect({ browserURL: `http://127.0.0.1:${port}`, defaultViewport: null });
+const pages = await b.pages();
+const page = pages.find(p => p.url().includes("index.html")) || pages[0];
+const out = await page.evaluate(() => {
+  const o = {};
+  const S = v => { try { return v === null || v === undefined ? null : v.toString(); } catch (e) { return null; } };
+  try {
+    o.realities = player.realities;
+    o.amE = player.antimatter.exponent;
+    o.id1 = S(InfinityDimension(1).amount);
+    o.maxID1 = S(player.requirementChecks.reality.maxID1);
+    o.idGroup = player.auto.infinityDims.isActive;
+    o.idAuto1 = player.auto.infinityDims.all?.[0]?.isActive;
+    o.lock15 = ImaginaryUpgrade(15).hasPlayerLock;
+    o.iu15 = ImaginaryUpgrade(15).isBought;
+    o.laiUnl = Laitela.isUnlocked;
+    o.laiRun = Laitela.isRunning;
+    o.laiTier = player.celestials.laitela.difficultyTier;
+    o.entropy = player.celestials.laitela.entropy;
+    o.entRate = Laitela.entropyGainPerSecond;
+    o.pelleUnl = Pelle.isUnlocked;
+    o.doomed = Pelle.isDoomed;
+    o.canEternity = Player.canEternity;
+    o.canCrunch = Player.canCrunch;
+    o.ecRunning = EternityChallenge.isRunning;
+    o.ecUnlocked = player.challenge.eternity.unlocked;
+    o.ec7 = EternityChallenge(7).completions;
+    o.ecDone = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => EternityChallenge(i).completions);
+    o.maxEPL = player.records.thisReality.maxEP.log10();
+    o.realityAvail = isRealityAvailable();
+    o.realTime = player.records.thisReality.realTime;
+    o.hold = globalThis.OrekiCelestialAutomation?.holdReality === true;
+    o.holdV = globalThis.OrekiCelestialAutomation?.holdRealityForV === true;
+    o.holdDeep = globalThis.OrekiCelestialAutomation?.holdRealityForDeepChallenge === true;
+    o.sprint = globalThis.OrekiIu15Sprint?.debugState ?? null;
+    o.gs = getGameSpeedupFactor();
+    o.etAuto = player.auto.eternity.isActive;
+    o.bcAuto = player.auto.bigCrunch.isActive;
+    o.lastUpdateAgoMs = Date.now() - Number(player.lastUpdate || 0);
+    o.dilUnl = PlayerProgress.dilationUnlocked();
+    o.dtL = Currency.dilatedTime.value.log10();
+    o.etL = Currency.eternities.value.log10();
+    o.ipL = Currency.infinityPoints.value.log10();
+    o.epL = Currency.eternityPoints.value.log10();
+    o.rmL = Currency.realityMachines.value.log10();
+    o.imCap = MachineHandler.currentIMCap.toExponential(2);
+    o.im = Currency.imaginaryMachines.value.toExponential(2);
+  } catch (e) { o.err = String(e && e.stack || e); }
+  return o;
+});
+console.log(JSON.stringify(out, null, 1));
+await b.disconnect();

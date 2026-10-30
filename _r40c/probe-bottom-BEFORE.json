@@ -1,0 +1,350 @@
+[
+  {
+    "view": "320x640",
+    "tab": "维度",
+    "vw": 320,
+    "vh": 640,
+    "scrollTop": 1546,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 137,
+        "h": 17,
+        "bottom": 640
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 251,
+        "y": 586,
+        "w": 63,
+        "h": 48,
+        "bottom": 634
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "增强计数频率升级的效果",
+      "x": 71,
+      "y": 646,
+      "w": 234,
+      "h": 60,
+      "bottom": 706,
+      "right": 305
+    }
+  },
+  {
+    "view": "320x640",
+    "tab": "选项",
+    "vw": 320,
+    "vh": 640,
+    "scrollTop": 469,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 137,
+        "h": 17,
+        "bottom": 640
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 251,
+        "y": 586,
+        "w": 63,
+        "h": 48,
+        "bottom": 634
+      }
+    ],
+    "hits": [
+      {
+        "bar": ".c-oreki-tut-entry",
+        "target": "打开自动备份存档菜单",
+        "overlapW": 54,
+        "overlapH": 24,
+        "pct": 12
+      }
+    ],
+    "hitCount": 1,
+    "lastBtn": {
+      "t": "打开自动备份存档菜单",
+      "x": 71,
+      "y": 562,
+      "w": 234,
+      "h": 48,
+      "bottom": 610,
+      "right": 305
+    }
+  },
+  {
+    "view": "320x640",
+    "tab": "自动化",
+    "vw": 320,
+    "vh": 640,
+    "scrollTop": 1979,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 137,
+        "h": 17,
+        "bottom": 640
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 251,
+        "y": 586,
+        "w": 63,
+        "h": 48,
+        "bottom": 634
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "购买最大数量",
+      "x": -271,
+      "y": 139,
+      "w": 90,
+      "h": 48,
+      "bottom": 187,
+      "right": -181
+    }
+  },
+  {
+    "view": "392x676",
+    "tab": "维度",
+    "vw": 392,
+    "vh": 676,
+    "scrollTop": 1358,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 137,
+        "h": 17,
+        "bottom": 676
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 323,
+        "y": 622,
+        "w": 63,
+        "h": 48,
+        "bottom": 670
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "增强计数频率升级的效果",
+      "x": 71,
+      "y": 682,
+      "w": 306,
+      "h": 60,
+      "bottom": 742,
+      "right": 377
+    }
+  },
+  {
+    "view": "392x676",
+    "tab": "选项",
+    "vw": 392,
+    "vh": 676,
+    "scrollTop": 433,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 137,
+        "h": 17,
+        "bottom": 676
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 323,
+        "y": 622,
+        "w": 63,
+        "h": 48,
+        "bottom": 670
+      }
+    ],
+    "hits": [
+      {
+        "bar": ".c-oreki-tut-entry",
+        "target": "打开自动备份存档菜单",
+        "overlapW": 54,
+        "overlapH": 24,
+        "pct": 9
+      }
+    ],
+    "hitCount": 1,
+    "lastBtn": {
+      "t": "打开自动备份存档菜单",
+      "x": 71,
+      "y": 598,
+      "w": 306,
+      "h": 48,
+      "bottom": 646,
+      "right": 377
+    }
+  },
+  {
+    "view": "392x676",
+    "tab": "自动化",
+    "vw": 392,
+    "vh": 676,
+    "scrollTop": 1653,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 137,
+        "h": 17,
+        "bottom": 676
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 323,
+        "y": 622,
+        "w": 63,
+        "h": 48,
+        "bottom": 670
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "购买最大数量",
+      "x": -235,
+      "y": 175,
+      "w": 90,
+      "h": 48,
+      "bottom": 223,
+      "right": -145
+    }
+  },
+  {
+    "view": "430x932",
+    "tab": "维度",
+    "vw": 430,
+    "vh": 932,
+    "scrollTop": 1085,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 915,
+        "w": 137,
+        "h": 17,
+        "bottom": 932
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 361,
+        "y": 878,
+        "w": 63,
+        "h": 48,
+        "bottom": 926
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "增强计数频率升级的效果",
+      "x": 71,
+      "y": 938,
+      "w": 344,
+      "h": 60,
+      "bottom": 998,
+      "right": 415
+    }
+  },
+  {
+    "view": "430x932",
+    "tab": "选项",
+    "vw": 430,
+    "vh": 932,
+    "scrollTop": 177,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 915,
+        "w": 137,
+        "h": 17,
+        "bottom": 932
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 361,
+        "y": 878,
+        "w": 63,
+        "h": 48,
+        "bottom": 926
+      }
+    ],
+    "hits": [
+      {
+        "bar": ".c-oreki-tut-entry",
+        "target": "打开自动备份存档菜单",
+        "overlapW": 54,
+        "overlapH": 24,
+        "pct": 8
+      }
+    ],
+    "hitCount": 1,
+    "lastBtn": {
+      "t": "打开自动备份存档菜单",
+      "x": 71,
+      "y": 854,
+      "w": 344,
+      "h": 48,
+      "bottom": 902,
+      "right": 415
+    }
+  },
+  {
+    "view": "430x932",
+    "tab": "自动化",
+    "vw": 430,
+    "vh": 932,
+    "scrollTop": 1351,
+    "bars": [
+      {
+        "sel": ".o-save-timer",
+        "x": 0,
+        "y": 915,
+        "w": 137,
+        "h": 17,
+        "bottom": 932
+      },
+      {
+        "sel": ".c-oreki-tut-entry",
+        "x": 361,
+        "y": 878,
+        "w": 63,
+        "h": 48,
+        "bottom": 926
+      }
+    ],
+    "hits": [],
+    "hitCount": 0,
+    "lastBtn": {
+      "t": "购买最大数量",
+      "x": -216,
+      "y": 431,
+      "w": 90,
+      "h": 48,
+      "bottom": 479,
+      "right": -126
+    }
+  }
+]

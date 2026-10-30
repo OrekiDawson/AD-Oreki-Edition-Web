@@ -1,0 +1,340 @@
+{
+  "steps": [
+    {
+      "step": "关闭剧情弹窗(第1次)",
+      "tapped": {
+        "x": 197,
+        "y": 491,
+        "w": 21,
+        "h": 21
+      },
+      "stillOpen": true
+    },
+    {
+      "step": "逐项真实触摸",
+      "visited": [
+        {
+          "tap": "维度",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        },
+        {
+          "tap": "自动化",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        },
+        {
+          "tap": "挑战",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        },
+        {
+          "tap": "无限",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        },
+        {
+          "tap": "永恒",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        },
+        {
+          "tap": "现实",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        },
+        {
+          "tap": "天神",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        },
+        {
+          "tap": "成就",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        },
+        {
+          "tap": "统计数据",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        },
+        {
+          "tap": "选项",
+          "active": [],
+          "subtabs": [
+            "Ω 反物质维度",
+            "∞ 无限维度",
+            "Δ 时间维度",
+            "自动购买器",
+            "自动机",
+            "Ω 普通挑战"
+          ],
+          "scrollBox": {
+            "cls": "c-game-ui",
+            "scrollH": 1665,
+            "clientH": 732,
+            "scrollTop": 0
+          },
+          "modal": true
+        }
+      ]
+    }
+  ],
+  "tabProbe": {
+    "hasTab": true,
+    "keys": [
+      "dimensions",
+      "options",
+      "statistics",
+      "achievements",
+      "automation",
+      "challenges",
+      "infinity",
+      "eternity",
+      "reality",
+      "celestials",
+      "shop"
+    ],
+    "tabBtnClasses": []
+  },
+  "sidebar": {
+    "count": 10,
+    "names": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "永恒",
+      "现实",
+      "天神",
+      "成就",
+      "统计数据",
+      "选项"
+    ]
+  },
+  "scroll": {
+    "before": {
+      "cls": "c-game-ui",
+      "scrollTop": 0,
+      "scrollH": 1665,
+      "clientH": 732
+    },
+    "after": {
+      "cls": "c-game-ui",
+      "scrollTop": 0,
+      "scrollH": 1665,
+      "clientH": 732
+    },
+    "moved": false
+  },
+  "narrow": {
+    "vw": 360,
+    "docScrollW": 360,
+    "docClientW": 360,
+    "overflowX": false,
+    "overflowing": [
+      {
+        "cls": "c-reality-container",
+        "right": 383,
+        "w": 350
+      },
+      {
+        "cls": "l-reality-button",
+        "right": 383,
+        "w": 350
+      },
+      {
+        "cls": "c-reality-button infotooltip c-reality-butto",
+        "right": 383,
+        "w": 350
+      },
+      {
+        "cls": "l-reality-button__contents",
+        "right": 375,
+        "w": 334
+      },
+      {
+        "cls": "l-player-glyphs-column",
+        "right": 672,
+        "w": 650
+      },
+      {
+        "cls": "l-equipped-glyphs-and-effects-container",
+        "right": 672,
+        "w": 650
+      },
+      {
+        "cls": "l-glyph-info-wrapper",
+        "right": 672,
+        "w": 450
+      },
+      {
+        "cls": "l-glyph-color-box",
+        "right": 447,
+        "w": 450
+      },
+      {
+        "cls": "c-glyph-info-options",
+        "right": 672,
+        "w": 450
+      },
+      {
+        "cls": "l-glyph-info-button c-glyph-info-button c-gl",
+        "right": 442,
+        "w": 220
+      }
+    ]
+  },
+  "notation": [
+    [
+      "player.options.notation",
+      "Scientific"
+    ],
+    [
+      "antimatter",
+      "1e3.951e9"
+    ],
+    [
+      "eternities",
+      "4e88"
+    ],
+    [
+      "big1e1e10",
+      "1"
+    ],
+    [
+      "mixedExp",
+      "9"
+    ]
+  ],
+  "news": {
+    "visibleNews": [],
+    "newsModalOpen": true
+  }
+}

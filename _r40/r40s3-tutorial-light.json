@@ -1,0 +1,27 @@
+{
+ "tag": "r40s3-tutorial-light",
+ "samples": 675,
+ "lastT": 721.5,
+ "closedAt": 310.1,
+ "gameEndAt": 721.5,
+ "endStateLast": 1.04015,
+ "realitiesLast": 100,
+ "doomedAt": 675.3,
+ "tutOpenSamples": 192,
+ "tutTotalSamples": 268,
+ "tutNodesMin": 0,
+ "smDegSamples": 0,
+ "pageErrors": 0,
+ "milestone": {
+  "5": 69.1,
+  "10": 134.5,
+  "15": 181.6,
+  "20": 226.7,
+  "25": 272.2,
+  "30": 306.9,
+  "40": 363.3,
+  "60": 459.9,
+  "80": 552.6,
+  "100": 650.6
+ }
+}

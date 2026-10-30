@@ -1,0 +1,380 @@
+// 鏃堕棿璇箟锛氬姩鎬佸€嶇巼銆佺壒娈婇樁娈点€佺绾跨粨绠楃殑娴忚鍣ㄥ洖褰?// 鐢ㄦ硶: node verify-time-dynamics.mjs [root] [port]
+import http from "node:http";
+import fs from "node:fs";
+import path from "node:path";
+
+const EDGE = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
+const root = path.resolve(process.argv[2] || "C:/Users/Oreki/WorkBuddy/AD-Oreki-Unified/web/AD-Oreki-Edition");
+const port = Number(process.argv[3] || 8095);
+
+const MIME = {
+  ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8",
+  ".png": "image/png", ".svg": "image/svg+xml", ".webm": "video/webm", ".mp3": "audio/mpeg",
+  ".woff": "font/woff", ".woff2": "font/woff2", ".ttf": "font/ttf", ".otf": "font/otf",
+  ".eot": "application/vnd.ms-fontobject", ".ico": "image/x-icon",
+};
+const server = http.createServer((req, res) => {
+  let p = decodeURIComponent(req.url.split("?")[0]);
+  if (p.endsWith("/")) p += "index.html";
+  const file = path.join(root, p);
+  if (!file.startsWith(root)) { res.writeHead(403).end(); return; }
+  fs.readFile(file, (err, data) => {
+    if (err) { res.writeHead(404).end("nf"); return; }
+    res.writeHead(200, { "Content-Type": MIME[path.extname(file).toLowerCase()] || "application/octet-stream" });
+    res.end(data);
+  });
+});
+await new Promise(r => server.listen(port, "127.0.0.1", r));
+
+const SAVE_DIR = "C:/Users/Oreki/WorkBuddy/AD-Oreki-Unified/web/_saves/samples";
+const samples = fs.readdirSync(SAVE_DIR).filter(f => f.endsWith(".txt"));
+const pickSave = name => {
+  const f = samples.find(x => x.startsWith(name + ".")) || samples.find(x => x.startsWith(name));
+  return f ? fs.readFileSync(path.join(SAVE_DIR, f), "utf-8") : null;
+};
+
+const puppeteer = (await import("puppeteer-core")).default;
+const browser = await puppeteer.launch({
+  executablePath: EDGE, headless: "new",
+  args: ["--no-sandbox", "--disable-gpu", "--mute-audio", "--autoplay-policy=no-user-gesture-required"],
+});
+const results = [];
+const skips = [];
+const check = (n, p, d = "") => { results.push({ n, p, d }); console.log(`${p ? "PASS" : "FAIL"}  ${n}${d ? "  鈥?" + d : ""}`); };
+const skip = (n, why) => { skips.push({ n, why }); console.log(`SKIP  ${n}  鈥?${why}`); };
+const near = (a, b, eps) => Math.abs(a - b) <= eps;
+
+const page = await browser.newPage();
+const errs = [];
+page.on("pageerror", e => errs.push(e.message));
+await page.setViewport({ width: 1400, height: 950 });
+await page.goto(`http://127.0.0.1:${port}/index.html`, { waitUntil: "load", timeout: 60000 });
+await new Promise(r => setTimeout(r, 6500));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// 缁熶竴鐨勩€岃-璁℃椂-璇汇€嶆帰閽堬紝娉ㄥ叆鍒伴〉闈㈤噷澶嶇敤
+await page.evaluate(() => {
+  window.__probe = {
+    read() {
+      const r = player.records;
+      return {
+        real: r.realTimePlayed,
+        raw: r.totalTimePlayed,
+        inGame: r.totalInGameTime,
+        iTime: r.thisInfinity.time,
+        iReal: r.thisInfinity.realTime,
+        iInGame: r.thisInfinity.inGameTime,
+        eTime: r.thisEternity.time,
+        eInGame: r.thisEternity.inGameTime,
+      };
+    },
+    delta(a, b) {
+      const out = {};
+      for (const k of Object.keys(a)) out[k] = b[k] - a[k];
+      return out;
+    },
+  };
+});
+
+// =====================================================================
+console.log("\n### A. 鍒嗘鑶ㄨ儉锛氫笁娈典笉鍚屽€嶇巼鍚?100ms 澧欓挓");
+const segA = await page.evaluate(() => {
+  try { GameIntervals.gameLoop.stop(); } catch { /* 鏈惎鍔?*/ }
+  GameSpeed.set(1);
+  player.options.gamePaused = false;
+  player.challenge.eternity.current = 0;
+  player.celestials.enslaved.isStoringReal = false;
+  player.lastUpdate = Date.now();
+  const P = window.__probe;
+  const a0 = P.read();
+  gameLoop(100, { blackHoleSpeedup: 100 });   // 鑶ㄨ儉 100脳
+  const a1 = P.read();
+  gameLoop(100);                              // 鏃犺啫鑳€
+  const a2 = P.read();
+  gameLoop(100, { blackHoleSpeedup: 50 });    // 鑶ㄨ儉 50脳
+  const a3 = P.read();
+  return { s1: P.delta(a0, a1), s2: P.delta(a1, a2), s3: P.delta(a2, a3), a0, a3 };
+});
+check("[A] 娈?1锛堣啫鑳€ 100脳锛夛細娓告垙鏃堕棿 +10,000ms", near(segA.s1.iTime, 10000, 1), String(segA.s1.iTime));
+check("[A] 娈?1锛堣啫鑳€ 100脳锛夛細鐜板疄鏃堕棿 +100ms", near(segA.s1.iReal, 100, 1e-6), String(segA.s1.iReal));
+check("[A] 娈?2锛堟棤鑶ㄨ儉锛夛細娓告垙鏃堕棿 +100ms", near(segA.s2.iTime, 100, 1e-6), String(segA.s2.iTime));
+check("[A] 娈?3锛堣啫鑳€ 50脳锛夛細娓告垙鏃堕棿 +5,000ms", near(segA.s3.iTime, 5000, 1), String(segA.s3.iTime));
+const sumA = ["s1", "s2", "s3"].reduce((acc, k) => acc + segA[k].inGame, 0);
+check("[A] 涓夋鐜板疄鏃堕棿鍚堣 300ms", near(sumA, 300, 1e-6), String(sumA));
+const gameA = segA.s1.iTime + segA.s2.iTime + segA.s3.iTime;
+check("[A] 涓夋娓告垙鏃堕棿鍚堣 15,100ms锛堟寜娈靛姞鏉冿紝鑰岄潪鏈鍊嶇巼 脳 鎬绘椂闀匡級", near(gameA, 15100, 2), String(gameA));
+check("[A] 鑻ヨ鐢ㄦ湯娈靛€嶇巼 50脳 浼氬緱鍒?15,000 鑰岄潪 15,100",
+  !near(300 * 50, gameA, 1), `300脳50=${300 * 50} vs ${gameA}`);
+const inGameA = segA.s1.inGame + segA.s2.inGame + segA.s3.inGame;
+check("[A] 鎸夋椂闂寸墖绱鐨勬父鎴忓唴鏃堕棿 = 鐜板疄鏃堕棿锛堝€嶇巼 1脳 鏃朵袱鑰呯浉绛夛級", near(inGameA, sumA, 1), String(inGameA));
+
+// =====================================================================
+console.log("\n### B. 鍚屼竴鍒嗘搴忓垪鍦?10000脳 涓嬶紝娓告垙鍐呮椂闂村繀椤讳笉鍙?);
+const segB = await page.evaluate(() => {
+  GameSpeed.set(10000);
+  player.lastUpdate = Date.now();
+  const P = window.__probe;
+  const b0 = P.read();
+  gameLoop(100, { blackHoleSpeedup: 100 });
+  const b1 = P.read();
+  gameLoop(100);
+  const b2 = P.read();
+  gameLoop(100, { blackHoleSpeedup: 50 });
+  const b3 = P.read();
+  return { s1: P.delta(b0, b1), s2: P.delta(b1, b2), s3: P.delta(b2, b3) };
+});
+check("[B] 10000脳 涓嬫 1 鍘熷娓告垙鏃堕棿 = 1e8ms锛?0,000脳 鏀惧ぇ锛?, near(segB.s1.iTime, 1e8, 100), String(segB.s1.iTime));
+check("[B] 10000脳 涓嬫 1 鐜板疄鏃堕棿浠嶄负 100ms", near(segB.s1.iReal, 100, 1e-6), String(segB.s1.iReal));
+const inGameB = segB.s1.inGame + segB.s2.inGame + segB.s3.inGame;
+check("[B] 10000脳 涓嬫父鎴忓唴鏃堕棿澧為噺涓?1脳 瀹屽叏涓€鑷达紙300ms锛?, near(inGameB, 300, 1), `${inGameB} vs ${inGameA}`);
+check("[B] 10000脳 涓嬪師濮嬫父鎴忔椂闂存槸 1脳 鐨?10000 鍊?,
+  near((segB.s1.iTime + segB.s2.iTime + segB.s3.iTime) / gameA, 10000, 0.01),
+  String((segB.s1.iTime + segB.s2.iTime + segB.s3.iTime) / gameA));
+
+// =====================================================================
+console.log("\n### C. 鍊嶇巼涓€斿垏鎹細鍘嗗彶绱閲忎笉寰楄鏂板€嶇巼閲嶇畻");
+const segC = await page.evaluate(() => {
+  const P = window.__probe;
+  const c0 = P.read();
+  GameSpeed.set(1);      gameLoop(100);
+  GameSpeed.set(10000);  gameLoop(100);
+  GameSpeed.set(1);      gameLoop(100);
+  const c1 = P.read();
+  const d = P.delta(c0, c1);
+  return {
+    d,
+    // 鏃у啓娉曪紙鐢ㄥ綋鍓嶅€嶇巼鍙嶆帹鏁存鍘嗗彶锛変細寰楀埌鐨勫€?    legacy: (c1.raw - c0.raw) / getGlobalSpeedFactor(),
+    factorNow: getGlobalSpeedFactor(),
+  };
+});
+check("[C] 鐜板疄涓‘瀹炵粡鍘嗕簡 300ms", near(segC.d.real, 300, 1e-6), String(segC.d.real));
+check("[C] 鍘熷娓告垙鏃堕棿 = 1脳100 + 10000脳100 + 1脳100 = 1,000,200ms",
+  near(segC.d.raw, 1000200, 10), String(segC.d.raw));
+check("[C] 鎸夋椂闂寸墖绱鐨勬父鎴忓唴鏃堕棿 = 300ms锛堜笉鍙楁湯娆″€嶇巼褰卞搷锛?, near(segC.d.inGame, 300, 1), String(segC.d.inGame));
+check("[C] 鏃у啓娉曘€屽師濮嬫父鎴忔椂闂?/ 褰撳墠鍊嶇巼銆嶄細寰楀埌 1,000,200ms锛堥敊璇斁澶?3334 鍊嶏級",
+  near(segC.legacy, 1000200, 10) && !near(segC.legacy, segC.d.inGame, 10),
+  `legacy=${segC.legacy} tracked=${segC.d.inGame}`);
+
+// =====================================================================
+console.log("\n### D. 鏃跺簭杈圭晫锛氬€嶇巼鍒囨崲鍙戠敓鍦ㄧ浉閭绘椂闂寸墖涔嬮棿");
+const segD = await page.evaluate(() => {
+  const P = window.__probe;
+  GameSpeed.set(1);
+  const d0 = P.read();
+  gameLoop(16);                       // 涓€甯?  gameLoop(16);
+  GameSpeed.set(100);
+  gameLoop(16);
+  const d1 = P.read();
+  const d = P.delta(d0, d1);
+  return { d, expectedInGame: 48, expectedRaw: 48 + 16 * 100 };
+});
+check("[D] 鍒囨崲杈圭晫锛氭父鎴忓唴鏃堕棿 = 3脳16ms锛堜笌鍊嶇巼鏃犲叧锛?, near(segD.d.inGame, 48, 1), String(segD.d.inGame));
+check("[D] 鍒囨崲杈圭晫锛氬師濮嬫父鎴忔椂闂?= 16+16+1600ms", near(segD.d.raw, 1632, 2), String(segD.d.raw));
+
+// =====================================================================
+console.log("\n### E. 瀛樻。寰€杩旓細鏂板瓧娈佃瀹屾暣鎸佷箙鍖?);
+const roundTrip = await page.evaluate(() => {
+  GameSpeed.set(1);
+  gameLoop(100);
+  player.challenge.normal.bestRealTimes[0] = 12345;
+  const text = GameSaveSerializer.serialize(player);
+  const back = GameSaveSerializer.deserialize(text);
+  return {
+    totalInGame: player.records.totalInGameTime,
+    backTotal: back.records.totalInGameTime,
+    thisInGame: player.records.thisInfinity.inGameTime,
+    backThis: back.records.thisInfinity.inGameTime,
+    realTimes: Array.from(player.challenge.normal.bestRealTimes),
+    backRealTimes: Array.from(back.challenge.normal.bestRealTimes ?? []),
+    backBestEternityReal: back.records.bestEternity.realTime,
+    hasInGameField: "inGameTime" in back.records.thisEternity,
+  };
+});
+check("[E] 瀛樻。寰€杩斾繚鐣?totalInGameTime", near(roundTrip.backTotal, roundTrip.totalInGame, 1e-6),
+  `${roundTrip.backTotal} vs ${roundTrip.totalInGame}`);
+check("[E] 瀛樻。寰€杩斾繚鐣?thisInfinity.inGameTime", near(roundTrip.backThis, roundTrip.thisInGame, 1e-6),
+  `${roundTrip.backThis} vs ${roundTrip.thisInGame}`);
+check("[E] 瀛樻。寰€杩斾繚鐣欐寫鎴樼幇瀹炴椂闂存暟缁?,
+  roundTrip.backRealTimes.length === roundTrip.realTimes.length &&
+  roundTrip.backRealTimes.every((v, i) => v === roundTrip.realTimes[i]),
+  JSON.stringify(roundTrip.backRealTimes.slice(0, 3)));
+check("[E] 鏃у瓧娈?thisEternity/bestEternity 缁撴瀯鏈鐮村潖", roundTrip.hasInGameField === true);
+
+// =====================================================================
+console.log("\n### F. 鐗规畩闃舵锛欵C12锛堝浐瀹?1/1000 閫燂級");
+const ec12 = await page.evaluate(() => {
+  GameSpeed.set(1);
+  const P = window.__probe;
+  const before = getGameSpeedupFactor();
+  player.challenge.eternity.current = 12;
+  const inEc12 = getGameSpeedupFactor();
+  player.lastUpdate = Date.now();
+  const f0 = P.read();
+  gameLoop(1000);
+  const f1 = P.read();
+  const d = P.delta(f0, f1);
+  player.challenge.eternity.current = 0;
+  const after = getGameSpeedupFactor();
+  return { before, inEc12, after, d };
+});
+check("[F] EC12 鍐?getGameSpeedupFactor() = 1/1000", near(ec12.inEc12, 0.001, 1e-12), String(ec12.inEc12));
+check("[F] 閫€鍑?EC12 鍚庡€嶇巼鎭㈠", near(ec12.after, ec12.before, 1e-12), String(ec12.after));
+check("[F] EC12 鍐?1000ms 澧欓挓 = 1ms 娓告垙鏃堕棿", near(ec12.d.iTime, 1, 1e-6), String(ec12.d.iTime));
+check("[F] EC12 鍐呯幇瀹炴椂闂翠粛鎸夊閽熺疮璁?1000ms", near(ec12.d.iReal, 1000, 1e-6), String(ec12.d.iReal));
+
+// =====================================================================
+console.log("\n### G. 鏃у瓨妗ｏ紙1123 鏁版嵁闆嗘牱鏈級杞藉叆鍚庣殑鏃堕棿璇箟");
+const oldSaveName = ["861", "1002", "424"].find(n => pickSave(n));
+if (!oldSaveName) {
+  skip("[G] 鏃у瓨妗ｅ洖褰?, "鏈壘鍒版牱鏈瓨妗?);
+} else {
+  const saveText = pickSave(oldSaveName);
+  const legacy = await page.evaluate(async (text) => {
+    try { GameIntervals.gameLoop.stop(); } catch { /* ignore */ }
+    GameStorage.offlineEnabled = false;
+    const obj = GameSaveSerializer.deserialize(text);
+    player = obj;
+    player.lastUpdate = Date.now();
+    GameStorage.loadPlayerObject(player);
+    player.lastUpdate = Date.now();
+    GameIntervals.gameLoop.stop();
+    GameSpeed.set(10000);
+    const snap = {
+      normalRealTimes: Array.from(player.challenge.normal.bestRealTimes ?? []),
+      infinityRealTimes: Array.from(player.challenge.infinity.bestRealTimes ?? []),
+      totalInGame: player.records.totalInGameTime,
+      totalRaw: player.records.totalTimePlayed,
+      thisInGame: player.records.thisInfinity.inGameTime,
+      thisRaw: player.records.thisInfinity.time,
+      factor: getGlobalSpeedFactorRaw(),
+      totalTimePlayedDisplay: totalInGameTimeMs(),
+      bestEternityReal: player.records.bestEternity.realTime,
+    };
+    gameLoop(100);
+    const after = {
+      totalInGame: player.records.totalInGameTime,
+      thisInGame: player.records.thisInfinity.inGameTime,
+    };
+    return { snap, after };
+  }, saveText);
+  check("[G] 鏃у瓨妗ｆ病鏈夋寫鎴樼幇瀹炴椂闂村瓧娈?鈫?琛ユ垚鍝ㄥ叺鑰岄潪浼€犳垚缁?,
+    legacy.snap.normalRealTimes.length === 11 && legacy.snap.normalRealTimes.every(v => v === Number.MAX_VALUE),
+    JSON.stringify(legacy.snap.normalRealTimes.slice(0, 3)));
+  check("[G] 鏃у瓨妗ｆ棤闄愭寫鎴樼幇瀹炴椂闂村悓鏍锋槸鍝ㄥ叺",
+    legacy.snap.infinityRealTimes.length === 8 && legacy.snap.infinityRealTimes.every(v => v === Number.MAX_VALUE));
+  check("[G] 杞藉叆鐬棿 totalInGameTime 涓?0锛堜笉鍋氭棤鏍规嵁鐨勬帹绠楋級", legacy.snap.totalInGame === 0, String(legacy.snap.totalInGame));
+  check("[G] 棣栧抚鎶婄疮璁″櫒鎸夊綋鏃剁殑鍊嶇巼琛ラ綈涓€娆★紙涓嶈烦鎴?0锛?,
+    near(legacy.after.totalInGame, legacy.snap.totalRaw / legacy.snap.factor + 100 / legacy.snap.factor, 2),
+    `${legacy.after.totalInGame} 鈮?${legacy.snap.totalRaw / legacy.snap.factor}`);
+  check("[G] 琛ラ綈鍚?totalInGameTimeMs() 涓庤ˉ榻愬€间竴鑷?,
+    near(legacy.snap.bestEternityReal, legacy.snap.bestEternityReal, 0) &&
+    legacy.snap.totalTimePlayedDisplay > 0,
+    String(legacy.snap.totalTimePlayedDisplay));
+
+  // 閲嶅鍔犺浇涓嶉噸澶嶆崲绠?  const twice = await page.evaluate(async (text) => {
+    const load = (t) => {
+      const obj = GameSaveSerializer.deserialize(t);
+      player = obj;
+      player.lastUpdate = Date.now();
+      GameStorage.loadPlayerObject(player);
+      player.lastUpdate = Date.now();
+      GameIntervals.gameLoop.stop();
+      const P = window.__probe;
+      const snap = { totalInGame: player.records.totalInGameTime, thisInGame: player.records.thisInfinity.inGameTime };
+      gameLoop(100);
+      const d = P.delta(snap, P.read());
+      return { snap, d };
+    };
+    GameSpeed.set(10000);
+    const first = load(text);
+    const second = load(text);
+    return { first, second };
+  }, saveText);
+  check("[G] 閲嶅鍔犺浇涓ゆ锛氳ˉ榻愬熀鍑嗕竴鑷达紙骞傜瓑锛?,
+    near(twice.first.snap.totalInGame, twice.second.snap.totalInGame, 1e-6),
+    `${twice.first.snap.totalInGame} vs ${twice.second.snap.totalInGame}`);
+  check("[G] 閲嶅鍔犺浇涓ゆ锛氬悓涓€甯х殑娓告垙鍐呮椂闂村閲忎竴鑷?,
+    near(twice.first.d.inGame, 0.01, 1e-3),
+    `绗竴娆″閲?${twice.first.d.inGame}`);
+}
+
+// =====================================================================
+console.log("\n### H. 绂荤嚎缁撶畻锛坰imulateTime锛?);
+const offline = await page.evaluate(() => {
+  const P = window.__probe;
+  const run = (factor) => {
+    GameSpeed.set(factor);
+    player.options.gamePaused = false;
+    player.challenge.eternity.current = 0;
+    player.lastUpdate = Date.now();
+    const before = P.read();
+    try { GameIntervals.gameLoop.stop(); } catch { /* ignore */ }
+    simulateTime(1, true);
+    try { GameIntervals.gameLoop.stop(); } catch { /* ignore */ }
+    const after = P.read();
+    return { d: P.delta(before, after), factor };
+  };
+  return { f1: run(1), f10000: run(10000) };
+});
+check("[H] 1脳 绂荤嚎 1 绉掞細鐜板疄鏃堕棿绾?+1000ms", near(offline.f1.d.real, 1000, 40), String(offline.f1.d.real));
+check("[H] 1脳 绂荤嚎 1 绉掞細娓告垙鏃堕棿涓庣幇瀹炴椂闂村悓閲忕骇",
+  near(offline.f1.d.raw, offline.f1.d.real, 60), `${offline.f1.d.raw} vs ${offline.f1.d.real}`);
+check("[H] 1脳 绂荤嚎锛氭父鎴忓唴鏃堕棿澧為噺 = 鐜板疄鏃堕棿澧為噺", near(offline.f1.d.inGame, offline.f1.d.real, 60),
+  `${offline.f1.d.inGame} vs ${offline.f1.d.real}`);
+check("[H] 10000脳 绂荤嚎 1 绉掞細鐜板疄鏃堕棿浠嶇害 +1000ms锛堢绾夸笉鏀惧ぇ鐜板疄鏃堕棿锛?,
+  near(offline.f10000.d.real, 1000, 40), String(offline.f10000.d.real));
+check("[H] 10000脳 绂荤嚎 1 绉掞細娓告垙鏃堕棿鏄幇瀹炴椂闂寸殑 10000 鍊?,
+  near(offline.f10000.d.raw / offline.f10000.d.real, 10000, 60),
+  String(offline.f10000.d.raw / offline.f10000.d.real));
+check("[H] 10000脳 绂荤嚎锛氭父鎴忓唴鏃堕棿澧為噺浠嶇瓑浜庣幇瀹炴椂闂村閲?,
+  near(offline.f10000.d.inGame, offline.f10000.d.real, 60),
+  `${offline.f10000.d.inGame} vs ${offline.f10000.d.real}`);
+
+// =====================================================================
+console.log("\n### I. Enslaved 鍌ㄥ瓨鐜板疄鏃堕棿");
+const enslaved = await page.evaluate(() => {
+  const canForce = typeof Enslaved !== "undefined" && Enslaved.isUnlocked;
+  if (!canForce) return { skipped: true, unlocked: false };
+  GameSpeed.set(10000);
+  player.challenge.eternity.current = 0;
+  player.celestials.enslaved.isStoringReal = true;
+  if (!Enslaved.isStoringRealTime) {
+    player.celestials.enslaved.isStoringReal = false;
+    return { skipped: true, unlocked: true, storing: false };
+  }
+  const P = window.__probe;
+  player.lastUpdate = Date.now() - 200;   // 妯℃嫙涓€娆?200ms 鐨勫閽熼棿闅?  const before = P.read();
+  gameLoop();
+  const after = P.read();
+  player.celestials.enslaved.isStoringReal = false;
+  player.lastUpdate = Date.now();
+  return { skipped: false, d: P.delta(before, after) };
+});
+if (enslaved.skipped) {
+  skip("[I] Enslaved 鍌ㄥ瓨鐜板疄鏃堕棿", enslaved.unlocked ? "璇ラ樁娈靛瓨妗ｆ棤娉曡繘鍏ュ瓨鍌ㄧ幇瀹炴椂闂寸姸鎬? : "瀛樻。鏈В閿?Enslaved");
+} else {
+  check("[I] 鍌ㄥ瓨鐜板疄鏃堕棿鏃剁幇瀹炴椂闂寸収甯哥疮璁★紙绾?200ms锛?, near(enslaved.d.real, 200, 25), String(enslaved.d.real));
+  check("[I] 鍌ㄥ瓨鐜板疄鏃堕棿鏃朵笉浜х敓娓告垙鏃堕棿", near(enslaved.d.raw, 0, 1e-6), String(enslaved.d.raw));
+  check("[I] 鍌ㄥ瓨鐜板疄鏃堕棿鏃舵父鎴忓唴鏃堕棿涔熶笉澧為暱", near(enslaved.d.inGame, 0, 1e-6), String(enslaved.d.inGame));
+}
+
+// =====================================================================
+console.log("\n### J. 椤甸潰鏃犺剼鏈紓甯?);
+check("[J] 鍏ㄦ祦绋嬫棤鏈崟鑾疯剼鏈敊璇?, errs.length === 0, errs.slice(0, 3).join(" | "));
+
+await browser.close();
+server.close();
+
+const passed = results.filter(r => r.p).length;
+const failed = results.length - passed;
+console.log(`\n==== 缁撴灉: ${passed} 閫氳繃 / ${failed} 澶辫触 / ${skips.length} 鏈墽琛?====`);
+if (skips.length) {
+  console.log("鏈墽琛岄」锛?);
+  for (const s of skips) console.log(`  - ${s.n}锛?{s.why}`);
+}
+if (failed) {
+  console.log("澶辫触椤癸細");
+  for (const r of results.filter(x => !x.p)) console.log(`  - ${r.n}  ${r.d}`);
+  process.exit(1);
+}

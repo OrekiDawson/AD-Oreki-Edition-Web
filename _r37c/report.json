@@ -1,0 +1,3568 @@
+{
+  "at": "2026-10-30T05:23:46.674Z",
+  "viewports": [
+    {
+      "viewport": "320",
+      "w": 320,
+      "h": 640,
+      "tabs": [
+        {
+          "tab": "dimensions",
+          "switched": true,
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 36,
+          "heightHistogram": {
+            "44": 5,
+            "46": 5,
+            "47": 8,
+            "48": 13,
+            "60": 2,
+            "127": 3
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "automation",
+          "switched": true,
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 33,
+          "heightHistogram": {
+            "44": 5,
+            "46": 5,
+            "47": 8,
+            "48": 6,
+            "69": 9
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "challenges",
+          "switched": true,
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 37,
+          "heightHistogram": {
+            "44": 6,
+            "46": 6,
+            "47": 9,
+            "48": 4,
+            "56": 12
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 4
+        },
+        {
+          "tab": "infinity",
+          "switched": "Cannot read properties of undefined (reading 'isAvailable')",
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 37,
+          "heightHistogram": {
+            "44": 6,
+            "46": 6,
+            "47": 9,
+            "48": 4,
+            "56": 12
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 4
+        },
+        {
+          "tab": "eternity",
+          "switched": true,
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 120,
+          "heightHistogram": {
+            "44": 21,
+            "46": 8,
+            "47": 18,
+            "48": 11,
+            "70": 2,
+            "100": 60
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "reality",
+          "switched": true,
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 52,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 18,
+            "48": 16,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "celestials",
+          "switched": true,
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 39,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 17,
+            "48": 4,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "achievements",
+          "switched": true,
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 21,
+            "48": 14,
+            "56": 3,
+            "60": 2,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "statistics",
+          "switched": true,
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 44,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 21,
+            "48": 5,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "options",
+          "switched": true,
+          "vw": 320,
+          "docScrollW": 320,
+          "docClientW": 320,
+          "bodyScrollW": 320,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 53,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 21,
+            "48": 13,
+            "50": 1,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        }
+      ]
+    },
+    {
+      "viewport": "360",
+      "w": 360,
+      "h": 640,
+      "tabs": [
+        {
+          "tab": "dimensions",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 59,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 14,
+            "60": 2,
+            "70": 2,
+            "76": 3
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "automation",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "challenges",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "infinity",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 65,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "70": 2,
+            "90": 18,
+            "192": 1
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "eternity",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 100,
+          "heightHistogram": {
+            "44": 21,
+            "46": 8,
+            "47": 22,
+            "48": 11,
+            "70": 2,
+            "100": 36
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "reality",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "celestials",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 48,
+          "heightHistogram": {
+            "44": 9,
+            "46": 9,
+            "47": 24,
+            "48": 4,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 4
+        },
+        {
+          "tab": "achievements",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 45,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 1
+        },
+        {
+          "tab": "statistics",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 45,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "options",
+          "switched": true,
+          "vw": 360,
+          "docScrollW": 360,
+          "docClientW": 360,
+          "bodyScrollW": 360,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 655,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        }
+      ]
+    },
+    {
+      "viewport": "392",
+      "w": 392,
+      "h": 676,
+      "tabs": [
+        {
+          "tab": "dimensions",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 59,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 14,
+            "56": 3,
+            "60": 2,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 1
+        },
+        {
+          "tab": "automation",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 68,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 24,
+            "61": 3,
+            "70": 2,
+            "116": 1
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "challenges",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "infinity",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 65,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "70": 2,
+            "90": 18,
+            "192": 1
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "eternity",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 108,
+          "heightHistogram": {
+            "44": 21,
+            "46": 8,
+            "47": 22,
+            "48": 11,
+            "70": 2,
+            "100": 44
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "reality",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "celestials",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 48,
+          "heightHistogram": {
+            "44": 9,
+            "46": 9,
+            "47": 24,
+            "48": 4,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "achievements",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 45,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "statistics",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 45,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "options",
+          "switched": true,
+          "vw": 392,
+          "docScrollW": 392,
+          "docClientW": 392,
+          "bodyScrollW": 392,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 691,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        }
+      ]
+    },
+    {
+      "viewport": "430",
+      "w": 430,
+      "h": 932,
+      "tabs": [
+        {
+          "tab": "dimensions",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 59,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 14,
+            "56": 3,
+            "60": 2,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "automation",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "challenges",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "infinity",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 65,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "70": 2,
+            "90": 18,
+            "192": 1
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "eternity",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "reality",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 61,
+          "heightHistogram": {
+            "44": 9,
+            "46": 9,
+            "47": 25,
+            "48": 16,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "celestials",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 6,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 4
+        },
+        {
+          "tab": "achievements",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 45,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 4
+        },
+        {
+          "tab": "statistics",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 45,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 4
+        },
+        {
+          "tab": "options",
+          "switched": true,
+          "vw": 430,
+          "docScrollW": 430,
+          "docClientW": 430,
+          "bodyScrollW": 430,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 947,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 54,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 13,
+            "50": 1,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        }
+      ]
+    },
+    {
+      "viewport": "768",
+      "w": 768,
+      "h": 1024,
+      "tabs": [
+        {
+          "tab": "dimensions",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 16,
+            "60": 2,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "automation",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 67,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 26,
+            "70": 2,
+            "80": 1
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "challenges",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 57,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "infinity",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 64,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "70": 2,
+            "90": 18,
+            "192": 1
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "eternity",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 91,
+          "heightHistogram": {
+            "44": 21,
+            "46": 8,
+            "47": 22,
+            "48": 10,
+            "70": 2,
+            "100": 28
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "reality",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 60,
+          "heightHistogram": {
+            "44": 9,
+            "46": 9,
+            "47": 25,
+            "48": 15,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "celestials",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 47,
+          "heightHistogram": {
+            "44": 9,
+            "46": 9,
+            "47": 24,
+            "48": 3,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "achievements",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 44,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 4,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 1
+        },
+        {
+          "tab": "statistics",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 44,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 4,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 1
+        },
+        {
+          "tab": "options",
+          "switched": true,
+          "vw": 768,
+          "docScrollW": 768,
+          "docClientW": 768,
+          "bodyScrollW": 768,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 1024,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 53,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 12,
+            "50": 1,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 1
+        }
+      ]
+    },
+    {
+      "viewport": "1280",
+      "w": 1280,
+      "h": 800,
+      "tabs": [
+        {
+          "tab": "dimensions",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "20": 2,
+            "25": 3,
+            "30": 2,
+            "36": 1,
+            "44": 16,
+            "46": 8,
+            "47": 22,
+            "60": 2,
+            "70": 2
+          },
+          "tooSmallCount": 8,
+          "tooSmallSample": [
+            {
+              "cls": "o-primary-btn l-button-container",
+              "w": 120,
+              "h": 30,
+              "x": 178,
+              "y": 202,
+              "right": 298
+            },
+            {
+              "cls": "o-primary-btn o-primary-btn--sacrifice o-primary-btn",
+              "w": 480,
+              "h": 25,
+              "x": 453,
+              "y": 202,
+              "right": 933
+            },
+            {
+              "cls": "o-primary-btn l-button-container",
+              "w": 120,
+              "h": 30,
+              "x": 1095,
+              "y": 202,
+              "right": 1215
+            },
+            {
+              "cls": "o-primary-btn tickspeed-btn o-primary-btn--disabled ",
+              "w": 300,
+              "h": 25,
+              "x": 491,
+              "y": 254,
+              "right": 791
+            },
+            {
+              "cls": "o-primary-btn tickspeed-max-btn o-primary-btn--disab",
+              "w": 100,
+              "h": 25,
+              "x": 802,
+              "y": 254,
+              "right": 902
+            },
+            {
+              "cls": "o-tab-btn l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 45,
+              "right": 1260
+            },
+            {
+              "cls": "o-tab-btn l-information l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 69,
+              "right": 1260
+            },
+            {
+              "cls": "c-oreki-tut-entry",
+              "w": 64,
+              "h": 36,
+              "x": 1211,
+              "y": 758,
+              "right": 1274
+            }
+          ],
+          "notificationCount": 1
+        },
+        {
+          "tab": "automation",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 67,
+          "heightHistogram": {
+            "20": 2,
+            "25": 6,
+            "35": 17,
+            "36": 1,
+            "40": 1,
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "70": 2
+          },
+          "tooSmallCount": 27,
+          "tooSmallSample": [
+            {
+              "cls": "o-primary-btn o-primary-btn--subtab-option",
+              "w": 113,
+              "h": 25,
+              "x": 433,
+              "y": 196,
+              "right": 546
+            },
+            {
+              "cls": "o-primary-btn o-primary-btn--subtab-option",
+              "w": 139,
+              "h": 25,
+              "x": 562,
+              "y": 196,
+              "right": 701
+            },
+            {
+              "cls": "o-primary-btn o-primary-btn--subtab-option",
+              "w": 243,
+              "h": 25,
+              "x": 717,
+              "y": 196,
+              "right": 960
+            },
+            {
+              "cls": "o-primary-btn c-autobuyer-box__mode-select c-autobuy",
+              "w": 229,
+              "h": 40,
+              "x": 468,
+              "y": 368,
+              "right": 697
+            },
+            {
+              "cls": "o-primary-btn c-autobuyer-box__mode-select l-autobuy",
+              "w": 229,
+              "h": 25,
+              "x": 468,
+              "y": 408,
+              "right": 697
+            },
+            {
+              "cls": "o-primary-btn c-autobuyer-box__mode-select l-autobuy",
+              "w": 229,
+              "h": 25,
+              "x": 468,
+              "y": 433,
+              "right": 697
+            },
+            {
+              "cls": "o-primary-btn c-autobuyer-box__mode-select l-autobuy",
+              "w": 229,
+              "h": 25,
+              "x": 468,
+              "y": 458,
+              "right": 697
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 724,
+              "y": 621,
+              "right": 899
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 495,
+              "y": 698,
+              "right": 670
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 724,
+              "y": 698,
+              "right": 899
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 495,
+              "y": 776,
+              "right": 670
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 724,
+              "y": 776,
+              "right": 899
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 495,
+              "y": 853,
+              "right": 670
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 724,
+              "y": 853,
+              "right": 899
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 495,
+              "y": 931,
+              "right": 670
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 724,
+              "y": 931,
+              "right": 899
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 495,
+              "y": 1008,
+              "right": 670
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 724,
+              "y": 1008,
+              "right": 899
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 495,
+              "y": 1086,
+              "right": 670
+            },
+            {
+              "cls": "o-autobuyer-btn",
+              "w": 175,
+              "h": 35,
+              "x": 724,
+              "y": 1086,
+              "right": 899
+            }
+          ],
+          "notificationCount": 1
+        },
+        {
+          "tab": "challenges",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 57,
+          "heightHistogram": {
+            "20": 2,
+            "25": 2,
+            "30": 12,
+            "36": 1,
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "70": 2
+          },
+          "tooSmallCount": 17,
+          "tooSmallSample": [
+            {
+              "cls": "o-primary-btn o-primary-btn--subtab-option",
+              "w": 147,
+              "h": 25,
+              "x": 529,
+              "y": 201,
+              "right": 676
+            },
+            {
+              "cls": "o-primary-btn o-primary-btn--subtab-option",
+              "w": 173,
+              "h": 25,
+              "x": 692,
+              "y": 201,
+              "right": 864
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 407,
+              "y": 400,
+              "right": 557
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 827,
+              "y": 400,
+              "right": 977
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 407,
+              "y": 601,
+              "right": 557
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 827,
+              "y": 601,
+              "right": 977
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 407,
+              "y": 802,
+              "right": 557
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--locked o-challenge-",
+              "w": 150,
+              "h": 30,
+              "x": 827,
+              "y": 802,
+              "right": 977
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 407,
+              "y": 1003,
+              "right": 557
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 827,
+              "y": 1003,
+              "right": 977
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 407,
+              "y": 1204,
+              "right": 557
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 827,
+              "y": 1204,
+              "right": 977
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--completed o-challen",
+              "w": 150,
+              "h": 30,
+              "x": 407,
+              "y": 1405,
+              "right": 557
+            },
+            {
+              "cls": "o-challenge-btn o-challenge-btn--locked o-challenge-",
+              "w": 150,
+              "h": 30,
+              "x": 827,
+              "y": 1405,
+              "right": 977
+            },
+            {
+              "cls": "o-tab-btn l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 45,
+              "right": 1260
+            },
+            {
+              "cls": "o-tab-btn l-information l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 69,
+              "right": 1260
+            },
+            {
+              "cls": "c-oreki-tut-entry",
+              "w": 64,
+              "h": 36,
+              "x": 1211,
+              "y": 758,
+              "right": 1274
+            }
+          ],
+          "notificationCount": 1
+        },
+        {
+          "tab": "infinity",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 64,
+          "heightHistogram": {
+            "20": 2,
+            "25": 2,
+            "36": 1,
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "70": 2,
+            "90": 18,
+            "146": 1
+          },
+          "tooSmallCount": 5,
+          "tooSmallSample": [
+            {
+              "cls": "o-primary-btn l--spoon-btn-group__little-spoon o-pri",
+              "w": 190,
+              "h": 25,
+              "x": 496,
+              "y": 748,
+              "right": 686
+            },
+            {
+              "cls": "o-primary-btn l--spoon-btn-group__little-spoon o-pri",
+              "w": 190,
+              "h": 25,
+              "x": 496,
+              "y": 776,
+              "right": 686
+            },
+            {
+              "cls": "o-tab-btn l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 45,
+              "right": 1260
+            },
+            {
+              "cls": "o-tab-btn l-information l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 69,
+              "right": 1260
+            },
+            {
+              "cls": "c-oreki-tut-entry",
+              "w": 64,
+              "h": 36,
+              "x": 1211,
+              "y": 758,
+              "right": 1274
+            }
+          ],
+          "notificationCount": 1
+        },
+        {
+          "tab": "eternity",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 93,
+          "heightHistogram": {
+            "20": 2,
+            "22": 13,
+            "25": 3,
+            "36": 1,
+            "38": 4,
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "70": 2,
+            "100": 30
+          },
+          "tooSmallCount": 23,
+          "tooSmallSample": [
+            {
+              "cls": "o-primary-btn o-primary-btn--subtab-option",
+              "w": 113,
+              "h": 25,
+              "x": 479,
+              "y": 196,
+              "right": 592
+            },
+            {
+              "cls": "o-primary-btn o-primary-btn--subtab-option",
+              "w": 178,
+              "h": 25,
+              "x": 608,
+              "y": 196,
+              "right": 786
+            },
+            {
+              "cls": "o-primary-btn o-primary-btn--subtab-option",
+              "w": 113,
+              "h": 25,
+              "x": 802,
+              "y": 196,
+              "right": 915
+            },
+            {
+              "cls": "o-tab-btn l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 45,
+              "right": 1260
+            },
+            {
+              "cls": "o-tab-btn l-information l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 69,
+              "right": 1260
+            },
+            {
+              "cls": "l-tt-save-load-btn c-tt-buy-button c-tt-buy-button--",
+              "w": 28,
+              "h": 22,
+              "x": 370,
+              "y": 723,
+              "right": 397
+            },
+            {
+              "cls": "hover-menu__wrapper l-tt-save-load-btn__wrapper",
+              "w": 22,
+              "h": 22,
+              "x": 791,
+              "y": 715,
+              "right": 813
+            },
+            {
+              "cls": "l-tt-save-load-btn c-tt-buy-button c-tt-buy-button--",
+              "w": 22,
+              "h": 22,
+              "x": 791,
+              "y": 715,
+              "right": 813
+            },
+            {
+              "cls": "hover-menu__wrapper l-tt-save-load-btn__wrapper",
+              "w": 22,
+              "h": 22,
+              "x": 819,
+              "y": 715,
+              "right": 841
+            },
+            {
+              "cls": "l-tt-save-load-btn c-tt-buy-button c-tt-buy-button--",
+              "w": 22,
+              "h": 22,
+              "x": 819,
+              "y": 715,
+              "right": 841
+            },
+            {
+              "cls": "hover-menu__wrapper l-tt-save-load-btn__wrapper",
+              "w": 22,
+              "h": 22,
+              "x": 847,
+              "y": 715,
+              "right": 869
+            },
+            {
+              "cls": "l-tt-save-load-btn c-tt-buy-button c-tt-buy-button--",
+              "w": 22,
+              "h": 22,
+              "x": 847,
+              "y": 715,
+              "right": 869
+            },
+            {
+              "cls": "hover-menu__wrapper l-tt-save-load-btn__wrapper",
+              "w": 22,
+              "h": 22,
+              "x": 875,
+              "y": 715,
+              "right": 897
+            },
+            {
+              "cls": "l-tt-save-load-btn c-tt-buy-button c-tt-buy-button--",
+              "w": 22,
+              "h": 22,
+              "x": 875,
+              "y": 715,
+              "right": 897
+            },
+            {
+              "cls": "hover-menu__wrapper l-tt-save-load-btn__wrapper",
+              "w": 22,
+              "h": 22,
+              "x": 903,
+              "y": 715,
+              "right": 925
+            },
+            {
+              "cls": "l-tt-save-load-btn c-tt-buy-button c-tt-buy-button--",
+              "w": 22,
+              "h": 22,
+              "x": 903,
+              "y": 715,
+              "right": 925
+            },
+            {
+              "cls": "hover-menu__wrapper l-tt-save-load-btn__wrapper",
+              "w": 22,
+              "h": 22,
+              "x": 931,
+              "y": 715,
+              "right": 953
+            },
+            {
+              "cls": "l-tt-save-load-btn c-tt-buy-button c-tt-buy-button--",
+              "w": 22,
+              "h": 22,
+              "x": 931,
+              "y": 715,
+              "right": 953
+            },
+            {
+              "cls": "l-tt-buy-button c-tt-buy-button c-tt-buy-button--loc",
+              "w": 158,
+              "h": 38,
+              "x": 373,
+              "y": 759,
+              "right": 531
+            },
+            {
+              "cls": "l-tt-buy-button c-tt-buy-button c-tt-buy-button--loc",
+              "w": 158,
+              "h": 38,
+              "x": 537,
+              "y": 759,
+              "right": 695
+            }
+          ],
+          "notificationCount": 1
+        },
+        {
+          "tab": "reality",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 60,
+          "heightHistogram": {
+            "20": 2,
+            "25": 2,
+            "27": 9,
+            "35": 1,
+            "36": 1,
+            "44": 9,
+            "46": 9,
+            "47": 25,
+            "70": 2
+          },
+          "tooSmallCount": 15,
+          "tooSmallSample": [
+            {
+              "cls": "c-glyph-inventory-option",
+              "w": 190,
+              "h": 27,
+              "x": 167,
+              "y": 352,
+              "right": 357
+            },
+            {
+              "cls": "c-glyph-inventory-option",
+              "w": 190,
+              "h": 27,
+              "x": 167,
+              "y": 384,
+              "right": 357
+            },
+            {
+              "cls": "c-glyph-inventory-option",
+              "w": 190,
+              "h": 27,
+              "x": 167,
+              "y": 416,
+              "right": 357
+            },
+            {
+              "cls": "c-glyph-inventory-option",
+              "w": 190,
+              "h": 27,
+              "x": 167,
+              "y": 448,
+              "right": 357
+            },
+            {
+              "cls": "c-glyph-inventory-option",
+              "w": 190,
+              "h": 27,
+              "x": 367,
+              "y": 352,
+              "right": 557
+            },
+            {
+              "cls": "c-glyph-inventory-option",
+              "w": 190,
+              "h": 27,
+              "x": 367,
+              "y": 384,
+              "right": 557
+            },
+            {
+              "cls": "c-glyph-inventory-option",
+              "w": 190,
+              "h": 27,
+              "x": 367,
+              "y": 416,
+              "right": 557
+            },
+            {
+              "cls": "c-glyph-inventory-option",
+              "w": 190,
+              "h": 27,
+              "x": 267,
+              "y": 511,
+              "right": 457
+            },
+            {
+              "cls": "c-glyph-inventory-option",
+              "w": 190,
+              "h": 27,
+              "x": 267,
+              "y": 543,
+              "right": 457
+            },
+            {
+              "cls": "c-reality-upgrade-btn l-glyph-equip-button-short",
+              "w": 106,
+              "h": 25,
+              "x": 649,
+              "y": 405,
+              "right": 755
+            },
+            {
+              "cls": "l-glyph-equip-button c-reality-upgrade-btn",
+              "w": 106,
+              "h": 35,
+              "x": 649,
+              "y": 435,
+              "right": 755
+            },
+            {
+              "cls": "l-glyph-equip-button-short c-reality-upgrade-btn",
+              "w": 106,
+              "h": 25,
+              "x": 649,
+              "y": 475,
+              "right": 755
+            },
+            {
+              "cls": "o-tab-btn l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 45,
+              "right": 1260
+            },
+            {
+              "cls": "o-tab-btn l-information l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 69,
+              "right": 1260
+            },
+            {
+              "cls": "c-oreki-tut-entry",
+              "w": 64,
+              "h": 36,
+              "x": 1211,
+              "y": 758,
+              "right": 1274
+            }
+          ],
+          "notificationCount": 1
+        },
+        {
+          "tab": "celestials",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 47,
+          "heightHistogram": {
+            "20": 2,
+            "36": 1,
+            "44": 9,
+            "46": 9,
+            "47": 24,
+            "70": 2
+          },
+          "tooSmallCount": 3,
+          "tooSmallSample": [
+            {
+              "cls": "o-tab-btn l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 45,
+              "right": 1260
+            },
+            {
+              "cls": "o-tab-btn l-information l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 69,
+              "right": 1260
+            },
+            {
+              "cls": "c-oreki-tut-entry",
+              "w": 64,
+              "h": 36,
+              "x": 1211,
+              "y": 758,
+              "right": 1274
+            }
+          ],
+          "notificationCount": 1
+        },
+        {
+          "tab": "achievements",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 44,
+          "heightHistogram": {
+            "20": 2,
+            "25": 1,
+            "36": 1,
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "70": 2
+          },
+          "tooSmallCount": 4,
+          "tooSmallSample": [
+            {
+              "cls": "o-primary-btn o-primary-btn--subtab-option",
+              "w": 212,
+              "h": 25,
+              "x": 591,
+              "y": 196,
+              "right": 802
+            },
+            {
+              "cls": "o-tab-btn l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 45,
+              "right": 1260
+            },
+            {
+              "cls": "o-tab-btn l-information l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 69,
+              "right": 1260
+            },
+            {
+              "cls": "c-oreki-tut-entry",
+              "w": 64,
+              "h": 36,
+              "x": 1211,
+              "y": 758,
+              "right": 1274
+            }
+          ],
+          "notificationCount": 1
+        },
+        {
+          "tab": "statistics",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 44,
+          "heightHistogram": {
+            "20": 2,
+            "25": 1,
+            "36": 1,
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "70": 2
+          },
+          "tooSmallCount": 4,
+          "tooSmallSample": [
+            {
+              "cls": "o-primary-btn",
+              "w": 100,
+              "h": 25,
+              "x": 646,
+              "y": 192,
+              "right": 746
+            },
+            {
+              "cls": "o-tab-btn l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 45,
+              "right": 1260
+            },
+            {
+              "cls": "o-tab-btn l-information l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 69,
+              "right": 1260
+            },
+            {
+              "cls": "c-oreki-tut-entry",
+              "w": 64,
+              "h": 36,
+              "x": 1211,
+              "y": 758,
+              "right": 1274
+            }
+          ],
+          "notificationCount": 1
+        },
+        {
+          "tab": "options",
+          "switched": true,
+          "vw": 1280,
+          "docScrollW": 1280,
+          "docClientW": 1280,
+          "bodyScrollW": 1280,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 161,
+              "h": 36,
+              "x": -9999999,
+              "y": 800,
+              "right": -9999838
+            }
+          ],
+          "buttonCount": 53,
+          "heightHistogram": {
+            "20": 2,
+            "36": 1,
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "55": 10,
+            "70": 2
+          },
+          "tooSmallCount": 3,
+          "tooSmallSample": [
+            {
+              "cls": "o-tab-btn l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 45,
+              "right": 1260
+            },
+            {
+              "cls": "o-tab-btn l-information l-help-me",
+              "w": 20,
+              "h": 20,
+              "x": 1240,
+              "y": 69,
+              "right": 1260
+            },
+            {
+              "cls": "c-oreki-tut-entry",
+              "w": 64,
+              "h": 36,
+              "x": 1211,
+              "y": 758,
+              "right": 1274
+            }
+          ],
+          "notificationCount": 1
+        }
+      ]
+    },
+    {
+      "viewport": "676x392",
+      "w": 676,
+      "h": 392,
+      "tabs": [
+        {
+          "tab": "dimensions",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 58,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 16,
+            "60": 2,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 4
+        },
+        {
+          "tab": "automation",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 67,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 26,
+            "70": 2,
+            "80": 1
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 5
+        },
+        {
+          "tab": "challenges",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 57,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "56": 12,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "infinity",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 64,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 5,
+            "70": 2,
+            "90": 18,
+            "192": 1
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "eternity",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 101,
+          "heightHistogram": {
+            "44": 21,
+            "46": 8,
+            "47": 22,
+            "48": 10,
+            "70": 2,
+            "100": 38
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "reality",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 60,
+          "heightHistogram": {
+            "44": 9,
+            "46": 9,
+            "47": 25,
+            "48": 15,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "celestials",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 47,
+          "heightHistogram": {
+            "44": 9,
+            "46": 9,
+            "47": 24,
+            "48": 3,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "achievements",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 44,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 4,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 3
+        },
+        {
+          "tab": "statistics",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 44,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 4,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        },
+        {
+          "tab": "options",
+          "switched": true,
+          "vw": 676,
+          "docScrollW": 676,
+          "docClientW": 676,
+          "bodyScrollW": 676,
+          "pageOverflowX": false,
+          "overflowCount": 0,
+          "overflowSample": [],
+          "leftOverflowCount": 1,
+          "leftSample": [
+            {
+              "cls": "TEXTAREA",
+              "w": 150,
+              "h": 36,
+              "x": -9999999,
+              "y": 392,
+              "right": -9999849
+            }
+          ],
+          "buttonCount": 53,
+          "heightHistogram": {
+            "44": 8,
+            "46": 8,
+            "47": 22,
+            "48": 12,
+            "50": 1,
+            "70": 2
+          },
+          "tooSmallCount": 0,
+          "tooSmallSample": [],
+          "notificationCount": 2
+        }
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "pageErrorCount": 0,
+  "startButton": "你拥有 3.77e19 反物质。\n你每秒获得 3.35e16",
+  "sidebar": {
+    "modernSidebar": true,
+    "items": [
+      "维度",
+      "自动化",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "count": 5,
+    "sideRect": {
+      "x": 0,
+      "y": 0,
+      "w": 56,
+      "h": 225
+    },
+    "shopInSidebar": false,
+    "shopRect": null,
+    "tabbarFallback": 5
+  },
+  "news": {
+    "tickerCount": 0,
+    "tickers": [],
+    "newsWordInBody": false,
+    "gameContainer": {
+      "marginTop": "0px",
+      "top": 0,
+      "h": 488,
+      "children": [
+        {
+          "cls": "tab-container",
+          "top": 0,
+          "h": 1504
+        }
+      ]
+    },
+    "sidebarFirstChildTop": -1,
+    "sidebarTop": 0
+  },
+  "newsInOptions": {
+    "optionsHasNewsWord": false,
+    "hits": [],
+    "newsModalRegistered": true
+  },
+  "notify": {
+    "baseline": 0,
+    "visibleCount": 4,
+    "visibleTexts": [
+      "通知实测 1 ×2",
+      "通知实测 2",
+      "通知实测 3",
+      "通知实测 4"
+    ],
+    "rects": [
+      {
+        "text": "通知实测 1",
+        "top": 113,
+        "h": 31,
+        "right": 733,
+        "w": 79
+      },
+      {
+        "text": "通知实测 2",
+        "top": 78,
+        "h": 31,
+        "right": 733,
+        "w": 79
+      },
+      {
+        "text": "通知实测 3",
+        "top": 44,
+        "h": 31,
+        "right": 733,
+        "w": 79
+      },
+      {
+        "text": "通知实测 4",
+        "top": 9,
+        "h": 31,
+        "right": 733,
+        "w": 79
+      }
+    ],
+    "overflowText": "还有 125 条提示",
+    "mergedBefore": 4,
+    "mergedAfter": 4,
+    "mergedTexts": [
+      "通知实测 1 ×2",
+      "通知实测 2",
+      "通知实测 3",
+      "通知实测 4"
+    ],
+    "maxRight": 733,
+    "innerWidth": 756
+  },
+  "scaffold": {
+    "ok": true,
+    "tabs": [
+      "dimensions",
+      "options",
+      "statistics",
+      "achievements",
+      "automation",
+      "challenges",
+      "infinity",
+      "eternity",
+      "reality",
+      "celestials",
+      "shop"
+    ]
+  },
+  "sidebarAfterScaffold": [
+    "维度",
+    "自动化",
+    "挑战",
+    "无限",
+    "永恒",
+    "现实",
+    "天神",
+    "成就",
+    "统计数据",
+    "选项"
+  ],
+  "modalChecks": [
+    {
+      "kind": "page",
+      "vp": "320",
+      "key": "dimensions",
+      "pageOverflowX": false,
+      "overflowCount": 0,
+      "tooSmallCount": 0,
+      "sample": []
+    },
+    {
+      "kind": "page",
+      "vp": "320",
+      "key": "challenges",
+      "pageOverflowX": false,
+      "overflowCount": 0,
+      "tooSmallCount": 0,
+      "sample": []
+    },
+    {
+      "kind": "page",
+      "vp": "320",
+      "key": "automation",
+      "pageOverflowX": false,
+      "overflowCount": 0,
+      "tooSmallCount": 0,
+      "sample": []
+    },
+    {
+      "kind": "page",
+      "vp": "320",
+      "key": "reality",
+      "pageOverflowX": false,
+      "overflowCount": 0,
+      "tooSmallCount": 0,
+      "sample": []
+    },
+    {
+      "kind": "h2p",
+      "vp": "320",
+      "rect": {
+        "x": 23,
+        "y": 20,
+        "w": 274,
+        "h": 600,
+        "right": 297,
+        "bottom": 620
+      },
+      "fitsViewport": true,
+      "bodyScrollable": true,
+      "bodyRect": {
+        "w": 266,
+        "h": 321
+      },
+      "closeBtnSize": {
+        "w": 44,
+        "h": 48
+      },
+      "tabListScrollable": true,
+      "title": "游戏帮助",
+      "firstTab": "新手教程"
+    },
+    {
+      "kind": "page",
+      "vp": "392",
+      "key": "dimensions",
+      "pageOverflowX": false,
+      "overflowCount": 0,
+      "tooSmallCount": 0,
+      "sample": []
+    },
+    {
+      "kind": "page",
+      "vp": "392",
+      "key": "challenges",
+      "pageOverflowX": false,
+      "overflowCount": 0,
+      "tooSmallCount": 0,
+      "sample": []
+    },
+    {
+      "kind": "page",
+      "vp": "392",
+      "key": "automation",
+      "pageOverflowX": false,
+      "overflowCount": 0,
+      "tooSmallCount": 0,
+      "sample": []
+    },
+    {
+      "kind": "page",
+      "vp": "392",
+      "key": "reality",
+      "pageOverflowX": false,
+      "overflowCount": 0,
+      "tooSmallCount": 0,
+      "sample": []
+    },
+    {
+      "kind": "h2p",
+      "vp": "392",
+      "rect": {
+        "x": 23,
+        "y": 20,
+        "w": 346,
+        "h": 636,
+        "right": 369,
+        "bottom": 656
+      },
+      "fitsViewport": true,
+      "bodyScrollable": true,
+      "bodyRect": {
+        "w": 338,
+        "h": 347
+      },
+      "closeBtnSize": {
+        "w": 44,
+        "h": 48
+      },
+      "tabListScrollable": true,
+      "title": "游戏帮助",
+      "firstTab": "新手教程"
+    }
+  ],
+  "summary": {
+    "sidebarCount": 5,
+    "sidebarItems": [
+      "维度",
+      "自动化",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "newsTickerCount": 0,
+    "notifyVisible": 4,
+    "perViewport": [
+      {
+        "vp": "320",
+        "maxOverflow": 0,
+        "pagesOverflow": [],
+        "maxTooSmall": 0,
+        "tooSmallPages": []
+      },
+      {
+        "vp": "360",
+        "maxOverflow": 0,
+        "pagesOverflow": [],
+        "maxTooSmall": 0,
+        "tooSmallPages": []
+      },
+      {
+        "vp": "392",
+        "maxOverflow": 0,
+        "pagesOverflow": [],
+        "maxTooSmall": 0,
+        "tooSmallPages": []
+      },
+      {
+        "vp": "430",
+        "maxOverflow": 0,
+        "pagesOverflow": [],
+        "maxTooSmall": 0,
+        "tooSmallPages": []
+      },
+      {
+        "vp": "768",
+        "maxOverflow": 0,
+        "pagesOverflow": [],
+        "maxTooSmall": 0,
+        "tooSmallPages": []
+      },
+      {
+        "vp": "1280",
+        "maxOverflow": 0,
+        "pagesOverflow": [],
+        "maxTooSmall": 27,
+        "tooSmallPages": [
+          "dimensions:8",
+          "automation:27",
+          "challenges:17",
+          "infinity:5",
+          "eternity:23",
+          "reality:15",
+          "celestials:3",
+          "achievements:4",
+          "statistics:4",
+          "options:3"
+        ]
+      },
+      {
+        "vp": "676x392",
+        "maxOverflow": 0,
+        "pagesOverflow": [],
+        "maxTooSmall": 0,
+        "tooSmallPages": []
+      }
+    ]
+  }
+}

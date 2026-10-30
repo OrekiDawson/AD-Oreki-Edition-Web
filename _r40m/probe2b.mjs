@@ -1,0 +1,26 @@
+import puppeteer from "puppeteer-core";
+const b = await puppeteer.connect({ browserURL: "http://127.0.0.1:9372", defaultViewport: null });
+const pages = await b.pages();
+const page = pages.find(p => p.url().includes("8882")) || pages[0];
+const out = await page.evaluate(() => {
+  const o = {};
+  const safe = (k, f) => { try { o[k] = f(); } catch (e) { o[k] = "ERR:" + (e && e.message); } };
+  safe("endgame", () => JSON.stringify(globalThis.OrekiEndgameAutomation?.debugState));
+  safe("sprint", () => JSON.stringify(globalThis.OrekiIu15Sprint?.debugState));
+  safe("iu15possible", () => { try { const u = ImaginaryUpgrade(15); return JSON.stringify({ bought: u.isBought, avail: u.isAvailableForPurchase, poss: u.isPossible, hasFailed: u.hasFailed, cost: String(u.cost) }); } catch (e) { return "ERR"; } });
+  safe("iu25state", () => { try { const u = ImaginaryUpgrade(25); return JSON.stringify({ bought: u.isBought, avail: u.isAvailableForPurchase, poss: u.isPossible, hasFailed: u.hasFailed, cost: String(u.cost) }); } catch (e) { return "ERR"; } });
+  safe("maxID1", () => String(player.requirementChecks.reality.maxID1));
+  safe("amE", () => Number(player.antimatter.exponent));
+  safe("imL", () => { try { return Math.log10(Number(Currency.imaginaryMachines.value)); } catch (e) { return null; } });
+  safe("ds6", () => TimeStudy.reality.isBought);
+  safe("dilUnl", () => PlayerProgress.dilationUnlocked());
+  safe("laitela", () => { try { return JSON.stringify({ unl: Laitela.isUnlocked, tier: player.celestials.laitela.difficultyTier, run: Laitela.isRunning, maxDim: Laitela.maxAllowedDimension, ent: player.celestials.laitela.entropy }); } catch (e) { return "ERR"; } });
+  safe("realities", () => player.realities);
+  safe("ecDone", () => [1,2,3,4,5,6,7,8,9,10,11,12].map(i => EternityChallenge(i).completions).join("/"));
+  safe("hold", () => ({ endgame: globalThis.OrekiCelestialAutomation?.holdReality === true, lui: globalThis.OrekiEndgameAutomation?.holdForLaitela === true }));
+  safe("pelle", () => JSON.stringify({ unl: Pelle.isUnlocked, doomed: Pelle.isDoomed, pamE: Number(player.celestials?.pelle?.records?.totalAntimatter?.exponent ?? 0) }));
+  safe("gameEnd", () => ({ isGameEnd: player.isGameEnd === true, endState: (() => { try { return Number(GameEnd.endState); } catch (e) { return null; } })() }));
+  return o;
+});
+console.log(JSON.stringify(out, null, 1));
+b.disconnect();

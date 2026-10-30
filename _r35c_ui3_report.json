@@ -1,0 +1,404 @@
+{
+  "steps": [
+    {
+      "step": "逐项真实触摸（player.tabs 证据）",
+      "visited": [
+        {
+          "tap": "维度",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        },
+        {
+          "tap": "自动化",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        },
+        {
+          "tap": "挑战",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        },
+        {
+          "tap": "无限",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        },
+        {
+          "tap": "永恒",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        },
+        {
+          "tap": "现实",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        },
+        {
+          "tap": "天神",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        },
+        {
+          "tap": "成就",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        },
+        {
+          "tap": "统计数据",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        },
+        {
+          "tap": "选项",
+          "before": "null",
+          "after": "null",
+          "changed": false,
+          "modal": false
+        }
+      ]
+    }
+  ],
+  "quoteDrain": {
+    "count": 62,
+    "lastFew": [
+      "Ϙ 你已完成鹿颈长的现实阶段。",
+      "Ϙ 你已完成鹿颈长的现实阶段。",
+      "Ϙ 鹿颈长 你认为这值得吗？为我的所作所为而悲伤？",
+      "Ϙ 鹿颈长 但，并不是。已经结束了。你走吧，留我一人独守剩下的残骸。"
+    ],
+    "closed": true
+  },
+  "tabKeys": [
+    "dimensions",
+    "options",
+    "statistics",
+    "achievements",
+    "automation",
+    "challenges",
+    "infinity",
+    "eternity",
+    "reality",
+    "celestials",
+    "shop"
+  ],
+  "sidebar": {
+    "count": 10,
+    "names": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "永恒",
+      "现实",
+      "天神",
+      "成就",
+      "统计数据",
+      "选项"
+    ]
+  },
+  "scroll": {
+    "before": {
+      "cls": "c-game-ui",
+      "scrollTop": 0,
+      "scrollH": 1311,
+      "clientH": 732
+    },
+    "after": {
+      "cls": "c-game-ui",
+      "scrollTop": 751,
+      "scrollH": 3096,
+      "clientH": 732
+    },
+    "moved": true,
+    "fullPageScrollable": false
+  },
+  "narrow360": [
+    {
+      "tab": "维度",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    },
+    {
+      "tab": "自动化",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    },
+    {
+      "tab": "挑战",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    },
+    {
+      "tab": "无限",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    },
+    {
+      "tab": "永恒",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    },
+    {
+      "tab": "现实",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    },
+    {
+      "tab": "天神",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    },
+    {
+      "tab": "成就",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    },
+    {
+      "tab": "统计数据",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    },
+    {
+      "tab": "选项",
+      "vw": 360,
+      "overflowX": false,
+      "docScrollW": 360,
+      "clipped": [
+        {
+          "cls": "c-reality-container",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button",
+          "right": 383
+        },
+        {
+          "cls": "c-reality-button infotooltip c-reality-b",
+          "right": 383
+        },
+        {
+          "cls": "l-reality-button__contents",
+          "right": 375
+        }
+      ]
+    }
+  ],
+  "notation": {
+    "option": "Scientific",
+    "samples": [
+      [
+        "antimatter",
+        "1e6.993e9"
+      ],
+      [
+        "infinityPoints",
+        "2e234,662,665"
+      ],
+      [
+        "eternities",
+        "2e89"
+      ],
+      [
+        "realityMachines",
+        "1e1000"
+      ],
+      [
+        "ipPerSec",
+        "2e234,662,662"
+      ]
+    ]
+  },
+  "news": {
+    "visible": [],
+    "overlayOpen": false
+  }
+}

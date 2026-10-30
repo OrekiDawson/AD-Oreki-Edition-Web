@@ -1,0 +1,66 @@
+{
+ "tag": "r40s2-panel",
+ "steps": [
+  {
+   "step": "dump top tabs",
+   "tabs": [
+    "?",
+    "i",
+    "维度\n       Ω  \n      ",
+    "自动化\n         \n      ",
+    "挑战\n       Ω  \n      ",
+    "无限\n         \n       ",
+    "永恒\n         \n       ",
+    "成就\n         \n       ",
+    "统计数据\n         \n     ",
+    "选项\n         \n       "
+   ]
+  },
+  {
+   "step": "Tab.options.subtabs.gameplay.show()",
+   "ok": true
+  }
+ ],
+ "tabTexts": [
+  "?",
+  "i",
+  "维度\n       Ω  \n      ",
+  "自动化\n         \n      ",
+  "挑战\n       Ω  \n      ",
+  "无限\n         \n       ",
+  "永恒\n         \n       ",
+  "成就\n         \n       ",
+  "统计数据\n         \n     ",
+  "选项\n         \n       "
+ ],
+ "nav": {
+  "ok": true,
+  "key": "gameplay",
+  "status": {
+   "tab": "options",
+   "sub": "gameplay"
+  }
+ },
+ "panel": {
+  "found": true,
+  "text": "智能自动购买器\n① 阶段\n永恒阶段（eternity）\n② 目标\n解锁现实（未完成）\n③ 策略\n永恒推进策略（eternityPush）\n④ 正在执行\n永恒重置 → 无可买｜eternity 1 秒前\n⑤ 下一步\n买时间之理\n⑥ 阻塞\n无\n⑦ 最近切换\ntimeStudy/challengeClear → eternity/eternityPush（1 秒前）",
+  "lines": [
+   "① 阶段 永恒阶段（eternity）",
+   "② 目标 解锁现实（未完成）",
+   "③ 策略 永恒推进策略（eternityPush）",
+   "④ 正在执行 永恒重置 → 无可买｜eternity 1 秒前",
+   "⑤ 下一步 买时间之理",
+   "⑥ 阻塞 无",
+   "⑦ 最近切换 timeStudy/challengeClear → eternity/eternityPush（1 秒前）"
+  ],
+  "rect": {
+   "x": 56,
+   "y": 1142,
+   "w": 700,
+   "h": 150
+  },
+  "overflowX": false
+ },
+ "screenshot": "C:\\Users\\Oreki\\WorkBuddy\\AD-Oreki-Unified\\web\\_tools\\_r40\\r40s2-panel.png",
+ "pageErrors": []
+}

@@ -1,0 +1,77 @@
+{
+  "readySec": 30,
+  "log": [
+    {
+      "step": "新档（hardReset 后重载）",
+      "reset": {
+        "am": "10",
+        "d1": "0",
+        "ls": [
+          "dimensionSave"
+        ]
+      },
+      "readySec": 30,
+      "atLoad": {
+        "am": "5.957986e+253",
+        "d1": "850",
+        "head": "你拥有 5.96e253 反物质。 你每秒获得 7.70e34 反物质。 每个计数频率使反物质维度的生产效率 ×1.165 计数频率：1.000 / 秒 买到 10 个 维度献祭已"
+      }
+    },
+    {
+      "step": "点击第一维度购买按钮",
+      "before": {
+        "am": "9.51988e+249",
+        "d1": "830",
+        "label": "购买 0 个 价格：1e250 反物质"
+      },
+      "after": {
+        "am": "9.6266354911896e+84",
+        "d1": "1.034726971134113e+63"
+      }
+    },
+    {
+      "step": "挑战页",
+      "challengeBtns": 12,
+      "first": "已完成",
+      "text": "达到 1e8 无限点数和 1e1100 反物质以解锁 一种新的维度 你拥有 4.58e179 反物质。 你每秒获得 4.18e145 反物质。 每个计数频率使反物质维度的生产效率 ×1.145 计数频率：2.37e10 / 秒 你拥有 0 无限点数。 达到 1.80e308 反物"
+    },
+    {
+      "step": "自动化页开关自动购买器",
+      "rows": 12,
+      "toggle": {
+        "ok": true,
+        "before": true,
+        "afterClick": false,
+        "cls": ""
+      },
+      "toggleAfter": {
+        "checked": false
+      }
+    },
+    {
+      "step": "统计数据页",
+      "docOverflow": 0,
+      "text": "达到 1e10500 反物质以解锁 下一个无限维度 你拥有 4.59e4792 反物质。 你每秒获得 1.47e2302 反物质。 每个计数频率使反物质维度的生产效率 ×5.784 计数频率：1.20e362 / 秒 你拥有 1.05e13"
+    },
+    {
+      "step": "选项页",
+      "buttons": 11,
+      "text": "达到 1e10500 反物质以解锁 下一个无限维度 你拥有 1.64e5130 反物质。 你每秒获得 8.79e5127 反物质。 每个计数频率使反物质维度的生产效率 ×5.784 计数频率：2.60e367 / 秒 你拥有 2.29e13"
+    },
+    {
+      "step": "残留英文",
+      "count": 0,
+      "sample": []
+    },
+    {
+      "step": "可见新闻节点",
+      "count": 0
+    }
+  ],
+  "consoleLog": [
+    {
+      "type": "error",
+      "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-sr"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+ "mode": "tutorial",
+ "tag": "r40s3-tut2",
+ "samples": 286,
+ "lastT": 320,
+ "gameEndAt": null,
+ "totAML_at10": null,
+ "totAML_at310": null,
+ "growth10_310": null,
+ "endStateAt310": 0,
+ "tutOpenSamples": 214,
+ "tutTotalSamples": 266,
+ "tutNodesMin": 0,
+ "tutTitlesSeen": [
+  "第 7 章　复制器与首次永恒",
+  "第 11 章　现实与符文",
+  "第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏",
+  ""
+ ],
+ "titleStable": false,
+ "closedAt": 300.9,
+ "pageErrors": 0,
+ "pageErrorSample": [],
+ "consoleErrors": 1,
+ "consoleErrorSample": [
+  "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src http://me.kis.v2.scr.kaspersky-labs.com ws://me.kis.v2.scr.kaspersky-labs.com '"
+ ],
+ "smDegSamples": 0,
+ "smErrLast": "",
+ "stagePath": [
+  "early",
+  "preInfinity",
+  "infinity",
+  "eternity",
+  "reality",
+  "timeStudy",
+  "celestials"
+ ],
+ "amE_last": 8411185180,
+ "realities_last": 25,
+ "doomed_last": false,
+ "exActN_last": 5,
+ "exTryN_last": 335,
+ "panel310": {
+  "stage": "Celestial 各阶段",
+  "goal": "解锁毁灭现实",
+  "strategy": "Celestial 专项策略",
+  "action": "现实重置|reality|0",
+  "next": "天神专项顺序",
+  "blockers": "无（已检查 2 项）",
+  "switch": "timeStudy/challengeClear>celestials/celestial"
+ },
+ "curve": [
+  {
+   "t": 0.1,
+   "totAML": null,
+   "endState": 0,
+   "stage": "early"
+  },
+  {
+   "t": 59.8,
+   "totAML": null,
+   "endState": 0,
+   "stage": "eternity"
+  },
+  {
+   "t": 179.9,
+   "totAML": null,
+   "endState": 0,
+   "stage": "reality"
+  },
+  {
+   "t": 239.6,
+   "totAML": null,
+   "endState": 0,
+   "stage": "reality"
+  },
+  {
+   "t": 300,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  }
+ ]
+}

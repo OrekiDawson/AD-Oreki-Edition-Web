@@ -1,0 +1,1141 @@
+{
+  "scenarios": {
+    "R35曲线 ÷400（2.5e3）+ 现实资源 + F=10000": {
+      "tail": 2500,
+      "teresaRawCPS": 304999425.11424935,
+      "wallSeconds": 10800,
+      "F": 10000,
+      "sqrtF": 100,
+      "teff": 1080000,
+      "steps": 11,
+      "fingerprint": {
+        "EP_log10": 1412.9263982951634,
+        "EP_pLog10": 1412.9263982951634,
+        "RM_pLog10": 0,
+        "glyphLevel": 0
+      },
+      "pets": [
+        {
+          "key": "Teresa",
+          "level": 25,
+          "unlocked": true,
+          "memories": 277677718111837000,
+          "gross": 285567231033013220,
+          "memoryChunks": 5458834437342.669,
+          "memoryUpgrades": 18,
+          "chunkUpgrades": 9,
+          "memMult": 112.45540695195746,
+          "chunkMult": 38.443359375,
+          "rawCPS": 304999425.11424935,
+          "cps": 5862601254.417744,
+          "memCapped": true,
+          "chunkCapped": true
+        },
+        {
+          "key": "Effarig",
+          "level": 1,
+          "unlocked": true,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "The Nameless Ones",
+          "level": 0,
+          "unlocked": false,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0.0014526235347875457,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "V",
+          "level": 0,
+          "unlocked": false,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0.0405200718363506,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        }
+      ],
+      "totalPetLevel": 26,
+      "remembrance": true,
+      "ppc": 1,
+      "levelTimeline": {
+        "teresa": [
+          {
+            "L": 2,
+            "wall": 1,
+            "mem": 1524997121341.2468
+          },
+          {
+            "L": 3,
+            "wall": 1,
+            "mem": 1524996807503.2468
+          },
+          {
+            "L": 4,
+            "wall": 1,
+            "mem": 1524992230127.2468
+          },
+          {
+            "L": 5,
+            "wall": 1,
+            "mem": 1524958506218.2468
+          },
+          {
+            "L": 6,
+            "wall": 1,
+            "mem": 1524789353811.2468
+          },
+          {
+            "L": 7,
+            "wall": 1,
+            "mem": 1524128542886.2468
+          },
+          {
+            "L": 8,
+            "wall": 1,
+            "mem": 1521966027354.2468
+          },
+          {
+            "L": 9,
+            "wall": 1,
+            "mem": 1515770176356.2468
+          },
+          {
+            "L": 10,
+            "wall": 1,
+            "mem": 1499771703160.2468
+          },
+          {
+            "L": 11,
+            "wall": 1,
+            "mem": 1461785526406.2468
+          },
+          {
+            "L": 12,
+            "wall": 1,
+            "mem": 1377630872612.2468
+          },
+          {
+            "L": 13,
+            "wall": 1,
+            "mem": 1201760094526.2468
+          },
+          {
+            "L": 14,
+            "wall": 1,
+            "mem": 852100887579.2468
+          },
+          {
+            "L": 15,
+            "wall": 1,
+            "mem": 186317706515.24683
+          },
+          {
+            "L": 16,
+            "wall": 2,
+            "mem": 474616148756670.3
+          },
+          {
+            "L": 17,
+            "wall": 2,
+            "mem": 471369566186138.3
+          },
+          {
+            "L": 18,
+            "wall": 2,
+            "mem": 462987934920244.3
+          },
+          {
+            "L": 19,
+            "wall": 2,
+            "mem": 441919593530386.3
+          },
+          {
+            "L": 20,
+            "wall": 2,
+            "mem": 390223006701193.3
+          },
+          {
+            "L": 21,
+            "wall": 2,
+            "mem": 266117455990614.3
+          },
+          {
+            "L": 22,
+            "wall": 3,
+            "mem": 4711229389982896
+          },
+          {
+            "L": 23,
+            "wall": 3,
+            "mem": 4036421890431078
+          },
+          {
+            "L": 24,
+            "wall": 3,
+            "mem": 2503201155012871
+          },
+          {
+            "L": 25,
+            "wall": 4,
+            "mem": 9488800833864180
+          }
+        ]
+      },
+      "req": [
+        {
+          "L": 1,
+          "req": 4230
+        },
+        {
+          "L": 2,
+          "req": 313838
+        },
+        {
+          "L": 3,
+          "req": 4577376
+        },
+        {
+          "L": 4,
+          "req": 33723909
+        },
+        {
+          "L": 5,
+          "req": 169152407
+        },
+        {
+          "L": 6,
+          "req": 660810925
+        },
+        {
+          "L": 7,
+          "req": 2162515532
+        },
+        {
+          "L": 8,
+          "req": 6195850998
+        },
+        {
+          "L": 9,
+          "req": 15998473196
+        },
+        {
+          "L": 10,
+          "req": 37986176754
+        },
+        {
+          "L": 11,
+          "req": 84154653794
+        },
+        {
+          "L": 12,
+          "req": 175870778086
+        },
+        {
+          "L": 13,
+          "req": 349659206947
+        },
+        {
+          "L": 14,
+          "req": 665783181064
+        },
+        {
+          "L": 15,
+          "req": 1220654078451
+        },
+        {
+          "L": 16,
+          "req": 3246582570532
+        },
+        {
+          "L": 17,
+          "req": 8381631265894
+        },
+        {
+          "L": 18,
+          "req": 21068341389858
+        },
+        {
+          "L": 19,
+          "req": 51696586829193
+        },
+        {
+          "L": 20,
+          "req": 124105550710579
+        },
+        {
+          "L": 21,
+          "req": 292048257855271
+        },
+        {
+          "L": 22,
+          "req": 674807499551818
+        },
+        {
+          "L": 23,
+          "req": 1533220735418207
+        },
+        {
+          "L": 24,
+          "req": 3429975488676372
+        }
+      ]
+    },
+    "上游原版（1e6）+ 现实资源 + F=10000": {
+      "tail": 1000000,
+      "teresaRawCPS": 304999425.11424935,
+      "wallSeconds": 10800,
+      "F": 10000,
+      "sqrtF": 100,
+      "teff": 1080000,
+      "steps": 11,
+      "fingerprint": {
+        "EP_log10": 1412.9263982951634,
+        "EP_pLog10": 1412.9263982951634,
+        "RM_pLog10": 0,
+        "glyphLevel": 0
+      },
+      "pets": [
+        {
+          "key": "Teresa",
+          "level": 23,
+          "unlocked": true,
+          "memories": 89671244020961180,
+          "gross": 699914261965137900,
+          "memoryChunks": 7492650428072.774,
+          "memoryUpgrades": 21,
+          "chunkUpgrades": 10,
+          "memMult": 247.06452907345056,
+          "chunkMult": 57.6650390625,
+          "rawCPS": 304999425.11424935,
+          "cps": 8793901881.626616,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "Effarig",
+          "level": 1,
+          "unlocked": true,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "The Nameless Ones",
+          "level": 0,
+          "unlocked": false,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0.0014526235347875457,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "V",
+          "level": 0,
+          "unlocked": false,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0.0405200718363506,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        }
+      ],
+      "totalPetLevel": 24,
+      "remembrance": true,
+      "ppc": 1,
+      "levelTimeline": {
+        "teresa": [
+          {
+            "L": 2,
+            "wall": 1,
+            "mem": 1524995433231.2468
+          },
+          {
+            "L": 3,
+            "wall": 1,
+            "mem": 1524869897877.2468
+          },
+          {
+            "L": 4,
+            "wall": 1,
+            "mem": 1523038947261.2468
+          },
+          {
+            "L": 5,
+            "wall": 1,
+            "mem": 1509549383382.2468
+          },
+          {
+            "L": 6,
+            "wall": 1,
+            "mem": 1441888420502.2468
+          },
+          {
+            "L": 7,
+            "wall": 1,
+            "mem": 1177564050131.2468
+          },
+          {
+            "L": 8,
+            "wall": 1,
+            "mem": 312557837044.2468
+          },
+          {
+            "L": 9,
+            "wall": 2,
+            "mem": 440646650141675.2
+          },
+          {
+            "L": 10,
+            "wall": 2,
+            "mem": 434247260863014.2
+          },
+          {
+            "L": 11,
+            "wall": 2,
+            "mem": 419052790161212.2
+          },
+          {
+            "L": 12,
+            "wall": 2,
+            "mem": 385390928643537.2
+          },
+          {
+            "L": 13,
+            "wall": 2,
+            "mem": 315042617409077.2
+          },
+          {
+            "L": 14,
+            "wall": 2,
+            "mem": 175178934630084.2
+          },
+          {
+            "L": 15,
+            "wall": 3,
+            "mem": 4184067615795015
+          },
+          {
+            "L": 16,
+            "wall": 3,
+            "mem": 3695805984414362
+          },
+          {
+            "L": 17,
+            "wall": 3,
+            "mem": 2397172956201186
+          },
+          {
+            "L": 18,
+            "wall": 4,
+            "mem": 15696837970476060
+          },
+          {
+            "L": 19,
+            "wall": 4,
+            "mem": 7269501414532822
+          },
+          {
+            "L": 20,
+            "wall": 5,
+            "mem": 19462172622311484
+          },
+          {
+            "L": 21,
+            "wall": 6,
+            "mem": 9580122623237848
+          },
+          {
+            "L": 22,
+            "wall": 8,
+            "mem": 27565666831274496
+          },
+          {
+            "L": 23,
+            "wall": 11,
+            "mem": 89671244020961180
+          }
+        ]
+      },
+      "req": [
+        {
+          "L": 1,
+          "req": 1692340
+        },
+        {
+          "L": 2,
+          "req": 125535354
+        },
+        {
+          "L": 3,
+          "req": 1830950616
+        },
+        {
+          "L": 4,
+          "req": 13489563879
+        },
+        {
+          "L": 5,
+          "req": 67660962880
+        },
+        {
+          "L": 6,
+          "req": 264324370371
+        },
+        {
+          "L": 7,
+          "req": 865006213087
+        },
+        {
+          "L": 8,
+          "req": 2478340399379
+        },
+        {
+          "L": 9,
+          "req": 6399389278661
+        },
+        {
+          "L": 10,
+          "req": 15194470701802
+        },
+        {
+          "L": 11,
+          "req": 33661861517675
+        },
+        {
+          "L": 12,
+          "req": 70348311234460
+        },
+        {
+          "L": 13,
+          "req": 139863682778993
+        },
+        {
+          "L": 14,
+          "req": 266313272425972
+        },
+        {
+          "L": 15,
+          "req": 488261631380653
+        },
+        {
+          "L": 16,
+          "req": 1298633028213176
+        },
+        {
+          "L": 17,
+          "req": 3352652506357979
+        },
+        {
+          "L": 18,
+          "req": 8427336555943238
+        },
+        {
+          "L": 19,
+          "req": 20678634731677324
+        },
+        {
+          "L": 20,
+          "req": 49642220284231930
+        },
+        {
+          "L": 21,
+          "req": 116819303142108450
+        },
+        {
+          "L": 22,
+          "req": 269922999820727520
+        },
+        {
+          "L": 23,
+          "req": 613288294167283000
+        },
+        {
+          "L": 24,
+          "req": 1371990195470548700
+        }
+      ]
+    },
+    "R35曲线 ÷400（2.5e3）+ 现实资源 + F=1": {
+      "tail": 2500,
+      "teresaRawCPS": 304999425.11424935,
+      "wallSeconds": 10800,
+      "F": 1,
+      "sqrtF": 1,
+      "teff": 10800,
+      "steps": 2,
+      "fingerprint": {
+        "EP_log10": 1412.9263982951634,
+        "EP_pLog10": 1412.9263982951634,
+        "RM_pLog10": 0,
+        "glyphLevel": 0
+      },
+      "pets": [
+        {
+          "key": "Teresa",
+          "level": 15,
+          "unlocked": true,
+          "memories": 337462696456.9263,
+          "gross": 2032180526512.9263,
+          "memoryChunks": 26210888095.755802,
+          "memoryUpgrades": 13,
+          "chunkUpgrades": 6,
+          "memMult": 30.287510659225312,
+          "chunkMult": 11.390625,
+          "rawCPS": 304999425.11424935,
+          "cps": 3474134076.6919966,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "Effarig",
+          "level": 1,
+          "unlocked": true,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "The Nameless Ones",
+          "level": 0,
+          "unlocked": false,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0.0014526235347875457,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "V",
+          "level": 0,
+          "unlocked": false,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0.0405200718363506,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        }
+      ],
+      "totalPetLevel": 16,
+      "remembrance": false,
+      "ppc": 1,
+      "levelTimeline": {
+        "teresa": [
+          {
+            "L": 2,
+            "wall": 10,
+            "mem": 15249967025.712467
+          },
+          {
+            "L": 3,
+            "wall": 10,
+            "mem": 15249653187.712467
+          },
+          {
+            "L": 4,
+            "wall": 10,
+            "mem": 15245075811.712467
+          },
+          {
+            "L": 5,
+            "wall": 10,
+            "mem": 15211351902.712467
+          },
+          {
+            "L": 6,
+            "wall": 10,
+            "mem": 15042199495.712467
+          },
+          {
+            "L": 7,
+            "wall": 10,
+            "mem": 14381388570.712467
+          },
+          {
+            "L": 8,
+            "wall": 10,
+            "mem": 12218873038.712467
+          },
+          {
+            "L": 9,
+            "wall": 10,
+            "mem": 6023022040.712467
+          },
+          {
+            "L": 10,
+            "wall": 20,
+            "mem": 2002479193101.9263
+          },
+          {
+            "L": 11,
+            "wall": 20,
+            "mem": 1964493016347.9263
+          },
+          {
+            "L": 12,
+            "wall": 20,
+            "mem": 1880338362553.9263
+          },
+          {
+            "L": 13,
+            "wall": 20,
+            "mem": 1704467584467.9263
+          },
+          {
+            "L": 14,
+            "wall": 20,
+            "mem": 1354808377520.9263
+          },
+          {
+            "L": 15,
+            "wall": 20,
+            "mem": 689025196456.9263
+          }
+        ]
+      },
+      "req": [
+        {
+          "L": 1,
+          "req": 4230
+        },
+        {
+          "L": 2,
+          "req": 313838
+        },
+        {
+          "L": 3,
+          "req": 4577376
+        },
+        {
+          "L": 4,
+          "req": 33723909
+        },
+        {
+          "L": 5,
+          "req": 169152407
+        },
+        {
+          "L": 6,
+          "req": 660810925
+        },
+        {
+          "L": 7,
+          "req": 2162515532
+        },
+        {
+          "L": 8,
+          "req": 6195850998
+        },
+        {
+          "L": 9,
+          "req": 15998473196
+        },
+        {
+          "L": 10,
+          "req": 37986176754
+        },
+        {
+          "L": 11,
+          "req": 84154653794
+        },
+        {
+          "L": 12,
+          "req": 175870778086
+        },
+        {
+          "L": 13,
+          "req": 349659206947
+        },
+        {
+          "L": 14,
+          "req": 665783181064
+        },
+        {
+          "L": 15,
+          "req": 1220654078451
+        },
+        {
+          "L": 16,
+          "req": 3246582570532
+        },
+        {
+          "L": 17,
+          "req": 8381631265894
+        },
+        {
+          "L": 18,
+          "req": 21068341389858
+        },
+        {
+          "L": 19,
+          "req": 51696586829193
+        },
+        {
+          "L": 20,
+          "req": 124105550710579
+        },
+        {
+          "L": 21,
+          "req": 292048257855271
+        },
+        {
+          "L": 22,
+          "req": 674807499551818
+        },
+        {
+          "L": 23,
+          "req": 1533220735418207
+        },
+        {
+          "L": 24,
+          "req": 3429975488676372
+        }
+      ]
+    },
+    "上游原版（1e6）+ 现实资源 + F=1": {
+      "tail": 1000000,
+      "teresaRawCPS": 304999425.11424935,
+      "wallSeconds": 10800,
+      "F": 1,
+      "sqrtF": 1,
+      "teff": 10800,
+      "steps": 2,
+      "fingerprint": {
+        "EP_log10": 1412.9263982951634,
+        "EP_pLog10": 1412.9263982951634,
+        "RM_pLog10": 0,
+        "glyphLevel": 0
+      },
+      "pets": [
+        {
+          "key": "Teresa",
+          "level": 8,
+          "unlocked": true,
+          "memories": 376981382916.2351,
+          "gross": 1945459082443.235,
+          "memoryChunks": 18490590147.551365,
+          "memoryUpgrades": 13,
+          "chunkUpgrades": 6,
+          "memMult": 30.287510659225312,
+          "chunkMult": 11.390625,
+          "rawCPS": 304999425.11424935,
+          "cps": 3474134076.6919966,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "Effarig",
+          "level": 1,
+          "unlocked": true,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "The Nameless Ones",
+          "level": 0,
+          "unlocked": false,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0.0014526235347875457,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        },
+        {
+          "key": "V",
+          "level": 0,
+          "unlocked": false,
+          "memories": 0,
+          "gross": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "memMult": 1,
+          "chunkMult": 1,
+          "rawCPS": 0.0405200718363506,
+          "cps": 0,
+          "memCapped": false,
+          "chunkCapped": false
+        }
+      ],
+      "totalPetLevel": 9,
+      "remembrance": false,
+      "ppc": 1,
+      "levelTimeline": {
+        "teresa": [
+          {
+            "L": 2,
+            "wall": 10,
+            "mem": 15248278915.712467
+          },
+          {
+            "L": 3,
+            "wall": 10,
+            "mem": 15122743561.712467
+          },
+          {
+            "L": 4,
+            "wall": 10,
+            "mem": 13291792945.712467
+          },
+          {
+            "L": 5,
+            "wall": 20,
+            "mem": 1917722929254.235
+          },
+          {
+            "L": 6,
+            "wall": 20,
+            "mem": 1850061966374.235
+          },
+          {
+            "L": 7,
+            "wall": 20,
+            "mem": 1585737596003.235
+          },
+          {
+            "L": 8,
+            "wall": 20,
+            "mem": 720731382916.2351
+          }
+        ]
+      },
+      "req": [
+        {
+          "L": 1,
+          "req": 1692340
+        },
+        {
+          "L": 2,
+          "req": 125535354
+        },
+        {
+          "L": 3,
+          "req": 1830950616
+        },
+        {
+          "L": 4,
+          "req": 13489563879
+        },
+        {
+          "L": 5,
+          "req": 67660962880
+        },
+        {
+          "L": 6,
+          "req": 264324370371
+        },
+        {
+          "L": 7,
+          "req": 865006213087
+        },
+        {
+          "L": 8,
+          "req": 2478340399379
+        },
+        {
+          "L": 9,
+          "req": 6399389278661
+        },
+        {
+          "L": 10,
+          "req": 15194470701802
+        },
+        {
+          "L": 11,
+          "req": 33661861517675
+        },
+        {
+          "L": 12,
+          "req": 70348311234460
+        },
+        {
+          "L": 13,
+          "req": 139863682778993
+        },
+        {
+          "L": 14,
+          "req": 266313272425972
+        },
+        {
+          "L": 15,
+          "req": 488261631380653
+        },
+        {
+          "L": 16,
+          "req": 1298633028213176
+        },
+        {
+          "L": 17,
+          "req": 3352652506357979
+        },
+        {
+          "L": 18,
+          "req": 8427336555943238
+        },
+        {
+          "L": 19,
+          "req": 20678634731677324
+        },
+        {
+          "L": 20,
+          "req": 49642220284231930
+        },
+        {
+          "L": 21,
+          "req": 116819303142108450
+        },
+        {
+          "L": 22,
+          "req": 269922999820727520
+        },
+        {
+          "L": 23,
+          "req": 613288294167283000
+        },
+        {
+          "L": 24,
+          "req": 1371990195470548700
+        }
+      ]
+    }
+  },
+  "grid": [
+    {
+      "cpsLabel": "现实 3.05e8",
+      "cps": 304999425.11424935,
+      "F": 10000,
+      "maxTail": 21620693.65041853,
+      "minDivisor": 0.046251985073598324
+    },
+    {
+      "cpsLabel": "现实 3.05e8",
+      "cps": 304999425.11424935,
+      "F": 1,
+      "maxTail": 1.7538264139692172,
+      "minDivisor": 570181.8561033212
+    },
+    {
+      "cpsLabel": "保守 1.80e7",
+      "cps": 17975209.61947336,
+      "F": 10000,
+      "maxTail": 350072.6807673869,
+      "minDivisor": 2.8565496679373013
+    },
+    {
+      "cpsLabel": "保守 1.80e7",
+      "cps": 17975209.61947336,
+      "F": 1,
+      "maxTail": 1,
+      "minDivisor": 1000000
+    },
+    {
+      "cpsLabel": "1e6",
+      "cps": 1000000,
+      "F": 10000,
+      "maxTail": 7397.160574863418,
+      "minDivisor": 135.1870072143816
+    },
+    {
+      "cpsLabel": "1e6",
+      "cps": 1000000,
+      "F": 1,
+      "maxTail": 1,
+      "minDivisor": 1000000
+    },
+    {
+      "cpsLabel": "1e5",
+      "cps": 100000,
+      "F": 10000,
+      "maxTail": 307.6886639265025,
+      "minDivisor": 3250.0384877320985
+    },
+    {
+      "cpsLabel": "1e5",
+      "cps": 100000,
+      "F": 1,
+      "maxTail": 1,
+      "minDivisor": 1000000
+    }
+  ]
+}

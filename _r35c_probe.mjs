@@ -1,0 +1,13 @@
+import fs from "node:fs";
+const WS="ws://127.0.0.1:9222/devtools/page/0";
+const ws=new WebSocket(WS);
+let seq=0;const pend=new Map();
+const send=(m,p={})=>new Promise((res,rej)=>{const id=++seq;pend.set(id,{res,rej});ws.send(JSON.stringify({id,method:m,params:p}));setTimeout(()=>{if(pend.has(id)){pend.delete(id);rej(new Error("timeout "+m));}},20000);});
+ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id&&pend.has(m.id)){const {res,rej}=pend.get(m.id);pend.delete(m.id);m.error?rej(new Error(m.error.message)):res(m.result);}};
+const ev=async x=>{const r=await send("Runtime.evaluate",{expression:x,returnByValue:true,awaitPromise:true,userGesture:true});if(r.exceptionDetails)return {__error:r.exceptionDetails.exception?.description};return r.result?.value;};
+await new Promise(r=>{ws.onopen=r;});
+await send("Runtime.enable");
+const expr=fs.readFileSync(process.argv[2],"utf8");
+const out=await ev(expr);
+console.log(JSON.stringify(out,null,2));
+ws.close();process.exit(0);

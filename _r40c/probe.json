@@ -1,0 +1,3257 @@
+[
+  {
+    "view": "320x640",
+    "tab": "维度",
+    "vw": 320,
+    "vh": 640,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 640,
+      "bottom": 640
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3423,
+      "ch": 640
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 128,
+        "y": 5,
+        "w": 186,
+        "h": 170,
+        "text": "还有 154 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：45.12 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 440,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 8,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 154 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "达到 1.80e308 无限点数",
+        "overlapPct": 77
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "达到 1.80e308 无限点数",
+        "overlapPct": 10
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "达到 1.80e308 无限点数",
+        "overlapPct": 8
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "320x640",
+    "tab": "挑战",
+    "vw": 320,
+    "vh": 640,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 640,
+      "bottom": 640
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3423,
+      "ch": 640
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 128,
+        "y": 5,
+        "w": 186,
+        "h": 204,
+        "text": "还有 155 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：46.02 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 440,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 8,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 155 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.29e20 永恒点数 当前",
+        "overlapPct": 77
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.29e20 永恒点数 当前",
+        "overlapPct": 10
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.29e20 永恒点数 当前",
+        "overlapPct": 8
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "320x640",
+    "tab": "自动化",
+    "vw": 320,
+    "vh": 640,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 640,
+      "bottom": 640
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3423,
+      "ch": 640
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 194,
+        "y": 5,
+        "w": 120,
+        "h": 170,
+        "text": "还有 155 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：47.03 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 440,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 8,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 155 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.93e23154 永恒点数",
+        "overlapPct": 47
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.93e23154 永恒点数",
+        "overlapPct": 10
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.93e23154 永恒点数",
+        "overlapPct": 8
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "320x640",
+    "tab": "成就",
+    "vw": 320,
+    "vh": 640,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 640,
+      "bottom": 640
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3423,
+      "ch": 640
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 159,
+        "y": 5,
+        "w": 155,
+        "h": 170,
+        "text": "还有 155 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：48.06 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 440,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 8,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 155 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.52e20 永恒点数 当前",
+        "overlapPct": 63
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.52e20 永恒点数 当前",
+        "overlapPct": 10
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.52e20 永恒点数 当前",
+        "overlapPct": 8
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "320x640",
+    "tab": "统计数据",
+    "vw": 320,
+    "vh": 640,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 640,
+      "bottom": 640
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3423,
+      "ch": 640
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 159,
+        "y": 5,
+        "w": 155,
+        "h": 170,
+        "text": "还有 155 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：49.05 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 440,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 8,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 155 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.80e20 永恒点数 当前",
+        "overlapPct": 63
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.80e20 永恒点数 当前",
+        "overlapPct": 10
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.80e20 永恒点数 当前",
+        "overlapPct": 8
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "320x640",
+    "tab": "选项",
+    "vw": 320,
+    "vh": 640,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 640,
+      "bottom": 640
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3408,
+      "ch": 640
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 159,
+        "y": 5,
+        "w": 155,
+        "h": 170,
+        "text": "还有 155 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 252,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 623,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：50.07 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 440,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 6,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 155 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.70e20865 永恒点数",
+        "overlapPct": 63
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.70e20865 永恒点数",
+        "overlapPct": 10
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.70e20865 永恒点数",
+        "overlapPct": 8
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 7.11e550,025 无限",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "392x676",
+    "tab": "维度",
+    "vw": 392,
+    "vh": 676,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 392,
+      "h": 676,
+      "bottom": 676
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3119,
+      "ch": 676
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 266,
+        "y": 5,
+        "w": 120,
+        "h": 170,
+        "text": "还有 155 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：52.04 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 458,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 5,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 155 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 5.92e225,127 永恒",
+        "overlapPct": 31
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 5.92e225,127 永恒",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 5.92e225,127 永恒",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.30e17,567,144",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "392x676",
+    "tab": "挑战",
+    "vw": 392,
+    "vh": 676,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 392,
+      "h": 676,
+      "bottom": 676
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3119,
+      "ch": 676
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 244,
+        "y": 5,
+        "w": 142,
+        "h": 204,
+        "text": "还有 156 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：52.87 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 458,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 7,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 156 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "达到 1.80e308 无限点数",
+        "overlapPct": 41
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "达到 1.80e308 无限点数",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "达到 1.80e308 无限点数",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "392x676",
+    "tab": "自动化",
+    "vw": 392,
+    "vh": 676,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 392,
+      "h": 676,
+      "bottom": 676
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3119,
+      "ch": 676
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 231,
+        "y": 5,
+        "w": 155,
+        "h": 204,
+        "text": "还有 156 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：53.69 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 458,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 7,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 156 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "达到 1.80e308 无限点数",
+        "overlapPct": 47
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "达到 1.80e308 无限点数",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "达到 1.80e308 无限点数",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "392x676",
+    "tab": "成就",
+    "vw": 392,
+    "vh": 676,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 392,
+      "h": 676,
+      "bottom": 676
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3119,
+      "ch": 676
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 231,
+        "y": 5,
+        "w": 155,
+        "h": 170,
+        "text": "还有 156 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：54.65 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 458,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 5,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 156 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 6.32e252,421 永恒",
+        "overlapPct": 47
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 6.32e252,421 永恒",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 6.32e252,421 永恒",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 2.84e15,485,608",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "392x676",
+    "tab": "统计数据",
+    "vw": 392,
+    "vh": 676,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 392,
+      "h": 676,
+      "bottom": 676
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3119,
+      "ch": 676
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 231,
+        "y": 5,
+        "w": 155,
+        "h": 170,
+        "text": "还有 156 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：55.94 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 458,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 5,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 156 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.15e257,880 永恒",
+        "overlapPct": 47
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.15e257,880 永恒",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.15e257,880 永恒",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 7.20e15,756,434",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  },
+  {
+    "view": "392x676",
+    "tab": "选项",
+    "vw": 392,
+    "vh": 676,
+    "uiRect": {
+      "x": 0,
+      "y": 0,
+      "w": 392,
+      "h": 676,
+      "bottom": 676
+    },
+    "uiBottomOver": 0,
+    "uiRightGap": 0,
+    "docOverflow": 0,
+    "uiScroll": {
+      "sh": 3119,
+      "ch": 676
+    },
+    "floating": [
+      {
+        "el": "div#notification-container.l-notification-container",
+        "x": 244,
+        "y": 5,
+        "w": 142,
+        "h": 136,
+        "text": "还有 156 条提示 自动成就："
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 90,
+        "w": 48,
+        "h": 48,
+        "text": "?"
+      },
+      {
+        "el": "div.o-tab-btn",
+        "x": 324,
+        "y": 96,
+        "w": 48,
+        "h": 48,
+        "text": "i"
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": -1,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": -3,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 44,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 42,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 134,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 132,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 179,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 177,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 224,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 179,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 271,
+        "y": 222,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 269,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 87,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 133,
+        "y": 267,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 41,
+        "y": 359,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.fas",
+        "x": 225,
+        "y": 357,
+        "w": 15,
+        "h": 15,
+        "text": ""
+      },
+      {
+        "el": "div.o-save-timer",
+        "x": 0,
+        "y": 659,
+        "w": 137,
+        "h": 17,
+        "text": "距离上次存档：57.51 秒"
+      },
+      {
+        "el": "div.o-startup-tip-count",
+        "x": 43,
+        "y": 458,
+        "w": 35,
+        "h": 15,
+        "text": "1 / 46"
+      }
+    ],
+    "coveredCount": 7,
+    "covered": [
+      {
+        "by": "div#notification-container.l-notification-container",
+        "byText": "还有 156 条提示 自动成就：",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.38e296,479 永恒",
+        "overlapPct": 41
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "?",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.38e296,479 永恒",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.o-tab-btn",
+        "byText": "i",
+        "target": "button.o-prestige-button",
+        "targetText": "获得 1.38e296,479 永恒",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 2
+      },
+      {
+        "by": "div.fas",
+        "byText": "",
+        "target": "button.c-reality-button",
+        "targetText": "购买解锁现实的时间研究以解锁现实",
+        "overlapPct": 1
+      }
+    ],
+    "clippedCount": 0,
+    "clipped": [],
+    "verticalCount": 0,
+    "vertical": [],
+    "smallCount": 0,
+    "small": []
+  }
+]

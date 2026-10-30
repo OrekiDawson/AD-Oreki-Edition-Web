@@ -1,0 +1,110 @@
+[
+  {
+    "view": "pelle-desktop",
+    "vw": 1440,
+    "docW": 1440,
+    "overflowX": false,
+    "goalText": "终局目标：反物质最大值达到 1×101000",
+    "goalBox": {
+      "x": 609,
+      "y": 196,
+      "w": 334,
+      "h": 29
+    },
+    "clickableCount": 21,
+    "smallCount": 3,
+    "small": [
+      {
+        "cls": "o-pelle-button",
+        "text": "显示被毁灭的现实中的效果",
+        "w": 182,
+        "h": 40
+      },
+      {
+        "cls": "o-pelle-button",
+        "text": "隐藏已购买的升级",
+        "w": 129,
+        "h": 40
+      },
+      {
+        "cls": "c-oreki-tut-entry",
+        "text": "?教程",
+        "w": 64,
+        "h": 36
+      }
+    ]
+  },
+  {
+    "view": "tut-stages-desktop",
+    "vw": 1440,
+    "docW": 1440,
+    "overflowX": false,
+    "activeChapter": "阶段指南",
+    "hasGoalText": true,
+    "mainText": "阶段指南 按你现在的进度给出建议 当前阶段 毁灭现实（佩勒） 毁灭现实里大部分机制被佩勒禁用，需要用 Pelle 升级与裂缝逐步夺回。终局目标：让反物质达到 1×10^1000。 在「天神 → 佩勒」里先看清哪些机制被禁用 用 Pelle 升级逐个恢复自动购买器与倍率 推进佩勒裂缝与打击目标，把反物质一路推高 反物质达到 1×10^1000 就抵达终局——这是最后一个目标，对着反物质最大值看进度 开局（未无限） 条件已满足，尚未进入 买维度 → 计数频率 → 维度提升 → 反物质星系，把反物质推到 1.8e308 做第一次无限。 无限期 已进入 这个阶段要连过三道墙：Break（大坍缩间隔拉满）→ IP 够 1e8 → 本纪最高反物质够 1e1100。三道都有 Mod 自动推进，你只需要让自动购买器总开关保持开启。 永恒期 已进入 时间研究、时间维度、永恒升级、时间膨胀；EP 主要用来点亮时间研究树。这一阶段的 IP / EP 兑换尺度仍然按 AD8 / AD9 收紧了，Reality 解锁后才恢复原版。 现实期 未解锁 尚未解锁 · 本阶段功能现在无法使用 —— 符文（Glyph）与"
+  },
+  {
+    "view": "tut-chapter7-desktop",
+    "vw": 1440,
+    "hasChapter": true,
+    "hasGoalText": true,
+    "hasOldWording": false,
+    "text": "你现在该做什么 当前阶段：后期天神与佩勒 · 已完成 13 / 17 个里程碑 ▶ 下一步：在研究树里点出「时间膨胀」研究，解锁膨胀（Dilation） ▶10. 在研究树里点出「时间膨胀」研究，解锁膨胀（Dilation）○11. 永久点数达到现实需求后点「现实」，进入第三个重置层✔12. 现实后每次都会给符文：把符文装到空槽位里，效果立刻生效✔13. 「挑战」页：先做普通挑战（首次无限后解锁），奖励是永久加成✔14. 再做无限挑战（目标高于无限上限） 进度由存档状态自动判定（✔ = 已完成，▶ = 现在做这一条）；只列出最近的几步。 ⓪ 界面速查 左侧栏：维度、自动化、挑战、无限、永恒、现"
+  },
+  {
+    "desktopConsoleErrors": [
+      "console: Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src http://me.kis.v2.scr.kaspersky-labs.com ws://me.kis.v2.scr.kaspersky-labs.com 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+    ]
+  },
+  {
+    "view": "pelle-mobile375",
+    "vw": 375,
+    "docW": 375,
+    "overflowX": false,
+    "goalText": "终局目标：反物质最大值达到 1×101000",
+    "goalBox": {
+      "x": 71,
+      "y": 499,
+      "w": 289,
+      "h": 55
+    },
+    "clickableCount": 21,
+    "smallCount": 2,
+    "small": [
+      {
+        "cls": "o-pelle-button",
+        "text": "显示被毁灭的现实中的效果",
+        "w": 182,
+        "h": 40
+      },
+      {
+        "cls": "o-pelle-button",
+        "text": "隐藏已购买的升级",
+        "w": 129,
+        "h": 40
+      }
+    ]
+  },
+  {
+    "view": "tut-stages-mobile375",
+    "vw": 375,
+    "docW": 375,
+    "overflowX": false,
+    "activeChapter": "阶段指南",
+    "hasGoalText": true,
+    "mainText": "阶段指南 按你现在的进度给出建议 当前阶段 毁灭现实（佩勒） 毁灭现实里大部分机制被佩勒禁用，需要用 Pelle 升级与裂缝逐步夺回。终局目标：让反物质达到 1×10^1000。 在「天神 → 佩勒」里先看清哪些机制被禁用 用 Pelle 升级逐个恢复自动购买器与倍率 推进佩勒裂缝与打击目标，把反物质一路推高 反物质达到 1×10^1000 就抵达终局——这是最后一个目标，对着反物质最大值看进度 开局（未无限） 条件已满足，尚未进入 买维度 → 计数频率 → 维度提升 → 反物质星系，把反物质推到 1.8e308 做第一次无限。 无限期 已进入 这个阶段要连过三道墙：Break（大坍缩间隔拉满）→ IP 够 1e8 → 本纪最高反物质够 1e1100。三道都有 Mod 自动推进，你只需要让自动购买器总开关保持开启。 永恒期 已进入 时间研究、时间维度、永恒升级、时间膨胀；EP 主要用来点亮时间研究树。这一阶段的 IP / EP 兑换尺度仍然按 AD8 / AD9 收紧了，Reality 解锁后才恢复原版。 现实期 未解锁 尚未解锁 · 本阶段功能现在无法使用 —— 符文（Glyph）与"
+  },
+  {
+    "view": "tut-chapter7-mobile375",
+    "vw": 375,
+    "hasChapter": true,
+    "hasGoalText": true,
+    "hasOldWording": false,
+    "text": "你现在该做什么 当前阶段：后期天神与佩勒 · 已完成 14 / 17 个里程碑 ▶ 下一步：在研究树里点出「时间膨胀」研究，解锁膨胀（Dilation） ▶10. 在研究树里点出「时间膨胀」研究，解锁膨胀（Dilation）○11. 永久点数达到现实需求后点「现实」，进入第三个重置层✔12. 现实后每次都会给符文：把符文装到空槽位里，效果立刻生效✔13. 「挑战」页：先做普通挑战（首次无限后解锁），奖励是永久加成✔14. 再做无限挑战（目标高于无限上限） 进度由存档状态自动判定（✔ = 已完成，▶ = 现在做这一条）；只列出最近的几步。 ⓪ 界面速查 左侧栏：维度、自动化、挑战、无限、永恒、现"
+  },
+  {
+    "mobileConsoleErrors": [
+      "console: Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src http://me.kis.v2.scr.kaspersky-labs.com ws://me.kis.v2.scr.kaspersky-labs.com 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+    ]
+  }
+]

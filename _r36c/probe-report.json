@@ -1,0 +1,2604 @@
+{
+  "generatedAt": "2026-10-30T03:04:40.567Z",
+  "cdpPort": 9342,
+  "saves": [
+    {
+      "file": "1123._Endgame.txt",
+      "reqTable": [
+        {
+          "L": 1,
+          "runtime": 4230,
+          "upstream_1e6": 1692340,
+          "r35_2p5e3": 4230,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 2,
+          "runtime": 313838,
+          "upstream_1e6": 125535354,
+          "r35_2p5e3": 313838,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 3,
+          "runtime": 4577376,
+          "upstream_1e6": 1830950616,
+          "r35_2p5e3": 4577376,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 4,
+          "runtime": 33723909,
+          "upstream_1e6": 13489563879,
+          "r35_2p5e3": 33723909,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 5,
+          "runtime": 169152407,
+          "upstream_1e6": 67660962880,
+          "r35_2p5e3": 169152407,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 6,
+          "runtime": 660810925,
+          "upstream_1e6": 264324370371,
+          "r35_2p5e3": 660810925,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 7,
+          "runtime": 2162515532,
+          "upstream_1e6": 865006213087,
+          "r35_2p5e3": 2162515532,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 8,
+          "runtime": 6195850998,
+          "upstream_1e6": 2478340399379,
+          "r35_2p5e3": 6195850998,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 9,
+          "runtime": 15998473196,
+          "upstream_1e6": 6399389278661,
+          "r35_2p5e3": 15998473196,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 10,
+          "runtime": 37986176754,
+          "upstream_1e6": 15194470701802,
+          "r35_2p5e3": 37986176754,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 11,
+          "runtime": 84154653794,
+          "upstream_1e6": 33661861517675,
+          "r35_2p5e3": 84154653794,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 12,
+          "runtime": 175870778086,
+          "upstream_1e6": 70348311234460,
+          "r35_2p5e3": 175870778086,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 13,
+          "runtime": 349659206947,
+          "upstream_1e6": 139863682778993,
+          "r35_2p5e3": 349659206947,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 14,
+          "runtime": 665783181064,
+          "upstream_1e6": 266313272425972,
+          "r35_2p5e3": 665783181064,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 15,
+          "runtime": 1220654078451,
+          "upstream_1e6": 488261631380653,
+          "r35_2p5e3": 1220654078451,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 16,
+          "runtime": 3246582570532,
+          "upstream_1e6": 1298633028213176,
+          "r35_2p5e3": 3246582570532,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 17,
+          "runtime": 8381631265894,
+          "upstream_1e6": 3352652506357979,
+          "r35_2p5e3": 8381631265894,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 18,
+          "runtime": 21068341389858,
+          "upstream_1e6": 8427336555943238,
+          "r35_2p5e3": 21068341389858,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 19,
+          "runtime": 51696586829193,
+          "upstream_1e6": 20678634731677324,
+          "r35_2p5e3": 51696586829193,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 20,
+          "runtime": 124105550710579,
+          "upstream_1e6": 49642220284231930,
+          "r35_2p5e3": 124105550710579,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 21,
+          "runtime": 292048257855271,
+          "upstream_1e6": 116819303142108450,
+          "r35_2p5e3": 292048257855271,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 22,
+          "runtime": 674807499551818,
+          "upstream_1e6": 269922999820727520,
+          "r35_2p5e3": 674807499551818,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 23,
+          "runtime": 1533220735418207,
+          "upstream_1e6": 613288294167283000,
+          "r35_2p5e3": 1533220735418207,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 24,
+          "runtime": 3429975488676372,
+          "upstream_1e6": 1371990195470548700,
+          "r35_2p5e3": 3429975488676372,
+          "matchesUpstream": false,
+          "matchesR35": true
+        }
+      ],
+      "imCap": {
+        "uncappedRM": null,
+        "uncappedRM_log10": null,
+        "baseIMCap": 285188127316486.1,
+        "currentIMCap": 285188127316486.1,
+        "projectedIMCap": 285188127316486.1,
+        "iMCap_stored": 285188127316486.1,
+        "OREKI_IM_CAP_MULT": 10.6,
+        "upstreamForm": null,
+        "ratioBaseOverUpstreamForm": 0,
+        "imUnlocked": true,
+        "imValue": 285188126998730.2,
+        "baseRMCap": null,
+        "hardcapRM": null,
+        "rmValue": null
+      },
+      "iuChain": {
+        "iu13": {
+          "id": 13,
+          "name": "信息之瞬",
+          "cost": 50000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在无名氏的现实中，获得 1.80e308 现实机器。"
+        },
+        "iu14": {
+          "id": 14,
+          "name": "入侵之忆",
+          "cost": 350000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": true,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": false,
+          "requirementText": "在永恒挑战5 中，计数频率达到 1e7.500e10 /秒"
+        },
+        "iu15": {
+          "id": 15,
+          "name": "理想之构",
+          "cost": 1000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在始终没有第一无限维度的前提下，达到 1e1.500e12 反物质"
+        },
+        "iu16": {
+          "id": 16,
+          "name": "无质动量",
+          "cost": 3500000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": true,
+          "canBeApplied": true,
+          "checkRequirement": true,
+          "hasFailed": false,
+          "requirementText": "两次在 30 秒内完成莱特拉的现实"
+        },
+        "iu20": {
+          "id": 20,
+          "name": "真空加速",
+          "cost": 3000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": true,
+          "canBeApplied": false,
+          "checkRequirement": true,
+          "hasFailed": false,
+          "requirementText": "连续统至少达到 100%"
+        },
+        "iu21": {
+          "id": 21,
+          "name": "消解存在",
+          "cost": 10000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "单次现实全程禁用连续统时，达到 1e7.400e12 反物质"
+        },
+        "iu22": {
+          "id": 22,
+          "name": "全面终结",
+          "cost": 150000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "装备至少 4 个诅咒符文时，在鹿颈长的现实中达到 1e1.500e11 反物质"
+        },
+        "iu23": {
+          "id": 23,
+          "name": "共面纯化",
+          "cost": 600000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "装备符文的数量不大于 0 时，在太阳神的现实中符文等级达到 20,000"
+        },
+        "iu24": {
+          "id": 24,
+          "name": "绝对废止",
+          "cost": 600000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "黑洞完全反转时，在太阳神的现实中获得 13,000 个反物质星系"
+        },
+        "iu25": {
+          "id": 25,
+          "name": "彻底抹除",
+          "cost": 1600000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在莱特拉的现实中，至少 4 个符文槽为空，禁用所有维度，达成现实。"
+        },
+        "laitela": {
+          "isUnlocked": true,
+          "continuumUnlocked": false,
+          "continuumActive": false,
+          "isRunning": false,
+          "maxAllowedDimension": 0,
+          "difficultyTier": 8
+        },
+        "ra": {
+          "isUnlocked": true,
+          "isRunning": false,
+          "spaceTheorems": 66,
+          "totalPetLevel": 100,
+          "remembranceUnlocked": true
+        },
+        "iu15Gates": {
+          "maxID1": null,
+          "maxID1_isZero": false,
+          "antimatter_value_log10": 9000000000000007,
+          "player_antimatter_exponent": 9000000000000007,
+          "exponent_ge_1p5e12": true
+        }
+      },
+      "vProgress": {
+        "items": {
+          "realities": {
+            "progress": 58508.3822204094,
+            "requirement": 200,
+            "resource": 11701676.44408188
+          },
+          "eternities": {
+            "progress": 1.2062551465573682e-12,
+            "requirement": 1e+70,
+            "resource": 31645
+          },
+          "infinities": {
+            "progress": 0,
+            "requirement": 1e+160,
+            "resource": 0
+          },
+          "dilatedTime": {
+            "progress": 443949.11273495737,
+            "requirement": {
+              "mantissa": 1,
+              "exponent": 30
+            },
+            "resource": 1.3093370035041701e+110
+          },
+          "replicanti": {
+            "progress": 4.430163509511602e-14,
+            "requirement": {
+              "mantissa": 1,
+              "exponent": 20000
+            },
+            "resource": null
+          },
+          "realityMachines": {
+            "progress": 95367431640625,
+            "requirement": 1e+60,
+            "resource": null
+          }
+        },
+        "allGe1": false,
+        "vUnlocked": false,
+        "spaceTheorems": 66,
+        "raUnlockApplied": true
+      },
+      "pets": [
+        {
+          "key": "Teresa",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 8.878617451947977e+23,
+          "memoryChunks": 81521767140607.62,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 11,
+          "rawMemoryChunksPerSecond": 19989716581274610,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 86.49755859375,
+          "hasRemembrance": false,
+          "requiredMemories": null
+        },
+        {
+          "key": "Effarig",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 1.9285194984599108e+21,
+          "memoryChunks": 173766512777.00952,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 11,
+          "rawMemoryChunksPerSecond": 4,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 86.49755859375,
+          "hasRemembrance": false,
+          "requiredMemories": null
+        },
+        {
+          "key": "The Nameless Ones",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 417361465912785600000,
+          "memoryChunks": 36169542202.868805,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 10,
+          "rawMemoryChunksPerSecond": 1539237307.558469,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 57.6650390625,
+          "hasRemembrance": false,
+          "requiredMemories": null
+        },
+        {
+          "key": "V",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 408647396877138850000,
+          "memoryChunks": 35951640455.34453,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 10,
+          "rawMemoryChunksPerSecond": 5506276.703294787,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 57.6650390625,
+          "hasRemembrance": true,
+          "requiredMemories": null
+        }
+      ],
+      "ppc": 256.04029133839265,
+      "env": {
+        "F": 10000,
+        "EP_log10": 1709682823.1212506,
+        "IP_log10": 151135686115.1397,
+        "TS_log10": 7284896457.948249,
+        "shards": 1,
+        "glyphLevel": 42384,
+        "totalTimePlayed": 2.3925559935962034e+251,
+        "achievementsPower": 1
+      }
+    },
+    {
+      "file": "1105._6.7e11DT+Cel7+3.9e44RS.txt",
+      "reqTable": [
+        {
+          "L": 1,
+          "runtime": 4230,
+          "upstream_1e6": 1692340,
+          "r35_2p5e3": 4230,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 2,
+          "runtime": 313838,
+          "upstream_1e6": 125535354,
+          "r35_2p5e3": 313838,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 3,
+          "runtime": 4577376,
+          "upstream_1e6": 1830950616,
+          "r35_2p5e3": 4577376,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 4,
+          "runtime": 33723909,
+          "upstream_1e6": 13489563879,
+          "r35_2p5e3": 33723909,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 5,
+          "runtime": 169152407,
+          "upstream_1e6": 67660962880,
+          "r35_2p5e3": 169152407,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 6,
+          "runtime": 660810925,
+          "upstream_1e6": 264324370371,
+          "r35_2p5e3": 660810925,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 7,
+          "runtime": 2162515532,
+          "upstream_1e6": 865006213087,
+          "r35_2p5e3": 2162515532,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 8,
+          "runtime": 6195850998,
+          "upstream_1e6": 2478340399379,
+          "r35_2p5e3": 6195850998,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 9,
+          "runtime": 15998473196,
+          "upstream_1e6": 6399389278661,
+          "r35_2p5e3": 15998473196,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 10,
+          "runtime": 37986176754,
+          "upstream_1e6": 15194470701802,
+          "r35_2p5e3": 37986176754,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 11,
+          "runtime": 84154653794,
+          "upstream_1e6": 33661861517675,
+          "r35_2p5e3": 84154653794,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 12,
+          "runtime": 175870778086,
+          "upstream_1e6": 70348311234460,
+          "r35_2p5e3": 175870778086,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 13,
+          "runtime": 349659206947,
+          "upstream_1e6": 139863682778993,
+          "r35_2p5e3": 349659206947,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 14,
+          "runtime": 665783181064,
+          "upstream_1e6": 266313272425972,
+          "r35_2p5e3": 665783181064,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 15,
+          "runtime": 1220654078451,
+          "upstream_1e6": 488261631380653,
+          "r35_2p5e3": 1220654078451,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 16,
+          "runtime": 3246582570532,
+          "upstream_1e6": 1298633028213176,
+          "r35_2p5e3": 3246582570532,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 17,
+          "runtime": 8381631265894,
+          "upstream_1e6": 3352652506357979,
+          "r35_2p5e3": 8381631265894,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 18,
+          "runtime": 21068341389858,
+          "upstream_1e6": 8427336555943238,
+          "r35_2p5e3": 21068341389858,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 19,
+          "runtime": 51696586829193,
+          "upstream_1e6": 20678634731677324,
+          "r35_2p5e3": 51696586829193,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 20,
+          "runtime": 124105550710579,
+          "upstream_1e6": 49642220284231930,
+          "r35_2p5e3": 124105550710579,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 21,
+          "runtime": 292048257855271,
+          "upstream_1e6": 116819303142108450,
+          "r35_2p5e3": 292048257855271,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 22,
+          "runtime": 674807499551818,
+          "upstream_1e6": 269922999820727520,
+          "r35_2p5e3": 674807499551818,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 23,
+          "runtime": 1533220735418207,
+          "upstream_1e6": 613288294167283000,
+          "r35_2p5e3": 1533220735418207,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 24,
+          "runtime": 3429975488676372,
+          "upstream_1e6": 1371990195470548700,
+          "r35_2p5e3": 3429975488676372,
+          "matchesUpstream": false,
+          "matchesR35": true
+        }
+      ],
+      "imCap": {
+        "uncappedRM": 2642337893,
+        "uncappedRM_log10": 9.421988352900897,
+        "baseIMCap": 0,
+        "currentIMCap": 199891162537145.94,
+        "projectedIMCap": 0,
+        "iMCap_stored": 199891162537145.94,
+        "OREKI_IM_CAP_MULT": 10.6,
+        "upstreamForm": 0,
+        "ratioBaseOverUpstreamForm": null,
+        "imUnlocked": true,
+        "imValue": 199891162537145.94,
+        "baseRMCap": null,
+        "hardcapRM": null,
+        "rmValue": null
+      },
+      "iuChain": {
+        "iu13": {
+          "id": 13,
+          "name": "信息之瞬",
+          "cost": 50000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在无名氏的现实中，获得 1.80e308 现实机器。"
+        },
+        "iu14": {
+          "id": 14,
+          "name": "入侵之忆",
+          "cost": 350000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": true,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": false,
+          "requirementText": "在永恒挑战5 中，计数频率达到 1e7.500e10 /秒"
+        },
+        "iu15": {
+          "id": 15,
+          "name": "理想之构",
+          "cost": 1000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在始终没有第一无限维度的前提下，达到 1e1.500e12 反物质"
+        },
+        "iu16": {
+          "id": 16,
+          "name": "无质动量",
+          "cost": 3500000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": true,
+          "canBeApplied": true,
+          "checkRequirement": true,
+          "hasFailed": false,
+          "requirementText": "两次在 30 秒内完成莱特拉的现实"
+        },
+        "iu20": {
+          "id": 20,
+          "name": "真空加速",
+          "cost": 3000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": true,
+          "canBeApplied": false,
+          "checkRequirement": true,
+          "hasFailed": false,
+          "requirementText": "连续统至少达到 100%"
+        },
+        "iu21": {
+          "id": 21,
+          "name": "消解存在",
+          "cost": 10000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "单次现实全程禁用连续统时，达到 1e7.400e12 反物质"
+        },
+        "iu22": {
+          "id": 22,
+          "name": "全面终结",
+          "cost": 150000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "装备至少 4 个诅咒符文时，在鹿颈长的现实中达到 1e1.500e11 反物质"
+        },
+        "iu23": {
+          "id": 23,
+          "name": "共面纯化",
+          "cost": 600000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "装备符文的数量不大于 0 时，在太阳神的现实中符文等级达到 20,000"
+        },
+        "iu24": {
+          "id": 24,
+          "name": "绝对废止",
+          "cost": 600000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "黑洞完全反转时，在太阳神的现实中获得 13,000 个反物质星系"
+        },
+        "iu25": {
+          "id": 25,
+          "name": "彻底抹除",
+          "cost": 1600000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在莱特拉的现实中，至少 4 个符文槽为空，禁用所有维度，达成现实。"
+        },
+        "laitela": {
+          "isUnlocked": true,
+          "continuumUnlocked": false,
+          "continuumActive": false,
+          "isRunning": false,
+          "maxAllowedDimension": 0,
+          "difficultyTier": 8
+        },
+        "ra": {
+          "isUnlocked": true,
+          "isRunning": false,
+          "spaceTheorems": 66,
+          "totalPetLevel": 100,
+          "remembranceUnlocked": true
+        },
+        "iu15Gates": {
+          "maxID1": null,
+          "maxID1_isZero": false,
+          "antimatter_value_log10": 2612033.8577741166,
+          "player_antimatter_exponent": 2612033,
+          "exponent_ge_1p5e12": false
+        }
+      },
+      "vProgress": {
+        "items": {
+          "realities": {
+            "progress": 58508.3822204094,
+            "requirement": 200,
+            "resource": 11701676.44408188
+          },
+          "eternities": {
+            "progress": 1.1904232295494563e-12,
+            "requirement": 1e+70,
+            "resource": 31215
+          },
+          "infinities": {
+            "progress": 0,
+            "requirement": 1e+160,
+            "resource": 0
+          },
+          "dilatedTime": {
+            "progress": 0.00010535961004776455,
+            "requirement": {
+              "mantissa": 1,
+              "exponent": 30
+            },
+            "resource": 1013287556419.95
+          },
+          "replicanti": {
+            "progress": 2.533562546476052e-8,
+            "requirement": {
+              "mantissa": 1,
+              "exponent": 20000
+            },
+            "resource": null
+          },
+          "realityMachines": {
+            "progress": 95367431640625,
+            "requirement": 1e+60,
+            "resource": null
+          }
+        },
+        "allGe1": false,
+        "vUnlocked": false,
+        "spaceTheorems": 66,
+        "raUnlockApplied": true
+      },
+      "pets": [
+        {
+          "key": "Teresa",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 7.793884360010503e+23,
+          "memoryChunks": 81521767140607.62,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 11,
+          "rawMemoryChunksPerSecond": 0.00027146995743977323,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 86.49755859375,
+          "hasRemembrance": false,
+          "requiredMemories": null
+        },
+        {
+          "key": "Effarig",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 1.6973048262299877e+21,
+          "memoryChunks": 173766512777.00952,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 11,
+          "rawMemoryChunksPerSecond": 14.733179545412476,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 86.49755859375,
+          "hasRemembrance": false,
+          "requiredMemories": null
+        },
+        {
+          "key": "The Nameless Ones",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 369234075245607000000,
+          "memoryChunks": 36169542202.868805,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 10,
+          "rawMemoryChunksPerSecond": 0.00009690063546829838,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 57.6650390625,
+          "hasRemembrance": false,
+          "requiredMemories": null
+        },
+        {
+          "key": "V",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 360809947469345400000,
+          "memoryChunks": 35951640455.34453,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 10,
+          "rawMemoryChunksPerSecond": 0.00012649870256825938,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 57.6650390625,
+          "hasRemembrance": true,
+          "requiredMemories": null
+        }
+      ],
+      "ppc": 256.04029133839265,
+      "env": {
+        "F": 10000,
+        "EP_log10": 407.9002089982346,
+        "IP_log10": 10000.400348857898,
+        "TS_log10": 1476.5718059196151,
+        "shards": 459584,
+        "glyphLevel": 42384,
+        "totalTimePlayed": 2.3925559935962034e+251,
+        "achievementsPower": 1
+      }
+    },
+    {
+      "file": "1000._9.73e14iM+Cel6+1.84e45SG.txt",
+      "reqTable": [
+        {
+          "L": 1,
+          "runtime": 4230,
+          "upstream_1e6": 1692340,
+          "r35_2p5e3": 4230,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 2,
+          "runtime": 313838,
+          "upstream_1e6": 125535354,
+          "r35_2p5e3": 313838,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 3,
+          "runtime": 4577376,
+          "upstream_1e6": 1830950616,
+          "r35_2p5e3": 4577376,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 4,
+          "runtime": 33723909,
+          "upstream_1e6": 13489563879,
+          "r35_2p5e3": 33723909,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 5,
+          "runtime": 169152407,
+          "upstream_1e6": 67660962880,
+          "r35_2p5e3": 169152407,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 6,
+          "runtime": 660810925,
+          "upstream_1e6": 264324370371,
+          "r35_2p5e3": 660810925,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 7,
+          "runtime": 2162515532,
+          "upstream_1e6": 865006213087,
+          "r35_2p5e3": 2162515532,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 8,
+          "runtime": 6195850998,
+          "upstream_1e6": 2478340399379,
+          "r35_2p5e3": 6195850998,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 9,
+          "runtime": 15998473196,
+          "upstream_1e6": 6399389278661,
+          "r35_2p5e3": 15998473196,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 10,
+          "runtime": 37986176754,
+          "upstream_1e6": 15194470701802,
+          "r35_2p5e3": 37986176754,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 11,
+          "runtime": 84154653794,
+          "upstream_1e6": 33661861517675,
+          "r35_2p5e3": 84154653794,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 12,
+          "runtime": 175870778086,
+          "upstream_1e6": 70348311234460,
+          "r35_2p5e3": 175870778086,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 13,
+          "runtime": 349659206947,
+          "upstream_1e6": 139863682778993,
+          "r35_2p5e3": 349659206947,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 14,
+          "runtime": 665783181064,
+          "upstream_1e6": 266313272425972,
+          "r35_2p5e3": 665783181064,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 15,
+          "runtime": 1220654078451,
+          "upstream_1e6": 488261631380653,
+          "r35_2p5e3": 1220654078451,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 16,
+          "runtime": 3246582570532,
+          "upstream_1e6": 1298633028213176,
+          "r35_2p5e3": 3246582570532,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 17,
+          "runtime": 8381631265894,
+          "upstream_1e6": 3352652506357979,
+          "r35_2p5e3": 8381631265894,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 18,
+          "runtime": 21068341389858,
+          "upstream_1e6": 8427336555943238,
+          "r35_2p5e3": 21068341389858,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 19,
+          "runtime": 51696586829193,
+          "upstream_1e6": 20678634731677324,
+          "r35_2p5e3": 51696586829193,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 20,
+          "runtime": 124105550710579,
+          "upstream_1e6": 49642220284231930,
+          "r35_2p5e3": 124105550710579,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 21,
+          "runtime": 292048257855271,
+          "upstream_1e6": 116819303142108450,
+          "r35_2p5e3": 292048257855271,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 22,
+          "runtime": 674807499551818,
+          "upstream_1e6": 269922999820727520,
+          "r35_2p5e3": 674807499551818,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 23,
+          "runtime": 1533220735418207,
+          "upstream_1e6": 613288294167283000,
+          "r35_2p5e3": 1533220735418207,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 24,
+          "runtime": 3429975488676372,
+          "upstream_1e6": 1371990195470548700,
+          "r35_2p5e3": 3429975488676372,
+          "matchesUpstream": false,
+          "matchesR35": true
+        }
+      ],
+      "imCap": {
+        "uncappedRM": null,
+        "uncappedRM_log10": null,
+        "baseIMCap": 4084053601979001.5,
+        "currentIMCap": 45537197662065870,
+        "projectedIMCap": 45537197662065870,
+        "iMCap_stored": 4084053601979001.5,
+        "OREKI_IM_CAP_MULT": 10.6,
+        "upstreamForm": null,
+        "ratioBaseOverUpstreamForm": 0,
+        "imUnlocked": true,
+        "imValue": 45537197662065870,
+        "baseRMCap": null,
+        "hardcapRM": null,
+        "rmValue": null
+      },
+      "iuChain": {
+        "iu13": {
+          "id": 13,
+          "name": "信息之瞬",
+          "cost": 50000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在无名氏的现实中，获得 1.80e308 现实机器。"
+        },
+        "iu14": {
+          "id": 14,
+          "name": "入侵之忆",
+          "cost": 350000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": true,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": false,
+          "requirementText": "在永恒挑战5 中，计数频率达到 1e7.500e10 /秒"
+        },
+        "iu15": {
+          "id": 15,
+          "name": "理想之构",
+          "cost": 1000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在始终没有第一无限维度的前提下，达到 1e1.500e12 反物质"
+        },
+        "iu16": {
+          "id": 16,
+          "name": "无质动量",
+          "cost": 3500000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": true,
+          "canBeApplied": true,
+          "checkRequirement": true,
+          "hasFailed": false,
+          "requirementText": "两次在 30 秒内完成莱特拉的现实"
+        },
+        "iu20": {
+          "id": 20,
+          "name": "真空加速",
+          "cost": 3000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": true,
+          "canBeApplied": true,
+          "checkRequirement": true,
+          "hasFailed": false,
+          "requirementText": "连续统至少达到 100%"
+        },
+        "iu21": {
+          "id": 21,
+          "name": "消解存在",
+          "cost": 10000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "单次现实全程禁用连续统时，达到 1e7.400e12 反物质"
+        },
+        "iu22": {
+          "id": 22,
+          "name": "全面终结",
+          "cost": 150000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "装备至少 4 个诅咒符文时，在鹿颈长的现实中达到 1e1.500e11 反物质"
+        },
+        "iu23": {
+          "id": 23,
+          "name": "共面纯化",
+          "cost": 600000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "装备符文的数量不大于 0 时，在太阳神的现实中符文等级达到 20,000"
+        },
+        "iu24": {
+          "id": 24,
+          "name": "绝对废止",
+          "cost": 600000000000000,
+          "isBought": true,
+          "isAvailableForPurchase": true,
+          "isPossible": false,
+          "canBeApplied": true,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "黑洞完全反转时，在太阳神的现实中获得 13,000 个反物质星系"
+        },
+        "iu25": {
+          "id": 25,
+          "name": "彻底抹除",
+          "cost": 1600000000000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在莱特拉的现实中，至少 4 个符文槽为空，禁用所有维度，达成现实。"
+        },
+        "laitela": {
+          "isUnlocked": true,
+          "continuumUnlocked": true,
+          "continuumActive": true,
+          "isRunning": false,
+          "maxAllowedDimension": 0,
+          "difficultyTier": 8
+        },
+        "ra": {
+          "isUnlocked": true,
+          "isRunning": false,
+          "spaceTheorems": 66,
+          "totalPetLevel": 100,
+          "remembranceUnlocked": true
+        },
+        "iu15Gates": {
+          "maxID1": null,
+          "maxID1_isZero": false,
+          "antimatter_value_log10": 3065078003402.603,
+          "player_antimatter_exponent": 3065078003402,
+          "exponent_ge_1p5e12": true
+        }
+      },
+      "vProgress": {
+        "items": {
+          "realities": {
+            "progress": 60019.13362053988,
+            "requirement": 200,
+            "resource": 12003826.724107975
+          },
+          "eternities": {
+            "progress": 4605373615.441511,
+            "requirement": 1e+70,
+            "resource": null
+          },
+          "infinities": {
+            "progress": 197437012.66782555,
+            "requirement": 1e+160,
+            "resource": null
+          },
+          "dilatedTime": {
+            "progress": 69318869333849350,
+            "requirement": {
+              "mantissa": 1,
+              "exponent": 30
+            },
+            "resource": null
+          },
+          "replicanti": {
+            "progress": 9.192024465452557e+21,
+            "requirement": {
+              "mantissa": 1,
+              "exponent": 20000
+            },
+            "resource": null
+          },
+          "realityMachines": {
+            "progress": 95367431640625,
+            "requirement": 1e+60,
+            "resource": null
+          }
+        },
+        "allGe1": true,
+        "vUnlocked": false,
+        "spaceTheorems": 66,
+        "raUnlockApplied": true
+      },
+      "pets": [
+        {
+          "key": "Teresa",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 1.4372855827115401e+23,
+          "memoryChunks": 81521767140607.62,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 11,
+          "rawMemoryChunksPerSecond": 740729408827015600,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 86.49755859375,
+          "hasRemembrance": false,
+          "requiredMemories": null
+        },
+        {
+          "key": "Effarig",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 342373448411310000000,
+          "memoryChunks": 173766512777.00952,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 11,
+          "rawMemoryChunksPerSecond": 343996737858.85895,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 86.49755859375,
+          "hasRemembrance": false,
+          "requiredMemories": null
+        },
+        {
+          "key": "The Nameless Ones",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 87204777027266380000,
+          "memoryChunks": 36169542202.868805,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 10,
+          "rawMemoryChunksPerSecond": 0,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 57.6650390625,
+          "hasRemembrance": false,
+          "requiredMemories": null
+        },
+        {
+          "key": "V",
+          "level": 25,
+          "isUnlocked": true,
+          "memories": 80479721840529800000,
+          "memoryChunks": 35951640455.34453,
+          "memoryUpgrades": 22,
+          "chunkUpgrades": 10,
+          "rawMemoryChunksPerSecond": 0,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 321.18388779548576,
+          "chunkUpgradeCurrentMult": 57.6650390625,
+          "hasRemembrance": true,
+          "requiredMemories": null
+        }
+      ],
+      "ppc": 297.95825215515356,
+      "env": {
+        "F": 10000,
+        "EP_log10": 5699890756.157588,
+        "IP_log10": 144298558253.80902,
+        "TS_log10": 25367229435.086315,
+        "shards": 2.21280593824678e+109,
+        "glyphLevel": 40936,
+        "totalTimePlayed": 8.980050429327615e+250,
+        "achievementsPower": 8.995077182314616e+26
+      }
+    },
+    {
+      "file": "424._8.4e1412EP+4.9e10DT.txt",
+      "reqTable": [
+        {
+          "L": 1,
+          "runtime": 4230,
+          "upstream_1e6": 1692340,
+          "r35_2p5e3": 4230,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 2,
+          "runtime": 313838,
+          "upstream_1e6": 125535354,
+          "r35_2p5e3": 313838,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 3,
+          "runtime": 4577376,
+          "upstream_1e6": 1830950616,
+          "r35_2p5e3": 4577376,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 4,
+          "runtime": 33723909,
+          "upstream_1e6": 13489563879,
+          "r35_2p5e3": 33723909,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 5,
+          "runtime": 169152407,
+          "upstream_1e6": 67660962880,
+          "r35_2p5e3": 169152407,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 6,
+          "runtime": 660810925,
+          "upstream_1e6": 264324370371,
+          "r35_2p5e3": 660810925,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 7,
+          "runtime": 2162515532,
+          "upstream_1e6": 865006213087,
+          "r35_2p5e3": 2162515532,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 8,
+          "runtime": 6195850998,
+          "upstream_1e6": 2478340399379,
+          "r35_2p5e3": 6195850998,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 9,
+          "runtime": 15998473196,
+          "upstream_1e6": 6399389278661,
+          "r35_2p5e3": 15998473196,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 10,
+          "runtime": 37986176754,
+          "upstream_1e6": 15194470701802,
+          "r35_2p5e3": 37986176754,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 11,
+          "runtime": 84154653794,
+          "upstream_1e6": 33661861517675,
+          "r35_2p5e3": 84154653794,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 12,
+          "runtime": 175870778086,
+          "upstream_1e6": 70348311234460,
+          "r35_2p5e3": 175870778086,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 13,
+          "runtime": 349659206947,
+          "upstream_1e6": 139863682778993,
+          "r35_2p5e3": 349659206947,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 14,
+          "runtime": 665783181064,
+          "upstream_1e6": 266313272425972,
+          "r35_2p5e3": 665783181064,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 15,
+          "runtime": 1220654078451,
+          "upstream_1e6": 488261631380653,
+          "r35_2p5e3": 1220654078451,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 16,
+          "runtime": 3246582570532,
+          "upstream_1e6": 1298633028213176,
+          "r35_2p5e3": 3246582570532,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 17,
+          "runtime": 8381631265894,
+          "upstream_1e6": 3352652506357979,
+          "r35_2p5e3": 8381631265894,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 18,
+          "runtime": 21068341389858,
+          "upstream_1e6": 8427336555943238,
+          "r35_2p5e3": 21068341389858,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 19,
+          "runtime": 51696586829193,
+          "upstream_1e6": 20678634731677324,
+          "r35_2p5e3": 51696586829193,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 20,
+          "runtime": 124105550710579,
+          "upstream_1e6": 49642220284231930,
+          "r35_2p5e3": 124105550710579,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 21,
+          "runtime": 292048257855271,
+          "upstream_1e6": 116819303142108450,
+          "r35_2p5e3": 292048257855271,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 22,
+          "runtime": 674807499551818,
+          "upstream_1e6": 269922999820727520,
+          "r35_2p5e3": 674807499551818,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 23,
+          "runtime": 1533220735418207,
+          "upstream_1e6": 613288294167283000,
+          "r35_2p5e3": 1533220735418207,
+          "matchesUpstream": false,
+          "matchesR35": true
+        },
+        {
+          "L": 24,
+          "runtime": 3429975488676372,
+          "upstream_1e6": 1371990195470548700,
+          "r35_2p5e3": 3429975488676372,
+          "matchesUpstream": false,
+          "matchesR35": true
+        }
+      ],
+      "imCap": {
+        "uncappedRM": 74,
+        "uncappedRM_log10": 1.8692317197309762,
+        "baseIMCap": 0,
+        "currentIMCap": 0,
+        "projectedIMCap": 0,
+        "iMCap_stored": 0,
+        "OREKI_IM_CAP_MULT": 10.6,
+        "upstreamForm": 0,
+        "ratioBaseOverUpstreamForm": null,
+        "imUnlocked": false,
+        "imValue": 0,
+        "baseRMCap": null,
+        "hardcapRM": null,
+        "rmValue": 0
+      },
+      "iuChain": {
+        "iu13": {
+          "id": 13,
+          "name": "信息之瞬",
+          "cost": 50000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在无名氏的现实中，获得 1.80e308 现实机器。"
+        },
+        "iu14": {
+          "id": 14,
+          "name": "入侵之忆",
+          "cost": 350000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": true,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": false,
+          "requirementText": "在永恒挑战5 中，计数频率达到 1e7.500e10 /秒"
+        },
+        "iu15": {
+          "id": 15,
+          "name": "理想之构",
+          "cost": 1000000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在始终没有第一无限维度的前提下，达到 1e1.500e12 反物质"
+        },
+        "iu16": {
+          "id": 16,
+          "name": "无质动量",
+          "cost": 3500000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": true,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": false,
+          "requirementText": "两次在 30 秒内完成莱特拉的现实"
+        },
+        "iu20": {
+          "id": 20,
+          "name": "真空加速",
+          "cost": 3000000000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": true,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": false,
+          "requirementText": "连续统至少达到 100%"
+        },
+        "iu21": {
+          "id": 21,
+          "name": "消解存在",
+          "cost": 10000000000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": true,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": false,
+          "requirementText": "单次现实全程禁用连续统时，达到 1e7.400e12 反物质"
+        },
+        "iu22": {
+          "id": 22,
+          "name": "全面终结",
+          "cost": 150000000000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "装备至少 4 个诅咒符文时，在鹿颈长的现实中达到 1e1.500e11 反物质"
+        },
+        "iu23": {
+          "id": 23,
+          "name": "共面纯化",
+          "cost": 600000000000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "装备符文的数量不大于 0 时，在太阳神的现实中符文等级达到 20,000"
+        },
+        "iu24": {
+          "id": 24,
+          "name": "绝对废止",
+          "cost": 600000000000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "黑洞完全反转时，在太阳神的现实中获得 13,000 个反物质星系"
+        },
+        "iu25": {
+          "id": 25,
+          "name": "彻底抹除",
+          "cost": 1600000000000000,
+          "isBought": false,
+          "isAvailableForPurchase": false,
+          "isPossible": false,
+          "canBeApplied": false,
+          "checkRequirement": false,
+          "hasFailed": true,
+          "requirementText": "在莱特拉的现实中，至少 4 个符文槽为空，禁用所有维度，达成现实。"
+        },
+        "laitela": {
+          "isUnlocked": false,
+          "continuumUnlocked": false,
+          "continuumActive": false,
+          "isRunning": false,
+          "maxAllowedDimension": 8,
+          "difficultyTier": 0
+        },
+        "ra": {
+          "isUnlocked": false,
+          "isRunning": false,
+          "spaceTheorems": 0,
+          "totalPetLevel": 1,
+          "remembranceUnlocked": false
+        },
+        "iu15Gates": {
+          "maxID1": null,
+          "maxID1_isZero": false,
+          "antimatter_value_log10": 73313247.81054771,
+          "player_antimatter_exponent": 73313247,
+          "exponent_ge_1p5e12": false
+        }
+      },
+      "vProgress": {
+        "items": {
+          "realities": {
+            "progress": 0,
+            "requirement": 200,
+            "resource": 0
+          },
+          "eternities": {
+            "progress": 1.9067344964803453e-11,
+            "requirement": 1e+70,
+            "resource": 853077
+          },
+          "infinities": {
+            "progress": 1.2746947386766278e-13,
+            "requirement": 1e+160,
+            "resource": 164438400
+          },
+          "dilatedTime": {
+            "progress": 0.00003722779820984602,
+            "requirement": {
+              "mantissa": 1,
+              "exponent": 30
+            },
+            "resource": 65996346678.6565
+          },
+          "replicanti": {
+            "progress": 0.028251706824206455,
+            "requirement": {
+              "mantissa": 1,
+              "exponent": 20000
+            },
+            "resource": null
+          },
+          "realityMachines": {
+            "progress": 0,
+            "requirement": 1e+60,
+            "resource": 0
+          }
+        },
+        "allGe1": false,
+        "vUnlocked": false,
+        "spaceTheorems": 0,
+        "raUnlockApplied": false
+      },
+      "pets": [
+        {
+          "key": "Teresa",
+          "level": 1,
+          "isUnlocked": true,
+          "memories": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "rawMemoryChunksPerSecond": 845138.0082772052,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 1,
+          "chunkUpgradeCurrentMult": 1,
+          "hasRemembrance": false,
+          "requiredMemories": 4230
+        },
+        {
+          "key": "Effarig",
+          "level": 0,
+          "isUnlocked": false,
+          "memories": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "rawMemoryChunksPerSecond": 0,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 1,
+          "chunkUpgradeCurrentMult": 1,
+          "hasRemembrance": false,
+          "requiredMemories": 0
+        },
+        {
+          "key": "The Nameless Ones",
+          "level": 0,
+          "isUnlocked": false,
+          "memories": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "rawMemoryChunksPerSecond": 0,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 1,
+          "chunkUpgradeCurrentMult": 1,
+          "hasRemembrance": false,
+          "requiredMemories": 0
+        },
+        {
+          "key": "V",
+          "level": 0,
+          "isUnlocked": false,
+          "memories": 0,
+          "memoryChunks": 0,
+          "memoryUpgrades": 0,
+          "chunkUpgrades": 0,
+          "rawMemoryChunksPerSecond": 0,
+          "memoryChunksPerSecond": 0,
+          "memoryUpgradeCurrentMult": 1,
+          "chunkUpgradeCurrentMult": 1,
+          "hasRemembrance": false,
+          "requiredMemories": 0
+        }
+      ],
+      "ppc": 1,
+      "env": {
+        "F": 10000,
+        "EP_log10": 595601.1271931585,
+        "IP_log10": 4868912.812682351,
+        "TS_log10": 87597.20865707521,
+        "shards": 0,
+        "glyphLevel": 0,
+        "totalTimePlayed": 383282683.1719286,
+        "achievementsPower": 279.66790339060094
+      }
+    }
+  ],
+  "sim": {
+    "wallSeconds": 10800,
+    "F": 10000,
+    "sqrtF": 100,
+    "teff": 1080000,
+    "steps": 1080,
+    "pets": [
+      {
+        "key": "Teresa",
+        "level": 25,
+        "isUnlocked": true,
+        "memories": 1.8545604800549394e+22,
+        "memoryChunks": 305968328472826.7,
+        "memoryUpgrades": 18,
+        "chunkUpgrades": 9,
+        "memoryUpgradeCurrentMult": 112.45540695195746,
+        "chunkUpgradeCurrentMult": 38.443359375,
+        "rawCPS": 7383135.231377955,
+        "cps": 283832521.0140865,
+        "requiredMemoriesNext": null,
+        "cappedMem": true,
+        "cappedChunk": true
+      },
+      {
+        "key": "Effarig",
+        "level": 0,
+        "isUnlocked": false,
+        "memories": 0,
+        "memoryChunks": 0,
+        "memoryUpgrades": 0,
+        "chunkUpgrades": 0,
+        "memoryUpgradeCurrentMult": 1,
+        "chunkUpgradeCurrentMult": 1,
+        "rawCPS": 0,
+        "cps": 0,
+        "requiredMemoriesNext": 0,
+        "cappedMem": false,
+        "cappedChunk": false
+      },
+      {
+        "key": "The Nameless Ones",
+        "level": 0,
+        "isUnlocked": false,
+        "memories": 0,
+        "memoryChunks": 0,
+        "memoryUpgrades": 0,
+        "chunkUpgrades": 0,
+        "memoryUpgradeCurrentMult": 1,
+        "chunkUpgradeCurrentMult": 1,
+        "rawCPS": 0,
+        "cps": 0,
+        "requiredMemoriesNext": 0,
+        "cappedMem": false,
+        "cappedChunk": false
+      },
+      {
+        "key": "V",
+        "level": 0,
+        "isUnlocked": false,
+        "memories": 0,
+        "memoryChunks": 0,
+        "memoryUpgrades": 0,
+        "chunkUpgrades": 0,
+        "memoryUpgradeCurrentMult": 1,
+        "chunkUpgradeCurrentMult": 1,
+        "rawCPS": 0,
+        "cps": 0,
+        "requiredMemoriesNext": 0,
+        "cappedMem": false,
+        "cappedChunk": false
+      }
+    ],
+    "trace": [
+      {
+        "raSeconds": 1000,
+        "wallSeconds": 10,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 16,
+            "mem": 776195707181.977,
+            "ch": 7383135231.3779545,
+            "mu": 13,
+            "cu": 6
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 16,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 91000,
+        "wallSeconds": 910,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 126376009093182130000,
+            "ch": 25257965189891.938,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 181000,
+        "wallSeconds": 1810,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 511281468682070900000,
+            "ch": 50802892081159.67,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 271000,
+        "wallSeconds": 2710,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 1.1547267916913563e+21,
+            "ch": 76347818972427.58,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 361000,
+        "wallSeconds": 3610,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 2.0567119781210434e+21,
+            "ch": 101892745863696.02,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 451000,
+        "wallSeconds": 4510,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 3.2172370279711333e+21,
+            "ch": 127437672754964.45,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 541000,
+        "wallSeconds": 5410,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 4.636301941241627e+21,
+            "ch": 152982599646232.88,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 631000,
+        "wallSeconds": 6310,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 6.313906717932525e+21,
+            "ch": 178527526537501.3,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 721000,
+        "wallSeconds": 7210,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 8.250051358043825e+21,
+            "ch": 204072453428769.75,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 811000,
+        "wallSeconds": 8110,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 1.0444735861575526e+22,
+            "ch": 229617380320038.2,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 901000,
+        "wallSeconds": 9010,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 1.2897960228527633e+22,
+            "ch": 255162307211306.62,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 991000,
+        "wallSeconds": 9910,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 1.5609724458900145e+22,
+            "ch": 280707234102575.06,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      },
+      {
+        "raSeconds": 1080000,
+        "wallSeconds": 10800,
+        "pets": [
+          {
+            "k": "Teresa",
+            "L": 25,
+            "mem": 1.8545604800549394e+22,
+            "ch": 305968328472826.7,
+            "mu": 18,
+            "cu": 9
+          },
+          {
+            "k": "Effarig",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "The Nameless Ones",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          },
+          {
+            "k": "V",
+            "L": 0,
+            "mem": 0,
+            "ch": 0,
+            "mu": 0,
+            "cu": 0
+          }
+        ],
+        "totalPetLevel": 25,
+        "ppc": 1
+      }
+    ],
+    "fingerprint": {
+      "EP_log10": 1226667.7399352056,
+      "IP_log10": null,
+      "TS_log10": null,
+      "RM_log10": null
+    },
+    "totalPetLevel": 25,
+    "remembranceUnlocked": true,
+    "ppc": 1,
+    "reqNow": [
+      {
+        "L": 1,
+        "req": 4230
+      },
+      {
+        "L": 2,
+        "req": 313838
+      },
+      {
+        "L": 3,
+        "req": 4577376
+      },
+      {
+        "L": 4,
+        "req": 33723909
+      },
+      {
+        "L": 5,
+        "req": 169152407
+      },
+      {
+        "L": 6,
+        "req": 660810925
+      },
+      {
+        "L": 7,
+        "req": 2162515532
+      },
+      {
+        "L": 8,
+        "req": 6195850998
+      },
+      {
+        "L": 9,
+        "req": 15998473196
+      },
+      {
+        "L": 10,
+        "req": 37986176754
+      },
+      {
+        "L": 11,
+        "req": 84154653794
+      },
+      {
+        "L": 12,
+        "req": 175870778086
+      },
+      {
+        "L": 13,
+        "req": 349659206947
+      },
+      {
+        "L": 14,
+        "req": 665783181064
+      },
+      {
+        "L": 15,
+        "req": 1220654078451
+      },
+      {
+        "L": 16,
+        "req": 3246582570532
+      },
+      {
+        "L": 17,
+        "req": 8381631265894
+      },
+      {
+        "L": 18,
+        "req": 21068341389858
+      },
+      {
+        "L": 19,
+        "req": 51696586829193
+      },
+      {
+        "L": 20,
+        "req": 124105550710579
+      },
+      {
+        "L": 21,
+        "req": 292048257855271
+      },
+      {
+        "L": 22,
+        "req": 674807499551818
+      },
+      {
+        "L": 23,
+        "req": 1533220735418207
+      },
+      {
+        "L": 24,
+        "req": 3429975488676372
+      }
+    ]
+  }
+}

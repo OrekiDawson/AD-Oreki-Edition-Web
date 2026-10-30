@@ -1,0 +1,55 @@
+{
+  "globals": {
+    "AntimatterDimension": true,
+    "InfinityDimension": true,
+    "TimeDimension": true,
+    "Replicanti": true,
+    "TimeStudy": true,
+    "Glyphs": true,
+    "Reality": false,
+    "Ra": true,
+    "Laitela": true,
+    "V": true,
+    "Teresa": true,
+    "Effarig": true,
+    "Enslaved": true,
+    "Pelle": true,
+    "NormalChallenges": true,
+    "InfinityChallenges": true,
+    "EternityChallenge": true,
+    "Automator": false
+  },
+  "names": {
+    "ra": "太阳神",
+    "laitela": "莱特拉",
+    "v": "薇",
+    "teresa": "特蕾莎",
+    "effarig": "鹿颈长",
+    "enslaved": "无名氏",
+    "pelle": "佩勒"
+  },
+  "numbers": {
+    "ad1Cost": {
+      "baseCost": "10",
+      "baseMult": "1000"
+    },
+    "infinityGoalIsMaxValue": "1.7976931348623157e+308",
+    "dimBoostDefaultPower": "2",
+    "dilationExponent": "^0.750",
+    "galaxyTier": 8
+  },
+  "unlocks": {
+    "autobuyerRequiresInfinity": {
+      "isUnlockedNow": false,
+      "note": "新档应为 false（首次无限后解锁）"
+    },
+    "eternityMilestoneKeepAutobuyers": true,
+    "optionsSavingTabHasImport": true,
+    "realityMachines": "0",
+    "blackHole": true,
+    "automatorTab": true,
+    "newsTickerRemoved": true,
+    "notifyLimitFour": true
+  },
+  "sidebarCountNow": 5
+}

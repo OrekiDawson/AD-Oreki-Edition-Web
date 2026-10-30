@@ -1,0 +1,134 @@
+{
+ "mode": "control",
+ "tag": "r40s3-control",
+ "samples": 823,
+ "lastT": 899.7,
+ "gameEndAt": null,
+ "totAML_at10": null,
+ "totAML_at310": null,
+ "growth10_310": null,
+ "endStateAt310": 0,
+ "tutOpenSamples": 0,
+ "tutTotalSamples": 259,
+ "tutNodesMin": 0,
+ "tutTitlesSeen": [
+  ""
+ ],
+ "titleStable": false,
+ "closedAt": null,
+ "pageErrors": 0,
+ "pageErrorSample": [],
+ "consoleErrors": 1,
+ "consoleErrorSample": [
+  "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src http://me.kis.v2.scr.kaspersky-labs.com ws://me.kis.v2.scr.kaspersky-labs.com '"
+ ],
+ "smDegSamples": 0,
+ "smErrLast": "",
+ "stagePath": [
+  "early",
+  "preInfinity",
+  "infinity",
+  "eternity",
+  "timeStudy",
+  "reality",
+  "celestials"
+ ],
+ "amE_last": 10369909381,
+ "realities_last": 100,
+ "doomed_last": false,
+ "exActN_last": 5,
+ "exTryN_last": 308,
+ "panel310": null,
+ "curve": [
+  {
+   "t": 0,
+   "totAML": null,
+   "endState": 0,
+   "stage": "early"
+  },
+  {
+   "t": 59.6,
+   "totAML": null,
+   "endState": 0,
+   "stage": "eternity"
+  },
+  {
+   "t": 180.2,
+   "totAML": null,
+   "endState": 0,
+   "stage": "reality"
+  },
+  {
+   "t": 240.2,
+   "totAML": null,
+   "endState": 0,
+   "stage": "reality"
+  },
+  {
+   "t": 299.7,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  },
+  {
+   "t": 359.9,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  },
+  {
+   "t": 419.9,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  },
+  {
+   "t": 480.2,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  },
+  {
+   "t": 540,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  },
+  {
+   "t": 599.5,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  },
+  {
+   "t": 660.3,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  },
+  {
+   "t": 719.5,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  },
+  {
+   "t": 779.8,
+   "totAML": null,
+   "endState": 0,
+   "stage": "timeStudy"
+  },
+  {
+   "t": 840.4,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  },
+  {
+   "t": 899.7,
+   "totAML": null,
+   "endState": 0,
+   "stage": "celestials"
+  }
+ ]
+}

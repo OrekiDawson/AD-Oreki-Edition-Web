@@ -1,0 +1,59 @@
+{
+ "tag": "r40s3-why-tut2",
+ "samples": 486,
+ "lastT": 280,
+ "pageErrors": 0,
+ "modLog": [
+  {
+   "t": 4.4,
+   "kind": "show",
+   "extra": {
+    "modal": "MessageModal",
+    "prio": 2
+   },
+   "stack": "at Modal.show (pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A52%3A12:22:5) <= at Modal.show (http://127.0.0.1:8889/src/core/modal.js:343:11) <= at AchievementState.unlock (http://127.0.0.1:8889/src/core/achievements/normal-achievement.js:64:21)"
+  },
+  {
+   "t": 4.4,
+   "kind": "sortModalQueue",
+   "extra": {
+    "q": 1
+   },
+   "stack": "at Modal.<computed> (pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A52%3A12:14:7) <= at Modal.show (http://127.0.0.1:8889/src/core/modal.js:124:11) <= at Modal.show (pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A52%3A12:23:21)"
+  },
+  {
+   "t": 10.1,
+   "kind": "show",
+   "extra": {
+    "modal": "OrekiTutorialModal",
+    "prio": 4
+   },
+   "stack": "at Modal.show (pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A52%3A12:22:5) <= at pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A123%3A26:2:33"
+  },
+  {
+   "t": 10.1,
+   "kind": "sortModalQueue",
+   "extra": {
+    "q": 2
+   },
+   "stack": "at Modal.<computed> (pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A52%3A12:14:7) <= at Modal.show (http://127.0.0.1:8889/src/core/modal.js:124:11) <= at Modal.show (pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A52%3A12:23:21)"
+  },
+  {
+   "t": 23.4,
+   "kind": "show",
+   "extra": {
+    "modal": "MessageModal",
+    "prio": 2
+   },
+   "stack": "at Modal.show (pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A52%3A12:22:5) <= at Modal.show (http://127.0.0.1:8889/src/core/modal.js:343:11) <= at DilationTimeStudyState.purchase (http://127.0.0.1:8889/src/core/time-studies/dilation-time-study.js:80:23)"
+  },
+  {
+   "t": 23.4,
+   "kind": "sortModalQueue",
+   "extra": {
+    "q": 3
+   },
+   "stack": "at Modal.<computed> (pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A52%3A12:14:7) <= at Modal.show (http://127.0.0.1:8889/src/core/modal.js:124:11) <= at Modal.show (pptr:evaluate;file%3A%2F%2F%2FC%3A%2FUsers%2FOreki%2FWorkBuddy%2FAD-Oreki-Unified%2Fweb%2F_tools%2F_r40%2Fr40s3-why-tut.mjs%3A52%3A12:23:21)"
+  }
+ ]
+}
