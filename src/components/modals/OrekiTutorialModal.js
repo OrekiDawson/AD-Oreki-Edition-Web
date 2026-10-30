@@ -1,16 +1,25 @@
 import ModalWrapperChoice from "./ModalWrapperChoice.js";
 import {
   getTutorialStageSnapshot,
+  getTutorialStartIndex,
   TUTORIAL_CHAPTERS,
   TUTORIAL_LOCKED_PREFIX,
+  TUTORIAL_SCHEMA_VERSION,
 } from "../../core/oreki-tutorial.js";
+import { ensureTutorialStyles } from "../tutorial/OrekiTutorialStyles.js";
 
 /**
  * AD: Oreki Edition — 内置教程弹窗
  *
  * 纯展示：只读取游戏状态，不写 player，也不改任何开关。
- * 阶段判定在 update() 里按「每 N 帧一次 + 状态签名未变就提前返回」的方式做，
- * 不会每帧重写 DOM；弹窗关闭后组件被销毁，开销归零。
+ * 正文全部来自 src/core/oreki-tutorial-data.json（经 oreki-tutorial.js 暴露），
+ * 本组件只负责排版，不写任何一句正文。
+ *
+ * 行为约定：
+ * - 打开时定位到「当前阶段」对应的章节（getTutorialStartIndex），不再固定停在第 1 章；
+ * - 切章时把内容区 scrollTop 归零；
+ * - 所属阶段未解锁时，正文顶部显示 TUTORIAL_LOCKED_PREFIX，不把没解锁的机制写成可用；
+ * - 阶段判定按「每 15 帧一次 + 状态签名未变就提前返回」执行，不每帧重写 DOM。
  */
 export default {
   name: "OrekiTutorialModal",
@@ -18,18 +27,22 @@ export default {
     ModalWrapperChoice,
   },
   data() {
+    ensureTutorialStyles();
     return {
       chapters: TUTORIAL_CHAPTERS,
-      index: 0,
+      schemaVersion: TUTORIAL_SCHEMA_VERSION,
+      index: getTutorialStartIndex(),
       stage: getTutorialStageSnapshot(),
       stageSig: "",
       frameTick: 0,
       lockedPrefix: TUTORIAL_LOCKED_PREFIX,
+      // 用户手动点过目录之后就不再让自动定位抢走焦点
+      navigated: false,
     };
   },
   computed: {
     chapter() {
-      return this.chapters[this.index];
+      return this.chapters[this.index] || this.chapters[0];
     },
     isFirst() {
       return this.index === 0;
@@ -37,9 +50,43 @@ export default {
     isLast() {
       return this.index === this.chapters.length - 1;
     },
+    chapterStage() {
+      // 用已经算好的 stage 快照，避免每次渲染再判定一遍阶段
+      if (!this.chapter.stageKey) return null;
+      const row = this.stage.rows.find(item => item.key === this.chapter.stageKey);
+      return row ? { status: row.status, statusText: row.statusText, name: row.name } : null;
+    },
+    isLocked() {
+      return this.chapterStage !== null && this.chapterStage.status === "locked";
+    },
+    stageDots() {
+      // 目录里每个章节的状态点：只为「属于某个阶段」的章节显示
+      const map = {};
+      for (const row of this.stage.rows) map[row.key] = row.status;
+      return map;
+    },
+    hasSteps() {
+      return Array.isArray(this.chapter.steps) && this.chapter.steps.length > 0;
+    },
+    hasBuyOrder() {
+      return Array.isArray(this.chapter.buyOrder) && this.chapter.buyOrder.length > 0;
+    },
+    hasNumbers() {
+      return Array.isArray(this.chapter.numbers) && this.chapter.numbers.length > 0;
+    },
+    hasTraps() {
+      return Array.isArray(this.chapter.traps) && this.chapter.traps.length > 0;
+    },
+    hasTable() {
+      const table = this.chapter.table;
+      return Boolean(table && Array.isArray(table.head) && Array.isArray(table.rows));
+    },
   },
   created() {
     this.stageSig = this.stageSignature(this.stage);
+  },
+  mounted() {
+    this.resetScroll();
   },
   methods: {
     update() {
@@ -51,19 +98,38 @@ export default {
       if (sig === this.stageSig) return;
       this.stageSig = sig;
       this.stage = next;
+      // 玩家还没自己翻过章时，跟着阶段变化重新定位
+      if (!this.navigated) this.index = getTutorialStartIndex();
     },
     stageSignature(stage) {
       return `${stage.key}|${stage.rows.map(row => row.status).join(",")}`;
     },
+    resetScroll() {
+      this.$nextTick(() => {
+        const box = this.$refs.scroll;
+        if (box) box.scrollTop = 0;
+      });
+    },
     goTo(index) {
       if (index < 0 || index >= this.chapters.length) return;
+      this.navigated = true;
       this.index = index;
+      this.resetScroll();
     },
     prevChapter() {
       this.goTo(this.index - 1);
     },
     nextChapter() {
       this.goTo(this.index + 1);
+    },
+    backToCurrent() {
+      this.navigated = false;
+      this.index = getTutorialStartIndex();
+      this.resetScroll();
+    },
+    stageLabelOf(chapter) {
+      if (!chapter.stageKey) return null;
+      return this.stageDots[chapter.stageKey] || null;
     },
     close() {
       EventHub.dispatch(GAME_EVENT.CLOSE_MODAL);
@@ -85,13 +151,18 @@ export default {
         <nav class="c-oreki-tut__nav">
           <button
             v-for="(item, i) in chapters"
-            :key="item.key"
+            :key="item.id"
             class="c-oreki-tut__nav-btn"
             :class="{ 'c-oreki-tut__nav-btn--active': i === index }"
             @click="goTo(i)"
           >
-            <span class="c-oreki-tut__nav-index">{{ i + 1 }}</span>
+            <span class="c-oreki-tut__nav-index">{{ i }}</span>
             <span class="c-oreki-tut__nav-title">{{ item.title }}</span>
+            <span
+              v-if="stageLabelOf(item)"
+              class="c-oreki-tut__dot"
+              :class="'c-oreki-tut__dot--' + stageLabelOf(item)"
+            />
           </button>
         </nav>
         <div class="c-oreki-tut__main">
@@ -99,13 +170,25 @@ export default {
             <span class="c-oreki-tut__head-title">{{ chapter.title }}</span>
             <span class="c-oreki-tut__head-subtitle">{{ chapter.subtitle }}</span>
           </div>
-          <div class="c-oreki-tut__scroll">
+          <div
+            ref="scroll"
+            class="c-oreki-tut__scroll"
+          >
             <div
-              v-if="chapter.kind === 'stages'"
-              class="c-oreki-tut__current"
+              v-if="isLocked"
+              class="c-oreki-tut__locked"
             >
+              {{ lockedPrefix }}{{ chapterStage.name }}的机制现在还不能用，本章只是提前告诉你它长什么样。
+            </div>
+            <div
+              v-if="chapter.draft"
+              class="c-oreki-tut__draft"
+            >
+              本章尚未写完（草稿），内容可能只有骨架。
+            </div>
+            <div class="c-oreki-tut__current">
               <div class="c-oreki-tut__current-label">
-                当前阶段
+                你现在的阶段
               </div>
               <div class="c-oreki-tut__current-name">
                 {{ stage.name }}
@@ -113,58 +196,189 @@ export default {
               <div class="c-oreki-tut__current-focus">
                 {{ stage.focus }}
               </div>
-              <ul class="c-oreki-tut__points">
+            </div>
+
+            <section class="c-oreki-tut__block">
+              <div class="c-oreki-tut__label">
+                阶段目标
+              </div>
+              <div class="c-oreki-tut__text">
+                {{ chapter.stageGoal }}
+              </div>
+            </section>
+
+            <section class="c-oreki-tut__block">
+              <div class="c-oreki-tut__label">
+                进入条件
+              </div>
+              <div class="c-oreki-tut__text">
+                {{ chapter.entry }}
+              </div>
+            </section>
+
+            <section
+              v-if="hasSteps"
+              class="c-oreki-tut__block"
+            >
+              <div class="c-oreki-tut__label">
+                具体操作
+              </div>
+              <ol class="c-oreki-tut__list">
                 <li
-                  v-for="(step, si) in stage.nextSteps"
+                  v-for="(step, si) in chapter.steps"
                   :key="'step' + si"
                 >
-                  {{ step }}
+                  {{ step.text }}
+                  <span
+                    v-if="step.auto"
+                    class="c-oreki-tut__auto"
+                  >已自动化</span>
                 </li>
-              </ul>
-            </div>
-            <div
-              v-if="chapter.kind === 'stages'"
-              class="c-oreki-tut__stages"
-            >
-              <div
-                v-for="row in stage.rows"
-                :key="row.key"
-                class="c-oreki-tut__stage-row"
-                :class="'c-oreki-tut__stage-row--' + row.status"
-              >
-                <div class="c-oreki-tut__stage-top">
-                  <span class="c-oreki-tut__stage-name">{{ row.name }}</span>
-                  <span
-                    class="c-oreki-tut__stage-status"
-                    :class="'c-oreki-tut__stage-status--' + row.status"
-                  >
-                    {{ row.statusText }}
-                  </span>
-                </div>
-                <div class="c-oreki-tut__stage-focus">
-                  <span
-                    v-if="row.status === 'locked'"
-                    class="c-oreki-tut__lock"
-                  >{{ lockedPrefix }}</span>{{ row.focus }}
-                </div>
-              </div>
-            </div>
+              </ol>
+            </section>
+
             <section
-              v-for="section in chapter.sections"
-              :key="section.heading"
-              class="c-oreki-tut__section"
+              v-if="hasBuyOrder"
+              class="c-oreki-tut__block"
             >
-              <div class="c-oreki-tut__section-title">
-                {{ section.heading }}
+              <div class="c-oreki-tut__label">
+                购买优先级
               </div>
-              <ul class="c-oreki-tut__points">
+              <ol class="c-oreki-tut__list">
                 <li
-                  v-for="(point, pi) in section.points"
-                  :key="'p' + pi"
+                  v-for="(item, bi) in chapter.buyOrder"
+                  :key="'buy' + bi"
                 >
-                  {{ point }}
+                  {{ item }}
+                </li>
+              </ol>
+            </section>
+
+            <section
+              v-if="chapter.automation"
+              class="c-oreki-tut__block"
+            >
+              <div class="c-oreki-tut__label">
+                自动化配置（哪些事不用你做）
+              </div>
+              <div class="c-oreki-tut__text">
+                {{ chapter.automation }}
+              </div>
+            </section>
+
+            <section
+              v-if="chapter.challenges"
+              class="c-oreki-tut__block"
+            >
+              <div class="c-oreki-tut__label">
+                挑战攻略
+              </div>
+              <div class="c-oreki-tut__text">
+                {{ chapter.challenges }}
+              </div>
+            </section>
+
+            <section
+              v-if="hasNumbers"
+              class="c-oreki-tut__block"
+            >
+              <div class="c-oreki-tut__label">
+                关键数值
+              </div>
+              <table class="c-oreki-tut__table">
+                <tbody>
+                  <tr
+                    v-for="(num, ni) in chapter.numbers"
+                    :key="'num' + ni"
+                  >
+                    <td class="c-oreki-tut__key">
+                      {{ num.label }}
+                    </td>
+                    <td>
+                      {{ num.value }}
+                      <span class="c-oreki-tut__src">{{ num.src }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section
+              v-if="hasTable"
+              class="c-oreki-tut__block"
+            >
+              <div class="c-oreki-tut__label">
+                对照表
+              </div>
+              <table class="c-oreki-tut__table">
+                <thead>
+                  <tr>
+                    <th
+                      v-for="(head, hi) in chapter.table.head"
+                      :key="'th' + hi"
+                    >
+                      {{ head }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(row, ri) in chapter.table.rows"
+                    :key="'tr' + ri"
+                  >
+                    <td
+                      v-for="(cell, ci) in row"
+                      :key="'td' + ci"
+                    >
+                      {{ cell }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="c-oreki-tut__block">
+              <div class="c-oreki-tut__label">
+                完成判据
+              </div>
+              <div class="c-oreki-tut__done">
+                {{ chapter.done }}
+              </div>
+            </section>
+
+            <section class="c-oreki-tut__block">
+              <div class="c-oreki-tut__label">
+                下一步
+              </div>
+              <div class="c-oreki-tut__text">
+                {{ chapter.next }}
+              </div>
+            </section>
+
+            <section
+              v-if="hasTraps"
+              class="c-oreki-tut__block"
+            >
+              <div class="c-oreki-tut__label">
+                常见卡点
+              </div>
+              <ul class="c-oreki-tut__trap">
+                <li
+                  v-for="(trap, ti) in chapter.traps"
+                  :key="'trap' + ti"
+                >
+                  {{ trap }}
                 </li>
               </ul>
+            </section>
+
+            <section
+              v-if="chapter.note"
+              class="c-oreki-tut__block"
+            >
+              <div class="c-oreki-tut__text">
+                {{ chapter.note }}
+              </div>
             </section>
           </div>
           <div class="c-oreki-tut__footer">
@@ -175,7 +389,13 @@ export default {
             >
               上一章
             </button>
-            <span class="c-oreki-tut__counter">{{ index + 1 }} / {{ chapters.length }}</span>
+            <button
+              class="o-primary-btn c-oreki-tut__nav-move"
+              @click="backToCurrent"
+            >
+              回到当前进度
+            </button>
+            <span class="c-oreki-tut__counter">{{ index }} / {{ chapters.length - 1 }}</span>
             <button
               class="o-primary-btn c-oreki-tut__nav-move"
               :class="{ 'c-oreki-tut__nav-move--disabled': isLast }"

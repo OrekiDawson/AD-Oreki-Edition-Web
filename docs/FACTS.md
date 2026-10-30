@@ -448,6 +448,29 @@ curl http://127.0.0.1:9222/json/list
 
 ---
 
+### F.5 `uiautomator dump` 在持续动画画面上会直接失败，Android UI 验证必须走 `frame-observer`（R40 实测）
+
+游戏画面每帧都在变，`uiautomator dump` 会一直等「界面静止」而永远等不到，直接报
+`ERROR: could not get idle state`。**更要命的是失败时不写新 XML，磁盘上留的是上一次的旧文件**
+—— 只看「文件存在」会把**上一次的界面**当成当前界面（比报错更危险）。R40 在后期存档界面连续 3 次全败、
+文件时间戳没变。
+
+`frame-observer` 原有 `view_tree_snapshot` 也不够用：它只在 `TYPE_WINDOW_STATE_CHANGED` 时产生，
+且**深度上限 12 把游戏正文整段切掉**（正文在第 13~18 层，深度 12 的节点 `children` 恒空，
+32 个节点里只有 1 个带文字）。
+
+解法（已实测）：R40 给 frame-observer 加
+`GET /ui?depth=48&max=3000&flat=1` —— 走**无障碍服务的即时控件树**，不等 idle；
+自动快照深度同时 12 → 24。封装命令 `android/AD_Oreki_Edition_Android/tools/fo.py ui`。
+实测 `oreki_test`（API34）游戏前台下返回 **97 个**「有文字/可点」节点，含完整中文文本与 bounds。
+（frame-observer 侧提交 `4fd58bc` + 行尾修正 `d0bec16`。）
+
+**规则：Android 侧读控件树一律先走 `fo.py ui`；`uiautomator dump` 不要当主路径**，
+若非用不可，必须**同时校验 dump 文件时间戳变化**，否则会读到旧界面。
+（与 `AGENTS.md §23` 口径一致，本节给的是**为什么**。） `[实测]`
+
+---
+
 ## G. 仍未知 / 待证
 
 - Android 端 EC 研究自动购买链在真机上是否真的能推进（`OrekiChallengeAuto.tick()` R35 已修正 8 处极性并汇编通过，**装机实测进行中**）。 `[未知]`
@@ -674,7 +697,17 @@ off-by-one，R39 已消掉。**改回不带 `+1` 的分母会立刻让文案与�
 
 ---
 
-## C.18 Web 端 Pelle 之前的真正死锁在 EC 阶段：现实重置清空时间研究，而 `shouldHoldReset()` 要等研究已买才压现实（R39 实测）
+## C.18 【机制结论已被 R40-A 推翻，仅保留观测数据】Web 端 Pelle 之前卡在 EC 阶段（R39 提出，R40 修正）
+
+> **R40-A 修正（2026-10-30）**：本节下面写的「现实重置清空时间研究 ⇒ `shouldHoldReset()` 死锁」
+> **不是**真实机制，已由 200 ms 级 `TimeStudyState.prototype.refund` 调用栈证据推翻。
+> 真实机制是「两条自动化对『当前目标 EC』定义不同 ⇒ 每 6.2 s 一次 respec 抖动」，见 **C.22**。
+> 关键反证：`isRealityAvailable()`（`reality.js:119`）要求 `maxEP.exponent >= 4000` **且**
+> `TimeStudy.reality.isBought` —— 现实只能在整条 EC 链打完之后发生，清空的是「已完成的一轮」，
+> 不可能是「正在建的那棵」；改前 700 s 内 `realities` 从 0 起，抖动期一直是 0（不是现实重置）。
+> 另外 `shouldHoldReset()` 只被 `game.js:237 orekiEcEntryHold()` 用于大坍缩自动器入口保护，
+> 压现实的是 `OrekiCelestialAutomation.holdReality`，两者不是一回事。
+> 保留下文：R39 的里程碑数字与「171 留不住」的观测仍然成立，可作对照基线。
 
 R39 新档长跑（`web/_tools/_r39b/r39b-full.jsonl`，1 s 采样）实测里程碑：
 IU15 **6.8 min**、莱特拉解锁 6.8 min、现实数 100 **9.1 min**、`laiTier=8` **9.6 min**；
@@ -699,11 +732,14 @@ EC1..EC12 各 5 次 → TimeStudy.reality（ds6）→ IU25 → Pelle → 反物�
   `IU25` 的 `checkRequirement` 要求 `TimeStudy.reality.isBought`，
   于是 `iu25q=false` / `iu25pos=false`，Pelle 无从谈起。
 
-**下一轮改法（有证据支撑，不是猜）**：给 `shouldHoldReset()` 加**有界准备期** ——
+**~~下一轮改法~~（R40 判定：不采用）**：原提议是给 `shouldHoldReset()` 加**有界准备期** ——
 当「目标 EC 的主研究未买、但 TT ≥ 100 且 `TimeStudy(71).canBeBought`」时也返回 true，
 并记 `_prepHoldUntil = now + 15~20 s`，到点无条件放手。
-回归指标用 `probe6.mjs`：`EternityChallenge(2).canBeBought` 变 true、`current` 变非 0。
-`[实测]`
+
+R40-A 判定这条**不必做也不该做**：现实在 EC 链未完成时根本无法发生（DS6 是硬闸门），
+「准备期压现实」解决的是一个不存在的问题；再叠一层 `holdReality` 只会重演 R34
+「两处各写一套条件互相锁死」的事故。R40 实际采用了另一个改法（见 C.22）。
+`[实测]`（推翻了 R39 的机制归属）
 
 ## C.19 同名坑第二次：`Currency.imaginaryMachines.value` 是普通 Number，没有 Decimal 方法（R39 实测）
 
@@ -736,3 +772,421 @@ docs/FACTS.md: text: unset       ← 修之后（把 * text=auto 移到最前面
 后果是这些**硬链接共享文件**在 checkout 时可能被 CRLF 改写、甚至被删除重建而断开硬链接，
 正是 AGENTS_GLOBAL §0-A 要防的事。R39 已把 `* text=auto` 提到文件最前面。
 **改 gitattributes 后必须用 `git check-attr` 复验，而不是看文件里有没有那行字。** `[实测]`
+
+## C.21 DS6（`TimeStudy.reality`）买上即被现实打掉，只活一帧 —— IU25 永远输掉这个竞态（R40 实测）
+
+`isRealityAvailable()`（`reality.js:119`）=
+`maxEP.exponent >= 4000 && TimeStudy.reality.isBought`。也就是说 DS6 **一被买上就是「现实可打」**，
+下一次 `shouldReality()` 立刻把现实打出去，而现实重置会 `Currency.timeTheorems.reset()`
+（`reality.js:672`）⇒ 时间研究整棵清空 ⇒ DS6 消失。
+
+`OrekiEndgameAutomation.driveLaitela()`（`oreki-endgame-automation.js:248`）第 250 行有
+`if (now - this._lastSlowMs < SLOW_TICK_MS) return;`，`SLOW_TICK_MS = 500`（`:97`）——
+**500 ms 真实时间节流**，采不到「DS6 在位 + tier 8」这个只存在一帧的状态。
+
+证据（`web/_tools/_r39b/r39b-full.jsonl`，2230 条 1 s 采样，覆盖 t=0→2297.7 s，复算命令见下）：
+
+```
+ds6 === true          99 条，最大 t = 406.5 s
+laiTier >= 8        1672 条，最小 t = 578.2 s
+两者同时成立            0 条          ← 交集为空
+```
+
+⇒ IU25 的 `checkRequirement`（`imaginary-upgrades.js:296-305`，要求
+`Laitela.isRunning && maxAllowedDimension === 0 && TimeStudy.reality.isBought`）**一次都不可能成立**。
+R39 末态正是 `iu15=true / laiTier=8 / imL=10.5 / ds6=false / iu25 恒 false`。
+
+**已采用的修法（不要改回「等 DS6 到账再判断」）**：不等 DS6，改成「EC 链已经全部 5/5」就**提前压住现实**，
+让 DS6 买上后留得住，再在同一个现实里起 run、卸符文、买 IU25。
+上限 `IU25_HOLD_MAX_MS = 90000`（`:95`，接线在 `:297-303`），到点无条件放行，每次现实重置后重新计时。
+**规则：凡是「只在一帧内成立」的状态，任何 ≥200 ms 的轮询都不可靠，只能改成提前压制或事件订阅。** `[实测]`
+
+## C.22 EC 分叉抖动：两条自动化对「当前目标 EC」定义不同 ⇒ 每 6.2 s 清空整棵时间研究树（R40 实测）
+
+这是 R39「现实每 10~20 s 重置一次」结论的真实替代机制（C.18 已标为推翻）。
+
+- `OrekiEternityAutomation.nextUnfinishedEcId()` 按 **1→12** 取第一个未满 ⇒ 当时是 EC6 ⇒
+  `blockedStudies()` 认为维度分叉该是 **71**，把 71 买回树里；
+- `OrekiDilationAutomation._targetEc()` 按 **9→10→11→12** 取 ⇒ 当时是 EC12，而
+  EC12 的 `secondary.forbiddenStudies = [71, 72]` ⇒ 只要 71 在树里，
+  它每 6 s 调一次 `respecTimeStudies(true)`（`oreki-dilation-automation.js:299-305`）；
+- 闭环：dilation 清空 38 个研究 → 本模块 1 s 内把 71 买回 → dilation 再判被 71 阻挡 → 再清空。
+
+证据（`web/_tools/_r40/r40a-diag.refunds.jsonl`，200 ms 采样 + `TimeStudyState.prototype.refund` 取真实调用栈）：
+7 次 respec、间隔恒 **6.17~6.32 s**、`unlocked` 全程 **0**、`studiesLen` 恒 38、**EC 完成数一次未变**，
+同期 `player.realities` 一直是 **0** ⇒ **确认是 respec 抖动，不是现实重置**。
+栈原文：`at respecTimeStudies (time-studies.js:141:11) ← at Object._driveEcChain (oreki-dilation-automation.js:301:9)`。
+
+**修法**：新增 `dimensionPathId()`（`oreki-eternity-automation.js:217`）——
+「**EC11 已满且 EC12 未满 → 73，否则 71**」，把维度分叉从「下一个打哪关」解耦；
+`blockedStudies()`（`:255`）改用它。另加会话内快照闸门 `{id, completions, at}` + 3 s，
+抑制「别的模块把研究买回来 → 再清空」的抖动。
+
+### 收益
+
+**主表：本次已实测到的里程碑（单次运行 T1，不做改前/改后配对）**
+
+出处 `web/_tools/_r40/r40a2-t1.log` / `.jsonl`（2945 条，t 0→1499.5 s）：
+
+| 里程碑 | 实测值 | 出处 | 证据等级 |
+|---|---|---|---|
+| EC1→EC12 全 5/5 首次达成 | **28.5 s** | `r40a2-t1.jsonl` 的 `ecs` 字段（日志无此行，需复算） | `[实测]` |
+| DS6（膨胀研究 6）到手 | **25.1 s** | `r40a2-t1.log` 的 `[FIRST] ds6 t=25.1s` | `[实测]` |
+| V 解锁 | **484.5 s** | `[FIRST] Vunl t=484.5s r=60` | `[实测]` |
+| iu15 / 莱特拉解锁 | **496.6 s** | `[FIRST] iu15` / `laiUnl` | `[实测]` |
+| `realities` 终值 | **185**（不是门槛，只是 T1 跑完的值） | `.jsonl` 末条 | `[实测]` |
+| 莱特拉 tier 0→8 | **从未发生**（全文件 `laiTier` 恒 0、`laiRun` 从未为真） | `.jsonl` | `[实测]` |
+
+⚠ **不要把这些数张冠李戴**：`T1` 里 DS6 是 **25.1 s**（不是 24.8）、全 12 关是 **28.5 s**（不是 27.8）、
+V 是 **484.5 s**（不是 482.6）。`27.8 / 24.8` 属于另一份文件 `r40a-fix.jsonl`。
+
+**同协议 A/B 副表（保留供 R41 核对）**
+
+`web/_tools/_r40/R40A-Web-EC-根因.md §3` 记录的唯一一对 A/B（同一探针、同一端口、同一配置）：
+
+| 指标 | 改前 `r40a-diag.jsonl`（700 s） | 改后 `r40a-fix.jsonl`（1000 s） |
+|---|---|---|
+| EC1~EC12 全部 5/5 首次达成 | 75.2 s | **27.8 s** |
+| DS6 首次买上 | 137.9 s | **24.8 s** |
+| `_driveEcChain` 抖动次数 | 11（含 7 连 6.2 s） | **5**（全为 `unl=11` 合法清场） |
+| realities @660 s | 30 | 70 @938 s |
+
+复算核对（统一口径，`ecs` 字段优先、缺失时回落到 `ec1..ec12`）：
+
+```
+r40a-diag.jsonl   全12关=75.2   ds6=137.9   （差 -62.7：ds6 晚于全关）
+r40a-fix.jsonl    全12关=27.8   ds6= 24.8   （差  +3.0：ds6 早于全关）
+r40a-fix2.jsonl   全12关=29.2   ds6= 26.1   （差  +3.1）
+r40a2-t1.jsonl    全12关=28.5   ds6= 25.1   （差  +3.4）
+```
+
+**`137.9 s` 的精确状态**：t=137.9 的样本是 `realities = 10`、`ds6 = true`、12 关已全满
+⇒ 它是**改前首次买上 DS6 的时刻**。该文件 `realities` 全程最高 **35**（末值），**从未到 60**；
+`realities=10` 首达是 t=111.5 s。**「137.9 s 是 realities=60 的时刻」是错的。**
+**`94.1 s` 作废**（属 `_r40m/run1`，见下），不得用作任何一列。
+
+⚠ **口径纪律**：口头「run1 / run2 / run3」在不同人嘴里指向过不同文件，**一律以文件名为准**：
+
+| 文件 | 角色 |
+|---|---|
+| `web/_tools/_r40/r40a-diag.jsonl` | 改前基线（700 s，585 条） |
+| `web/_tools/_r40/r40a-fix.jsonl` | 改后（1000 s） |
+| `web/_tools/_r40/r40a-fix2.jsonl` | 改后双文件（430 s，回归） |
+| `web/_tools/_r40/r40a2-t1.jsonl` | **T1 长跑**（1500 s，2945 条，跑到 `realities=185`） |
+| `web/_tools/_r40m/run1.console.log` | 并行独立 run，**用了哪份代码没留档** |
+
+⚠ **ds6 早于全 12 关 —— 现象已实测且可复现，机制未解释**：
+
+- **改前顺序正常**：`r40a-diag` 里 ds6 比全 12 关**晚 62.7 s**；
+- **改后三条 run 全部反转**：`fix` 早 3.0 s、`fix2` 早 3.1 s、`T1` 早 3.4 s ⇒ **系统性反转，不是采样抖动**；
+- 与「DS6 的逻辑前置是 EC11/EC12 各满 5 次」并不矛盾（DS6 不要求 EC1~EC8 全满）；
+- **机制仍未定位**，不要当成机制结论用。
+  候选解释（`[推断，未验证]`）：EC 链由 `_targetEc()` 按 9→10→11→12 先打高新关、
+  `nextUnfinishedEcId()` 再回头补 1~8 ⇒ 先买上 DS6、后集齐全 12 关。
+
+**注意：`_r40m/run1` 不能当前置基线。** 那份 `run1.console.log`（18:11，端口 8872）首次全 12 关在 **t=28.2 s**，
+其后 `[WIPE]` 以约 **2.1 s** 节奏把 `ecUnl` 反复打回 0，**t=93.1 s 才再次全 5/5**、`[DS6] bought @t=94.1 s`。
+其 WIPE 节奏（2.1 s）与 diag（6.2 s）、fix（12 次/现实周期）都不同，**且用哪份代码没留档** ⇒
+`93.1 / 94.1` **只属于这条 run**，任何列都不要用。 `[实测]`
+
+## C.23 `Glyphs.equip()` 换槽 = 一次**无收益的完整现实重置**，`realities` 不增（R40 实测）
+
+`Glyphs.equip()` 在目标槽已占用时会走 `swapIntoActive()`（`glyph-core.js:319-323`），
+后者调 `finishProcessReality({ reset: true, glyphUndo: false, restoreCelestialState: true })`
+（`glyph-core.js:759`）——这是一次**完整现实重置**：清空 EC 完成记录、时间定理（含整棵研究树）、
+膨胀研究；而 `reset: true` 表示**不发奖励、`realities` 也不增加**（`reality.js` 只有 `!isReset` 才结算）。
+
+证据（`web/_tools/_r40/r40a-fix.refunds.jsonl`，按 `finishProcessReality` 的调用者拆分）：
+
+```
+swapIntoActive 触发       3 次，t = 140.9 / 256.1 / 387.8 s
+  同刻 realities 取值      15 / 20 / 25（事件前后不变 ⇒ 确为无收益重置）
+经 beginProcessReality    5 次（真实现；树非空时才有 refund 记录）
+可观测现实重置合计        8 次，其中 3 次来自本条
+```
+
+**修法**：`equipGlyphs()`（`oreki-reality-automation.js:288`）只保留「装空槽」这一条路径，
+`freeSlot < 0` 时直接 `continue` 跳过，**不替换**。装空槽与原版手动点击等价，不触发任何重置。
+RU9/16/17/18/24 的「恰好 N 个符文」形态要求改由 `_driveGlyphRequirements` 先卸再装空槽完成，不受影响。
+**规则：这个代码库里 `Glyphs.equip()` 到已占用槽 = 静默丢一轮进度，永远只装空槽。** `[实测]`
+
+## C.24 莱特拉熵速率公式：除数 `2e7`，反物质指数 **2e8 即满速 0.5/s**（R40 核对源码，推翻旧注释）
+
+`src/core/celestials/laitela/laitela.js:82`：
+
+```js
+get entropyGainPerSecond() {
+  return Math.clamp(Math.pow(Currency.antimatter.value.add(1).log10() / OREKI_LAITELA_ENTROPY_DIVISOR, 2), 0, 100) / 200;
+}
+```
+
+`OREKI_LAITELA_ENTROPY_DIVISOR = 2e7`（`:30`）。因为外层有 `clamp(..., 0, 100)`，
+`log10(AM) / 2e7 >= 10` ⇒ 即 **反物质指数 ≥ 2e8 就达到上限 0.5/s**（填满熵 2 秒）。
+
+⚠ `laitela.js` 文件头注释里同时存在两个**历史**除数：原版硬编码 `1e11`、R38 早期候选 `5e8`
+（注释原文「(amE/5e8)^2/200」）。当前生效的只有 `2e7`，别照旧注释的除数反推时间。
+
+由此暴露的阈值错误：原 `LAT_RUN_MIN_AM_EXP = 1e10`（`oreki-endgame-automation.js:65`）
+比满速点 2e8 **高 50 倍**，等于要求「远超满速」才肯开 run。实测（`web/_tools/_r40/r40a2-t1.jsonl`，2945 条 0.5 s 采样）：
+
+```
+全文件 laiTier 取值集合 = {0}      laiRun 为 true 的条数 = 0
+IU15 之后 265 s 窗口（522 条）：amE >= 1e10 仅 2 条
+```
+
+⇒ 阈值几乎永不满足，莱特拉 run 一次都没起过、tier 恒 0，IU25 的 `maxAllowedDimension === 0` 无从谈起。
+已改为 `4e8`（`:65`；推导写在 `:62-64` 的注释里）。
+
+**「改成 4e8 之后 tier 能上 8」是 `[推断]`，尚未实测** —— 不要当已验证结论引用。
+`[读码]`（公式）+ `[实测]`（阈值失效）／改后收益 `[推断]`
+
+## C.25 Android 构建期红线守卫是**全文子串扫描**，smali 注释也会命中导致中止构建（R40 实测，第二次踩）
+
+`build_mod.py:2028-2030` 的存档字段红线守卫不做语法分析，纯粹扫全文子串
+（内部 `_ec_flatten_all()` 先把全文压平，让变异串与断言串同视图）。
+smali 注释里只要出现下面任一字面量，就会被判「触碰存档字段」并中止构建：
+
+```
+completions
+->F(I)V
+PlayerEternityChallenges;->h(I)V
+PlayerNormalChallenges;->n(I)V
+PlayerInfinityChallenges;->i(I)V
+```
+
+修法只有一个：**改写注释的措辞**，例如写「不写解锁位 / 完成次数 / 当前关卡」，
+而不是把真实标识符抄进注释。同类前科：R39 曾因注释写完整错误描述符导致扫描器误报。
+本轮因这条真实中止过一次构建。
+**规则：写 smali 注释时永不出现上述五个字面量；描述意图用中文散文，不抄标识符。** `[实测]`
+
+## C.26 Android 底栏是**两行**结构、页签数随解锁进度变化，坐标一律现取（R40 实测）
+
+`AGENTS.md §7.1` 记的「Android 底栏 12 项」是**槽位总数**，不是可见数；
+`§7.3.2` 明确「永恒 / 现实 / 天神等入口**随阶段解锁隐藏属正常行为**」。
+
+⚠ **具体坐标表在 `android/AD_Oreki_Edition_Android/AGENTS.md §3`**（不是工作区根那本）。
+它写的是「主 tab **共 11 个**、中心 `y = 2142`、首项 `x = 48`、间距 98 ⇒ `x = 48 + 98*i`」，
+并列出 11 个图标（立方体…通知，**没有天神**）。那张表**只对「12 个槽位全解锁」的存档成立**：
+新档只显示 7 项时，按 `48+98*i` 点到的是空白 —— 本轮就是这么白跑了一整轮。
+**R40 已在该文件 `:405-415` 补了限定块**（「本节的坐标表只在『12 个槽位全解锁』的存档上成立」
+＋「`x = 48 + 98*i` 不是通用公式」＋ 要求点前用 `python tools/fo.py ui` 现取），与本节结论一致，**不用再改那份**。
+
+**真实结构（frame-observer 取到的控件树）——底栏分两行**：
+
+| 行 | 资源 id | bounds | 结构 |
+|---|---|---|---|
+| 主 tab 行 | `com.oreki.antimatterdimensions:id/mainTabLayout` | `0,2076,1080,2208` | `HorizontalScrollView`，**每个图标槽宽 ≈90 px**（实测相邻中心差 82~98，均值 90；1080/90 = 12 槽，与「12 项」吻合） |
+| 副 tab 行 | `com.oreki.antimatterdimensions:id/secondaryTabLayout` | `0,2208,1080,2340` | 宽度**三等分**：`0,2208,360,2340` / `360,2208,720,2340` / `720,2208,1080,2340`，文本 **普通 / 无限 / 永恒** |
+
+可见页签数随进度变化：**全新存档 7 个主图标**（实测中心 `475 / 565 / 653 / 750 / 835 / 933 / 1015`），
+**后期存档 10 个主图标 + 3 个副页签**。
+
+⇒ **`48 + 98*i` 只在「后期存档、11 项全显示」时成立，不能跨存档通用**（换进度就失效）。
+硬证据：`reports/r40b/tmp/walk_report.json` —— 按 `48+98*i` 点的 11 个坐标
+（48/146/244/…/1028，y=2142）**全部**返回同一段文本 `["云存档", …, "确定"]`，11 条完全相同。
+
+**另一组「7 点坐标」其实不是主图标行（此前误当作矛盾）**：
+`x ≈ 76 / 230 / 385 / 538 / 692 / 847 / 1000` 与
+**`x = 1080*(2i+1)/(2*7)`**（= 77.1 / 231.4 / 385.7 / 540 / 694.3 / 848.6 / 1002.9）**逐个吻合，偏差 ≤1.4 px**
+⇒ 那是**一行 7 等分**的容器（正是 `android/AGENTS.md §3` 的子 tab 等分公式，只是 N=7），
+而主 tab 图标行是 `HorizontalScrollView` + 固定 90 px 槽、左对齐，两者**不是同一行**。
+所以「槽宽 90」与「间距 154」并不冲突，是被量了不同的行 —— **但结论不变：主行不能写死坐标**。
+**注：这 7 个槽位值来自单次夹具，仅作参考，不要拿去当通用坐标。**
+
+> 顺带说明：`android/AGENTS.md §3` 里的**子 tab 等分公式 `x = 1080*(2i+1)/(2N)` 是正确的**，
+> 上面已被 7 等分实测再次验证，**不要把它跟主 tab 的 `48+98i` 一起废掉**。
+> 错的只是「主 tab 固定 11 项、固定间距」这一半。 `[实测]`+`[推断]`（7 等分归属为推断）
+
+**规则：点页签前必须先取控件树现算坐标**，首选 `tools/fo.py ui`（见 F.5），
+取 `mainTabLayout` / `secondaryTabLayout` 的子节点按 `x` 排序后点中心；
+`uiautomator dump` 只作静止页兜底。参考实现：`reports/r40b/tmp/walk2.py`。 `[实测]`
+
+## C.27 首启会连续弹多个简体中文模态弹窗，不逐个关掉则后续所有 `input tap` 全被吞（R40 实测）
+
+全新安装首启的弹窗序列（每个都有一个「确定」按钮）：
+
+```
+云存档（默认禁用） → 反作弊系统 → 语言（中文(简体)）
+```
+
+不逐个点掉「确定」，后面所有 `input tap` 都会被最上层的模态吃掉 —— 点击事件确实发出去了，
+但落在弹窗按钮上，页面完全不切。本轮因此**白跑了一整轮 11 页遍历**。
+
+证据：
+
+- `reports/r40b/tmp/walk_report.json`：11 次点击、11 次都读到 `云存档` 弹窗文本，
+  `n_nodes=4`（标题 / 描述 / 启用按钮 / 确定），页面正文一次都没出现；
+- `reports/r40b/tmp/fo_state.json`：语言弹窗 `titleText="语言"`、spinner 值 `中文 (简体)`、
+  `确定` 按钮 `bounds=[844,1421][1020,1570]`、中心 `[932,1495]`；
+- `reports/r40b/tmp/first_run_dialogs.json` = `["语言","语言","语言"]`（语言弹窗被记录到 3 次）。
+
+**规则：任何 Android 自动化在第一次 `tap` 之前，必须先 dump 一次并循环点掉
+`text=="确定"` 的节点直到没有模态，再开始做事。** `[实测]`
+
+## C.28 Android EC12 三夹具都能自动完成并真实结算；但两个「修复分支」都没被触发（R40 实测 + 未验证）
+
+权威出处：`android/AD_Oreki_Edition_Android/reports/r40b/R40B-Android-验收.md`（本节与它冲突时以它为准）。
+
+### C.28.1 唯一可以写「已实测」的结论
+
+**EC12 完成次数在 B1/B2/B3 三个夹具下都从 `0` 变 `5`，且走了真实的永恒重置，不是写完成位。**
+
+| 场景 | 夹具改动 | EC12 | eternities | infinities | studies 条数 |
+|---|---|---|---|---|---|
+| B1 入口+结算 | `completions[11]=0`、`unlocked=0`、`current=0`；含 233、不含 71/72 | **0 → 5** | 1.32e431 → 4.64e435（**×3500**） | 1.07e960 → 1.07e970 | 58 → 58 |
+| B2 互斥分叉 | 同 B1，但**保留** 71/72 | **0 → 5** | ×约 1700 | +6.8e969 | 60 → 60（**71 仍在**） |
+| B3 前置缺失 | 同 B1，但**去掉** 233/234 | **0 → 5** | ×约 1700 | +6.7e969 | 56 → 56（**233 始终不在**） |
+
+- B1 用时约 **42 s**（5 s 采样，首次出现 5 在 t≈42.2 s）。
+- 判「真实结算」的依据：三个场景 `eternities` 都涨了 1700~3500 倍、`infinities` 涨 9~10 个数量级
+  —— 每关完成都要走一次真实永恒重置，这个量级不可能来自写完成位。
+- APK：`090b9adb…f43`；`logcat` 过滤 `FATAL / VerifyError / AndroidRuntime / ANR in / NoSuchMethod / NoClassDef`
+  命中 5 行**全是 `monkey` 自己的 `RuntimeInit` 启动日志**，无一条来自游戏进程。 `[实测]`
+
+### C.28.2 必须标「未验证」的三条（不要写成通过）
+
+1. **「`forbiddenStudies` 冲突 → respec 到 73」= 【未验证】**。
+   B2 保留了 71/72，跑完 `studies` 仍 60 条、**71 仍在树上** ⇒ 那条分支**本轮根本没触发**，
+   既不能证真也不能证伪。
+2. **「`purchaseUntil` 补齐前置」= 【未验证】**。
+   B3 去掉 233/234 后 EC12 照样 0→5，但**跑完树上仍然没有 233** ⇒ 机制不明。
+   候选解释（`[推断]`）：①`purchaseUntil` 买了整链，EC 跑完又被原版 respec 重建回 56 条；
+   ②原版进 EC 的路径并不真的校验 233（门槛在别处）；③别的路径绕过前置。
+   要证伪需在 `purchaseUntil` 那行前打临时日志，或 EC 运行期高频抓 `player.timestudy.studies`。列为 R41 待办。
+3. **「`unlocked` 的瞬时值」= 【未确认】**。1 s 高频采样 90 次都没抓到 `unlocked=12`，
+   只有 3 s 一次的落盘 ⇒ EC 单次运行短于采样粒度，无法据 `unlocked` 判断进入瞬间。
+
+### C.28.3 判定陷阱（今天差点误判成失败的地方）
+
+`unlocked` 跑完**回到 0 是正常的**：`Eternity.reset()` 每次都把 `challenge.eternity.unlocked` 清零。
+`challenge.eternity.unlocked` 的语义是「**当前唯一解锁的那一关的 id**」，`0` = 一关都没解锁
+（`EternityChallenge.isUnlocked` = `unlocked === this.id`，`src/core/eternity-challenge.js:54`）。
+
+⇒ **两个后果都必须记住**：
+- **测「能不能进 EC」不能拿 `completions` 全 5 但 `unlocked=0` 的存档直接跑** —— 那是自相矛盾的夹具，
+  必然得到「一关都进不去」，会被误判成产品缺陷。必须按场景重造夹具。
+- **判 EC 有没有真跑过要看 `completions` 或 `eternities`，不要看 `unlocked`。** `[实测]`
+
+## C.29 R40B 构建产物指纹与构建期自测（R40 实测）
+
+| 项 | 值 |
+|---|---|
+| 产物 | `android/AD_Oreki_Edition_Android/release/反物质维度.apk` |
+| SHA-256 | `090b9adbd0b4f8ad0a1b799d151c11e6af207ea93c55e13ea40441ba67d69f43` |
+| 体积 | 66.5 MiB |
+| 签名 | v2 = true / v3 = true（v1 = false），`CN=AD Oreki Edition, OU=Personal Mod, O=Oreki`，证书 SHA-256 `95960bce…19d7` |
+| 构建日志 | `android/AD_Oreki_Edition_Android/build/r40b_rebuild.log`（19:11，`EXIT=0`） |
+| EC 链断言 | 日志 `:124`「EC 链条断言通过：purchaseUntil 已接线（真实 continuation）、互斥分叉走原版 respec（6 s 冷却 / 32 次上限）、无存档字段写入」 |
+
+**「11/11 变异自测」的口径**：`R40B-Android-验收.md` 头部记
+`OREKI_EC_SELFTEST=1 python scripts/build_mod.py` ⇒ 变异自测 **11/11 全部拦下**。
+**注意**：`build/r40b_rebuild.log` 那次是**不带**该环境变量跑的，所以只打印「EC 链条断言通过」、不打印计数
+（报告另一处还存在一个旧的 8/8）。要现证 11/11，就按上面那条命令重跑一次再引用。
+
+**注意**：`R40B-Android-EC.md` 正文仍写着「未跑 Gradle」，与 19:11 这次全量重建**口径冲突**，
+以 `build/r40b_rebuild.log` 与产物为准（该报告写于 19:05，早于重建）。 `[实测]`
+
+## C.30 Android 12 个页面全部有内容、0 空白页、无软锁（R40 实测）
+
+用 `fo.py ui` **现取**底栏可点槽位（**不硬编码坐标**）逐个点进去读标题，12 个不同页面全部渲染出内容：
+
+| # | 页签 | 文本节点 | # | 页签 | 文本节点 |
+|---|---|---|---|---|---|
+| 1 | 无限维度 | 56 | 7 | 天神地图 | 19 |
+| 2 | 自动购买器 | 110 | 8 | 成就 | 18 |
+| 3 | 无限升级 | 42 | 9 | 统计数据 | 50 |
+| 4 | 时间研究 | 113 | 10 | 选项 | 66 |
+| 5 | 符文 | 75 | 11 | 商店 | 65 |
+| 6 | 复兴树 | 69 | 12 | 游戏帮助 | 56 |
+
+**0 个空白页**，逐页切换后无软锁、无 ANR。
+注：点到的可点槽位有 23 个（tab 内部还有嵌套可点节点，多点几次仍停在同一 tab），去重后是 12 个页面。
+
+**这 12 个标题是从主行 12 个槽位（`id/mainTabLayout`，槽宽 90）逐个点出来的**；
+坐标结构见 **C.26**（主行槽宽 90、副行 `id/secondaryTabLayout` 三等分）。
+**不要用 `48 + 98*i` 反推**——那只对「12 槽位全解锁」的存档成立。
+
+**这条只证明「导航不坏」，不证明「IC1 本体正常」** —— IC1 的即时完成与奖励结算本轮未单独跑，
+标 `[部分实测]`。 `[实测]`
+
+## C.31 佩勒（毁灭现实）的 `player.break` 死锁：反物质夹在 1.8e308，`endState` 封顶 0.75（R40 实测 + 读码）
+
+**现象**：`r40a3-fix2`（900 s）在 t=714.1 s 进入毁灭态后，`endState` 恒 `0.7505`，
+从 714.1 s 到 899.5 s 共 371 条采样**零变化**；`isGameEnd` 始终 false；`amE`（`log10(反物质)`）恒 **308**。
+同期 `AD1.productionPerSecond` 仍是 1e9 量级、`_lastError` 全程空、`_lastDoomBuyMs` 每 ≤100 ms 刷新
+⇒ **自动化在跑，产量在算，只是每帧被丢掉**。`[实测]`
+
+**完整链（每一环都能对到行号）**：
+
+| # | 事实 | 出处 |
+|---|---|---|
+| ① | 进入毁灭态 → `Pelle.initializeRun()` → `armageddon(false)` → `finishProcessReality({reset:true})` → `player.break = false` | `pelle.js:83 / :155`、`reality.js:633` |
+| ② | **原版唯一**能把 break 再次打开的逻辑路径：`isDoomed && keepAutobuyers.canBeApplied && hasMaxedInterval` ⇒ `break = true` | `reality.js:749-752`（官方 upstream 逐字相同） |
+| ③ | `keepAutobuyers` = Pelle 升级 id 2，代价 **5e6 遗迹碎片**，货币来自**末日（Armageddon）** | `secret-formula/celestials/pelle-upgrades.js:73-78` |
+| ④ | 本作 `tryOpenBreakInfinityGate()` 带 `&& !Pelle.isDoomed`（**该函数官方不存在**，整段是 MOD 加的） | `game.js:203-215` |
+| ⑤ | 本作 `driveDoomed()` 只做 maxAll / 维度提升 / 星系 / 买佩勒升级，**从不调 `Pelle.armageddon`、从不请求现实** ⇒ ②一次都不执行 | `oreki-endgame-automation.js:440-470` |
+| ⑥ | `_stopDoomedResets()` 每帧把大坍缩与永恒自动器关掉 | `oreki-endgame-automation.js:472-486` |
+| ⑦ | 无 break 时维度 tick 直接 `return`，并把反物质 `dropTo(1.7976931348623157e308)`；单帧产量上限 `DC.E315` | `antimatter-dimension.js:663 / :682 / :580-586 / :609` |
+| ⑧ | **进入毁灭态时 `hasMaxedInterval` 也是 false**：`Autobuyer.unlock()` 在 `!keepAutobuyers.canBeApplied` 时把间隔重置回默认值 | `autobuyer.js:184-188` |
+| ⑨ | 毁灭态初值 `remnants = 0`、`realityShards = 0` ⇒ `realityShardGainPerSecond = (10^(4·r^(1/7.5))−1)/1000 = 0` | `pelle.js` 初值 + `realityShards` 公式 |
+
+⇒ **「只去掉 `&& !Pelle.isDoomed` 守卫」是无效修法**：`breakInfinity()` 第一行
+`if (!Autobuyer.bigCrunch.hasMaxedInterval) return;` 会直接返回，而 ⑧ 保证那时它一定是 false。
+必须先走末日循环把 `keepAutobuyers` 买下来，间隔才可能被拉满。**这条是 R40 晚间被实测推翻的第一次尝试，写在这里防止再犯。**
+
+**数值自洽**：`endState = 0.7505` 反解 ⇒ `records.totalAntimatter ≈ 1e316.2`，与 ⑦ 的 `E315` 封顶同量级。
+而 `OREKI_PELLE_END_TARGET_EXP = 1e3` 要求 `E = 1000` ⇒ **差 684 个数量级**。
+
+**这不是「数值墙」，也不是「目标定太高」**：
+原版 `game-end.js` 的分母是 `log10(9e15) - 8.7`，过线点在指数 **9e15**，比本作的 1e3 高 12 个数量级
+⇒ **原版毁灭态必然能突破 1.8e308，否则官方自己也通不了关**。
+所以病根在「自动化没走完原版那条路」，把 `OREKI_PELLE_END_TARGET_EXP` 下调是篡改通关定义，禁止。
+
+**真正的错在策略，不在参数**：`_stopDoomedResets()` 当初是为了「别把反物质清零」，
+但它同时掐断了「拿遗迹碎片换 `keepAutobuyers`」的唯一途径 ⇒ break 永远回不来。
+R38-M 记的「反物质峰值被大摁在 e316」正是这条策略的产物，不是另一个独立 bug。
+
+> **规则：毁灭态的正确推进序列 = 反复末日拿遗迹碎片 → 买 `keepAutobuyers`(5e6) → 下一次现实重置自动恢复 break → 反物质才能突破 1.8e308。任何「不重置只囤产量」的写法都是死路。** `[实测]`（现象）+ `[读码]`（链）
+
+## C.32 Steam 社区攻略抓取：App ID 是 **1399720**，不是 1391520（R40 实测，两人各踩一次）
+
+- `store.steampowered.com/api/appdetails?appids=1391520` → `{"success":false}`；
+  `steamcommunity.com/actions/SearchApps/Antimatter%20Dimensions` → `{"appid":"1399720"}`。
+- `/app/1391520/guides/` **302 到商店首页**（返回「Welcome to Steam」）——这一步极容易被误判成「被墙 / 地区限制」。
+- `/app/1399720/guides/` **200 / 91,729 字节 / `View All (29)`**，卡片带 `data-appid="1399720"` 与 `data-publishedfileid`，可直接正则抠 ID + 标题。
+- 需要代理：`export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897`。
+
+**抓取四个坑**：
+
+1. 连续请求会 **429**，必须退避重试；带登录 cookie 更稳（**但绝不能把 cookie 文件落进仓库**，本轮已误留过一次 `sc.jar`）；
+2. 单篇直连 `sharedfiles/filedetails/?id=<ID>&l=schinese` 可用；正文结构是 `div.guide.subSections` → `div.subSectionTitle` + `div.subSectionDesc`；
+3. Steam 表格是 **`div.bb_table` 不是 `<table>`**，不特殊处理会「一格一行」；
+4. 英文长文原典不在 Steam，在 fandom 的 `Guide` 页（网页 403，走 `api.php?action=query&prop=revisions&rvslots=main&titles=Guide` 可取），256,224 字符 / 106 个标题，写到终局。
+
+**已落盘规模**（`web/_tools/_r40/`）：`steam_guides/` 12 篇中文/英文攻略 ≈ **149,234 汉字**；
+`ref_guides/wiki_guide.wiki` 为英文原典。索引与「哪个是权威」见 `steam_guides/MANIFEST.md`。
+**攻略数值一律不可直接采信**（终局、V 解锁、IU15、现实解锁全部与本项目不同），数值必须回 `src/` 核对。 `[实测]`
+
+## C.33 膨胀研究 DS1：门槛 12900 不缩放，窗口内只花 5 TT `[源码核对 + 实测]`
+
+**这条是为纠正一个我自己写错的结论而记的**（2026-10-30 晚，team-lead 提出「DS1 ÷1000 = 13 时间之理」，
+被 agent-e 用源码反证，我复核后确认对方正确）。
+
+| 项 | 值 | 出处 |
+|---|---|---|
+| DS1 原版成本 | 5000 TT | `secret-formula/eternity/time-studies/dilation-time-studies.js:6` |
+| 窗口内实际支付 | **5 TT**（`floor(5000/1000)`） | `time-studies/dilation-time-study.js:9,48-51` |
+| 解锁门槛 | **12900 TT，不参与任何缩放** | `dilation-time-study.js:54-56`（`return this.id === 1 ? 12900 : 0`） |
+| 门槛判定读的是 | `Currency.timeTheorems.max`（历史最高，不是余额） | `dilation-time-studies.js:8` |
+| 探针实测 | `ttNeed` 恒 12900；`ttMaxL` 最高 6.90（≈8e6） | `web/_tools/_r36d/_r36d-dil-*.jsonl` |
+
+**两个容易混的数**：
+- `12900 / 1000 = 12.9` → `floor` 得 **12**，不是 13。用除法反推门槛会得到错数。
+- **13 是 EC2 的入口资源**（`1300 / 100 = 13`，`ec-time-study.js:119-125`），属于 ch09，与膨胀无关。
+  我在提要求时把这两个数串了，`FACTS` 记在此处防止再串。
+
+**正确写法**：「累计 12900 时间之理的门槛不变，进入引导窗口后**只花 5 时间之理**」。
+
+同类提醒：本项目已有 `OREKI_PRE_ETERNITY_IP_DIVISOR = 30`、`OREKI_PRE_REALITY_EP_DIVISOR = 30`、
+`OREKI_DILATION_TT_DIVISOR = 1000` 三处 MOD 缩放，**每一处只作用于 cost，不作用于 requirement**。
+写教程数值时先确认「这个数是成本还是门槛」。

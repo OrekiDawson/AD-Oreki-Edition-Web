@@ -207,3 +207,25 @@
    命令改动后要实际跑一次（`node serve.mjs` / `bash ../_tools/run-all.sh` / 视口矩阵脚本）。
 3. **无结果的全套回归不得反复重跑**：先查日志与退出码定位第一处失败，单独复现一项，
    有证据再修；失败 / 挂起 / 未执行分别记录。
+
+---
+
+## 双端实现差异表（2026-10-30 用户确立，长期有效）
+
+**规则唯一源 = 工作区根 `AGENTS.md` §21**，本节只写 Web 仓落点，不重复定义。
+
+- 本仓根目录 `WEB_ANDROID_DIFFERENCES.md` 与工作区根、Android 仓同名文件是**同一 inode 的硬链接**，
+  只通过任一路径编辑，不要复制、不要另存为。
+- 每轮**开工先读**、**收工按实际代码变更更新**；任何影响游戏行为的提交都要检查是否需要更新。
+- 新增/修改双端共有的机制时，必须同时在表里写清「Web 实现 / Android 实现 / 验证状态 / 证据」。
+- 只有**真实运行证据**才能标 `已验证`；纯读码或整页一致只能标 `待验证`。
+- 提交前核对硬链接未被破坏：
+
+```bash
+stat -c '%d %i %n' WEB_ANDROID_DIFFERENCES.md \
+  ../AD-Oreki-Unified/WEB_ANDROID_DIFFERENCES.md \
+  ../../android/AD_Oreki_Edition_Android/WEB_ANDROID_DIFFERENCES.md
+```
+
+**同时注意**：最高目标已更新为「新手无教程、全新存档、真实墙钟 ≤180 分钟通关」，
+Web 与 Android 各自独立通过（口径唯一源 = 工作区根 `AGENTS.md` §22）。
