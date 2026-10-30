@@ -1443,3 +1443,56 @@ break 只能从末日拿到，从而漏掉「间隔拉满后应该自动买 brea
 - 是否**全程 10000×**、中途有无调倍率：jsonl 里 `ticksPsL` 抖动过大（0 → 243 → 36），
   **无法从数据判定**，待 agent-a 确认。若中途调速，本条应改写为「非恒速跑」。
 - 只有 1 次成功样本，前置段方差未知（另一次同链路跑是 783.1 s，差 75 s）。
+
+## C.37 教程弹窗「2.4 秒自动消失」：不是关闭，是被更高优先级弹窗盖住 `[实测]`
+
+### 一、现象与根因
+
+现象：教程弹窗打开约 2.4 s 后从 DOM 消失，`Modal.show/hide` 打桩零命中。
+
+真因（100 ms 采样 + 覆盖者栈）：
+
+```
+t=3000ms  queue=1  current=OrekiTutorialModal  dom=true
+t=3100ms  queue=2  current=MessageModal        dom=false
+栈：AchievementState.unlock (normal-achievement.js:64) -> bigCrunchReset (big-crunch.js:56)
+```
+
+机制链：教程 `priority=0`（`modal.js:239`）→ 成就 55 用 `Modal.message.show(text, {}, 3)`
+（`normal-achievement.js:64`；`Modal.message` 自身 priority=2）→
+`sortModalQueue` 换掉 `ui.view.modal.current`（`modal.js:150-157`）→
+`PopupModal` 只渲染 `view.modal.current`（`GameUiComponentFixed.js:84-87`）→
+**教程组件被销毁，但仍在队列里（queue=2）**；点掉消息后 `current` 回到教程，组件**重建**。
+
+⇒ 「2.4 s」= 首次大坍缩到成就 55 的时间差，**不是任何关闭动作**。
+
+### 二、真正的伤害是第二层：阅读位置丢失
+
+组件重建会重跑 `data()`，而其中 `index: getTutorialStartIndex()` 会把章节重置到当前阶段章。
+实测：跳到第 10 章 → 被顶掉 → 点掉消息 → 回来落在**第 7 章**。
+
+⇒ 教训：**「消失」只是表象，可恢复但会重置状态的组件重建才是缺陷本体。**
+凡是「组件会被销毁重建」的 UI，状态必须外置到模块级或持久层，不能只放在 `data()` 里。
+
+### 三、修法（最小改动）
+
+1. `ModalWrapperChoice` 加 `useEnterToConfirm`（默认 `true`）——它 `created()` 无条件把
+   Enter 接到 `doConfirm()`，没传 `confirmFn` 就 `dispatch(CLOSE_MODAL)`。
+   纯阅读弹窗传 `false`，其余几十个弹窗行为零变化。
+2. `TutorialReadingPosition`（模块级，不写 player、不落 localStorage）跨重建保留章节与滚动位置。
+   区分「主动关」与「被顶掉」的依据：**只有主动关闭才派发 `CLOSE_MODAL`**，
+   被顶掉走 `sortModalQueue` 不派发。
+3. **不改 `core/modal.js`**：priority 3 的消息内容是「你 1 分钟内完成了一次无限，UI 变了」，
+   对首次游玩的人是必要信息；且 `Modal.message.show` 带 `props.callback`，
+   排队补发要挂起再恢复回调，属改共享基础设施，波及面上百个调用点。
+   ⇒ 接受「被打断一次，点掉就回来」，与其它弹窗同等待遇。
+
+### 四、方法学陷阱：用 `defineProperty` 拦响应式对象会毁掉被测现场
+
+第一版诊断脚本用 `Object.defineProperty(ui.view.modal, "queue"/"current", {...})`
+把 Vue 的访问器换成了普通属性，**掐断响应式**：`current` 明明有值，DOM 永远不更新，
+于是测出「dom 全程 false」的假象，把结论带向「弹窗根本没打开」。
+
+⇒ 规则：**拦响应式对象只能用于「记录谁在写」，不能在同一轮里做 DOM 断言**；
+要么只在 `show()` 之前装桩并只读日志、DOM 断言另跑一轮，要么改包方法
+（`removeFromQueue` / `Modal.hide` / `Modal.hideAll`）而不碰访问器。
