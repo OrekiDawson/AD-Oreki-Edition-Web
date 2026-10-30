@@ -1213,48 +1213,114 @@ C.33 初版我写了「本项目三处 MOD 缩放每一处只作用于 cost，�
 ⇒ 正确的提法是：**每个缩放系数的适用范围必须逐处读源码确认，不能用一句话概括。**
 「成本 / 门槛 / 入口资源要求」是三个不同的东西，同一份 MOD 里缩放可能只碰其中一个、也可能碰两个。
 
-## C.34 双端自动化覆盖差距实测：Web 12 个模块 vs Android 2 个类 `[实测]`
+## C.34 双端自动化规模实测：行数**不支持**「Android 落后」，缺口必须按能力逐项核对 `[实测]`（本节含一次自我更正）
 
-2026-10-30 23:50，用户指出「安卓前期中期也有很多没跟上的」，实测核对，**成立且差距远大于预期**。
+> **更正声明（2026-10-31）**：本节初版（23:50）写着「Web 12 个模块 2,962 行 vs Android 2 个类
+> 1,834 行」，并据此断言「差距远大于预期」。**这个结论和数字都是错的**，由 agent-b 独立核对后驳回，
+> 我复核确认。错误原因见第三节，结论见第五节。保留原文错误说明，是为了防止后人再按同样方法
+> 重新得出同样错的结论。
 
-### 一、模块数对照
+### 一、Web 侧实测清单（12 个机制模块，4,198 行）
 
-| Web `src/core/oreki-*.js`（自动化相关，共 2,962 行） | 行数 | Android 等价实现 |
+统计口径：`src/core/oreki-*.js` 中**参与自动化的模块**，排除教程（`oreki-tutorial*.js`）、
+生成物（`*.gen.js`）、探针（`*-probe.js`）、工具（`oreki-tools.js`）。
+
+| 模块 | 行数 |
+|---|---:|
+| `oreki-celestial-automation.js` | 817 |
+| `oreki-eternity-automation.js` | 758 |
+| `oreki-endgame-automation.js` | 692 |
+| `oreki-reality-automation.js` | 473 |
+| `oreki-dilation-automation.js` | 458 |
+| `oreki-iu15-sprint.js` | 293 |
+| `oreki-instant-challenges.js` | 225 |
+| `oreki-early-automation.js` | 199 |
+| `oreki-break-infinity-gate.js` | 127 |
+| `oreki-keep-antimatter.js` | 77 |
+| `oreki-bootstrap.js` | 47 |
+| `oreki-autobuy-break-infinity.js` | 32 |
+| **合计** | **4,198** |
+
+### 二、Android 侧实测清单（13 个文件，5,808 行）
+
+统计口径：`work/mod/smali/kajfosz/antimatterdimensions/` 下**包根 + `oreki/` 子包**的
+`Oreki*.smali` 与 `oreki/*.smali`。`scripts/payload/` 是同一份的镜像，不重复计数。
+
+**机制类（9 个，5,166 行）**
+
+| 文件 | 行数 | 位置 |
 |---|---:|---|
-| `oreki-early-automation.js` | 199 | 部分（`OrekiStageAuto.enableEarly`） |
-| `oreki-eternity-automation.js` | 758 | **未见** |
-| `oreki-dilation-automation.js` | 458 | 1 处零星引用 |
-| `oreki-reality-automation.js` | 473 | 仅 `StageAssist.realityUpgradesAll()` |
-| `oreki-celestial-automation.js` | 817 | 仅 `unlock147` / `ach147` |
-| `oreki-instant-challenges.js` | 225 | **未见** |
-| `oreki-autobuy-break-infinity.js` | 32 | 部分（`OrekiStageAuto.upgradeCrunchInterval`） |
+| `OrekiSpeed.smali` | 1,321 | 包根 |
+| `oreki/StageAssist.smali` | 1,394 | `oreki/` |
+| `OrekiChallengeAuto.smali` | 862 | 包根 |
+| `oreki/OrekiStageAuto.smali` | 440 | `oreki/` |
+| `OrekiAuto.smali` | 381 | 包根 |
+| `OrekiInstantChallenge.smali` | 304 | 包根 |
+| `oreki/AchievementUnlocker.smali` | 188 | `oreki/` |
+| `oreki/OrekiSpeedModeListener.smali` | 100 | `oreki/` |
+| `OrekiEcContinuation.smali` | 98 | 包根 |
+| `OrekiTrace.smali` | 78 | 包根 |
 
-Android `oreki` 包机制类只有两个：`StageAssist.smali`（1,394 行 / 32 方法）、
-`OrekiStageAuto.smali`（440 行 / 8 方法）。
+**界面类（4 个，642 行）**：`oreki/SpeedSettingsActivity.smali` 336、`oreki/SettingsClickListener.smali` 253、
+`oreki/StageConfirmListener.smali` 53 —— 不计入机制对比。
 
-### 二、关键词覆盖探测（`grep -ril` 限定 oreki 包）
+⇒ **Android 机制代码 5,166 行 > Web 4,198 行。** 按规模，Android 不落后，反而更多。
 
-| 关键词 | 提及文件数 | 备注 |
-|---|---:|---|
-| `replicanti`（复制器） | 0 | 复制器自动化未见 |
-| `eternityChall`（永恒挑战） | 0 | EC 未见 |
-| `instantChallenge`（进入即完成） | 0 | 核心加速机制未见 |
-| `sacrifice`（维度献祭） | 0 | 献祭自动化未见 |
-| `dilation`（膨胀） | 1 | 零星 |
-| `realityUpgrade`（现实升级） | 1 | 仅一个方法 |
-| `celestial` | 4 | 主要是成就解锁，不等于机制已做 |
+### 三、初版错在哪（方法学，比结论更重要）
 
-### 三、方法学结论：**grep 0 命中 ≠ 缺失**（本条的真正价值）
+**错误 1：只扫了 `oreki/` 子包，漏掉包根。**
+初版断言「Android 机制类只有 2 个」。实际包根还有 4 个主要机制类
+（`OrekiSpeed` 1,321 行、`OrekiChallengeAuto` 862 行、`OrekiAuto` 381 行、
+`OrekiInstantChallenge` 304 行），占了 Android 机制代码的一半以上。
+`find . -name "Oreki*.smali"` 一条命令就能避免，我却按子包路径去数。
 
-同一天实测反例：`player.break` 在 Android DEX 里是 **`Player.brake:Z`**
-（序列化键仍是 `"break"`，setter `Player;->x0(Z)V` @11107，getter `m()Z` @10746）；
-`Pelle` 类是 **`.../pelle/c`**。按 Web 字段名搜索 → 0 命中，但逻辑原样存在。
+**错误 2：把行数当能力。**
+即使数字没错，用「行数少」推「功能没跟上」也是无效推理。行数少可能是实现更紧凑
+（smali 里一个方法体比 JS 长得多，同功能行数本来就不可比）。
 
-⇒ 在本项目里，关键词搜索 **0 命中只能记为「未找到」**。要断言「确认缺失」，
-必须给出反证：该阶段 tick 的调用链里只有 A/B/C 三个动作、没有目标动作的调用点，
-并贴调用链原文。三态记法固定为 **已有 / 确认缺失 / 未知**，禁止把「未知」写成「缺失」。
+**错误 3：结论用词过强。**
+我写的是「成立且差距远大于预期」。当时手里只有关键词 0 命中，那只能支持「未找到」。
 
-### 四、由此产生的排期变更
+### 四、关键词覆盖探测（结果保留，但**不能**当缺失证据）
 
-佩勒破无限循环**暂缓**，Android 先补前中期。理由：Android 若走不到佩勒门口，
-打通最后一道门没有意义。顺序错了不是优先级问题，是路线问题。
+限定 `Oreki*.smali` + `oreki/*.smali`，统计提及文件数：
+
+| 关键词 | 提及文件数 |
+|---|---:|
+| `replicanti` / `Replicanti` | 0 / 0 |
+| `sacrifice` / `Sacrifice` | 0 / 0 |
+| `eternityChall` | 0 |
+| `instantChallenge` | 0 |
+| `dilation` | 1 |
+| `realityUpgrade` | 1 |
+
+**这张表最典型的一行是 `instantChallenge : 0`——而 `OrekiInstantChallenge.smali` 就存在，304 行。**
+原因：smali 里的引用是 `Lkajfosz/antimatterdimensions/OrekiInstantChallenge;`，方法名多半已被混淆，
+不会出现 `instantChallenge` 这个 camelCase 串。**关键词 0 命中甚至不能证明「没这个名字」，更别说「没这个功能」。**
+
+至此已累积 **三个** 反例，全部是「按 Web 名字搜 Android，0 命中但功能存在」：
+
+| 按 Web 名搜索 | 在 Android 的实际形态 | 结果 |
+|---|---|---|
+| `player.break` | `Player.brake:Z`（键仍是 `"break"`，setter `x0(Z)V` @11107，getter `m()Z` @10746） | 0 命中，功能存在 |
+| `Pelle` | 混淆类 `.../pelle/c` | 0 命中，功能存在 |
+| `instantChallenge` | `OrekiInstantChallenge.smali`（类名在，方法体不出现该串） | 0 命中，类存在 |
+
+⇒ **规则：关键词 0 命中只能记为「未找到」。** 要断言「确认缺失」，必须给出反证：
+该阶段 tick 的调用链里只有 A/B/C 三个动作、没有目标动作的调用点，并贴调用链原文。
+三态记法固定为 **已有 / 确认缺失 / 未知**，禁止把「未知」写成「缺失」。
+
+### 五、修正后的真实结论
+
+1. **规模上 Android 不落后**（5,166 vs 4,198 行），「Android 前期中期没跟上」**不能由行数证明**。
+2. **能力覆盖仍是未知**。已知 Android 有 `OrekiSpeed` / `OrekiChallengeAuto` / `OrekiAuto` /
+   `OrekiInstantChallenge` / `StageAssist` / `OrekiStageAuto` 六个自动层，但**具体覆盖到哪一步、
+   哪一步只做了一半，没有逐项核对过**。这才是真正待办的事。
+3. **待查风险**：`oreki/AchievementUnlocker.smali`（188 行）名字听起来像「直接解锁成就」。
+   若它绕过原版成就条件，就违反「不得伪造完成位」的硬约束（见 C.31 同类原则），**必须优先核查**。
+
+### 六、由此产生的排期变更（结论未变，但理由换了）
+
+佩勒破无限循环**暂缓**，Android 先做前中期**能力逐项核对**（不是「补」——补什么还没确定）。
+理由不是「Android 落后」，而是：Android 若走不到佩勒门口，打通最后一道门没有意义；
+而走到哪一步、卡在哪个机制，现在**只有猜测没有证据**。
