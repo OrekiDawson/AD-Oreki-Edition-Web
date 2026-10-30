@@ -384,6 +384,10 @@ export function debugState() {
     // 单测与探针必须用这份名单跟 spec 做集合比对，一个字符不同就要红。
     leafIds: Object.keys(LEAVES).slice().sort(),
     declaredLeafIds: (spec?.conditionGrammar?.leaves ?? []).slice().sort(),
+    // 面板要显示「无（已检查 N 项）」—— N 必须取自 spec，不能写死：
+    // spec 加一条 blocker，面板的「已检查」计数要跟着变，否则这句话立刻变成假话。
+    blockersDeclared: (spec?.blockers ?? []).length,
+    advisoriesDeclared: (spec?.advisories ?? []).length,
     lastEvalAgoMs: lastEvalAt ? Date.now() - lastEvalAt : null,
     degradedCount,
     lastError,
