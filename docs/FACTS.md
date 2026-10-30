@@ -1998,3 +1998,79 @@ interval 拉满（有，OrekiStageAuto.upgradeCrunchInterval）
 
 ⇒ 结论：即使第 1、2 环修好，第 4 环不补，`brake` 仍恒假（除非走末日）。
 但**修的顺序必须由 A0 门控表定**，不许照着这张表从上往下盲补。
+
+## C.44 上线 R40：发布源必须是 commit，不是工作区 `[实测]`
+
+### 一、上线结果
+
+`web/_deploy/site` 提交 `31a72e9` → `OrekiDawson/OrekiDawson.github.io` main → `https://oreki.net`
+
+同步：**49 项变更（更新 43 + 新建 6），一致跳过 813，源码缺失 0**。
+
+线上实开验收 7/7（`web/_tools/_r40/r40t-live-verify.mjs`，直接打 `https://oreki.net`）：
+
+| 项 | 结果 |
+|---|---|
+| 页面能进（`GameUI.initialized`） | PASS，9,506 ms |
+| 教程 6 s 内一直可见 | PASS，消失采样 0/49 |
+| 教程章节未跳变 | PASS，全程「第 0 章 开始之前」 |
+| 目录底部 7 篇附录 | PASS，实际 7 条 |
+| 7 篇逐篇正文 > 200 字符 | PASS，2874/2337/1638/1621/2494/6191/3196 |
+| `apx_changes` 表格 ≥ 15 行 | PASS，rows=24 |
+| 线上无 pageerror | PASS |
+
+### 二、三个坑（都会导致「以为发了其实没发」或「发上去白屏」）
+
+**坑一：`filelist.txt` 漏登记 6 项，而 `--dry-run` 不会报。**
+
+漏了：`oreki-tutorial-data.gen.js`(197KB) / `OrekiTutorialStyles.js` /
+`oreki-tutorial-markdown.js` / `oreki-smart-strategy.js` / `oreki-smart-strategy.gen.js` /
+`oreki-smart-executor.js`。
+
+原因：`sync_deploy.py` **只按清单走**，清单里没有的它根本不看。
+所以「dry-run 报新建 0 项」不代表没有新增文件。
+
+⇒ 查新增唯一可靠办法：**拿源码树和清单做差集**，不是看 dry-run 输出。
+这与 R38 漏 `oreki-dilation-automation.js` 导致线上 404 是同一个坑，第二次了。
+清单一律 856 → 862。
+
+**坑二：`sync_deploy.py` 读工作区，会把别人未验收的中间态直接发上线。**
+
+同步当下工作区有 3 个 `M`（`OptionsGameplayTab.js` / `oreki-smart-executor.js` /
+`oreki-smart-strategy.js`），都是 agent-a 正在改、还没验收的。
+
+改法（已落盘）：`sync_deploy.py` 支持 `OREKI_SYNC_SRC` 覆盖源码根；
+发布时先 `git worktree add ../_wt_deploy HEAD`，再
+`OREKI_SYNC_SRC=_wt_deploy python sync_deploy.py`。
+
+⇒ 规则：**发布永远发布一个 commit，不发布工作区。**
+不然「线上跑的是哪份代码」这个问题永远答不清。
+
+注意 `web/_wt_head` **不能当干净快照**：它是 `df6ef9d` 的 detached worktree，
+早于教程单源化，连 `src/core/oreki-tutorial.js` 都不存在。看着干净，其实是更老的版本。
+
+**坑三：Pages 构建完成 ≠ 立刻可用，冷启动会 503。**
+
+推送后约 3 分钟 `https://oreki.net/src/core/oreki-tutorial.js` 仍是旧版 40,191 B
+（新版 16,275 B），新文件 404；出现新版后**第一次**加载还撞到一次 503
+（`GameUI.initialized` 70 s 未真）。重跑即 9.5 s 正常。
+
+⇒ 判据：**看「某个已登记文件的字节数变了没有」，比看 index.html 返回 200 有效**。
+再加一个穿透参数 `?cb=随机` 避免 CDN 缓存误判。
+
+### 三、上线验收不能拿本地副本代替
+
+本地 `_deploy/site` 上 22/22 全过，线上**仍要单独跑一遍**：
+- 本地副本可能比远端新（本地同步了但推送失败）
+- 远端可能比本地旧（Pages 没重建完）
+
+两者是**三个不同状态**：工作区 / 部署副本 / 线上。
+⇒ 规则：**「部署副本通过」不构成「线上可用」的证据**，必须对线上 URL 实开一次。
+
+### 四、线上验收脚本要能直连线上
+
+`r40t-appendix-verify.mjs` 把 baseURL 硬编码成 `http://127.0.0.1:${port}`，只能测本地。
+新写 `r40t-live-verify.mjs` 接受完整 URL。
+
+⇒ 规则：**验收脚本的地址必须是参数，不许硬编码。**
+硬编码的结果是「线上验收」这一步会被悄悄降级成「本地再跑一遍」。
