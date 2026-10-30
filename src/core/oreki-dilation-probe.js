@@ -202,6 +202,40 @@ function sample(ctx) {
     dtUpgRebuy: pick(() => JSON.parse(JSON.stringify(player.dilation.rebuyables || {}))),
     dtUpgSet: pick(() => JSON.parse(JSON.stringify(Array.from(player.dilation.upgrades || [])))),
 
+    // ── DT 速率的乘子分解（回答「速率由什么决定」）────────────────────
+    rate: {
+      // 速子粒子（TP）是 DT 速率的**主项**（dilation.js:126）
+      tpL: pick(() => safeLog10(Currency.tachyonParticles.value)),
+      // tpGain = getTP(maxAM, true)：TP 是「本次永恒最大反物质」的函数
+      tpGainL: pick(() => safeLog10(getTP(player.records.thisEternity.maxAM, true))),
+      baseTpL: pick(() => safeLog10(getBaseTP(player.records.thisEternity.maxAM, true))),
+      tachyonGainMultL: pick(() => safeLog10(tachyonGainMultiplier())),
+      // 各倍率项的 log10
+      dtGainL: pick(() => safeLog10(DilationUpgrade.dtGain.effectValue)),
+      ach132L: pick(() => safeLog10(Achievement(132).effectOrDefault(1))),
+      ach137L: pick(() => safeLog10(Achievement(137).effectOrDefault(1))),
+      ru1L: pick(() => safeLog10(RealityUpgrade(1).effectOrDefault(1))),
+      ru1Bought: pick(() => player.reality.rebuyables?.[1] ?? null),
+      ru4Bought: pick(() => player.reality.rebuyables?.[4] ?? null),
+      ru8Bought: pick(() => player.reality.rebuyables?.[8] ?? null),
+      glyphDtL: pick(() => safeLog10(getAdjustedGlyphEffect("dilationDT"))),
+      replFactorL: pick(() => safeLog10(Math.clampMin(
+        Decimal.log10(Replicanti.amount) * getAdjustedGlyphEffect("replicationdtgain"), 1))),
+      replAmountL: pick(() => safeLog10(Replicanti.amount)),
+      achPowerL: pick(() => safeLog10(Achievements.power)),
+      galaxies: pick(() => player.galaxies),
+      // 膨胀升级的已买集合（ndMultDT=6 / ipMultDT=7 是正反馈的关键）
+      ndMultDT: pick(() => DilationUpgrade.ndMultDT.isBought === true),
+      ipMultDT: pick(() => DilationUpgrade.ipMultDT.isBought === true),
+      dtGainBought: pick(() => player.dilation.rebuyables?.[1] ?? null),
+      tachyonGainBought: pick(() => player.dilation.rebuyables?.[3] ?? null),
+      // 各膨胀升级是否买得起（真实 cost，不买）
+      canNdMult: pick(() => Currency.dilatedTime.gte(DilationUpgrade.ndMultDT.cost)),
+      canIpMult: pick(() => Currency.dilatedTime.gte(DilationUpgrade.ipMultDT.cost)),
+      canDtGain: pick(() => Currency.dilatedTime.gte(DilationUpgrade.dtGain.cost)),
+      canTachyonGain: pick(() => Currency.dilatedTime.gte(DilationUpgrade.tachyonGain.cost)),
+    },
+
     // ── 状态机内部计数器（gates / 起步次数）──────────────────────────
     gates: pick(() => JSON.parse(JSON.stringify(cel?.gates || {}))),
     dilStarts: pick(() => cel?.dilationStarts ?? null),
