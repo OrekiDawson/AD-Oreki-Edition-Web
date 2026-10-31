@@ -4411,17 +4411,25 @@ R49/R50 之前该功能**只有读码与包内确认**，从未在设备上跑�
 V 看到的永远是 0。`r50-fresh4` 重载后 5 分钟的对照实验：直接放手 ⇒ `releases` 17 次、
 V 恒 false；改走宽限 ⇒ `releases` 1 次、V 为真。
 
-#### C.85.4　仍然没做到的（如实记录）
+#### C.85.4　`r50-fresh5` 的中间卡点（已由七修解决，留作对照）
 
-* `r50-fresh5` 在 t=1225 s 卡在莱特拉阶段：`im=5.25e9`（已够 IU25 的 5e9）、
-  `ds6=true`、`tier=4`、`laiRun=false`，`realities` 冻在 80 达 500 秒。原因是 IU25 的判据
-  「在莱特拉的现实中……达成现实」需要一次现实才能结算，而当时的判据仍在压住现实。
-  已由 `bb59a22` 改为有界窗口，`r50-fresh6` 正在验证，**结果未出之前不宣称已通关**。
-* 当前 HEAD 上**尚未**取得第二次 `isGameEnd === true` 的完整墙钟证据；
-  最后一次完整通关仍是 `r50-fresh1`（2530.2 s，endState 1.0214，HEAD `5ea342a`）。
-* Android 端的差距是结构性的，见 C.85.5。
+`r50-fresh5` 在 t=1225 s 卡在莱特拉阶段：`im=5.25e9`（已够 IU25 的 5e9）、`ds6=true`、
+`tier=4`、`laiRun=false`，`realities` 冻在 80 达 500 秒。原因是 IU25 的判据
+「在莱特拉的现实中……达成现实」需要一次现实才能结算，而当时的判据仍在压住现实。
+七修（`bb59a22`）把它改成有界窗口后，`r50-fresh6` 通过。
 
-#### C.85.5　Android：自动化覆盖不到终局（结构性缺口，非本轮引入）
+#### C.85.5　`r50-fresh6`：当前 HEAD 真实新档 **760 秒通关**（实测）
+
+* 取档：清空 `localStorage` 后新建，`gameCreatedTime` 与录制起点同秒，`realities=0`；
+* 终局样本：`isGameEnd=true`、`endState=1.0084237436763426`、`stage=doomed`、
+  `realities=100`、`v/iu15/iu25/pelle/doomed` 全为 true、`spd=40000`；
+* **墙钟 760 秒 = 12 分 40 秒**，占 180 分钟预算的 **7.0%**；
+* 对比：同一判据修好前的新档 `r50-fresh1` 是 2530.2 秒，`r50-fresh2` 2840 秒仍未通关。
+* 里程碑时间线（同一份 `r50-fresh6.jsonl`）：t=445~485 s 进入莱特拉阶段
+  （`v=1 / iu15=1`），t=590 s `imCap` 回到 1.39e10（> IU25 成本 5e9），t=760 s 终局。
+* 证据文件：`web/reports/_r50/r50-fresh6.jsonl`（152 样本）、`.log`、`.summary.json`。
+
+#### C.85.6　Android：自动化覆盖不到终局（结构性缺口，非本轮引入）
 
 清空存档后的真实新档实测（`gameCreatedTime` 与 `lastUpdate` 差 1621 s）：
 
