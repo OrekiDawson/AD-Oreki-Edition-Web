@@ -3945,3 +3945,83 @@ celestialsEnslaved / celestialsV / celestialsRa / laitela / pelle / doomed`。
 
 **投影授权仍然必须人工确认**：本次改造**没有**新增任何 `POST /capture/start` 之类接口；
 自愈只处理「无障碍绑定」这件纯本地的事，与 MediaProjection 授权严格分离。
+
+## C.81 R48 收尾事实与 §45 轮次互斥规则落盘（2026-11-01 01:0x）`[实测 + 落盘]`
+
+### C.81.1 §45 已写入共享规则（P0 流程）
+
+`docs/AGENTS_GLOBAL.md` 已追加 **§45 每轮启动与结束的子 Agent 全量收回、轮次互斥规则**。
+
+- 写入方式：原地 `r+b → seek(END) → write → truncate`，**未使用 `cp` / 原子替换 / 删除重建**。
+- 写入前后校验：inode `8162774324763556` **未变**，`nlink = 3`，三处路径 md5 一致
+  （`d3a2b5957d57` → `8cc5de8eabee`），文件大小 171,399 → 175,911 B。
+- `python scripts/check_agents_sync.py` 输出「结论：全部一致」，AGENTS.md 与 FACTS.md 两组三处 inode / SHA-256 均一致。
+- §45 与 §39、§40 **并列不覆盖**；仅在**轮次边界**优先于 §39。
+
+### C.81.2 R48 已验证事实（有证据，可复用）
+
+1. **Web 新手教程禁绿已达成** `[真机 Edge 实测]`
+   逐章扫 24 章 + hover / active / focus / disabled 全态，**绿色命中 0**。
+   变量实测 `--color-reality: #4c9aff`、`--color-good: #4c9aff`、`--color-good-dark: #2f6fd0`；
+   关闭按钮描边 `rgb(0, 68, 156)`。**做法是变量作用域重定向**（`.c-modal:has(.c-oreki-tut)` 内重设），
+   不是逐类改色 —— 一次覆盖全部引用点，也不会漏掉继承与渐变。
+2. **Web 教程关闭按钮出屏已修，且有 A/B 决定性证据** `[实测]`
+   360×380 短视口：无注入样式时弹层 `top = -25`、关闭按钮 `top = -17`、`closeInView = false`；
+   有样式时 `top = 8`、`closeInView = true`。320 / 360 / 393 / 412 / 851（横屏）全部 `closeInView = true`、无横向滚动。
+   根因是 `.l-modal` 用 `top:50% + translate(-50%,-50%)` 居中，内容高于视口时上半截被推出屏幕；
+   改为 `inset:0 + flex` 居中后根治。
+3. **Android 教程 `VerifyError` 已修** `[真机 logcat]`
+   故障：点教程直接摔回桌面，日志 `register v6 has type Reference: android.widget.LinearLayout
+   but expected Reference: java.lang.String`。根因是 `footerPill` 调用点把 `p1`（LinearLayout）当 String 传。
+   **同类错误已是第三次**，因此新增 `scripts/check_invoke_types.py` 作为构建前闸门：
+   静态比对「实参是 `p` 寄存器 vs 形参声明类型」，正确处理 `D`/`J` 双格宽度，`<init>`/`<clinit>` 跳过，
+   重载任一匹配即放过。自测注入原 bug 能精确报出。
+4. **Android 教程标题不再被状态栏压住** `[真机截图]`
+   Android 15+ 对 `targetSdk≥35` 强制 edge-to-edge，连 `Dialog` 也不再自动避让。
+   新增 `DrawerInsetListener` 挂真实 `WindowInsets`（`SDK_INT≥30` 走 `systemBars()`，否则 `getSystemWindowInsetTop()`），
+   记基础 padding 后 `setPadding(base + inset)`，**不用固定 24dp、不重复叠加**。
+5. **官方 Current Tab 未被破坏** `[真机 dumpsys]`
+   `id/toolbar` 仍在 `0,136,1440,332`，Oreki 入口是 `wholeOptionsLayout` 的内部子项（§44 合规）。
+6. **Android 教程字号药丸同源刷新已修** `[像素采样]`
+   点大→只大亮、点小→只小亮、点中→只中亮；像素 `(130,165,193)` 蓝 vs `(64,69,76)` 灰；
+   字号真实生效（「阶段目标」高 77 → 89 px）。
+7. **章节抽屉**：可弹出、列 24 章、遮罩生效、返回键可关。修复点是 `if-gtz` 极性写反（应为 `if-lez`）。
+
+### C.81.3 自动购买器错位的根因（R48 定位，R49 修复中）`[真机实测 + 读码]`
+
+**不是 Edge 独有**，是共享 CSS 的固定宽度设计问题：
+
+| 规则 | 声明值 | 实际像素（rem = 10px） | 后果 |
+|---|---|---|---|
+| `styles.css:4392` `.c-autobuyer-box-row` | `width: 96rem` | 960 px | 桌面模式视口约 980 px、扣侧栏后内容约 870 px → 行溢出 |
+| `.l-autobuyer-singlet-group` | `width: 97rem` | 970 px | 把行撑到 970 px（真机实测两行 `rowW = 970`）|
+| `.o-autobuyer-btn` | `width: 17.5rem` | 175 px | 被放进 `width:25%`（约 97 px）的槽 → 必然外溢约 78 px |
+
+真机复现（411 px 逻辑视口，手机 Chrome）：18 行中 `__toggleSlot` / `__checkboxSlot` 的子元素
+**超出所属槽右边界 75–83 px**；截图可见「×1 → ×2 批量购买…」被右侧「购买最大数量」整块压住。
+
+**关键机理**：桌面模式把布局视口报到约 980 px，**恰好绕过 `max-width:900px` 断点** ——
+这就是「只有桌面模式出问题」的由来。所以修复**不能只靠媒体查询**，必须用与视口无关的
+`min(设计宽, 100%)` 收敛。
+
+**R48 修改（本地未提交，R49 承接）**：`oreki.css` 用 `min(设计宽, 100%)` + 窄屏槽位重排；
+Windows Edge 411 / 980 / 1280 三档实测「越界行 0、子元素溢出 0、无横向滚动」，1280 下主行仍 960 px。
+**真机复验在 R48 未完成**（手机 Chrome 标签页中途被关闭），不得记为已修复。
+
+### C.81.4 R48 遗留的语义纠正（用户 2026-11-01 00:4x 指出）
+
+用户原话：「挑战应该是开始即完成，而不是未开始时自动完成」。这纠正了此前的实现方向。
+
+- `eternity-challenge.js` 的 `autoComplete.tick()` 曾有两条分支直接 `addCompletion(true)`，
+  其中含 Ra 解锁「即时 EC」后的 while 循环 —— **挑战根本没开始就把次数补满**。
+- `player.js` 曾把 `autoEC` 默认设为 `true`，等于开局就开着「未开始自动完成」。
+- R48 已改：自动化的唯一动作是 `start()` 下一个未完成的 EC；完成统一交 `OrekiInstantChallenge`
+  （要求 `current !== 0` 才结算）。
+- **验证缺口（必须记住）**：`EC.completions` 有自定义 setter，从控制台强写会在数百毫秒内被存档真值还原，
+  所以「写值后读回」的验证方法**无效**；必须用「真实启动 → 等待 → 读真值」。
+  R48 因此未能坐实「开始即完成」，只坐实了「未启动不涨次数」。R49 继续。
+
+### C.81.5 FACTS 硬链接校验
+
+`docs/FACTS.md` 三处 inode `3940649674859546`、`nlink = 3`、SHA-256 一致（`f34e79e5756bdecb`）。
+本次追加同样使用原地读写，未破坏链接。
