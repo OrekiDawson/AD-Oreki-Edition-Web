@@ -2811,3 +2811,276 @@ filelist 里有、但源码不存在：0
 **这就是 C.53 §二 那条"比对前先让两边可比特"的第二次实证。** 这次是同一条规则反向作用：不归一化会得到「40+ 个文件不一样、必须整站重发」的假警报。
 
 ⇒ 规则：**做部署差异比对，第一个动作永远是归一化行尾，不是直接 `diff -rq`。**
+
+## C.59 **原版 Android 移植本身就不记录 `PelleRecords.totalAntimatter`**，`endState` 在 Android 上恒 0 `[REA 实测]`
+
+### 一、结论
+
+**Android 端（含原版对照 APK）`PelleRecords.totalAntimatter` 在玩法路径上没有任何写入点。**
+`GameEnd.endState` 读的正是这个字段，所以 **`endState` 恒 0，终局判定在 Android 上物理不可达**——
+与 Break、与自动化、与倍率都无关。
+
+这不是「我们改坏的」，是**原版移植本身缺这一环**。
+
+### 二、REA 取证（本轮实跑，非历史引用）
+
+| 项 | 值 |
+|---|---|
+| `bash scripts/rea.sh doctor` | jadx `healthy`（Hopper/Ghidra/IDA 缺失属正常） |
+| `inspect-android-class` 目标 | `release/对照组_原版仅移除Google.apk` 的 `Player$PelleRecords` |
+| evidence_id | `ev_36243241b72bc353e851c315fff19b29d5bc1a69d7c52a56495573aa509ef012` |
+| APK sha256 | `d7860864582cb5dff07baf161d20b0c7ee2db5498353705eee7a29802393476a` |
+| class_count | 20017 |
+| 类结构 | 字段 3 个（`totalAntimatter` / `totalEternityPoints` / `totalInfinityPoints`）；getter `a()/b()/c()`；setter `d()/e()/f()` |
+| setter 本体 | 裸 `iput-object`，**没有 `max()` 语义** |
+| `trace-android-references --method-name d` | evidence_id `ev_4639a43895bea3b4cd15a9711948747b9f3a6c0473b703a866b6c62d154c52fc`，`total: 2`，`coverage: complete` |
+
+两处调用者：
+
+| 位置 | 真实身份 |
+|---|---|
+| `kajfosz.antimatterdimensions.player.e.m()V`（dex offset 3310） | **存档反序列化**：`e.smali:13389-13422` 读 `"records"` → `"totalAntimatter"` → `e.a(h32)` 转 BigDouble → setter |
+| `defpackage.ve3.b()V`（dex offset 68） | **佩勒打击 #5 的触发器**：`ve3` 持 `a:B`（打击序号），`a()` 读 `Pelle.d()` 的 BitSet 判是否已发生；`b()` 里吐 `you_encountered_pelle_strike` toast、`PelleCollapsed.b(false)`，然后 **`if (a == 5)` 才**把 `records.totalAntimatter` 置成常量 `Llu;->r4`（`totalInfinityPoints` 置 `Llu;->n4`）。**是「打击 5 = 清空记录」，朝下清，不是朝上记。** |
+
+`ug2.smali:37440-37530`（统计展示）全段只有 `a()` / `c()` 取值拼字符串，**没有任何 setter 调用**，与 REA 的 `total: 2` 互相印证。
+
+### 三、断口在哪里
+
+Web `src/core/currency.js:211-217`：
+
+```js
+player.records.thisInfinity.maxAM = player.records.thisInfinity.maxAM.max(value);
+player.records.thisEternity.maxAM = player.records.thisEternity.maxAM.max(value);
+player.records.thisReality.maxAM  = player.records.thisReality.maxAM.max(value);
+
+if (Pelle.isDoomed) {
+  player.celestials.pelle.records.totalAntimatter =
+      player.celestials.pelle.records.totalAntimatter.max(value);
+}
+```
+
+**Android 的反物质 setter 有前三条 `maxAM`，没有第四条。**
+
+### 四、为什么必须修，且为什么不能用「每帧采样」糊过去
+
+修它是**恢复原版（Web）既有机制**，不是给自己开口子：判定仍要求「在毁灭态下真实产量把 AM 推到 1e1000」。不修则永远不可达；修了也不降低任何门槛。**这不属于伪造完成位。**
+
+但**禁止用 tick 采样代替**：Web 是「每次赋值就抬峰值」，采样是「每帧读一次」——`endState` 要的正是**历史峰值**，帧内峰值恰恰是被采掉的那个值。而且它**测不出来**：跑 200 秒一切正常，直到进佩勒才发现永远差一口气。属于 C.52「断言全绿但行为不对」的同一族。
+
+⇒ 必须在 setter 路径上做**等价移植**，且 `max()` 语义必须保留（裸 `d(value)` 会变成「最后一次赋值」，比不记录更糟）。
+
+### 五、未验证的部分（不许含糊）
+
+本轮**无法完整验证**这条修复，因为 Android 新档要走到佩勒才用得上它。
+在 Android 真能进佩勒之前，这条只能标 `[读码等价移植]` + `[未实测-需进佩勒]`，**不得写「已修复」**。
+
+诊断入口：`OREKI_PELLE_REC rec=<log10> am=<log10> doomed=<0|1>`，30 秒一行。
+现在必须是 `doomed=0 / rec=0`；若 `rec` 在非佩勒局里上涨，说明 `Pelle.isDoomed` 谓词判反了（那是红线，会导致正常局刷 `endState`），必须立即停。
+
+### 六、附带确证：Break 之后间隔是免费拉满的
+
+`autobuyer/a;->c()V` 是 `while (!v()) A(true)`，`A(true)` 走**免费**分支，不扣 IP。原版 Break 按钮点完就调它。
+
+⇒ **32767 IP 的用途被精确限定在「够到 Break 那一刻」**，Break 之后 15 级不再需要钱。
+⇒ 补贴额只能覆盖「到 Break 为止」的差额，把 Break 之后的级数也算进去就会多补。
+
+原版 Break 按钮的真实执行序列（从 `MainActivityBreakInfinityKt$loadViewsBreakInfinity$1$1.smali:126` 抠出，`const/4 v3,0x1` 处）：
+
+```
+if (!Player.m()) {
+  if (CrunchAutobuyerState.v()) {
+    Player.x0(true);
+    g61.a("BREAK_INFINITY");
+    autobuyer.a.c();
+  }
+}
+```
+
+四点齐全：已 Break 守卫 / 间隔已满守卫 / `x0(true)` / 事件 / `a.c()`。
+**`a.c()` 不许省**——省了它，Break 后其它自动购买器的间隔仍是初始值，后续阶段会被拖死。
+
+---
+
+## C.60 教程 ch05 原先只写「间隔已到 100 毫秒」这个结果，没写怎么到；补齐后需要 15 级 / 32767 IP `[实测 + 读码]`
+
+### 一、事实
+
+`web/AD-Oreki-Edition/src/core/oreki-tutorial-data.json` 的 ch05（第 5 章 打破无限）在本轮之前：
+
+- `entry` 只有一句「大坍缩自动购买器的间隔已到 100 毫秒（这是 Break 的硬前置，不是 Break 的奖励）」——**把目标写成了前置**，玩家读到的第一句就是「你还没到这个章」；
+- `numbers` 里**没有任何一条**间隔数值（150000 / ×0.6 / 15 级 / 32767）；
+- `challenges` 是 `null`；
+- `automation` 引用的 AU6 行号是 `src/core/oreki-autobuy-break-infinity.js:39-55`，**该文件一共只有 32 行**，引用是错的。
+
+补齐后（提交 `ad8ffeb` / Android assets `986dcac`），`numbers` 里新增 6 条间隔数值，`steps` 从 6 条扩到 8 条，`traps` 从 3 条扩到 5 条，`challenges` 由 `null` 改为两条硬约束。
+
+### 二、数字出处（全部已逐行核对）
+
+| 数字 | 值 | 出处 |
+|---|---|---|
+| 大坍缩自动器初始间隔 | 150000 毫秒 | `src/core/player.js:81-83`（`bigCrunch: { cost: 1, interval: 150000 }`） |
+| 每级间隔 | ×0.6，`Math.clampMin(…, 100)` | `src/core/autobuyers/autobuyer.js:173` |
+| 每级成本 | ×2 | `src/core/autobuyers/autobuyer.js:172` |
+| 拉满级数 | 15（0.6^14 → 117.5 未到 100；0.6^15 → 70.5 被下限截成 100） | 按 `autobuyer.js:173` 逐级核算 |
+| 累计成本 | 32767 = 2^15 − 1 | `src/core/oreki-break-infinity-gate.js:51` |
+| 拉满判据 | `data.interval <= 100` | `src/core/autobuyers/autobuyer.js:165-167` |
+| Break 硬前置 | `if (!Autobuyer.bigCrunch.hasMaxedInterval) return;` | `src/game.js:95` |
+| Break 后免费拉满全部间隔 | `maxIntervalForFree()` 循环 | `src/game.js:97-99` |
+| 挑战中禁止 Break | `if (InfinityChallenge.isRunning) return;` | `src/game.js:96` |
+| 原版手动升间隔需先完成普通挑战 12 | `get canBeUpgraded() { return NormalChallenge(12).isCompleted; }` | `src/core/autobuyers/big-crunch-autobuyer.js:30-32`；按钮模板 `AutobuyerIntervalButton.js:39-52` |
+
+### 三、MOD 与原版的差异（教程里必须讲清，否则「按钮消失」会被当成 bug）
+
+`upgradeInterval()`（`autobuyer.js:169-177`）**没有 `canBeUpgraded` 门控**，唯一门槛是 IP 余额。
+所以 MOD 的闸门可以直接无视「普通挑战 12」这条 UI 前置连买 15 级，玩家在自动购买器开着时会看到按钮自己消失。
+
+### 四、规模
+
+补齐后：Web `validate_tutorial.mjs` **2176 项全通过**；Android `oreki_tutorial_gen.py` 生成 **18 章 / 847 条 / 26047 汉字 / 118161 字节**，回读校验逐字一致。
+
+---
+
+## C.61 Web 教程五项渲染验收实测结果（18 章 / 7 附录 / 10 态定位 / 最长章 / 字号）`[实测]`
+
+### 一、实测环境
+
+宿主机 Edge（CDP）+ puppeteer 设备模拟，`node _tools/_r42/tut-accept.mjs`、`tut-stage.mjs`。
+截图与 JSON 报告在 `web/_tools/_r42/shots/`、`web/_tools/_r42/tut-*-report.json`。
+
+### 二、逐项
+
+| 项 | 结果 | 证据 |
+|---|---|---|
+| 18 章逐章可阅读 | 通过：18 章全部打开，正文字符数 **1571 ~ 5731**，占位卡 0、草稿章 0 | `tut-accept-report.json → items.chapters` |
+| 7 篇附录入口 | 通过：`.c-oreki-tut__nav-btn--apx` 恰好 **7** 个，逐篇点开正文 **2640 字**以内均非空，副标题均含「附录」 | `items.appendices` |
+| 按 stage() 定位 | 通过 **10/10**：新档→ch01、有维度提升→ch02、有星系→ch03、未打破→ch04、已打破 IP=1e0→ch05、IP=1e12→ch06、永恒→ch07、现实→ch11、天神→ch13、佩勒→ch16 | `tut-stage-report.json` |
+| 长章不截断 | 通过：最长 **ch09（5731 字）**，内容区 `scrollHeight 5087` vs `clientHeight 338`，滚到底后末块 `bottom=642 < 视口 844`，`atBottom=true` | `items.longest` |
+| 字号三档 | **Web 无此功能**，按 `docs/TUTORIAL_SCHEMA.md`「双端渲染差异」表 Web 侧就是固定字号；实测 `.c-oreki-tut__text` 恒为 `12.5px`，页面内不存在任何字号控件，CSS 变量 `--oreki-tut-font-scale` 为空 | `items.font` |
+
+### 三、定位的方法学（否则会得出反向结论）
+
+第一次用「改 `player` 状态 → 打开教程」测定位，5 个状态**全部**落在 ch07。原因不是定位错：
+这款 MOD 默认 10000× 速度，测试跑 1~2 分钟游戏自己就推进到永恒了。
+正确做法是先 `player.auto.autobuyersOn = false` 冻住自动机，再在**同一个 `page.evaluate`** 里改状态并立刻 `show()`，避免中间夹进一次 tick。改完后 10/10 全对。
+
+---
+
+## C.62 Web 七宽度 + 横屏实测：整页横向溢出 0，触控档无 <44px 按钮；320 宽教程底栏贴边但不溢出 `[实测]`
+
+### 一、结果
+
+| 宽度 | 整页横向溢出 | 越界元素 | <44px 可点元素 | 教程弹窗 | 长章滚到底 |
+|---|---|---|---|---|---|
+| 320 | 无 | 0 | 0 | 未超出视口，底栏可见 | 是 |
+| 360 | 无 | 0 | 0 | 同上 | 是 |
+| 390 | 无 | 0 | 0 | 同上 | 是 |
+| 430 | 无 | 0 | 0 | 同上 | 是 |
+| 768 | 无 | 0 | 0 | 同上 | 是 |
+| 1280 | 无 | 0 | **6** | 同上 | 是 |
+| 横屏 844×390 | 无 | 0 | 0 | 同上 | 是 |
+
+### 二、两个需要说明的点
+
+1. **1280 那 6 个 <44px 的全部是桌面布局按钮**（「买到 10 个」30px、「维度献祭」25px、「计数频率价格」25px、「购买最大数量」25px、教程入口 36px）。
+   44×44 是触控下限，桌面宽度不适用；触控档（≤430 与横屏 844×390）实测 **0** 个不达标。
+2. **320 宽教程底栏贴边不溢出**：底栏 `scrollWidth == clientWidth == 274`，「下一章」右缘 297 = 弹窗右缘 297，间隙 0px。
+   排版不破，但零余量——再窄 1px 就会溢出，属于需要盯的临界值。
+
+### 三、表格
+
+第 5 章对照表在所有宽度都**在自己的滚动容器内**（`table.right < scrollBox.right`），不存在撑破整页的情况；
+宽度随容器走（320→270px、768→718px、1280→500px），没有出现「表格固定宽度把页面撑宽」。
+
+---
+
+## C.63 侧栏按真实进度动态显示：新档 5 项，解锁后 10 项齐全、无重名、无空页 `[实测]`
+
+- 全新存档侧栏：`维度 / 自动化 / 成就 / 统计数据 / 选项`（5 项）。挑战、无限、永恒、现实、天神**都不出现**——符合「按真实进度动态显示」。
+- 注入最高阶段（无限/永恒/现实各 1、`Teresa.pouredAmount=1`、`Achievement(147).unlock()`、`player.celestials.pelle.doomed=true`）后：`维度 / 自动化 / 挑战 / 无限 / 永恒 / 现实 / 天神 / 成就 / 统计数据 / 选项`（10 项），**缺项 0、多项 0、重名 0**。
+- 逐项点开，`.c-game-tab` 正文长度 86 ~ 3358 字，**空页 0**。
+- 新闻条：`#news / .c-news-ticker / [class*=news-ticker]` 节点数 **0**，DOM 里就不存在，符合「Web 关闭新闻」。
+
+一个坑：侧栏的点击处理器挂在 `.l-tab-btn-inner` **自己**身上（`src/components/ui-modes/modern/ModernTabButton.js:54`），
+点它的父 `div` 不会切页——第一次扫描时 10 个页面正文长度全是 638，就是这么来的。
+
+---
+
+## C.64 AVD `oreki_test` 在 `-gpu swiftshader_indirect` 下会出现「应用在跑但 screencap 冻结」`[实测]`
+
+现象：`adb exec-out screencap -p` 连续 4 次取到**同一帧**（md5 完全相同），
+期间 `logcat` 里 `OREKI_GATE` / `OREKI_ACHAUDIT` 仍在正常输出、`dumpsys window` 的 `mCurrentFocus` 也是本应用，
+`dumpsys power` 为 `mWakefulness=Awake`。连按 `KEYCODE_BACK` 也不出帧。
+
+⇒ 画面管线（SurfaceFlinger 合成）卡住，**不是应用卡住**。
+⇒ 结论：在这个 AVD 上做 UI 验收时，一旦发现 screencap 与 logcat 行为不一致，应判定为**装置故障**并重启模拟器，不要据此得出「界面没反应」。
+⇒ `uiautomator dump` 在这个应用上还有独立问题：`ERROR: could not get idle state`（画面持续动画，永远不 idle），不要去重试它。
+
+---
+
+## C.65 装机 APK 的教程正文是**空的**：`assets/oreki_tutorial.txt` 没进包，界面显示「教程正文缺失（行数 0 / 章节 0）」`[实测]`
+
+### 一、现象（`oreki_test` AVD，装的是 3.19.0 / 2026-10-30 19:42 那个包）
+
+从「选项 → 打开 Oreki 中文教程」进去，界面只有 7 个节点：
+
+```
+TextView  Oreki 教程
+Button    关闭
+Button    打开 OREKI 设置
+Button    字号 小 / 字号 中 / 字号 大
+TextView  教程正文缺失（行数 0 / 章节 0 / 异常 null）：请重装完整安装包，并把这一行反馈给打包的人。
+```
+
+⇒ 章节页签一个都没有，「18 章可阅读」「7 篇附录入口」在**当前装机包上都不成立**。
+⇒ 这不是教程代码坏了：MOD 自己的守卫把「正文为空」如实报出来了，报错文案还指明了下一步动作。守卫是好的，**坏的是打包**。
+
+### 二、根因（已核对）
+
+`release/反物质维度.apk`（2026-10-31 02:53，69.7 MB）里 `assets/` 共 **22 项**，
+逐个列出：`dexopt/baseline.prof(m)`、`fonts/*`(17)、`realityanimbg_*.mp4`(4) —— **没有 `oreki_tutorial.txt`**。
+
+而同一时刻磁盘上：
+- `scripts/payload/assets/oreki_tutorial.txt` 存在（118161 字节，本轮重新生成）
+- `work/mod/assets/oreki_tutorial.txt` 也存在（114149 字节，03:15，**比 APK 的 02:53 还晚**）
+
+⇒ 那个 APK 是「资产还没生成 / 还没拷进工作树」之前打的，不是资产的锅，是**打包顺序**的锅。
+⇒ 现在两个位置的资产都已就位，**下一次 `build_mod.py` 全量构建应当能进包**，但必须在构建后自查：
+
+```bash
+python -c "import zipfile;z=zipfile.ZipFile(r'release/反物质维度.apk');print([n for n in z.namelist() if 'oreki_tutorial' in n])"
+```
+
+输出为空就是没进包，不要装机验收。
+`build_mod.py:3795` 的 `TUTORIAL_ASSETS` 与 `build_mod.py:3875/3905` 的字节断言只在**生成阶段**，不校验**产物 zip**，这是漏检的缝。
+
+### 三、影响
+
+Android 侧「教程渲染五项验收」的第 1、2、4 项在当前包上**无法通过**（不是没测，是没有东西可测）。
+第 3 项（stage 定位）与第 5 项（字号三档）不受影响，见 C.66。
+
+---
+
+## C.66 Android 教程字号三档真实生效：同一段文字高度 222 / 261 / 420 px `[实测]`
+
+### 一、方法
+
+正文为空不影响量字号：界面上的报错文案本身就是正文 `TextView`。
+固定宽度（992 px）下切换 小 / 中 / 大，从无障碍控件树读 `bounds`，用**同一段文字的高度**做判据。
+（装置画面在 `-gpu swiftshader_indirect` 下会冻结，见 C.64，所以走的是控件树不是截图。）
+
+### 二、读数
+
+| 档位 | `bounds` | 高度 |
+|---|---|---|
+| 字号 小 | `44,686,1036,908` | **222** |
+| 字号 中 | `44,686,1036,947` | **261** |
+| 字号 大 | `44,686,1036,1106` | **420** |
+
+- 小/中 = 222 / 261 = **0.851**，与源码系数 **0.85** 对得上（`TutorialActivity.smali:1709` 注释「小 0.85 / 中 1.0 / 大 1.2」）。
+- 大/中 = 420 / 261 = 1.609 ≠ 1.2，原因是**换行**：字号变大后这段文字从 2 行变 3 行，高度不是纯比例。
+  ⇒ 「三档真实生效」成立（三档读数两两不同，且小/中比例精确落在系数上），但**不要**用 大/中 的比值去反推系数。
+
+### 三、入口
+
+三档按钮在教程界面顶部同一条，等分 1080 宽：`0,466,360,598` / `360,466,720,598` / `720,466,1080,598`（各 360×132 px，远大于 44dp）。
+点击后立即重绘当前章，无确认框。
