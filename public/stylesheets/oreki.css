@@ -546,7 +546,7 @@
   margin-bottom: 1rem;
   padding: 0.8rem 1rem;
   background: var(--color-base);
-  border: 0.1rem solid var(--color-good);
+  border: 0.1rem solid var(--oreki-tut-ok, #7cc6ff);
   border-radius: var(--var-border-radius, 0.5rem);
 }
 
@@ -583,7 +583,7 @@
 }
 
 .c-oreki-tut__stage-row--entered {
-  border-left-color: var(--color-good);
+  border-left-color: var(--oreki-tut-ok, #7cc6ff);
 }
 
 .c-oreki-tut__stage-row--available {
@@ -612,7 +612,7 @@
 }
 
 .c-oreki-tut__stage-status--entered {
-  color: var(--color-good);
+  color: var(--oreki-tut-ok, #7cc6ff);
 }
 
 .c-oreki-tut__stage-status--available {
@@ -650,7 +650,7 @@
   min-height: 3.6rem;
   padding: 0 1.2rem;
   font-size: 1.15rem;
-  border: 0.1rem solid var(--color-good);
+  border: 0.1rem solid var(--oreki-tut-ok, #7cc6ff);
   background: var(--color-base);
   color: var(--color-text);
   border-radius: var(--var-border-radius, 0.5rem);
@@ -2080,3 +2080,7 @@
     max-width: 100%;
   }
 }
+
+
+/* [R47-C1] 教程禁绿：本文件里 c-oreki-tut 段的 --color-good 已换成这个蓝色强调色 */
+.c-oreki-tut { --oreki-tut-ok: #7cc6ff; }
