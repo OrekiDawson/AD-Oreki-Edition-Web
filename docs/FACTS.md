@@ -4312,3 +4312,47 @@ R50 的真死锁是 C.83.1~C.83.3 这三条，靠字段级证据定位。
    `Modal.orekiTutorial.isOpen === true`（它确实已是 `ui.view.modal.current`）但 DOM 里
    一个 `.c-oreki-tut` 都没有。量教程前必须先 `Quote.clearAll()`。
    这也是**上游原有行为**，不是本 MOD 引入的缺陷。
+
+### C.84.6 Android「挑战启动即完成」端到端运行验证【本轮首次做实】
+
+R49/R50 之前该功能**只有读码与包内确认**，从未在设备上跑出结果。本轮在 AVD
+`oreki_test`（API 34，1440×3200 @560dpi，App versionName 3.19.0 / versionCode 30190000）
+上做实：
+
+**运行环境事实**
+- 游戏本体是**原生 Java**（`kajfosz.antimatterdimensions.MainActivity`），不是 WebView；
+  设备上唯一的 WebView 只加载 AdMob。因此**不能**用 CDP 驱动游戏页，
+  必须走真实控件/存档观测。`adb root` 可用，存档在
+  `/data/data/com.oreki.antimatterdimensions/files/player.json`（明文 JSON）。
+- 钩子确已注入：`build/build.log` 第 135~136 行
+  `[Oreki IC] 已在 Challenges.update 入口插入 OrekiInstantChallenge.tick()`、
+  `[Oreki CA] ... OrekiChallengeAuto.tick()（先于 IC 结算）`。
+
+**判定实验（二分法 + 低上限排除自然完成）**
+存档夹具：把 `challenge.normal.completedBits` 从 8190（C1~C12 全完成）改成
+**4094**（清掉 bit12 → C12 未完成），`challenge.normal.current = 12`
+（等价于原版 `start()` 之后的「在 C12 中」状态），
+`records.thisInfinity.maxAM = 1e10`（把自然打到目标的可能压掉）。
+此前的试探还包含：`completedBits=8190` 且 `current=12`（已完成的挑战再进入）。
+
+| 采样（开局后） | completedBits | current | maxAM | 结论 |
+| --- | --- | --- | --- | --- |
+| t1 ≈ 15 s（读档时的存档） | 4094 | 12 | 1e10 | 尚未 tick |
+| t2 ≈ 30 s | **8190** | **0** | **1e133** | 已被结算并退出 |
+| t3~t6 | 8190 | 0 | 1e133→1e300 | 之后是正常游玩增长 |
+
+判据三条同时成立：
+1. **完成位** 4094 → 8190（C12 记完成），而玩家全程没有任何点击；
+2. **`current` 12 → 0**（退出挑战），且这一跳发生在同一个 15 s 采样窗口内；
+3. **`maxAM` 1e10 → 1e133**：正是 `rewardAntimatter` 的「把 `thisInfinity.maxAM`
+   临时抬到 `challenge.goal` 再交给原版 `gainedInfinityPoints`」留下的签名——
+   自然游玩不可能在 15 s 内从 1e10 涨到 1e133。
+另外 `completedBits=8190` + `current=12` 的对照实验里 `current` 也回到 0，
+符合「原版已完成 → `K()` 为 true → 跳过发奖、仍然退出」的幂等分支，
+即**没有发生二次结算**。
+
+**未能做到的部分（如实记录）**：App 的自动存档间隔约 60 s，`lastUpdate` 在同一存档
+内不变，因此**无法做到帧级时间戳**；「下一帧完成」这一点是由「一个存档周期内
+`current` 由 12 变 0、完成位翻转、maxAM 跳到 goal」三条同时成立推出来的，
+不是直接测到的帧号。要拿到帧级证据需要在 smali 里加日志后重新构建（约 8 分钟构建
++ 装机），本轮受通关长跑占用时间未做，记为待办。
