@@ -1,0 +1,68 @@
+{
+ "tag": "r40s3-quote-drain",
+ "verdict": "未结束",
+ "latencyS": null,
+ "quoteAt": 239.9,
+ "qLeftAtQuote": 0,
+ "qNamesAtQuote": "OrekiTutorialModal#4|MessageModal#2",
+ "clicks": 12,
+ "budget": 12,
+ "endedAt": null,
+ "drainLog": [
+  {
+   "n": 5,
+   "sel": "end",
+   "t": 280.1,
+   "qCur": true,
+   "qLeft": 4,
+   "nModal": 0
+  },
+  {
+   "n": 10,
+   "sel": "end",
+   "t": 280.8,
+   "qCur": true,
+   "qLeft": 1,
+   "nModal": 0
+  },
+  {
+   "n": 11,
+   "sel": "right",
+   "t": 282,
+   "qCur": true,
+   "qLeft": 1,
+   "nModal": 0
+  },
+  {
+   "n": 12,
+   "sel": "right",
+   "t": 282.2,
+   "qCur": true,
+   "qLeft": 1,
+   "nModal": 0
+  },
+  {
+   "n": 12,
+   "sel": "final",
+   "t": 282.2,
+   "qCur": true,
+   "qLeft": 1,
+   "nModal": 0
+  }
+ ],
+ "back": null,
+ "pageErrors": 0,
+ "lastRow": {
+  "t": 282.2,
+  "qCur": true,
+  "qLeft": 1,
+  "qLine": "除了我之外，无人能在我的领域更进一步。",
+  "nQuote": 1,
+  "nModal": 0,
+  "cur": "OrekiTutorialModal",
+  "qNames": "OrekiTutorialModal#4|MessageModal#2",
+  "tutNodes": 0,
+  "tutTitle": "",
+  "realities": 25
+ }
+}

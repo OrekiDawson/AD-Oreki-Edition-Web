@@ -1,0 +1,155 @@
+{
+ "tag": "r40s3-quote-recover",
+ "verdict": "未结束",
+ "latencyS": null,
+ "quoteAt": 277,
+ "quoteLine": "我会让你进入我的现实，不要被它击垮。",
+ "qNamesAtQuote": "OrekiTutorialModal#4|MessageModal#2",
+ "naturalEnd": null,
+ "clickLog": [
+  {
+   "sel": "end",
+   "t": 301.6,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "right",
+   "t": 302,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "end",
+   "t": 307.5,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "end",
+   "t": 314.8,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "end",
+   "t": 321.4,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "end",
+   "t": 325.6,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "end",
+   "t": 330.2,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "right",
+   "t": 330.7,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "right",
+   "t": 331.1,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "end",
+   "t": 334.1,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "right",
+   "t": 334.6,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  },
+  {
+   "sel": "right",
+   "t": 335,
+   "qCur": true,
+   "qNames": "OrekiTutorialModal#4|MessageModal#2",
+   "nModal": 0
+  }
+ ],
+ "clicks": 12,
+ "closedByClick": false,
+ "clickables": [
+  {
+   "s": ".c-modal-celestial-quote__arrow-right",
+   "found": true,
+   "x": 503,
+   "y": 244,
+   "w": 21,
+   "h": 21,
+   "display": "block",
+   "visibility": "hidden",
+   "opacity": "1"
+  },
+  {
+   "s": ".c-modal-celestial-quote__end",
+   "found": true,
+   "x": 379,
+   "y": 369,
+   "w": 21,
+   "h": 21,
+   "display": "block",
+   "visibility": "visible",
+   "opacity": "1"
+  },
+  {
+   "s": ".c-modal-celestial-quote__arrow-left",
+   "found": true,
+   "x": 254,
+   "y": 244,
+   "w": 21,
+   "h": 21,
+   "display": "block",
+   "visibility": "hidden",
+   "opacity": "1"
+  },
+  {
+   "s": ".c-oreki-tut",
+   "found": false
+  },
+  {
+   "s": ".l-modal-overlay",
+   "found": true,
+   "x": 378,
+   "y": 244,
+   "w": 756,
+   "h": 488,
+   "display": "block",
+   "visibility": "visible",
+   "opacity": "1"
+  }
+ ],
+ "pageErrors": 0,
+ "consoleErrors": 1,
+ "consoleErrSample": [
+  "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src http://me.kis.v2.scr.kaspersky-labs.com"
+ ],
+ "recoverDetail": {
+  "verdict": "未结束"
+ }
+}

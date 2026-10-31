@@ -1,0 +1,233 @@
+{
+ "tag": "r40s3-quote-drain3",
+ "timing": {
+  "lastQuoteOnAt": 307.4,
+  "quoteOffAt": 309.2,
+  "modalBackAt": 309.2,
+  "latencyS": 0,
+  "sigOff": "0|0|1|OrekiTutorialModal|1",
+  "sigBack": "0|0|1|OrekiTutorialModal|1"
+ },
+ "monCount": 16,
+ "verdict": "会回来，不修",
+ "latencyS": 0,
+ "quoteAt": 229.6,
+ "qLeftAtQuote": 0,
+ "qNamesAtQuote": "OrekiTutorialModal#4|MessageModal#2",
+ "clicks": 22,
+ "budget": 60,
+ "endedAt": 416.2,
+ "drainLog": [
+  {
+   "n": 1,
+   "sel": "end",
+   "t": 236,
+   "qCur": true,
+   "qLeft": 1,
+   "nModal": 0
+  },
+  {
+   "n": 2,
+   "sel": "right",
+   "t": 236.6,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 3,
+   "sel": "end",
+   "t": 236.9,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 4,
+   "sel": "end",
+   "t": 272.7,
+   "qCur": true,
+   "qLeft": 6,
+   "nModal": 0
+  },
+  {
+   "n": 5,
+   "sel": "end",
+   "t": 273.1,
+   "qCur": true,
+   "qLeft": 5,
+   "nModal": 0
+  },
+  {
+   "n": 6,
+   "sel": "end",
+   "t": 273.3,
+   "qCur": true,
+   "qLeft": 4,
+   "nModal": 0
+  },
+  {
+   "n": 7,
+   "sel": "end",
+   "t": 274.4,
+   "qCur": true,
+   "qLeft": 3,
+   "nModal": 0
+  },
+  {
+   "n": 8,
+   "sel": "right",
+   "t": 274.5,
+   "qCur": true,
+   "qLeft": 2,
+   "nModal": 0
+  },
+  {
+   "n": 9,
+   "sel": "right",
+   "t": 275,
+   "qCur": true,
+   "qLeft": 2,
+   "nModal": 0
+  },
+  {
+   "n": 10,
+   "sel": "end",
+   "t": 275.2,
+   "qCur": true,
+   "qLeft": 2,
+   "nModal": 0
+  },
+  {
+   "n": 11,
+   "sel": "right",
+   "t": 275.3,
+   "qCur": true,
+   "qLeft": 1,
+   "nModal": 0
+  },
+  {
+   "n": 12,
+   "sel": "right",
+   "t": 276.4,
+   "qCur": true,
+   "qLeft": 1,
+   "nModal": 0
+  },
+  {
+   "n": 13,
+   "sel": "end",
+   "t": 276.5,
+   "qCur": true,
+   "qLeft": 1,
+   "nModal": 0
+  },
+  {
+   "n": 14,
+   "sel": "right",
+   "t": 276.7,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 15,
+   "sel": "right",
+   "t": 276.8,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 16,
+   "sel": "right",
+   "t": 277,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 17,
+   "sel": "end",
+   "t": 277.1,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 18,
+   "sel": "right",
+   "t": 307.6,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 19,
+   "sel": "right",
+   "t": 307.8,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 20,
+   "sel": "right",
+   "t": 308.9,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 21,
+   "sel": "right",
+   "t": 309.1,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 22,
+   "sel": "end",
+   "t": 309.3,
+   "qCur": true,
+   "qLeft": 0,
+   "nModal": 0
+  },
+  {
+   "n": 22,
+   "sel": "final",
+   "t": 416.2,
+   "qCur": false,
+   "qLeft": 0,
+   "nModal": 1
+  }
+ ],
+ "back": {
+  "t": 416.2,
+  "qCur": false,
+  "qLeft": 0,
+  "qLine": null,
+  "nQuote": 0,
+  "nModal": 1,
+  "cur": "OrekiTutorialModal",
+  "qNames": "OrekiTutorialModal#4|MessageModal#2",
+  "tutNodes": 234,
+  "tutTitle": "第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏",
+  "realities": 50
+ },
+ "pageErrors": 0,
+ "lastRow": {
+  "t": 416.2,
+  "qCur": false,
+  "qLeft": 0,
+  "qLine": null,
+  "nQuote": 0,
+  "nModal": 1,
+  "cur": "OrekiTutorialModal",
+  "qNames": "OrekiTutorialModal#4|MessageModal#2",
+  "tutNodes": 234,
+  "tutTitle": "第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏",
+  "realities": 50
+ }
+}
