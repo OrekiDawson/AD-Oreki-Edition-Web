@@ -3735,3 +3735,30 @@ EC1~EC12 全 5/5 在 **26 s**（171 在 7 s 买到、EC2 在 7 s 满 5）；RU10
 **本轮发布包不含的两处改动**（构建时间早于改动）：
 `oreki_dark_theme.py` 的 4 个对比度色值（EC 研究进行中 / 自动购买器设置错误，FAIL 4→0，均达 WCAG AA）。
 随下一次构建生效。
+
+## C.78 「底栏」在两端是**不同东西**：Android 两行 ScrollableTabLayout，Web 只有左侧竖栏（无底栏）`[读码]`
+
+用户 2026-10-31 下达长期规则：**导航底栏一律按官方实现，不允许自创形态**。
+
+**官方 Web 没有底栏。** `web/upstream/official/src/components/ui-modes/modern/ModernSidebar.vue:28-37`
+只有左侧竖栏 `div.c-modern-sidebar`，`tabs: () => Tabs.newUI`，**无底部导航、无抽屉、无窄屏断点**。
+官方 `public/stylesheets/styles.css` 的 media query（960 / 720 / 480px）作用于**文档站**，与游戏 UI 无关。
+
+`Tabs.newUI` 两端**逐项相同**（`src/core/tabs.js:211-223`，官方同文件同位置）：
+dimensions → automation → challenges → infinity → eternity → reality → celestials →
+achievements → statistics → options → shop，共 **11 项**。
+我们 `OREKI_WEB_TAB_ORDER` 只是去掉 `shop`（Web 无商店）后剩 **10 项**，**顺序与官方完全一致**。
+
+**官方 Android 底栏 = 两行 `ScrollableTabLayout`**，见
+`work/base_decoded/res/layout/app_bar_main.xml:34-38`：
+`bottomNavigationLayout`(BlurView) > `bottomNavigationInnerLayout` >
+`mainTabLayout`（主分类，`tabGravity="fill"` / `tabMode="scrollable"` / `tabMaxWidth=4000dp`）+
+`secondaryTabLayout`（子页签，`fitAllTabs="true"`）。
+文字色走主题属性 `?bottomNavigationText` / `?bottomNavigationTextSelected`，**不硬编码色值**。
+官方还允许 4 种导航类型互切（`dialog_navigations.xml`）：侧边 / 始终侧边 / 滑动 / 底部，
+中文名依次在 `values-zh-rCN/strings.xml:3741 / 4044 / 4082 / 845`（底部叫「**底部导航栏**」）。
+
+⇒ **教程文案不能写「底栏」。** 同一份 json 供两端使用，而 Web 端屏幕上不存在底栏，
+写「点底栏『维度』」会让 Web 玩家找不到入口。统一改为中性的「**「维度」页签**」。
+
+⇒ **坐标表（C.26）仍然成立但只对 Android 有效**；不要拿它去描述 Web。
