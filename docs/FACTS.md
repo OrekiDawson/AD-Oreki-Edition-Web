@@ -3425,7 +3425,9 @@ nav    : y=70  h=116.9  flex-direction: row  overflow-x: auto  overflow-y: hidde
 **溢出 126.3px**；正文仍在自滚容器内（`scroll.h=261` / `scrollH=4157`，能滚到底），
 所以不影响可读性，但改导航条高度时要连带复核底栏位置。
 
-脚本：`web/_tools/_r42/nav-probe-320.mjs`、`nav-main-probe.mjs`。### 五、已修复（2026-10-31 11:33，Web commit `43eecfb`）`[实测-宿主机视口]`
+脚本：`web/_tools/_r42/nav-probe-320.mjs`、`nav-main-probe.mjs`。
+
+### 五、已修复（2026-10-31 11:33，Web commit `43eecfb`）`[实测-宿主机视口]`
 
 §三 的缺陷已修：`src/components/modals/OrekiTutorialModal.js` 新增 `revealActiveNav()`，
 挂在 `mounted` / 阶段推进 / `goTo` / `goToAppendix` / `backToCurrent` / 页脚翻页上。
