@@ -1,0 +1,564 @@
+{
+  "at": "2026-10-31T02:11:55.758Z",
+  "browser": "Chrome/156.0.8078.47",
+  "cases": [
+    {
+      "case": "320",
+      "density": 540,
+      "rotation": 0,
+      "expectW": 320,
+      "moduleReady": true,
+      "main": {
+        "vw": 320,
+        "vh": 597,
+        "dpr": 3.375,
+        "docOverflow": false,
+        "docScrollW": 320,
+        "docClientW": 320,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 22,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": false,
+        "scrollbar": {
+          "innerW": 320,
+          "docClientW": 320
+        }
+      },
+      "tut": {
+        "present": true,
+        "modal": {
+          "x": 23,
+          "right": 297,
+          "w": 274,
+          "h": 444
+        },
+        "modalOutsideViewport": false,
+        "footer": {
+          "w": 274,
+          "scrollW": 274,
+          "clientW": 274,
+          "selfOverflow": false,
+          "lastRight": 297,
+          "gapToModalEdge": 0
+        },
+        "footerKids": [
+          {
+            "text": "上一章",
+            "x": 23,
+            "right": 83,
+            "w": 60,
+            "h": 48
+          },
+          {
+            "text": "回到当前进度",
+            "x": 90,
+            "right": 185,
+            "w": 95,
+            "h": 48
+          },
+          {
+            "text": "5 / 17",
+            "x": 191,
+            "right": 230,
+            "w": 39,
+            "h": 18
+          },
+          {
+            "text": "下一章",
+            "x": 237,
+            "right": 297,
+            "w": 60,
+            "h": 48
+          }
+        ],
+        "footerVisible": true,
+        "scrollRect": {
+          "h": 261,
+          "scrollH": 5617
+        },
+        "tables": [
+          {
+            "w": 270,
+            "right": 293,
+            "scrollBoxW": 274,
+            "scrollBoxRight": 297,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 270,
+            "right": 293,
+            "scrollBoxW": 274,
+            "scrollBoxRight": 297,
+            "overflowsScrollBox": false
+          }
+        ],
+        "pageOverflowWithModal": false,
+        "navSmall": 0
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots_avd\\avd_w_320.png",
+        "_tools\\_r42\\shots_avd\\avd_w_320_tut.png"
+      ]
+    },
+    {
+      "case": "360",
+      "density": 480,
+      "rotation": 0,
+      "expectW": 360,
+      "moduleReady": true,
+      "main": {
+        "vw": 360,
+        "vh": 630,
+        "dpr": 3,
+        "docOverflow": false,
+        "docScrollW": 360,
+        "docClientW": 360,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 18,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "现实",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": false,
+        "scrollbar": {
+          "innerW": 360,
+          "docClientW": 360
+        }
+      },
+      "tut": {
+        "present": true,
+        "modal": {
+          "x": 23,
+          "right": 337,
+          "w": 314,
+          "h": 467
+        },
+        "modalOutsideViewport": false,
+        "footer": {
+          "w": 314,
+          "scrollW": 314,
+          "clientW": 314,
+          "selfOverflow": false,
+          "lastRight": 337,
+          "gapToModalEdge": 0
+        },
+        "footerKids": [
+          {
+            "text": "上一章",
+            "x": 23,
+            "right": 84,
+            "w": 61,
+            "h": 48
+          },
+          {
+            "text": "回到当前进度",
+            "x": 103,
+            "right": 198,
+            "w": 95,
+            "h": 48
+          },
+          {
+            "text": "5 / 17",
+            "x": 218,
+            "right": 257,
+            "w": 39,
+            "h": 18
+          },
+          {
+            "text": "下一章",
+            "x": 277,
+            "right": 337,
+            "w": 61,
+            "h": 48
+          }
+        ],
+        "footerVisible": true,
+        "scrollRect": {
+          "h": 275,
+          "scrollH": 5019
+        },
+        "tables": [
+          {
+            "w": 310,
+            "right": 333,
+            "scrollBoxW": 314,
+            "scrollBoxRight": 337,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 310,
+            "right": 333,
+            "scrollBoxW": 314,
+            "scrollBoxRight": 337,
+            "overflowsScrollBox": false
+          }
+        ],
+        "pageOverflowWithModal": false,
+        "navSmall": 0
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots_avd\\avd_w_360.png",
+        "_tools\\_r42\\shots_avd\\avd_w_360_tut.png"
+      ]
+    },
+    {
+      "case": "390",
+      "density": 443,
+      "rotation": 0,
+      "expectW": 390,
+      "moduleReady": true,
+      "main": {
+        "vw": 390,
+        "vh": 692,
+        "dpr": 2.768749952316284,
+        "docOverflow": false,
+        "docScrollW": 390,
+        "docClientW": 390,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 17,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "现实",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": false,
+        "scrollbar": {
+          "innerW": 390,
+          "docClientW": 390
+        }
+      },
+      "tut": {
+        "present": true,
+        "modal": {
+          "x": 23,
+          "right": 367,
+          "w": 344,
+          "h": 509
+        },
+        "modalOutsideViewport": false,
+        "footer": {
+          "w": 344,
+          "scrollW": 344,
+          "clientW": 344,
+          "selfOverflow": false,
+          "lastRight": 367,
+          "gapToModalEdge": 0
+        },
+        "footerKids": [
+          {
+            "text": "上一章",
+            "x": 23,
+            "right": 83,
+            "w": 60,
+            "h": 48
+          },
+          {
+            "text": "回到当前进度",
+            "x": 113,
+            "right": 208,
+            "w": 94,
+            "h": 48
+          },
+          {
+            "text": "5 / 17",
+            "x": 238,
+            "right": 277,
+            "w": 39,
+            "h": 18
+          },
+          {
+            "text": "下一章",
+            "x": 307,
+            "right": 367,
+            "w": 60,
+            "h": 48
+          }
+        ],
+        "footerVisible": true,
+        "scrollRect": {
+          "h": 299,
+          "scrollH": 4736
+        },
+        "tables": [
+          {
+            "w": 340,
+            "right": 363,
+            "scrollBoxW": 344,
+            "scrollBoxRight": 367,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 340,
+            "right": 363,
+            "scrollBoxW": 344,
+            "scrollBoxRight": 367,
+            "overflowsScrollBox": false
+          }
+        ],
+        "pageOverflowWithModal": false,
+        "navSmall": 0
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots_avd\\avd_w_390.png",
+        "_tools\\_r42\\shots_avd\\avd_w_390_tut.png"
+      ]
+    },
+    {
+      "case": "430",
+      "density": 402,
+      "rotation": 0,
+      "expectW": 430,
+      "moduleReady": true,
+      "main": {
+        "vw": 430,
+        "vh": 821,
+        "dpr": 2.512500047683716,
+        "docOverflow": false,
+        "docScrollW": 430,
+        "docClientW": 430,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 17,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": false,
+        "scrollbar": {
+          "innerW": 430,
+          "docClientW": 430
+        }
+      },
+      "tut": {
+        "present": true,
+        "modal": {
+          "x": 23,
+          "right": 407,
+          "w": 384,
+          "h": 597
+        },
+        "modalOutsideViewport": false,
+        "footer": {
+          "w": 384,
+          "scrollW": 384,
+          "clientW": 384,
+          "selfOverflow": false,
+          "lastRight": 407,
+          "gapToModalEdge": 0
+        },
+        "footerKids": [
+          {
+            "text": "上一章",
+            "x": 23,
+            "right": 83,
+            "w": 60,
+            "h": 48
+          },
+          {
+            "text": "回到当前进度",
+            "x": 126,
+            "right": 221,
+            "w": 95,
+            "h": 48
+          },
+          {
+            "text": "5 / 17",
+            "x": 265,
+            "right": 303,
+            "w": 39,
+            "h": 18
+          },
+          {
+            "text": "下一章",
+            "x": 347,
+            "right": 407,
+            "w": 60,
+            "h": 48
+          }
+        ],
+        "footerVisible": true,
+        "scrollRect": {
+          "h": 351,
+          "scrollH": 4402
+        },
+        "tables": [
+          {
+            "w": 380,
+            "right": 403,
+            "scrollBoxW": 384,
+            "scrollBoxRight": 407,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 380,
+            "right": 403,
+            "scrollBoxW": 384,
+            "scrollBoxRight": 407,
+            "overflowsScrollBox": false
+          }
+        ],
+        "pageOverflowWithModal": false,
+        "navSmall": 0
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots_avd\\avd_w_430.png",
+        "_tools\\_r42\\shots_avd\\avd_w_430_tut.png"
+      ]
+    },
+    {
+      "case": "横屏_845x390",
+      "density": 443,
+      "rotation": 1,
+      "expectW": 845,
+      "moduleReady": true,
+      "main": {
+        "vw": 845,
+        "vh": 311,
+        "dpr": 2.768749952316284,
+        "docOverflow": false,
+        "docScrollW": 845,
+        "docClientW": 845,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 17,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": false,
+        "scrollbar": {
+          "innerW": 845,
+          "docClientW": 845
+        }
+      },
+      "tut": {
+        "present": true,
+        "modal": {
+          "x": 23,
+          "right": 822,
+          "w": 799,
+          "h": 250
+        },
+        "modalOutsideViewport": false,
+        "footer": {
+          "w": 799,
+          "scrollW": 799,
+          "clientW": 799,
+          "selfOverflow": false,
+          "lastRight": 822,
+          "gapToModalEdge": 0
+        },
+        "footerKids": [
+          {
+            "text": "上一章",
+            "x": 23,
+            "right": 83,
+            "w": 60,
+            "h": 48
+          },
+          {
+            "text": "回到当前进度",
+            "x": 265,
+            "right": 359,
+            "w": 94,
+            "h": 48
+          },
+          {
+            "text": "5 / 17",
+            "x": 541,
+            "right": 580,
+            "w": 39,
+            "h": 18
+          },
+          {
+            "text": "下一章",
+            "x": 762,
+            "right": 822,
+            "w": 60,
+            "h": 48
+          }
+        ],
+        "footerVisible": true,
+        "scrollRect": {
+          "h": 147,
+          "scrollH": 3124
+        },
+        "tables": [
+          {
+            "w": 795,
+            "right": 818,
+            "scrollBoxW": 799,
+            "scrollBoxRight": 822,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 795,
+            "right": 818,
+            "scrollBoxW": 799,
+            "scrollBoxRight": 822,
+            "overflowsScrollBox": false
+          }
+        ],
+        "pageOverflowWithModal": false,
+        "navSmall": 0
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots_avd\\avd_w_横屏_845x390.png",
+        "_tools\\_r42\\shots_avd\\avd_w_横屏_845x390_tut.png"
+      ]
+    }
+  ],
+  "pageUrl": "http://127.0.0.1:8099/index.html"
+}
