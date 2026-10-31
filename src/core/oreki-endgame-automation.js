@@ -657,9 +657,25 @@ export const OrekiEndgameAutomation = {
 
   get debugState() {
     const pick = fn => { try { return fn(); } catch (e) { return null; } };
+    /**
+     * [Oreki R42-B] IM 的十进制指数。
+     *
+     * 这里原来写的是 `Currency.imaginaryMachines.value.log10()`。IM 是 `NumberCurrency`
+     * （currency.js:420），`.value` 是**普通 number**，没有 `.log10` ⇒ 每次读
+     * `debugState.imL` 都抛 TypeError，被 `pick` 吞成 `null`。
+     * 后果不是「看不见 IM」，而是**把 0（真的有 0 台 IM）与异常混成同一个 null**：
+     * R39 的探针就把 `imL=null` 读成「IM 没攒起来」，与 `iu25ConditionsReady()` 里
+     * 那处 `.gte()` 是同一类坑（同文件 :240 已记录过一次）。改用 Math.log10，
+     * 并显式把「非正数」返回 0 而不是 -Infinity，方便长期对照。
+     * 静态守卫见 `scripts/validate_number_currency.mjs`。
+     */
+    const imLog10 = () => {
+      const v = Number(Currency.imaginaryMachines.value);
+      return Number.isFinite(v) && v > 0 ? Math.log10(v) : 0;
+    };
     return {
       step: this.step,
-      imL: pick(() => Currency.imaginaryMachines.value.log10()),
+      imL: pick(imLog10),
       imCapL: pick(() => MachineHandler.currentIMCap),
       iuBought: this._iuBought,
       laitelaTier: pick(() => Laitela.difficultyTier),

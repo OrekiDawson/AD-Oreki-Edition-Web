@@ -185,6 +185,27 @@ const CSS = `
   color: var(--color-reality);
 }
 .c-oreki-tut__summary--current { color: var(--color-good); }
+
+/* ── 窄屏（≤900px，断点与 oreki.css 的教程降级保持一致）下的导航条与触屏目标 ──
+ *
+ * 缺陷 1（320/360 实测）：目录在窄屏被改成横排后，分组标题
+ *   「附录（不参与主线进度）」还是个普通 flex 项，被压到 min-content 宽度 →
+ *   中文逐字换行，撑出一列 104px 高的竖排字；默认 align-items: stretch，
+ *   于是 25 个按钮全被拉到 114px 高，导航条占掉 320×640 视口高度的 18%。
+ *   改成不收缩 / 不换行 / 纵向居中，导航条回落到单行高度。
+ * 缺陷 2：塌回单行后按钮只剩 min-height 3.6rem（36px），低于 44px 触屏目标，抬到 4.4rem。
+ * 缺陷 3：弹窗底部「关闭教程」是 3.2rem（32px），同样抬到 4.4rem。
+ */
+@media screen and (max-width: 900px) {
+  .c-oreki-tut__nav-label {
+    flex: 0 0 auto;
+    align-self: center;
+    margin: 0 0.9rem 0 0.2rem;
+    white-space: nowrap;
+  }
+  .c-oreki-tut__nav-btn { min-height: 4.4rem; }
+  .c-modal:has(.c-oreki-tut) .l-modal-buttons .o-primary-btn { min-height: 4.4rem; }
+}
 `;
 
 /**
