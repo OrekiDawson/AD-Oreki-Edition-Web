@@ -56,7 +56,7 @@ export function aggregateAutomation(chapters) {
   const parts = list
     .filter(chapter => typeof chapter.automation === "string" && chapter.automation.trim() !== "")
     .map(chapter => `### ${chapter.title}\n\n${chapter.automation.trim()}`);
-  if (parts.length === 0) return "（本 MOD 暂无自动化说明）";
+  if (parts.length === 0) return "（本作暂无自动化说明）";
   return [
     "本附录由各章的「自动化配置」字段自动汇总，**不单独维护**——它和各章正文永远一致。",
     "按章节顺序排列，方便你确认「这件事到底要不要我手动做」。",
