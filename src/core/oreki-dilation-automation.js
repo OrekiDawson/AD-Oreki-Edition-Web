@@ -236,10 +236,34 @@ export const OrekiDilationAutomation = {
       // 「DS6 在位 且 IM 够」同一帧成立 ⇒ 70 秒里 `ds6` 一次都没再为真，IU25 永远差临门一脚。
       // 所以 IM 达标时改为继续压住现实，让 DS6 留在位，由 endgame 模块起 run 并买 IU25；
       // IU25 一买上 `hold` 会在最上面按 `iu25-bought` 释放，不会永久压死现实。
-      if (PlayerProgress.dilationUnlocked() && TimeStudy.reality.isBought) {
+      // ── [Oreki R50 三修] 放手的前提是「膨胀真的跑起来过」，不是「DS1/DS6 在手上」──
+      //
+      // 原判据：DS1 与 DS6 同时在手且 IM < IU25 成本 → 立刻放手。
+      // 实测（`r50-fresh2`，2840 s 真实新档）：t=90 s 买到 DS1、t=110 s 就被现实清空，
+      // 此后 2700 s 里 `maxDT` 恒 0，形成「打 EC 链 → 拿到 DS1/DS6 → 立刻放手 →
+      // 现实清空 dilation.studies → 重打」的活锁：`releases` 走到 163、
+      // `_phase` 在 idle/deep-ec 之间反复、EC11 永远打不满。
+      // 这不是「慢」而是**链式死锁**：
+      //   maxDT=0 ⇒ V 的 `dilatedTime` 项恒 0 ⇒ V 永不解锁
+      //   ⇒ `OrekiIu15Sprint.canArm` 恒 false（它要求 `vAchievementUnlock`）
+      //   ⇒ IU15 永不买 ⇒ 莱特拉永久锁 ⇒ IU25/佩勒/终局全部不可达；
+      // 同时缺膨胀乘数 ⇒ `maxEP` 只到 1e3872681 ⇒ `log10(uncappedRM)=2907`
+      //   ⇒ `baseIMCap=1.09e9`，而 `player.reality.iMCap` 只升不降、冻结在 2.7159e9
+      //   ⇒ IM 天花板 2.72e9 < IU25 成本 5e9，钱也永远不够。
+      //
+      // 新判据：**只有 `achieved`（`maxDT ≥ OREKI_V_UNLOCK_DILATED_TIME`）之后**才允许
+      // 放手去产出 RM→IM。未达标就继续压住，让 `tickDilation()` 真正启动膨胀。
+      // 同时不再要求 DS6：V 的 `dilatedTime` 判据只读 `records.thisReality.maxDT`，
+      // 实测 `r50-fresh1` 全程没买过 DS6（`ds6` 从未为 true）却照样解锁了 V。
+      // 未 achieved 时**不 return**，落回下面的 `HOLD_MAX_MS` / `HOLD_STALL_MS` 护栏，
+      // 不会把现实永久压死。
+      if (PlayerProgress.dilationUnlocked()) {
         const imReady = Number(Currency.imaginaryMachines.value) >= OREKI_IU25_COST;
-        if (!imReady) return this._release("dil-chain-done", HOLD_COOLDOWN_MS);
-        return true;
+        if (this.achieved && !imReady) return this._release("dil-chain-done", HOLD_COOLDOWN_MS);
+        if (imReady) return true;
+        // 膨胀在跑但还没达标：EC 链已满会让 `_completionMark()` 不再增长，
+        // 这时不能让它触发 `HOLD_STALL_MS` 的「无进展」判死，否则又回到「放手→清空」。
+        this._progressAtMs = now;
       }
 
       // ── [Oreki R40-A2] 曾经想在这里加「DS6 已到手就放手」，**实测否决，不要再加** ──
