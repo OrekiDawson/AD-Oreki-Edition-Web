@@ -4558,3 +4558,33 @@ Break 需要累计 32767 IP；按 2 IP/次、17.7 秒/次，差 32208 IP ⇒ 需
 `ButtonInfinityUpgrade.smali` 里 `d()V`（:281）**只是按状态刷颜色**，不是购买入口；
 点击事件收敛到 `Lqg5;->u(Landroid/view/View;Landroid/widget/TextView;)V`（:987）。
 真正的可重复升级 purchase 混淆名尚未定位，因此本文件**不宣称该改动已实施或已验证**。
+
+#### C.86.5　教程中文化双端实机验收（含实际打开检查）
+
+**Web（活页面，CDP 逐面板点开）**：`Modal.orekiTutorial.show()` → 依次点击 24 个
+`.c-oreki-tut__nav-btn`，读 `.c-oreki-tut__content` 的 `innerText` 汇总
+（记录：`web/reports/_r50/tut-live-check.{txt,json}`，脚本 `_tut_ch2.mjs`）。
+
+| 指标 | 实测值 |
+| --- | --- |
+| 面板数 / 空面板 | 24 / **0** |
+| 弹窗尺寸 | 1238 × 404（1280 视口） |
+| 全文总字数 | 77,301 |
+| 缩写出现总数 | **32** |
+| 11 个中文名命中 | **11 / 11** |
+| 正文中的缩写（第 5/7/8/10/11/15 章） | 13 处，**全部带中文注解**（无注解 0） |
+| 附录 A 术语表内的缩写 | 19 处，全部位于「中文名 · 英文缩写 · 用途」三列表中 |
+
+**Android（真机 Activity + APK 资源）**：
+
+* 直接拉起 `kajfosz.antimatterdimensions.oreki.tutorial.TutorialActivity`，
+  `mCurrentFocus` 确认为该 Activity，截图 `android/reports/r50/r50_tut_android.png`
+  （标题「Oreki 教程」、章节标签「开始之前 / 开局：10… / 维度献祭与第… / 第一次无限」、
+  正文「第 4 章　无限升级与普通挑战」，中文完整、**无乱码**）；
+* 从设备内 `base.apk` 抽出 `assets/oreki_tutorial.txt`（166,158 B），
+  与仓库 `android/AD_Oreki_Edition_Android/scripts/payload/assets/oreki_tutorial.txt`
+  **SHA-256 逐字节一致**（`62a7fb9cbe215768…`）；
+* 该文本 71,316 字，缩写出现 **32** 次，与 Web 完全同分布（`ID` 9、其余各 1~2），
+  11 个中文名 **11 / 11** 命中，无括号注解 19 处**全部落在附录 A**（表格单元格 `TBL|` 标记）。
+
+结论：双端教程内容同源、缩写分布一致、正文裸露缩写为 0；此前「只需改源 JSON」的判断成立。
