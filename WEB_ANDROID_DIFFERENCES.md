@@ -69,11 +69,14 @@
 | 功能模块 | Web 实现 | Android 实现 | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 | 负责人/后续 |
 |---|---|---|---|---|---|---|---|---|
 | 首次现实入口 | `processManualReality(false)`（与玩家点按钮同一函数） | 原版 UI 按钮；自动化未确认 | 逻辑 | 缺失（Android 无自动现实） | 同语义 | 未验证 | Web `oreki-reality-automation.js` | R41 |
+| **Break 闸门（自动打破无限）** | `oreki-break-infinity-gate.js` `tryOpen()`：`!grantedThisSession && !Pelle.isDoomed` → 补差额 → `while(!hasMaxedInterval) upgradeInterval(false)` → `x0(true)`，同一 tick 三步连做 | **无自动入口**，只能手点。真实按钮序列已从原版 smali 抠出：`if(!Player.m()){ if(CrunchAutobuyerState.v()){ Player.x0(true); g61.a("BREAK_INFINITY"); autobuyer.a.c(); } }` | **缺失** | 需修复（R42 AD5b） | 必须走原版真实路径，**`a.c()` 不许省**（它让 Break 后所有自动购买器间隔免费拉满） | **未验证**：R41 实测 `brake=false / interval=19440 / ip=11`，闸门尚未实现 | `MainActivityBreakInfinityKt$loadViewsBreakInfinity$1$1.smali:126`；Web `gate.js:102-122` | R42：`OrekiBreakGate` |
+| **间隔阶段补贴（32767 IP）** | `BREAK_INTERVAL_TOTAL_COST = 2^15 − 1`；只补「差值」，会话级幂等，`!Pelle.isDoomed` 门内 | **无补贴**：`OrekiStageAuto` 只照价扣 IP，够一级买一级（所以 IP 卡在 11、interval 停在 19440） | **缺失** | 需修复（R42 AD5 B） | 补贴额必须从 `t()`/`u()` 动态推，**不许写死 32767**；只覆盖到 Break 那一刻（Break 后免费） | **未验证** | FACTS §C.48 / §C.59 第六节；Web `gate.js:46-51` | R42：与 BreakGate 同批 |
 | 符文自动装备 | R40A 改为**只装空槽**：绝不替换已占用槽 | **无符文自动装备自动化** | 逻辑 | 需修复（Web 已修 bug，Android 无对应功能） | 不触发静默重置；能拿到 RU9/16/17/18/24 | 待验证（Web 修完未跑完整验收） | 见下方 §4.1 专项 | R41 |
 | 幻象机器（IM）类型坑 | `Currency.imaginaryMachines.value` 是 **Number**，调用 `.gte()/.lte()` 会 TypeError 且被 catch 吞成 `false` | 未确认（smali 侧无此 API 形态） | 逻辑 | 预期（平台 API 不同） | 判定结果一致 | 已验证（Web R39 修 `iu25ConditionsReady`） | FACTS §C.19 | — |
 | 莱特拉 tier 升级 | `OrekiEndgameAutomation.driveLaitela()`：`tier>=8` 前用有界 `holdReality` 抢 30 s 窗口；R40 新增「EC 链全通即提前压现实（90 s 上限）」护住 DS6 | 未找到等价自动化 | 缺失 | 需修复 | 能真实升到 tier 8 并买 IU25 | 待验证 | 见 FACTS §C.21~C.23 | R41 |
 | 佩勒（毁灭现实）驱动 | `driveDoomed()`：`maxAll` + 维度提升 + 星系 + 佩勒升级；**每 100 ms 关掉大坍缩/永恒自动器**，让 `records.totalAntimatter` 单调增长 | **原版通路已核对齐全、未被我们改动**：① `prestige/f;->o(Lqw3;ZLCont;)` 里 `Pelle.isDoomed && keepAutobuyers.canBeApplied && CrunchAutobuyerState.hasMaxedInterval → Player;->x0(Z)`（= `player.break`，序列化键 `break`）L7445-7530；② `Pelle.armageddon` = `celestials/pelle/c;->g(ZZLCont;)`，L3874 调 `prestige/f;->l`；③ 自动器 `reset()` = `UpgradeableAutobuyerState;->h()V`，读 `keepAutobuyers` 早退。**缺的只是驱动**（没人调 `armageddon`，`remnants` 恒 0 → 碎片 0 → 5e6 买不起 → 间隔被重置回 150000 → `hasMaxedInterval` 恒 false → break 永不开）。R40P 结论：**策略修正**——不是「关掉大坍缩囤产量」，而是「末日循环 → 碎片 → keepAutobuyers → 用真实 IP 买满间隔 → 再末日一次」 | 缺失（驱动层未实现；原版三处通路完整） | 需修复 | 反物质峰值能涨到 1e1000 | **未验证：break 未置真**（见 `reports/r40p-Android佩勒破无限.md`） | FACTS §C.15/§C.17；`prestige/f.smali:7445-7530`；`pelle/c.smali:3650/3874`；`UpgradeableAutobuyerState.smali:271` | R41：末日循环驱动 + AVD 实测 break |
-| 终局触发后 | `GameEnd.gameLoop` 置 `player.isGameEnd` | 常量已镜像，置位点未改 | 数值 | 预期 | `endState>=1` 判据一致 | 待验证 | FACTS §C.17 | R41 |
+| 终点记录写入（`PelleRecords.totalAntimatter`） | `currency.js:215-217`：反物质 setter 里 `if (Pelle.isDoomed) records.totalAntimatter = records.totalAntimatter.max(value)`，**每次赋值都抬峰值** | **玩法路径上完全没有写入点**：setter `d()` 只有两处调用者 —— `player/e.m()`（存档反序列化）与 `ve3.b()`（佩勒打击 #5，把记录**置常量清空**）。反物质 setter 只有 `thisInfinity/thisEternity/thisReality` 三条 `maxAM` | **缺失（原版移植本身的缺口）** | 需修复 | 必须是 setter 路径的**等价移植**并保留 `max()` 语义；**禁止用每帧采样替代**（会漏掉帧内峰值，且测不出来） | **未验证**：本轮不可能验到，需 Android 真能进佩勒 | FACTS §C.59（REA `ev_36243241…` / `ev_4639a438…`，原版 APK sha256 `d7860864…`） | R42：`OREKI_PELLE_REC` 为诊断入口；现在必须 `doomed=0 / rec=0` |
+| 终局触发后 | `GameEnd.gameLoop` 置 `player.isGameEnd` | 常量已镜像（`TARGET=1001.0` 已修，`720f145`），置位点未改 | 数值 | 预期 | `endState>=1` 判据双端等价 | **部分验证**：公式等价已用位模式复核（`TARGET=1001` 时交会点恰在 `E=1000`）；但因上行缺写入点，**Android 侧 `endState` 恒 0，判定物理不可达** | FACTS §C.59；`celestials/pelle/b.smali` `b()D` | R42：先补记录写入，再谈终局 |
 
 ### 4.1 专项：符文替换会触发「无收益的完整现实重置」（Web 实测根因，Android 侧无此功能）
 
@@ -159,8 +162,12 @@
 
 1. **两端的 EC 分叉是两种机制，不能因为都能打满就说「实现一致」**：Web 是「选一条路径」，
    Android 是「检测到冲突再 respec」。语义等价但实现不同，**任何一端改判定都要重测另一端**。
-2. **Android 没有时间研究/现实/莱特拉/佩勒的自动购买自动化**。这四块是目前 Android 无法到达终局的结构性原因，
-   不是「数值差一点」。任何「双端一致」的结论在补齐这四块之前都不成立。
+2. **Android 自动化只覆盖「首次无限 → 攒 IP → 拉间隔」这一段，永恒 / 现实 / 天神 / 佩勒的自动化都还没有。**
+   但**不要说成「Android 缺这些功能」**——原版 APK 里 `celestials/` 下 `effarig / laitela / nameless / pelle / ra / teresa / v` 全在，
+   `Player$Celestials` 的七个字段也全在（2026-10-31 实测）。**功能齐、驱动缺**，这是两件不同的事，
+   把它写成「缺 2700 行」会让人误判工作量。
+   ⇒ 更上游的一条在 FACTS C.59：**Android 连终点记录都没写**，所以哪怕自动化全齐也到不了终局。
+   判断「Android 能不能通关」必须先看 C.59，而不是数自动化条目。
 3. **`RealityUpgrades.allBought` 这类标志在两端语义不同**（Web 有 `allBought` getter，Android 靠 `b.b()`），
    不要用同一个词当同一件事。
 4. **构建通过 ≠ 运行通过**。Android 侧 EC 改动在 R40 之前只有「smali 汇编通过 + 构建期断言 + 变异自测」，
@@ -176,7 +183,6 @@
    都要先确认那次 dump 真的成功（失败时**不写文件**，磁盘上是上一次的旧 XML，极易误读）。
 
 ## 13. 硬链接维护流程（每次改动后照做）
-
 ```bash
 cd /c/Users/Oreki/WorkBuddy/AD-Oreki-Unified
 # 1) 确认三处仍是同一 inode 与同一设备号
@@ -198,3 +204,29 @@ cmp WEB_ANDROID_DIFFERENCES.md web/AD-Oreki-Edition/WEB_ANDROID_DIFFERENCES.md \
 ```
 
 若某个仓库里那份**有未提交的有效修改**，先把它 `git diff` 出来人工合并进根文件，再重建链接。
+
+## 14. 本轮（R42）变更索引与「已实现 / 已构建 / 已安装 / 已验证」四态
+
+> 四个状态**不许混写**。「已实现」= 代码在仓库；「已构建」= 产出 APK；「已安装」= 装进 AVD；
+> 「已验证」= 有运行期证据（logcat / 字段真值 / 控件树读数）。缺哪一项就写缺哪一项。
+
+| 变更 | 条目位置 | 已实现 | 已构建 | 已安装 | 已验证 |
+|---|---|---|---|---|---|
+| 终点记录写入 `PelleRecords.totalAntimatter`（补 Web `currency.js:215` 的第四条） | §4 第一行 | 否（待落盘） | 否 | 否 | 否 |
+| 自动 Break Infinity（AD5b，走原版四步序列） | §4「Break 闸门」 | 进行中 | 否 | 否 | 否 |
+| 间隔阶段补贴（AD5 B，动态推差额） | §4「间隔阶段补贴」 | 进行中 | 否 | 否 | 否 |
+| `endState` 判据 `TARGET=1001.0`（消掉分母 off-by-one） | §4「终局触发后」 | 是（`720f145`） | 部分（候选包含，正式包不含） | 部分 | 公式等价已复核；运行期未验 |
+| `OrekiStageAuto` 八处极性 + AchAudit 相邻两行极性 | FACTS §C.50 / §C.54 | 是（`a97580c`/`81cc909`） | 部分（候选包含，正式包不含） | 部分 | **是**：`mode=2/xHighest=1e1`、interval 150000→19440、`OREKI_ACHAUDIT` 每 5 s 一轮 |
+| 教程 ch05 Break Infinity 机制 | FACTS §C.60 | 是（`ad8ffeb`/`986dcac`） | 是（05:39 候选包含资产） | 否 | Web 五项验收过 4；Android ①②④ 待补 |
+| Web 智能路线择优 | FACTS（待编号） | 进行中 | 不适用 | 不适用 | 否 |
+
+### 14.1 三条「不要被表面现象骗到」的判据（本轮新增）
+
+1. **看 APK 先数 `assets/`，别看 mtime。** 正式包 mtime 比候选包新一天，内容却是旧包（22 项资产 vs 24 项），
+   教程正文因此为空。见 FACTS §C.55 / §C.67。
+2. **看 smali 极性先找已知语义的基准样本。** `Lju;->t(D)Z`（canAfford）是标准样本。
+   `OrekiAchAudit` 是**相邻两行各错一次**，只修一行会停在「0 轮」或「1 轮」，见 FACTS §C.54。
+3. **`uiautomator dump` 在这个应用上恒失败**（`could not get idle state`），失败时**不写文件**，
+   磁盘上是上一次的旧 XML，极易误读成「页面没变」。要控件树就走 FrameObserver 的 `/ui`（a11y 通道，无需 MediaProjection 授权）。
+   另：`oreki_test` 在 `-gpu swiftshader_indirect` 下会**画面冻结但应用在跑**（screencap md5 恒定、logcat 正常），
+   换 `-gpu angle_indirect` 才正常。见 FACTS §C.64。
