@@ -106,6 +106,11 @@
 getEstimatedRemainingSeconds / getCurrentStep / getLastSwitchReason / getBlockers`
 （`:955-1005`），全部只读、读不到返回 `null`。
 
+⚠ **面板还没接这些方法**。`src/components/tabs/options-gameplay/OptionsGameplayTab.js` 不在我的可写范围，
+它现在仍只渲染执行层的七项（`OrekiSmartExecutor.debugState()`，逐字段取、不遍历键），
+所以新增的 `route` 字段不会破坏它，但也**不会显示出来**。
+路线相关只读接口已经就位，接面板是下一步（对应 `route-model.ui.items` 的 9 条）。
+
 ### 2.5 两条路线被真正淘汰（这是本层唯一改变结论的地方）
 
 | 路线 | 结果 | 原因 |
