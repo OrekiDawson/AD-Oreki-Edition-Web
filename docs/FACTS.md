@@ -3868,3 +3868,61 @@ celestialsEnslaved / celestialsV / celestialsRa / laitela / pelle / doomed`。
    --user-data-dir=…Temp\oreki-cdp-shared-9300`）；**用户 Edge 窗口为 0 个**，未受影响。
    关闭 3 个闲置页（2 个 oreki.net 游戏页 + 1 个 newtab）后：进程 19 → 17，内存 2127 → 1178 MB，
    `page` 标签 3 → 0。实例保留供后续验收，用毕整实例退出。
+
+### C.80.2 R45 本轮新增确认（2026-10-31 21:5x，全部带证据）
+
+1. **两次验收跑为什么过不去（可复现的量化证据）** `[实测]`
+   用 `_tools/_r45/r45-liveness-probe.mjs` 在 10000×、全新存档下每 20 s 采样 `debugState()`：
+   - `celestialsEffarig` / `celestialsEnslaved` / `laitela` 三个阶段恒为
+     `owned=0 delegated=3 unsupported=0`，即 `celestial` 策略的 priority
+     （`celestialSpecificOrder` / `spendUnlockResource` / `advanceCelestialNav`）
+     **三条全是 delegated**，`pickExecutable()` 结构上挑不出可代劳动作；
+   - `takeovers=216`、`attemptCount=216` 自 t≈180 s 起完全冻结（验收跑是 235，t≈191 s）；
+   - 同期 `realities` 仍在涨（30 → 90），说明**游戏在跑、执行层没在推**。
+   ⇒ 结论：不是「挑不出动作后没报」，而是**该阶段本来就没有一条 owned 动作**。
+2. **终局真正的门是 IU25 的四条件** `[源码]`
+   `imaginary-upgrades.js:296-305`：`IU25` 要求
+   `Laitela.isRunning && Laitela.maxAllowedDimension === 0 && TimeStudy.reality.isBought`。
+   而 `laitela.js:54` `maxAllowedDimension = 8 - difficultyTier`，
+   `game.js:1165` 的 `difficultyTier++` **没有上限**（唯一自增点，已全仓 rg 确认）。
+   ⇒ `tier` 一旦越过 8，`maxAllowedDimension` 变负数，IU25 **永久不可买**。这是不可逆毁档风险。
+3. **Pelle 解锁唯一判据 = `IU25.isBought`** `[源码]`（`celestial-recon` 取证，五方一致）
+   ⇒ 「到 Pelle 终局」等价于「tier 恰好 8 时在同一现实里买到膨胀研究 6 与 IU25」。
+4. **探针字段曾有三处错，已修正** `[实测]`
+   `effarig` 要读 `isCompleted`（读 `isUnlocked` 会漏「已解锁未完成」）；
+   V 的全局是 `Celestial.V`（`player.celestials.v` 不存在）；莱特拉「裂隙」= `maxAllowedDimension >= 6`，
+   不是对象键计数。`r45-accept-run.mjs` 已补 `laiTier / laiMaxDim / laiRunning / laiEntropy / ds6 / iu25`。
+5. **执行层「长时间零动作」不再静默** `[已改]`
+   `oreki-smart-executor.js` 新增 `STATE.noActionSince` / `lastExecAt`、常量 `STALL_REPORT_MS=60000`、
+   函数 `stuckNoAction()`，并在 `tickUnsafe()` 里做**双重兜底**（`describeNoAction()` 返回 null
+   时仍按阈值补报）；`debugState()` 新增 `stalledSec` / `lastExecAgoSec` / `stallThresholdSec`。
+   `executor-selftest.mjs` 由 9 项扩到 **11 项**，全通过（第 10 条钉「模块长期自称有动作」，
+   第 11 条钉「laitela 形态 3 条全 delegated」）。
+6. **Android 装机后 UI 卡死的真因是 ART `VerifyError`** `[实测]`
+   `OrekiEternity.smali` 的 `blocked(III)Z` 是**静态三参**，参数只有 `p0/p1/p2`，
+   却按 `p3` 使用；`.locals 4` 下 `p3 → v7`，恰等于寄存器总数 7 ⇒
+   `index 7 >= 7`，ART 拒绝整类，`OrekiStageAuto` 每 30 次/s 抛一次异常把 UI 线程打死。
+   静态预检的教训：**必须按参数宽度算寄存器总数**（`D`/`J` 占 2 格、非静态含 `this`），
+   只查「`p<N>` 映射是否超 v15」会漏掉「恰好等于总数」这一类。
+7. **`frame-observer` 已在 AVD 上** `[实测]`
+   `emulator-5554` 已装 `com.oreki.frameobserver` 且进程在跑，`adb forward tcp:8731` 已建；
+   `/stats` 返回 `"capturing": false, "state": {"v": "未开始"}` ⇒
+   **MediaProjection 授权必须由人在设备上点**，工具刻意不提供远程启动接口。
+
+### C.80.3 R46 首次 Android 有效交付（2026-10-31 21:34）
+
+| 项 | 值 |
+|---|---|
+| 构建入口 | `./gradlew.bat build`（Gradle Wrapper 8.10.2 编排 `scripts/build_mod.py`），`JAVA_HOME=tools/jdk/jdk-17.0.20.1+1` |
+| 构建结果 | `BUILD SUCCESSFUL in 9m 21s`（b3；b2 于 21:08 因 `OrekiEternity.blocked(III)Z` 的 ART `VerifyError` 失败） |
+| 候选包 | `build/gradle-stage/反物质维度.apk`，69,790,309 B |
+| 发布包 | `release/反物质维度.apk`（经 `installToRelease`，**不是**候选包直接改名） |
+| SHA-256 | `ca472a5125319dc31a56cf202d2e67ab98d8780b9edaab8622604b330c2ef68c` |
+| 旧发布包 SHA-256 | `090b9adbd0b4f8ad0a1b799d151c11e6af207ea93c55e13ea40441ba67d69f43`（已确认被替换，未用旧包冒充） |
+| verifyRelease | **15/15 通过**（`build/gradle-reports/verify-release.json`） |
+| 装机验证 | `emulator-5554` 增量安装成功；`MainActivity` 到前台；`logcat` 无 `VerifyError` / `Verifier rejected` / `FATAL EXCEPTION` |
+| 启动证据 | `reports/_r45/shots/r45_launch.png`：深色主题、离线收益弹窗（无限点数 177→179、无限次数 216→217）、`开始游戏` 按钮、顶栏「选项」 |
+| 版本 | `versionName=3.19.0`、`versionCode=30190000`、`minSdk=24`、`targetSdk=37` |
+| 网盘 | OneDrive `C:/Users/Oreki/OneDrive/反物质维度.apk` 与小米云盘 `C:/Users/Oreki/小米云盘/反物质维度.apk` 均为 `ca472a51…c2ef68c` / 69,790,309 B / 21:34（按用户要求不做远程回读核验） |
+
+**上一个正式包是 11:04 的 `090b9adb…`，中间近 10 小时没有 Android 版本 —— 本轮已恢复交付。**
