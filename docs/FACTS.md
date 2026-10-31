@@ -3084,7 +3084,7 @@ Android 侧「教程渲染五项验收」的第 1、2、4 项在当前包上**�
 | 字号 中 | `44,686,1036,947` | **261** |
 | 字号 大 | `44,686,1036,1106` | **420** |
 
-- 小/中 = 222 / 261 = **0.851**，与源码系数 **0.85** 对得上（`TutorialActivity.smali:1709` 注释「小 0.85 / 中 1.0 / 大 1.2」）。
+- 小/中 = 222 / 261 = **0.851**，与源码系数 **0.85** 对得上（`scripts/payload/smali/…/oreki/tutorial/TutorialActivity.smali:1747` 注释「小 0.85 / 中 1.0 / 大 1.2」，`0x3f59999a  # 0.85f` 在 `:1769`；原记 `:1709` 已漂移，2026-10-31 复核）。
 - 大/中 = 420 / 261 = 1.609 ≠ 1.2，原因是**换行**：字号变大后这段文字从 2 行变 3 行，高度不是纯比例。
   ⇒ 「三档真实生效」成立（三档读数两两不同，且小/中比例精确落在系数上），但**不要**用 大/中 的比值去反推系数。
 
@@ -3425,7 +3425,30 @@ nav    : y=70  h=116.9  flex-direction: row  overflow-x: auto  overflow-y: hidde
 **溢出 126.3px**；正文仍在自滚容器内（`scroll.h=261` / `scrollH=4157`，能滚到底），
 所以不影响可读性，但改导航条高度时要连带复核底栏位置。
 
-脚本：`web/_tools/_r42/nav-probe-320.mjs`、`nav-main-probe.mjs`。
+脚本：`web/_tools/_r42/nav-probe-320.mjs`、`nav-main-probe.mjs`。### 五、已修复（2026-10-31 11:33，Web commit `43eecfb`）`[实测-宿主机视口]`
+
+§三 的缺陷已修：`src/components/modals/OrekiTutorialModal.js` 新增 `revealActiveNav()`，
+挂在 `mounted` / 阶段推进 / `goTo` / `goToAppendix` / `backToCurrent` / 页脚翻页上。
+定位用 `getBoundingClientRect` 差值而不是 `offsetLeft`（弹窗里块的定位祖先不一定是 nav）；
+比可视带还宽的长标题（320 宽下的 ch1「开局：10 反物质到第一次维度提升」、ch13「天神（一）…」）
+改为对齐左沿，否则居中会把章序号切掉。
+宽屏是纵向列表、`scrollWidth == clientWidth`，这段计算是空操作。
+
+`[实测-宿主机视口]` 320 / 360 / 390 / 430 / 横屏 640×320 五档：逐章点 18 次，
+当前按钮**左沿可见 18/18**（ch1 / ch13 右沿仍出界，因为按钮比可视带宽，几何上不可能全见），
+`scrollLeft` 随章变化（320 宽 ch5 = 1065）；7 篇附录同样跟随。
+
+§四 的两个数字**已不再是当前值**（不是笔误，是修复前后不同）：
+
+| 项 | C.73 原读数 | 现在 | 说明 |
+|---|---|---|---|
+| 导航条高 | 116.9 px | **47 px** | 根因不是「多行章标题撑起来」，是分组标题 `.c-oreki-tut__nav-label`「附录（不参与主线进度）」在横排里被压到 min-content **逐字换行**，撑出 104 px 高的一列；`align-items: stretch` 再把 25 个按钮全拉到 114 px。修法 `flex: 0 0 auto; align-self: center; white-space: nowrap`，同时按钮 `min-height: 4.4rem`（44 px 触屏目标） |
+| `.c-oreki-tut__main` 溢出 layout | 126.3 px | **0** | 同批还修了「底栏被裁」：`.c-oreki-tut__main` / `.c-oreki-tut__scroll` 补 `min-height: 0`，把压缩交给正文滚动盒，表头/提示/底栏 `flex: 0 0 auto` |
+
+`oreki.css` 行号已漂移：900 断点现在在 **`:662`**，nav 降级块 **`:673-679`**（原记 `:659` / `:670-686`；
+`oreki.css` 在 11:3x 被另一路改动增加约 230 行）。本条脚本：`web/_tools/_r42/nav-probe-320.mjs`、
+`nav-main-probe.mjs`；本轮新增 `web/_tools/_r42b/{viewport-matrix,hit-test,nav-geometry}.mjs`。
+
 
 ## C.74 Android 教程只有 18 章，**7 篇附录只存在于 Web 端** `[实测]`
 
@@ -3452,7 +3475,7 @@ CH 行数 = 应该渲染出来的章节数；装机后界面章节数必须等�
 `oreki-tutorial-data.json` 里 `chapters=18`、`appendices=7`（附录 A 术语表 / B 隐藏成就速查 / C 记数法 /
 D 中英界面对照 / E 卡住时的症状对照 / F 自动化总览 / G 本 MOD 与原版的差异清单）。
 
-但 `android/AD_Oreki_Edition_Android/scripts/oreki_tutorial_gen.py` 只遍历 `doc["chapters"]`（`:198`、`:394`、`:503`、`:574`、`:701`、`:754`），
+但 `android/AD_Oreki_Edition_Android/scripts/oreki_tutorial_gen.py` 只遍历 `doc["chapters"]`（`:198` 是 `.get()` 校验、`:394` / `:503` / `:574` / `:701` / `:754` 是实际遍历点；2026-10-31 复核仍在，另见 `:539`、`:837`），
 **全文没有 `appendices` 这个键**；资产标签表里也没有 APX 一类。⇒ Android 无论装机多少次都看不到这 7 篇。
 
 ### 四、影响
