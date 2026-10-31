@@ -1894,6 +1894,8 @@ cd web && node _tools/_r42c/verify-reuse.mjs
 - 同一份 `oreki.net/src/core/oreki-tutorial-data.gen.js`（198 KB）两次取值耗时 **15 s / 81.8 s**，内容 SHA-256 完全一致 ⇒ **直连可用但速度波动极大，慢不等于部署失败**；核验线上内容用「取回后比 SHA-256」，不要用耗时判断。
 - `gradlew` 在 Windows 上自带的 `tools/jdk` 探测用 `-x "$dir/bin/java"`，而 Windows 只有 `bin/java.exe`，**`-x` 恒假 → JAVA_HOME 不被注入 → 构建直接退出**。仓库内有两个 JDK：`tools/jdk/jdk-17.0.20.1+1`（与 R43 基线一致）与 `jdk-21.0.13+9`。**每次构建前显式 `export JAVA_HOME=<仓库>/tools/jdk/jdk-17.0.20.1+1`**，系统 PATH 里没有 `java`。
 
+> 补充：Android SDK / AVD / adb **下载**一律直连 `developer.android.google.cn`，不使用代理，详见 **§43**（2026-10-31 22:51 下达）。
+
 ## §34 Android 模拟器生命周期与资源管理（用户 2026-10-31 18:54 下达，长期有效，**本节是 AVD 生命周期的唯一源**）
 
 1. `oreki_test` **只在有明确测试或调试任务时运行**。
@@ -2379,3 +2381,155 @@ ID / 任务与目标 / 负责文件与目录 / 创建时间 / 状态 / 预期交
 **必须区分 Agent 本身与它启动的独立构建、浏览器、模拟器进程**，避免误伤其他任务。
 
 > 最终原则：主 Agent 可以立即结束失联或失效的子 Agent，不必等待其同意；但必须尽可能保护已经产生的代码和交付成果。
+
+
+## §41 frame-observer 主动授权与观测（用户 2026-10-31 21:52 下达，长期有效，**本节是 Android 观测的唯一源**）
+
+### 一、定位
+
+- frame-observer 是 Android 端**唯一的画面 + 控件树观测通道**，不是可选项。
+- 凡涉及 Android UI 验收（教程页是否深色、顶栏、两行 `ScrollableTabLayout`、按钮是否真的可点、画面是否卡死），
+  **一律先用它取证据**，不允许凭「应该没问题」写结论。
+- **「主动获取授权」= 主 Agent 自己把整条授权链路走完**，不把「你去点一下开始捕获」这类动作留给用户。
+
+### 二、授权链路（每次 AVD 重启或投影被收回后必须重走）
+
+1. adb 全路径：`C:/Users/Oreki/Android/sdk/platform-tools/adb.exe`（**不在 PATH**，必须写全）。
+2. `adb devices` 必须看到 `emulator-5554  device`。
+3. `adb forward tcp:8731 tcp:8731`，再用 `adb forward --list` 确认。
+4. `curl -s -m 5 http://127.0.0.1:8731/stats` 探活。连不上或 `capturing=false` → 进第 5 步。
+5. 冷启动：`am force-stop com.oreki.frameobserver` → `am start -n com.oreki.frameobserver/.MainActivity`。
+6. **冷启动场景下 `/ui` 必定 503**（HTTP 服务随进程一起停，实测返回 `{"无障碍服务未连接"}`），
+   所以这一步**必须用 `uiautomator dump`**，且 Git Bash 会做 MSYS 路径转换，**必须 `export MSYS_NO_PATHCONV=1`**，
+   否则 `/sdcard/fo.xml` 会被改写成 `.../PortableGit/sdcard/fo.xml` 而静默失败：
+   `adb shell uiautomator dump /sdcard/fo.xml` → `adb shell cat /sdcard/fo.xml`。
+   按钮是 `com.oreki.frameobserver:id/btn_start`（文本「开始捕获」）。
+7. 系统投影对话框由 `com.android.systemui` 弹，**文案是英文**：`START NOW`（`android:id/button1`）/ `CANCEL`（`android:id/button3`）。
+   在这里才可以用 `/ui`（此时进程已起、a11y 若正常）或继续 `uiautomator dump` 拿 bounds → tap。
+8. `/stats` 复核三项，全过才算授权成功：`capturing=true`、`frames_processed` 在增长、`actual_fps>0`。
+9. **授权成功后必须把无障碍服务写回**：`am force-stop` 会把 `settings secure enabled_accessibility_services`
+   清成 `null`、`accessibility_enabled` 变成 `0`（实测），不写回则 `/ui` 一直返回
+   `503 {"error":"无障碍服务未连接"}`。命令：
+   ```
+   adb shell settings put secure enabled_accessibility_services      com.oreki.frameobserver/com.oreki.frameobserver.a11y.ObserverA11yService
+   adb shell settings put secure accessibility_enabled 1
+   ```
+   写回后再用 `/ui` 复核一次，返回 JSON 数组才算恢复。
+
+### 三、不可绕过的边界
+
+- **不允许**用 `pm grant` 或任何等价手段伪造投影权限；MediaProjection 只能走系统对话框。
+- 工具刻意**不提供** `POST /capture/start`，禁止我给它加远程触发接口来「省掉确认这一步」。
+- 授权对话框只在设备前台可见：动手前用 `dumpsys window | rg mCurrentFocus` 确认 `MainActivity` 在前台。
+
+### 四、自愈与失效判定
+
+- 投影被系统收回（`MediaProjection.onStop`）表现为 `/stats` 的 `capturing=false`，或 `/stats` 直接不可达。
+- AVD 重启、app 被 force-stop、系统回收前台服务 —— 这三种都要重走第二节。
+- **连续两次走完第二节仍拿不到 `capturing=true`**，才允许报「frame-observer 不可用」，
+  并附 `/stats` 原文 + `logcat` 相关行，不许只写一句失败。
+
+### 五、观测纪律
+
+- 控件树用 `/ui`：它**不等 idle**，专治 `uiautomator dump` 在动画画面上报 `could not get idle state`。
+- 画面用 `/snapshot.jpg`（响应头带 `X-Frame-Id` / `X-Frame-Mono-Ns`）；**没看图不得断言画面正常**。
+- 时序问题用 `/frame_at?t=<ns>` 回放；无障碍事件用 `/events?since=N`。
+- **bounds 是物理像素 1440×1600，画面是 720×1600 半分辨率**，换算别搞错。
+- 截图与控件树要落到 `android/reports/` 对应轮次目录，作为验收证据。
+
+### 六、与采集中会话的关系
+
+- 正在采集（`capturing=true` 且 `frames_processed` 持续增长）时，不得为图省事 force-stop；
+  确需重启，先记录原因与当时的 `frames_processed`。
+- 采集会话本身不是交付物，但它是 Android 端 UI 结论的**唯一证据源**，丢证据比丢帧严重。
+
+> 最终原则：Android 端要看的、要点的、要证明的，先用 frame-observer 拿到证据再下结论；授权这一步由主 Agent 自己走完，不推给用户。
+
+## §42 frame-observer 按需求可修改（用户 2026-10-31 22:00 下达，长期有效，**本节是修改该工具的唯一源**）
+
+### 一、授权范围
+
+- 用户已明确授权：**可以按需求修改 frame-observer**（源码、资源、构建脚本、文档均可改）。
+- 这项授权是**长期有效**的，不需要每次再问。§41 里「禁止给它加远程触发接口」的条款**仍然有效**。
+
+### 二、必须守住的底线（不可改）
+
+- **投影授权必须由人在设备上确认**：`POST /capture/start` 之类远程触发接口**永远不许加**。
+- 不许用 `pm grant` / 系统签名伪造 `CAPTURE_VIDEO_OUTPUT` 或绕过系统对话框。
+- 不许为了「观测方便」去改游戏包（`com.oreki.antimatterdimensions`）——观测工具与被观测对象必须分离。
+- 不许删减 `/stats`、`/snapshot.jpg`、`/ui`、`/events`、`/frame_at` 任一既有端点；只能增强。
+
+### 三、鼓励做的改进（按需，不为了改而改）
+
+- **无障碍绑定自愈**：启动时检测 `enabled_accessibility_services` 是否包含本服务，缺失则尝试写回，
+  写不进去（无 `WRITE_SECURE_SETTINGS`）时在 `/stats` 明确报 `a11y:"missing"`，而不是让 `/ui` 只回一句 503。
+- `/ui` 在 a11y 未连接时返回**结构化错误体**（含 `error` / `hint` / `fix` 三条），把修复命令直接带出来。
+- 冷启动后 HTTP 服务就绪的**早期可用性**：MainActivity 起服务后主动打印一行 `HTTP ready on 8731`，便于脚本轮询。
+- 诊断信息：`/stats` 增 `a11y`、`forward`、`lastUiMs` 等字段，减少「盲猜为什么 /ui 失败」。
+
+### 四、修改后的验收（缺一不可）
+
+1. `gradle assembleDebug`（或既有构建脚本）成功，产出 APK。
+2. `adb install -r` 装机成功，`MainActivity` 能起到前台。
+3. **完整走一遍 §41 第二节链路**，确认改后仍能自己拿到授权。
+4. `/ui`、`/snapshot.jpg`、`/stats`、`/events` 四个端点各取一次真实响应，作为证据落到 `android/reports/`。
+5. 失败要附 logcat 原文，不许只写「失败」。
+
+### 五、留痕
+
+每次修改必须在 `frame-observer/README.md` 或 `docs/` 下记一条：改了什么、为什么、验证结果。
+涉及端点行为变化时，同步更新 README 的端点评测表。
+
+> 最终原则：工具可以改，底线不能动。改它是为了让「自己拿授权、自己看证据」这条路更短，不是为了让确认步骤消失。
+
+## §43 Android SDK / AVD / adb 下载走国内官方源（用户 2026-10-31 22:51 下达，长期有效，**本节是 Android 工具链下载路径的唯一源**）
+
+### 一、规则
+
+下载 **AVD 系统镜像 / Android SDK / Build-Tools / Platform-Tools(adb) / Emulator / cmdline-tools** 时，
+**直连 `developer.android.google.cn`，不使用代理**（`127.0.0.1:7897` 在这条链路上关掉）。
+
+这是官方提供的中国大陆镜像域名，直连比走代理更快也更稳。
+
+### 二、容易踩的坑：看到 google 就开代理
+
+§33 写的是「GitHub 等海外域名直连失败才走代理」，但 `google.com` 系列域容易被**下意识**套上代理，
+结果反而变慢甚至超时。判断依据只有一个 —— **看后缀**：
+
+| 域名 | 走法 |
+|---|---|
+| `developer.android.google.cn` | **直连**（官方大陆镜像） |
+| `dl.google.com`（SDK 实际下载的 CDN） | **直连**（§33 已实测可达，根路径 404 属正常） |
+| `maven.google.com` / `dl.google.com/dl/android/maven2` | **直连** |
+| `github.com` / `githubusercontent.com` / Releases | 直连失败或明显不稳时走代理 |
+
+### 三、操作要求
+
+1. **先清代理环境变量再调 `sdkmanager`**，否则会继承 shell 里的 `http_proxy` 走代理：
+   ```
+   unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy
+   ```
+2. `sdkmanager` **不要**加 `--proxy=http --proxy_host=... --proxy_port=...`；不加就是直连。
+3. **AVD 与系统镜像**：
+   ```
+   sdkmanager "system-images;android-34;google_apis;x86_64" "emulator" "platform-tools"
+   ```
+   下载完用 `avdmanager create avd` 建 AVD；镜像体积大（1~2 GB），**下载前先确认磁盘余量**。
+4. adb 单独更新：`sdkmanager "platform-tools"`，装完用
+   `C:/Users/Oreki/Android/sdk/platform-tools/adb.exe version` 核验版本真的变了（**不能只看安装日志**）。
+5. Gradle 若需 Google 仓库，优先用直连地址；国内网络下 `maven.aliyun.com/repository/google` 可作备选。
+   **改仓库地址要写进该仓的 `build.gradle` 并留痕**，不要只在本机改。
+
+### 四、失败处理
+
+- 直连 `developer.android.google.cn` 失败时，先换 `dl.google.com` 再试；两者都失败才考虑代理。
+- 走代理也失败，就明确报「本次下载失败」并附实际报错原文，**不许写成「已下载」而实际没有**。
+- 下载完成后必须核验落地：文件存在 + 体积合理 + `sdkmanager --list_installed` 或 `adb version` 输出包含目标版本。
+
+### 五、与其它节的关系
+
+- 本节是 §33（代理网络与大陆环境适配）在 **Android 工具链下载**这一具体场景上的细化，冲突时**以本节为准**。
+- §33 的「端口必须实探、不得假设」仍然有效：代理端口变了照样要重新探测。
+- 本条只覆盖**下载**；`git push`、Release 附件、网盘上传等仍按 §33 判断是否用代理。
+
+> 最终原则：Android 工具链优先走 `developer.android.google.cn` 直连；判断走不走代理看域名后缀，不看是不是「google」。

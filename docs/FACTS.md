@@ -3926,3 +3926,22 @@ celestialsEnslaved / celestialsV / celestialsRa / laitela / pelle / doomed`。
 | 网盘 | OneDrive `C:/Users/Oreki/OneDrive/反物质维度.apk` 与小米云盘 `C:/Users/Oreki/小米云盘/反物质维度.apk` 均为 `ca472a51…c2ef68c` / 69,790,309 B / 21:34（按用户要求不做远程回读核验） |
 
 **上一个正式包是 11:04 的 `090b9adb…`，中间近 10 小时没有 Android 版本 —— 本轮已恢复交付。**
+
+### C.80.4 frame-observer 按需求改造：无障碍绑定自愈（2026-10-31 22:05，全部实测）
+
+| 事实 | 证据 |
+|---|---|
+| `am force-stop` **必然清空**无障碍绑定 | 清空前 `enabled_accessibility_services=com.oreki.frameobserver/...ObserverA11yService`、`accessibility_enabled=1`；force-stop 后两者变成 `null` / `0` |
+| 冷启动时 `/ui` **必定 503**，且 HTTP 服务随进程一起停 | force-stop 后 `curl /ui` 返回 503，正文 `无障碍服务未连接（设置里启用 ObserverA11yService 后再试）`；`/stats` 同时不可达 |
+| 系统投影对话框由 `com.android.systemui` 弹，**文案是英文** | `uiautomator dump` 得到 `CANCEL`（`android:id/button3`, center 288,2047）与 `START NOW`（`android:id/button1`, center 1107,2047） |
+| 开始捕获按钮定位可靠 | `com.oreki.frameobserver:id/btn_start`，文本「开始捕获」，bounds `[56,609][706,777]`，center `(381,693)`；`input tap` 对 app 按钮**有效**（与游戏画布上的合成触摸被忽略不同） |
+| **自愈已生效** | 人为写 `null`/`0` 后冷启动：`OrekiA11y: 已写回无障碍绑定: ...ObserverA11yService` → `onCreate ensureBound=true state=notconnected` → 1.2 s 后 `a11y connected` |
+| `/stats` 新增 `a11y` 字段可用 | 返回 `"a11y":{"v":"connected"}`（沿用该工具既有的 `{"v":...}` 编码约定，与 `state`/`session` 一致，**未破坏既有消费方**） |
+| 改造后四端点全部实测可用 | `/stats` 200（capturing=true, frames 51, fps 10.94）、`/ui` 200（3,259 B）、`/snapshot.jpg` 200（80,454 B, `X-Frame-Id: 212`）、`/events?since=0` 200（34,457 B, 42 条） |
+| 构建与产物 | `python tools/build_cli.py` 通过（javac 编译 12 个源文件，含新增 `A11yBinder`），`apksigner verify` 通过，APK SHA-256 `e8a9477edf8ff4d4fa02d7c3b4c3ee9edffa3cb71cb147717587ce4c071d668e`，0.04 MB |
+| 权限 | `WRITE_SECURE_SETTINGS` 需 `adb shell pm grant`；已授予并核验 `granted=true`。未授予时自愈静默失败并记 `OrekiA11y` 日志，不影响其它功能 |
+| 提交 | `frame-observer` 仓 `50f1ec0f57bea9ec8155adfff694226fd4dc3b7c`（远端已确认） |
+| 证据目录 | `android/reports/_r46/frameobs/`：`before-restart.json`、`stats_selfheal.json`、`stats_after_selfheal_auth.json`、`ui_after_auth.json`、`ui_selfheal.json`、`ui_game.json`、`fo2.xml`、`dlg2.xml`、`snap_after_selfheal.jpg`、`events_after_selfheal.txt` |
+
+**投影授权仍然必须人工确认**：本次改造**没有**新增任何 `POST /capture/start` 之类接口；
+自愈只处理「无障碍绑定」这件纯本地的事，与 MediaProjection 授权严格分离。
