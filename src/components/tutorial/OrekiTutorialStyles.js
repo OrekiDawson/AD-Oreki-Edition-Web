@@ -222,6 +222,38 @@ const CSS = `
   .c-oreki-tut__nav-btn { min-height: 4.4rem; }
   .c-modal:has(.c-oreki-tut) .l-modal-buttons .o-primary-btn { min-height: 4.4rem; }
 }
+
+/* ── 横屏（矮视口）：640×320 实测正文滚动区只剩 17px，弹窗本身比视口高 3px ──
+ * 原因：竖屏那套降级（导航横条 47px + 10px 间距 + Esc 提示 22px）在 320px 高的屏幕上
+ * 把纵向空间吃光了。宽度有 640，横向放得下左侧目录列，所以这里还原成「左栏 + 正文」，
+ * 并把 Esc 提示让出来（横屏本来也不是主要阅读姿态）。
+ */
+@media screen and (max-height: 520px) and (min-width: 560px) {
+  .c-oreki-tut__layout {
+    flex-direction: row;
+    height: 64vh;
+    max-height: 64vh;
+  }
+  .c-oreki-tut__nav {
+    flex: 0 0 15rem;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 0;
+  }
+  .c-oreki-tut__nav-btn {
+    width: 100%;
+    white-space: normal;
+  }
+  .c-oreki-tut__nav-label {
+    flex: 0 0 auto;
+    align-self: auto;
+    margin: 0.6rem 0 0.2rem;
+    white-space: nowrap;
+  }
+  .c-oreki-tut__hint { display: none; }
+  .c-oreki-tut__scroll { max-height: none; }
+}
 `;
 
 /**
