@@ -63,6 +63,16 @@ const DEEP_EC_IDS = [8, 9, 10, 11, 12];
 const DEEP_TT_STUDY_IDS = [231, 232, 233, 234];
 /** 压现实总时长上限（真实毫秒） */
 const HOLD_MAX_MS = 240000;
+/**
+ * [Oreki R50 五修] 深层 EC 链（EC8~EC12）单次压现实的上限：480 s。
+ *
+ * 原 240 s 对「EC8→9→10→11→12 各打满 5 次」常常不够：单关要买研究、被互斥分叉挡住要 respec、
+ * 再进关打 5 次，5 关串起来容易越过 240 s；一超时就放手，而现实立刻清空 `eternityChalls`，
+ * 已经打下的进度全部作废（`r50-fresh4` t=1350 s：ecs 只在 5~8 之间来回）。
+ * 这里只放宽「总时长」这一条，`HOLD_STALL_MS`（90 s 无新完成即放手）不变——
+ * 真卡住照样会放手，不会把现实永久压死。
+ */
+const DEEP_EC_HOLD_MAX_MS = 480000;
 /** EC 完成总数停滞多久就放手（真实毫秒） */
 const HOLD_STALL_MS = 90000;
 /** 放手后的冷却（真实毫秒），避免刚放手又立刻压回去 */
@@ -215,8 +225,20 @@ export const OrekiDilationAutomation = {
       // 而 EC1~EC7 没满说明通用路径还在有效推进，没必要抢它的窗口。
       // 防无限压死：`HOLD_MAX_MS`（240 s 总时长）、`HOLD_STALL_MS`（90 s 无完成即放手）、
       // `HOLD_COOLDOWN_MS`（10 s 冷却）三条护栏都在下面原样生效。
-      const ec7Done = EternityChallenge(7).isFullyCompleted;
-      if (!EternityChallenge(11).isFullyCompleted && !(ec7Done && atGate)) {
+      // ── [Oreki R50 五修] 过了 V 门槛就不再要求「EC7 已满」才肯压现实 ──────────
+      //
+      // 原判据 `!(ec7Done && atGate)` 要求「本现实里 EC1~EC7 全部 5/5」才允许压住现实，
+      // 但现实每 8~15 s 就把 `player.eternityChalls` 整批清空（reality.js:651），
+      // 于是每个现实开头 `ec7Done` 必为 false → 立刻 `_release("shallow")` →
+      // `_driveEcChain()` 一帧都进不去 → EC8~EC12 永远打不满。
+      // 实测三份真实新档（`r50-fresh2` 163 次释放、`r50-fresh4` 62 次释放）都是这个循环；
+      // `r50-fresh1` 只在偶然的一轮里凑够 EC7 才侥幸走通（V 在 2044 s）。
+      //
+      // 门槛前（realities < 60）仍然只走老路径：那时压现实会把 V 的第一项判据按死。
+      // 过门槛后 `realities` 已远超 60，压现实不再伤 V 的任何一项，此时**EC 深度才是唯一瓶颈**，
+      // 所以只要深层 EC 未满就压住，让 `_driveEcChain()` 真正把这 5 关打完。
+      // 防压死仍由 `HOLD_STALL_MS`（90 s 无新完成即放手）与 `HOLD_MAX_MS` 系列兜底。
+      if (!EternityChallenge(11).isFullyCompleted && !atGate) {
         return this._release("shallow");
       }
       // 门槛前的压现实（只有「EC11 已满」这条老路径才可能走到这里）仍受累计预算约束。
@@ -260,29 +282,22 @@ export const OrekiDilationAutomation = {
       // 不会把现实永久压死。
       if (PlayerProgress.dilationUnlocked()) {
         const imReady = Number(Currency.imaginaryMachines.value) >= OREKI_IU25_COST;
-        // ── [Oreki R50 四修] 「IM 够了」也不许无条件压住 ──────────────────────
+        // ── [Oreki R50 六修] 达标后必须走下面的 `HOLD_GRACE_MS` 宽限，不许当场放手 ──
         //
-        // 三修只要求 `achieved` 就放手，IM 达标时仍然 `return true`。实测
-        // （`r50-fresh3`）：t=385 s V 解锁、`im=imCap=5.72e9` 后连续压住现实 **642 s**，
-        // `realities` 卡在 65 不动 —— 而 `OrekiIu15Sprint` 的 `armed` 分支恰恰要等
-        // **一次真实现实重置**把 `requirementChecks.reality.maxID1` 换成新对象、
-        // 归零之后才开始冲刺（oreki-iu15-sprint.js:147-152）。
-        // 现实被压死 ⇒ 干净窗口永不出现 ⇒ IU15 永不买 ⇒ 莱特拉永久锁 ⇒
-        // 持有 DS6 也没有任何下游能消费（IU25 的判据要求「在莱特拉的现实中达成现实」）。
+        // 五修版在这里直接 `_release("dil-chain-done")`，实测（`r50-fresh4` 重载后
+        // t=300~480 s）表现为：DS1 一到手 → 膨胀起来 → `maxDT` 在 1 秒内就冲过阈值 →
+        // `achieved` 变真 → 立刻放手 → 现实清空 → `maxDT` 归 0 → 再打 EC 链，`releases`
+        // 一路涨到 17，而 `V` 始终是 false。原因是 `game.js` 里**现实自动化跑在 V 检查之前**，
+        // 放手太早，同帧的现实已经把 `records.thisReality.maxDT` 清零，
+        // V 看到的永远是 0 —— 这正是文件下方 `HOLD_GRACE_MS` 那段注释早已写明的坑。
         //
-        // 所以压现实的**唯一合法收益**是「让 endgame 在同一帧里用 DS6 + 足够 IM 买 IU25」，
-        // 而这条通路要求莱特拉已解锁。莱特拉没解锁时，压现实只有代价没有收益：
-        // 直接放手，把干净现实还给 IU15 冲刺。
+        // 所以：只有「IM 够 IU25 且莱特拉已解锁」才继续压住；其余情况（包括 achieved）
+        // 都落到下面的宽限分支，由它再压 `HOLD_GRACE_MS`（20 s）后放手。
         const laiReady = Laitela.isUnlocked === true;
-        if (this.achieved && (!imReady || !laiReady)) {
-          // 冷却必须 ≥ 一次现实的间隔（天体阶段 15 s），否则刚放手就又压回去，
-          // 现实同样一帧都插不进来。
-          return this._release("dil-chain-done", Math.max(HOLD_COOLDOWN_MS, 16000));
-        }
         if (imReady && laiReady) return true;
-        // 膨胀在跑但还没达标：EC 链已满会让 `_completionMark()` 不再增长，
+        // 还没达标：EC 链已满会让 `_completionMark()` 不再增长，
         // 这时不能让它触发 `HOLD_STALL_MS` 的「无进展」判死，否则又回到「放手→清空」。
-        this._progressAtMs = now;
+        if (!this.achieved) this._progressAtMs = now;
       }
 
       // ── [Oreki R40-A2] 曾经想在这里加「DS6 已到手就放手」，**实测否决，不要再加** ──
@@ -330,7 +345,9 @@ export const OrekiDilationAutomation = {
       }
       this._achieveAtMs = 0;
 
-      const holdMax = this._holdIsEarly ? EARLY_HOLD_MAX_MS : HOLD_MAX_MS;
+      const holdMax = this._holdIsEarly
+        ? EARLY_HOLD_MAX_MS
+        : (this.ecDepthNeeded && atGate ? DEEP_EC_HOLD_MAX_MS : HOLD_MAX_MS);
       if (now - this._holdSinceMs > holdMax) {
         return this._release("timeout", HOLD_COOLDOWN_MS);
       }
