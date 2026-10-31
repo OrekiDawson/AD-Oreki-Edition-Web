@@ -3826,3 +3826,45 @@ celestialsEnslaved / celestialsV / celestialsRa / laitela / pelle / doomed`。
 3. 双语附录 `apx_terms`（164 处）与 `apx_bilingual`（89 处）`中文：English` 形态待裁定。
 4. 教程正文里 24 组「中文 / English」对照（E 线已列清单，源在 Web json）。
 5. `OrekiTutorialModal.js:499` 等 4 处 `num.src` 死代码清理。
+
+---
+
+## C.80 R45 交付台账（2026-10-31 起，§37 双小时强制交付）`[实测]`
+
+> 每行 = 一次**有效交付**（按 §37 定义）。报告/测试/commit 本身不算。
+> 权威源：本表 + git 历史；`release/` 与双云盘按 SHA-256 认来源。
+
+| 时间 | 类型 | 版本标记 | 核验结果 | 备注 |
+|---|---|---|---|---|
+| 2026-10-31 20:25 | Web | 源码 `f0f3fb2` / 部署仓 `1ab78bb` | `verify_live.py` 7/7 文件 SHA-256 一致（去 CRLF）；`https://oreki.net/` 200 | 本轮首次交付。部署门控抓到真实缺陷：`src/core/oreki-perk-automation.js` 在 import 闭包内但**不在 `filelist.txt`**，上线会 404；已补清单 863 → 864 项后闭包判定 PASS |
+
+### C.80.1 本轮已确认的关键事实
+
+1. **基线新档通关实测（R45 基线，线上 `73b8919` 版本）** `[实测]`：
+   `performance.now()` 独立墙钟 **700.4 s** 触发 `isGameEnd`（`endState=1.018048`，realities=100），
+   远低于 180 分钟（10800 s）。阶段时序：4.2s 破无限 / 6.3s 首次永恒 / 67.1s 现实×5 /
+   136s 复兴树 / 223.7s 特蕾莎 / 268.7s 无名氏 / 479s 莱特拉 / 700.4s 终局。
+   ⇒ **180 分钟验收在 Web 侧不是瓶颈**，真正的缺陷是中段执行层停摆与阶段抖动。
+2. **阶段识别每秒翻面的根因** `[实测+读码]`：`timeStudy.studiesBought` 叶子取
+   `player.timestudy.studies.length`，该值**每次永恒重置清 0**，导致 eternity ↔ timeStudy
+   每秒 A→B→A 翻转（基线日志实测 9 次）。R45 已合并为 `eternityTimeStudy`（阶段 20 → 19），
+   判据只留单调量；新版本实测序列仅剩一次 `eternityChallenges` 往返。
+3. **Material 依赖事实** `[实测·读包]`：`release/反物质维度.apk` 的 `resources.arsc` 含
+   `Theme.Material3` 128 次、`Theme.MaterialComponents` 99 次，实际存在
+   `Theme.Material3.Dark` / `.NoActionBar` / `.Dialog*` / **`.FocusRings`** 全套；
+   `classes.dex` 53 处、`classes2.dex` 174 处 `com/google/android/material` 引用。
+   ⇒ 用户所说的「Material 13」（`com.google.android.material:material:1.13.x`）**自带完整
+   Material3 主题族**，教程页应复用，不得升级或新增依赖。版本号串不在 arsc 内，属正常。
+4. **构建链 JDK 实际取值** `[实测]`：`build_mod.py:4585` **硬编码**
+   `tools/jdk/jdk-17.0.20.1+1/bin/java.exe`，即真正编译/签名用 JDK 17；
+   而 `build.gradle:25-33` 的目录扫描取「最新」，`verifyEnvironment` 报的是 `jdk-21.0.13+9`。
+   ⇒ R44 交接「必须 export JAVA_HOME 否则构建失败」只是 Gradle 自身启动需要，
+   **apktool/apksigner 始终走 JDK 17**，两者不矛盾。`verifyEnvironment` 9 项全 PASS。
+5. **交付前三个包互不相同** `[实测]`（替换前必须按 SHA-256 认来源）：
+   `release/` = `090b9adb…d69f43`（69,745,182 B）；候选 `build/gradle-stage/` = `44384c59…26bd6`（69,786,213 B）；
+   OneDrive 与小米云盘 = `b399827d…f799c0`（69,782,195 B，两处相同）。
+6. **Edge 资源盘点（§38 首次执行）** `[实测]`：17 个 `msedge.exe` 全属**同一个** WorkBuddy
+   自动化实例（主进程 PID 22136，`--headless=new --remote-debugging-port=9300
+   --user-data-dir=…Temp\oreki-cdp-shared-9300`）；**用户 Edge 窗口为 0 个**，未受影响。
+   关闭 3 个闲置页（2 个 oreki.net 游戏页 + 1 个 newtab）后：进程 19 → 17，内存 2127 → 1178 MB，
+   `page` 标签 3 → 0。实例保留供后续验收，用毕整实例退出。
