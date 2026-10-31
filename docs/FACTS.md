@@ -4443,3 +4443,66 @@ V 恒 false；改走宽限 ⇒ `releases` 1 次、V 为真。
   Break 闸门、莱特拉 tier、佩勒驱动）。
 * 结论：**Android 端在现有代码下不可能在 180 分钟内到达终局**，这不是靠调参能补的，
   需要补移植上述模块。本轮不伪造通过，如实记为阻塞项。
+
+### C.86　R50 复跑与阻塞点细化（2026-11-01）
+
+#### C.86.1　两次独立真实新档通关（`r50-fresh6` / `r50-fresh8`）
+
+| 轮次 | 新档取证方式 | 终局墙钟 | endState | 末样本 `real` / `spd` |
+| --- | --- | --- | --- | --- |
+| `r50-fresh6` | `localStorage.clear()` + reload，快照取于 **12.6 s** | **760 s**（12 分 40 秒） | 1.0084237436763426 | 100 / 40000 |
+| `r50-fresh8` | `GameStorage.hardReset()`，快照取于 **6.0 s** | **840 s**（14 分 00 秒） | 1.104099675817734 | 100 / 40000 |
+
+两轮终局样本的 `v / iu15 / iu25 / pelle / doomed` 全为 true，`stage.id = doomed`。
+里程碑对照（秒）：
+
+| 里程碑 | fresh6 | fresh8 |
+| --- | --- | --- |
+| V 解锁 | 405 | 495 |
+| IU15 买到 | 425 | 515 |
+| IU25 / Pelle / Doomed | 720 | 800 |
+| 终局 | 760 | 840 |
+
+两轮最慢 840 s = 14 分钟，占 180 分钟预算的 **7.8%**。
+
+#### C.86.2　新档取证方法必须修正（重要，避免后续误判）
+
+起初用「`localStorage.clear()` + `Page.reload` 后等 12~15 s 再读快照」取证，读到
+`realities=0` 但 `eternities=1.7e4 / normalBits=8190 / am≈1e5.6e8`，一度误判为「旧档残留」。
+逐项排查后确认**不是残留**，而是取证窗口太晚——本作在 10000× 下自动化极快：
+
+* `Player.defaultStart` 实测为 `eternities 0 / antimatter 10 / normalBits 0 / icBits 0`，默认值未被污染；
+* `player.records.gameCreatedTime` 等于执行清档的时刻，`realTimePlayed` 仅 12 s；
+* `localStorage` 只剩 `dimensionSave` 一个键（3 个键含备份槽），无旧档可加载；
+* 两轮录制的前几个样本都落在**最早期阶段**（fresh6 t=5「永恒与时间研究」、fresh8 t=5「无限维度与永恒前置」）。
+
+**正确取证方法**（已固化为 `web/reports/_r50/_fresh8.mjs`）：
+
+1. 调 **`GameStorage.hardReset()`**（与玩家点「硬重置」同一条官方路径），不要手写 `localStorage.clear()`；
+2. 重载后 **250 ms 轮询**，取 `records.realTimePlayed` 最小的一帧快照；
+3. 判据：`realities / eternities === 0`、`infinities` 个位数、`normalBits ≤ 2`、`speed === 10000`。
+   `r50-fresh8` 实测读到 `rtp=6021 ms / realities=0 / eternities=0 / infinities=3 / normalBits=2 / icBits=0 / speed=10000 / autobuyersOn=true`，这一帧才可作为新档基线。
+
+结论：**`r50-fresh8` 是零起点基线**；`r50-fresh6` 因快照偏晚 6 s，只作复现样本，不作零起点基线。
+
+#### C.86.3　Android 阻塞点精确化（替换 C.85.6 的笼统描述）
+
+C.85.6 写的是「自动化只覆盖到攒 IP」。实测把范围收窄到一个具体字段：
+
+| 采样时刻（自 `gameCreatedTime`） | infinities | IP | `ipMultUpgrades` | `breakInfinityUpgradeBits` | `bigCrunch.interval` | 下一级升级成本 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1621 s | 98 | 17 | — | 0 | — | — |
+| **12873.6 s** | **735** | **447** | **0** | **0** | **906.99**（游戏秒） | **1024 IP** |
+
+* `player.auto.ipMult = true`、`bigCrunch.isActive = true`、`eternity.isActive = false`、`reality.isActive = false`；
+* 但 `ipMultUpgrades` **恒为 0**：IP 倍率重复升级一次都没买，`gainedIP` 不随坍缩次数指数上升，
+  IP 只能线性爬（735 次坍缩→447 IP）；
+* Break 需要「`interval ≤ 100` 且累计 32767 IP」。当前 interval 已在第 10 级（150000×0.6^10≈907），
+  余下 5 级共需 31744 IP，而 IP 只有 447 —— 3.6 小时没有跨过这道门，自然到不了永恒层，
+  更到不了现实 / 天神 / Pelle。
+* 运行时日志佐证：`OREKI_GATE: GATE brake=false g=true c=false b=false mult=10000.0 rt=1.2885924E7`
+  （`brake=false` 即 Break 未达成；`rt` 为秒，与 12873 s 一致）。
+
+**下一步最小修复点**：不是补整个「永恒/现实/天神自动化」（`OrekiEternity.smali` 已存在，覆盖永恒层），
+而是让 IP 倍率重复升级真的被买（当前 `OrekiStageAuto` 依赖原版 `Game.autoBuyerTick` 的 IPMult 块，
+实测该块在 10000× 下 0 次购买）。修通这一条，Break 门才有机会打开，后续层才谈得上验证。
