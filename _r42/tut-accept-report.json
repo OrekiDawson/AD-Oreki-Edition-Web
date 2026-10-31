@@ -1,0 +1,284 @@
+{
+  "at": "2026-10-31T01:31:18.979Z",
+  "env": {
+    "innerWidth": 390,
+    "innerHeight": 844,
+    "dpr": 2,
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)",
+    "sidebar": [
+      "维度",
+      "自动化",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "hasTutorialEntry": true
+  },
+  "items": {
+    "entry": {
+      "box": {
+        "x": 352,
+        "y": 814,
+        "w": 64,
+        "h": 48
+      },
+      "opened": {
+        "modal": true,
+        "navCount": 18,
+        "apxCount": 7,
+        "apxLabel": "附录（不参与主线进度）",
+        "head": "第 2 章　维度献祭与第一个反物质星系"
+      }
+    },
+    "chapters": {
+      "count": 18,
+      "empty": [],
+      "placeholderChapters": [],
+      "minChars": 1571,
+      "maxChars": 5731,
+      "list": [
+        {
+          "i": 0,
+          "head": "第 0 章　开始之前",
+          "chars": 1571,
+          "sections": 9
+        },
+        {
+          "i": 1,
+          "head": "第 1 章　开局：10 反物质到第一次维度提升",
+          "chars": 2549,
+          "sections": 10
+        },
+        {
+          "i": 2,
+          "head": "第 2 章　维度献祭与第一个反物质星系",
+          "chars": 2428,
+          "sections": 10
+        },
+        {
+          "i": 3,
+          "head": "第 3 章　第一次无限",
+          "chars": 2110,
+          "sections": 9
+        },
+        {
+          "i": 4,
+          "head": "第 4 章　无限升级与普通挑战",
+          "chars": 3355,
+          "sections": 11
+        },
+        {
+          "i": 5,
+          "head": "第 5 章　打破无限",
+          "chars": 4985,
+          "sections": 11
+        },
+        {
+          "i": 6,
+          "head": "第 6 章　无限维度与无限挑战补全",
+          "chars": 3620,
+          "sections": 11
+        },
+        {
+          "i": 7,
+          "head": "第 7 章　复制器与首次永恒",
+          "chars": 2748,
+          "sections": 10
+        },
+        {
+          "i": 8,
+          "head": "第 8 章　时间研究与永恒里程碑",
+          "chars": 2772,
+          "sections": 10
+        },
+        {
+          "i": 9,
+          "head": "第 9 章　永恒挑战（EC1~EC12）",
+          "chars": 5731,
+          "sections": 11
+        },
+        {
+          "i": 10,
+          "head": "第 10 章　时间膨胀",
+          "chars": 3060,
+          "sections": 10
+        },
+        {
+          "i": 11,
+          "head": "第 11 章　现实与符文",
+          "chars": 4659,
+          "sections": 10
+        },
+        {
+          "i": 12,
+          "head": "第 12 章　复兴树、自动机与黑洞",
+          "chars": 3931,
+          "sections": 10
+        },
+        {
+          "i": 13,
+          "head": "第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏",
+          "chars": 3454,
+          "sections": 10
+        },
+        {
+          "i": 14,
+          "head": "第 14 章　天神（二）：薇、太阳神",
+          "chars": 3103,
+          "sections": 10
+        },
+        {
+          "i": 15,
+          "head": "第 15 章　莱特拉",
+          "chars": 4341,
+          "sections": 10
+        },
+        {
+          "i": 16,
+          "head": "第 16 章　佩勒与终局",
+          "chars": 3098,
+          "sections": 10
+        },
+        {
+          "i": 17,
+          "head": "第 17 章　隐藏条件与成就总表",
+          "chars": 4736,
+          "sections": 11
+        }
+      ],
+      "pass": true
+    },
+    "appendices": {
+      "count": 7,
+      "navLabel": "附录（不参与主线进度）",
+      "empty": [],
+      "list": [
+        {
+          "i": 0,
+          "head": "附录 A　术语表",
+          "chars": 2333
+        },
+        {
+          "i": 1,
+          "head": "附录 B　隐藏成就速查",
+          "chars": 1789
+        },
+        {
+          "i": 2,
+          "head": "附录 C　记数法",
+          "chars": 1085
+        },
+        {
+          "i": 3,
+          "head": "附录 D　中英界面对照",
+          "chars": 1075
+        },
+        {
+          "i": 4,
+          "head": "附录 E　卡住时的症状对照",
+          "chars": 1946
+        },
+        {
+          "i": 5,
+          "head": "附录 F　自动化总览",
+          "chars": 6568
+        },
+        {
+          "i": 6,
+          "head": "附录 G　本 MOD 与原版的差异清单",
+          "chars": 2640
+        }
+      ],
+      "pass": true
+    },
+    "longest": {
+      "chapterIndex": 9,
+      "head": "第 9 章　永恒挑战（EC1~EC12）",
+      "chars": 5731,
+      "scrollH": 5087,
+      "clientH": 338,
+      "needScroll": true,
+      "scrollTop": 4749,
+      "atBottom": true,
+      "lastBlock": "本章是全流程里唯一「打开就完成」的章节：12 关 60 次不需要任何操作，真正的门槛全在入口资源（窗口内 ÷100）与研究树分叉切换。原版攻略里「EC11 是最慢的一关」「EC12 要开自动永恒」这类经验在本 MOD 不成立，因为那些无限点",
+      "lastBlockBox": {
+        "top": 500,
+        "bottom": 642,
+        "visible": true
+      },
+      "footerBox": {
+        "top": 697,
+        "bottom": 751,
+        "visible": true
+      },
+      "headBox": {
+        "top": 255,
+        "bottom": 307,
+        "visible": true
+      },
+      "pass": true
+    },
+    "font": {
+      "textFontSize": "12.5px",
+      "rootFontSize": "12px",
+      "fontControls": [],
+      "cssVarCandidates": [
+        {
+          "v": "--oreki-tut-font-scale",
+          "val": ""
+        },
+        {
+          "v": "--tutorial-font-scale",
+          "val": ""
+        },
+        {
+          "v": "--font-scale",
+          "val": ""
+        }
+      ],
+      "webHasControl": false,
+      "note": "按 docs/TUTORIAL_SCHEMA.md「双端渲染差异」，Web 侧字号固定、三档只属于 Android；本项在 Web 侧只能证「没有控件」，真实三档差异必须去 Android 取。",
+      "pass": "N/A（Web 无此功能，按设计）"
+    },
+    "positioning": {
+      "states": [
+        {
+          "state": "全新档（early）",
+          "head": "第 7 章　复制器与首次永恒",
+          "counter": "7 / 17",
+          "stage": "永恒期"
+        },
+        {
+          "state": "无限次数=1、未打破（infinity）",
+          "head": "第 7 章　复制器与首次永恒",
+          "counter": "7 / 17",
+          "stage": "永恒期"
+        },
+        {
+          "state": "已打破、IP 指数 0（infinity）",
+          "head": "第 7 章　复制器与首次永恒",
+          "counter": "7 / 17",
+          "stage": "永恒期"
+        },
+        {
+          "state": "已打破、IP 指数 12（infinity 后段）",
+          "head": "第 7 章　复制器与首次永恒",
+          "counter": "7 / 17",
+          "stage": "永恒期"
+        },
+        {
+          "state": "永恒次数=1（eternity）",
+          "head": "第 7 章　复制器与首次永恒",
+          "counter": "7 / 17",
+          "stage": "永恒期"
+        }
+      ],
+      "note": "定位函数是 src/core/oreki-tutorial.js:294-317 的 getTutorialStartIndex()。本轮实测到的映射：early->ch01；infinity 且未打破->ch04；已打破且 IP 指数<11->ch05；>=11->ch06。"
+    }
+  },
+  "shots": [
+    "_tools\\_r42\\shots\\r42_tut_02_appendix_nav.png",
+    "_tools\\_r42\\shots\\r42_tut_04_longest_bottom.png"
+  ],
+  "pageErrors": []
+}

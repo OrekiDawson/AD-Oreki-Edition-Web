@@ -1,0 +1,289 @@
+{
+  "at": "2026-10-31T01:33:22.250Z",
+  "results": [
+    {
+      "state": "全新档（无维度提升、无星系）",
+      "expect": "ch01",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 1 章　开局：10 反物质到第一次维度提升",
+        "counter": "1 / 17",
+        "stage": "开局（未无限）",
+        "rows": [
+          "开局（未无限）"
+        ]
+      },
+      "playerState": {
+        "eternities": "0",
+        "realities": "0",
+        "infinities": "0",
+        "break": false,
+        "ipExp": 0,
+        "galaxies": "0",
+        "dimensionBoosts": "0",
+        "stageNow": false
+      },
+      "actualId": "ch01",
+      "pass": true
+    },
+    {
+      "state": "开局·已有 1 次维度提升",
+      "expect": "ch02",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 2 章　维度献祭与第一个反物质星系",
+        "counter": "2 / 17",
+        "stage": "开局（未无限）",
+        "rows": [
+          "开局（未无限）"
+        ]
+      },
+      "playerState": {
+        "eternities": "0",
+        "realities": "0",
+        "infinities": "0",
+        "break": false,
+        "ipExp": 0,
+        "galaxies": "0",
+        "dimensionBoosts": "1",
+        "stageNow": false
+      },
+      "actualId": "ch02",
+      "pass": true
+    },
+    {
+      "state": "开局·已有 1 个反物质星系",
+      "expect": "ch03",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 3 章　第一次无限",
+        "counter": "3 / 17",
+        "stage": "开局（未无限）",
+        "rows": [
+          "开局（未无限）"
+        ]
+      },
+      "playerState": {
+        "eternities": "0",
+        "realities": "0",
+        "infinities": "0",
+        "break": false,
+        "ipExp": 0,
+        "galaxies": "1",
+        "dimensionBoosts": "1",
+        "stageNow": false
+      },
+      "actualId": "ch03",
+      "pass": true
+    },
+    {
+      "state": "无限期·1 次无限、未打破",
+      "expect": "ch04",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 4 章　无限升级与普通挑战",
+        "counter": "4 / 17",
+        "stage": "无限期",
+        "rows": [
+          "无限期"
+        ]
+      },
+      "playerState": {
+        "eternities": "0",
+        "realities": "0",
+        "infinities": "1",
+        "break": false,
+        "ipExp": 0,
+        "galaxies": "0",
+        "dimensionBoosts": "0",
+        "stageNow": false
+      },
+      "actualId": "ch04",
+      "pass": true
+    },
+    {
+      "state": "无限期·已打破、无限点数 1e0",
+      "expect": "ch05",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 5 章　打破无限",
+        "counter": "5 / 17",
+        "stage": "无限期",
+        "rows": [
+          "无限期"
+        ]
+      },
+      "playerState": {
+        "eternities": "0",
+        "realities": "0",
+        "infinities": "1",
+        "break": true,
+        "ipExp": 0,
+        "galaxies": "0",
+        "dimensionBoosts": "0",
+        "stageNow": false
+      },
+      "actualId": "ch05",
+      "pass": true
+    },
+    {
+      "state": "无限期·已打破、无限点数 1e12",
+      "expect": "ch06",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 6 章　无限维度与无限挑战补全",
+        "counter": "6 / 17",
+        "stage": "无限期",
+        "rows": [
+          "无限期"
+        ]
+      },
+      "playerState": {
+        "eternities": "0",
+        "realities": "0",
+        "infinities": "1",
+        "break": true,
+        "ipExp": 12,
+        "galaxies": "0",
+        "dimensionBoosts": "0",
+        "stageNow": false
+      },
+      "actualId": "ch06",
+      "pass": true
+    },
+    {
+      "state": "永恒期·永恒次数 1",
+      "expect": "ch07",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 7 章　复制器与首次永恒",
+        "counter": "7 / 17",
+        "stage": "永恒期",
+        "rows": [
+          "永恒期"
+        ]
+      },
+      "playerState": {
+        "eternities": "1",
+        "realities": "0",
+        "infinities": "1",
+        "break": true,
+        "ipExp": 20,
+        "galaxies": "0",
+        "dimensionBoosts": "0",
+        "stageNow": false
+      },
+      "actualId": "ch07",
+      "pass": true
+    },
+    {
+      "state": "现实期·现实次数 1",
+      "expect": "ch11",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 11 章　现实与符文",
+        "counter": "11 / 17",
+        "stage": "现实期",
+        "rows": [
+          "现实期"
+        ]
+      },
+      "playerState": {
+        "eternities": "1",
+        "realities": "1",
+        "infinities": "1",
+        "break": true,
+        "ipExp": 20,
+        "galaxies": "0",
+        "dimensionBoosts": "0",
+        "stageNow": false
+      },
+      "actualId": "ch11",
+      "pass": true
+    },
+    {
+      "state": "天神期·已向特蕾莎投入",
+      "expect": "ch13",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 13 章　天神（一）：特蕾莎、鹿颈长、无名氏",
+        "counter": "13 / 17",
+        "stage": "天神期",
+        "rows": [
+          "天神期"
+        ]
+      },
+      "playerState": {
+        "eternities": "0",
+        "realities": "1",
+        "infinities": "1",
+        "break": true,
+        "ipExp": 20,
+        "galaxies": "0",
+        "dimensionBoosts": "0",
+        "stageNow": false
+      },
+      "actualId": "ch13",
+      "pass": true
+    },
+    {
+      "state": "毁灭现实·佩勒",
+      "expect": "ch16",
+      "injected": {
+        "ok": true,
+        "errors": []
+      },
+      "actual": {
+        "head": "第 16 章　佩勒与终局",
+        "counter": "16 / 17",
+        "stage": "毁灭现实（佩勒）",
+        "rows": [
+          "毁灭现实（佩勒）"
+        ]
+      },
+      "playerState": {
+        "eternities": "0",
+        "realities": "1",
+        "infinities": "1",
+        "break": true,
+        "ipExp": 20,
+        "galaxies": "0",
+        "dimensionBoosts": "0",
+        "stageNow": true
+      },
+      "actualId": "ch16",
+      "pass": true
+    }
+  ],
+  "pageErrors": [],
+  "frozen": {
+    "autobuyersOn": false
+  }
+}

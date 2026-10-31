@@ -1,0 +1,694 @@
+{
+  "at": "2026-10-31T01:34:21.211Z",
+  "env": {
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0",
+    "viewport": [
+      390,
+      844
+    ],
+    "dpr": 3
+  },
+  "freshSidebar": [
+    "维度",
+    "自动化",
+    "成就",
+    "统计数据",
+    "选项"
+  ],
+  "unlocked": {
+    "unlock": {
+      "ok": true,
+      "err": []
+    },
+    "names": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "永恒",
+      "现实",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "dupes": [],
+    "pages": [
+      {
+        "tab": "dimensions",
+        "switched": "no-tab",
+        "textLen": 654
+      },
+      {
+        "tab": "automation",
+        "switched": "no-tab",
+        "textLen": 654
+      },
+      {
+        "tab": "challenges",
+        "switched": "no-tab",
+        "textLen": 654
+      },
+      {
+        "tab": "infinity",
+        "switched": "no-tab",
+        "textLen": 654
+      },
+      {
+        "tab": "eternity",
+        "switched": "no-tab",
+        "textLen": 654
+      },
+      {
+        "tab": "reality",
+        "switched": "no-tab",
+        "textLen": 654
+      },
+      {
+        "tab": "celestials",
+        "switched": "no-tab",
+        "textLen": 654
+      },
+      {
+        "tab": "achievements",
+        "switched": "no-tab",
+        "textLen": 654
+      },
+      {
+        "tab": "statistics",
+        "switched": "no-tab",
+        "textLen": 654
+      },
+      {
+        "tab": "options",
+        "switched": "no-tab",
+        "textLen": 654
+      }
+    ]
+  },
+  "viewports": [
+    {
+      "vp": "320",
+      "w": 320,
+      "h": 640,
+      "main": {
+        "vw": 320,
+        "docOverflow": false,
+        "docScrollW": 320,
+        "docClientW": 320,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 16,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": {
+          "nodes": 0,
+          "visible": false
+        }
+      },
+      "tut": {
+        "present": true,
+        "modalRect": {
+          "x": 23,
+          "y": 96,
+          "w": 274,
+          "h": 435
+        },
+        "modalOutsideViewport": false,
+        "scrollRect": {
+          "h": 256,
+          "scrollH": 5648
+        },
+        "tableInfo": [
+          {
+            "w": 270,
+            "right": 293,
+            "scrollBoxW": 274,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 270,
+            "right": 293,
+            "scrollBoxW": 274,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          }
+        ],
+        "navCount": 25,
+        "navSmall": [],
+        "footerVisible": true,
+        "pageOverflowWithModal": false
+      },
+      "tutScroll": {
+        "scrollH": 5648,
+        "clientH": 256
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_320.png",
+        "_tools\\_r42\\shots\\r42_w_320_tut.png"
+      ]
+    },
+    {
+      "vp": "360",
+      "w": 360,
+      "h": 640,
+      "main": {
+        "vw": 360,
+        "docOverflow": false,
+        "docScrollW": 360,
+        "docClientW": 360,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 19,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": {
+          "nodes": 0,
+          "visible": false
+        }
+      },
+      "tut": {
+        "present": true,
+        "modalRect": {
+          "x": 23,
+          "y": 96,
+          "w": 314,
+          "h": 435
+        },
+        "modalOutsideViewport": false,
+        "scrollRect": {
+          "h": 256,
+          "scrollH": 5083
+        },
+        "tableInfo": [
+          {
+            "w": 310,
+            "right": 333,
+            "scrollBoxW": 314,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 310,
+            "right": 333,
+            "scrollBoxW": 314,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          }
+        ],
+        "navCount": 25,
+        "navSmall": [],
+        "footerVisible": true,
+        "pageOverflowWithModal": false
+      },
+      "tutScroll": {
+        "scrollH": 5083,
+        "clientH": 256
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_360.png",
+        "_tools\\_r42\\shots\\r42_w_360_tut.png"
+      ]
+    },
+    {
+      "vp": "390",
+      "w": 390,
+      "h": 844,
+      "main": {
+        "vw": 390,
+        "docOverflow": false,
+        "docScrollW": 390,
+        "docClientW": 390,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 18,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": {
+          "nodes": 0,
+          "visible": false
+        }
+      },
+      "tut": {
+        "present": true,
+        "modalRect": {
+          "x": 23,
+          "y": 129,
+          "w": 344,
+          "h": 574
+        },
+        "modalOutsideViewport": false,
+        "scrollRect": {
+          "h": 338,
+          "scrollH": 4776
+        },
+        "tableInfo": [
+          {
+            "w": 340,
+            "right": 363,
+            "scrollBoxW": 344,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 340,
+            "right": 363,
+            "scrollBoxW": 344,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          }
+        ],
+        "navCount": 25,
+        "navSmall": [],
+        "footerVisible": true,
+        "pageOverflowWithModal": false
+      },
+      "tutScroll": {
+        "scrollH": 4776,
+        "clientH": 338
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_390.png",
+        "_tools\\_r42\\shots\\r42_w_390_tut.png"
+      ]
+    },
+    {
+      "vp": "430",
+      "w": 430,
+      "h": 932,
+      "main": {
+        "vw": 430,
+        "docOverflow": false,
+        "docScrollW": 430,
+        "docClientW": 430,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 18,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": {
+          "nodes": 0,
+          "visible": false
+        }
+      },
+      "tut": {
+        "present": true,
+        "modalRect": {
+          "x": 23,
+          "y": 143,
+          "w": 384,
+          "h": 634
+        },
+        "modalOutsideViewport": false,
+        "scrollRect": {
+          "h": 373,
+          "scrollH": 4476
+        },
+        "tableInfo": [
+          {
+            "w": 380,
+            "right": 403,
+            "scrollBoxW": 384,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 380,
+            "right": 403,
+            "scrollBoxW": 384,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          }
+        ],
+        "navCount": 25,
+        "navSmall": [],
+        "footerVisible": true,
+        "pageOverflowWithModal": false
+      },
+      "tutScroll": {
+        "scrollH": 4476,
+        "clientH": 373
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_430.png",
+        "_tools\\_r42\\shots\\r42_w_430_tut.png"
+      ]
+    },
+    {
+      "vp": "768",
+      "w": 768,
+      "h": 1024,
+      "main": {
+        "vw": 768,
+        "docOverflow": false,
+        "docScrollW": 768,
+        "docClientW": 768,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 18,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": {
+          "nodes": 0,
+          "visible": false
+        }
+      },
+      "tut": {
+        "present": true,
+        "modalRect": {
+          "x": 23,
+          "y": 165,
+          "w": 722,
+          "h": 680
+        },
+        "modalOutsideViewport": false,
+        "scrollRect": {
+          "h": 410,
+          "scrollH": 3240
+        },
+        "tableInfo": [
+          {
+            "w": 718,
+            "right": 741,
+            "scrollBoxW": 722,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 718,
+            "right": 741,
+            "scrollBoxW": 722,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          }
+        ],
+        "navCount": 25,
+        "navSmall": [],
+        "footerVisible": true,
+        "pageOverflowWithModal": false
+      },
+      "tutScroll": {
+        "scrollH": 3240,
+        "clientH": 410
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_768.png",
+        "_tools\\_r42\\shots\\r42_w_768_tut.png"
+      ]
+    },
+    {
+      "vp": "1280",
+      "w": 1280,
+      "h": 800,
+      "main": {
+        "vw": 1280,
+        "docOverflow": false,
+        "docScrollW": 1280,
+        "docClientW": 1280,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 16,
+        "smallCount": 6,
+        "smallSample": [
+          {
+            "t": "买到 10 个",
+            "cls": "o-primary-btn l-button-contain",
+            "w": 120,
+            "h": 30
+          },
+          {
+            "t": "维度献祭已禁用（加成为 ×1）",
+            "cls": "o-primary-btn o-primary-btn--s",
+            "w": 480,
+            "h": 25
+          },
+          {
+            "t": "购买最大数量（M）",
+            "cls": "o-primary-btn l-button-contain",
+            "w": 120,
+            "h": 30
+          },
+          {
+            "t": "计数频率价格: 1e3",
+            "cls": "o-primary-btn tickspeed-btn",
+            "w": 300,
+            "h": 25
+          },
+          {
+            "t": "购买最大数量",
+            "cls": "o-primary-btn tickspeed-max-bt",
+            "w": 100,
+            "h": 25
+          },
+          {
+            "t": "? 教程",
+            "cls": "c-oreki-tut-entry",
+            "w": 64,
+            "h": 36
+          }
+        ],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": {
+          "nodes": 0,
+          "visible": false
+        }
+      },
+      "tut": {
+        "present": true,
+        "modalRect": {
+          "x": 291,
+          "y": 194,
+          "w": 699,
+          "h": 400
+        },
+        "modalOutsideViewport": false,
+        "scrollRect": {
+          "h": 268,
+          "scrollH": 3881
+        },
+        "tableInfo": [
+          {
+            "w": 500,
+            "right": 971,
+            "scrollBoxW": 519,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 500,
+            "right": 971,
+            "scrollBoxW": 519,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          }
+        ],
+        "navCount": 25,
+        "navSmall": [],
+        "footerVisible": true,
+        "pageOverflowWithModal": false
+      },
+      "tutScroll": {
+        "scrollH": 3881,
+        "clientH": 268
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_1280.png",
+        "_tools\\_r42\\shots\\r42_w_1280_tut.png"
+      ]
+    },
+    {
+      "vp": "横屏_844x390",
+      "w": 844,
+      "h": 390,
+      "main": {
+        "vw": 844,
+        "docOverflow": false,
+        "docScrollW": 844,
+        "docClientW": 844,
+        "overflowCount": 0,
+        "overflowSample": [],
+        "buttonCount": 16,
+        "smallCount": 0,
+        "smallSample": [],
+        "sidebar": [
+          "维度",
+          "自动化",
+          "成就",
+          "统计数据",
+          "选项"
+        ],
+        "news": {
+          "nodes": 0,
+          "visible": false
+        }
+      },
+      "tut": {
+        "present": true,
+        "modalRect": {
+          "x": 23,
+          "y": 56,
+          "w": 798,
+          "h": 265
+        },
+        "modalOutsideViewport": false,
+        "scrollRect": {
+          "h": 156,
+          "scrollH": 3179
+        },
+        "tableInfo": [
+          {
+            "w": 794,
+            "right": 817,
+            "scrollBoxW": 798,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          },
+          {
+            "w": 794,
+            "right": 817,
+            "scrollBoxW": 798,
+            "ownScroller": false,
+            "overflowsScrollBox": false
+          }
+        ],
+        "navCount": 25,
+        "navSmall": [],
+        "footerVisible": true,
+        "pageOverflowWithModal": false
+      },
+      "tutScroll": {
+        "scrollH": 3179,
+        "clientH": 156
+      },
+      "tutAtBottom": true,
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_横屏_844x390.png",
+        "_tools\\_r42\\shots\\r42_w_横屏_844x390_tut.png"
+      ]
+    },
+    {
+      "vp": "390_unlocked",
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_390_unlocked.png"
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "verdicts": [
+    {
+      "vp": "320",
+      "verdict": "通过",
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_320.png",
+        "_tools\\_r42\\shots\\r42_w_320_tut.png"
+      ]
+    },
+    {
+      "vp": "360",
+      "verdict": "通过",
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_360.png",
+        "_tools\\_r42\\shots\\r42_w_360_tut.png"
+      ]
+    },
+    {
+      "vp": "390",
+      "verdict": "通过",
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_390.png",
+        "_tools\\_r42\\shots\\r42_w_390_tut.png"
+      ]
+    },
+    {
+      "vp": "430",
+      "verdict": "通过",
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_430.png",
+        "_tools\\_r42\\shots\\r42_w_430_tut.png"
+      ]
+    },
+    {
+      "vp": "768",
+      "verdict": "通过",
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_768.png",
+        "_tools\\_r42\\shots\\r42_w_768_tut.png"
+      ]
+    },
+    {
+      "vp": "1280",
+      "verdict": "问题：6 个可点元素 <44px",
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_1280.png",
+        "_tools\\_r42\\shots\\r42_w_1280_tut.png"
+      ]
+    },
+    {
+      "vp": "横屏_844x390",
+      "verdict": "通过",
+      "shots": [
+        "_tools\\_r42\\shots\\r42_w_横屏_844x390.png",
+        "_tools\\_r42\\shots\\r42_w_横屏_844x390_tut.png"
+      ]
+    }
+  ]
+}

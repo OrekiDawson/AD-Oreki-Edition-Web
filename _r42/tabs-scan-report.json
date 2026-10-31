@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-31T01:36:43.619Z",
+  "fresh": [
+    "维度",
+    "自动化",
+    "成就",
+    "统计数据",
+    "选项"
+  ],
+  "unlocked": {
+    "inject": {
+      "ok": true,
+      "err": []
+    },
+    "names": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "永恒",
+      "现实",
+      "天神",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "missing": [],
+    "unexpected": [],
+    "dupes": [],
+    "pages": [
+      {
+        "idx": 0,
+        "name": "维度",
+        "textLen": 424,
+        "snippet": "购买最大数量 你拥有 1.0 无限之力。 增加 ^7.000 为 反物质维度 提供 ×1.0 的加成。 除第八无限维度外",
+        "empty": false,
+        "scrollH": 1192,
+        "docOverflow": false
+      },
+      {
+        "idx": 1,
+        "name": "自动化",
+        "textLen": 164,
+        "snippet": "恢复自动购买器 启用所有自动购买器 将反物质维度自动购买器设为购买单个 按住 ? 键以打开快捷键列表。 自动购买器间隔与",
+        "empty": false,
+        "scrollH": 316,
+        "docOverflow": false
+      },
+      {
+        "idx": 2,
+        "name": "挑战",
+        "textLen": 922,
+        "snippet": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 一些普通挑战需要完成要求才能进入。 如果启用自动大坍缩，不论采用何种设置",
+        "empty": false,
+        "scrollH": 2068,
+        "docOverflow": false
+      },
+      {
+        "idx": 3,
+        "name": "无限",
+        "textLen": 726,
+        "snippet": "你不能在被毁灭的现实中充能无限升级。 在升级列表的每一列中，升级必须按从上到下的顺序依次购买。 反物质维度获得基于游玩时",
+        "empty": false,
+        "scrollH": 541,
+        "docOverflow": false
+      },
+      {
+        "idx": 4,
+        "name": "永恒",
+        "textLen": 3358,
+        "snippet": "导出时间研究树 下次永恒后重置时间研究树 导入时间研究树 11 第一时间维度获得基于计数频率的加成 当前: ×1.0 价",
+        "empty": false,
+        "scrollH": 4496,
+        "docOverflow": false
+      },
+      {
+        "idx": 5,
+        "name": "现实",
+        "textLen": 423,
+        "snippet": "重启本次末日 你仍然需要在时间研究标签页解锁现实。 符文等级因子 ▼ 0.0160×永恒点数^0.500 0.0475 ",
+        "empty": false,
+        "scrollH": 1208,
+        "docOverflow": false
+      },
+      {
+        "idx": 6,
+        "name": "天神",
+        "textLen": 86,
+        "snippet": "Ϟ 特蕾莎 进贡 1 / 1.00e14 现实机器 特蕾莎的现实 特蕾莎的复兴点商店 进贡 1 / 1.00e21 现实",
+        "empty": false,
+        "scrollH": 681,
+        "docOverflow": false
+      },
+      {
+        "idx": 7,
+        "name": "成就",
+        "textLen": 656,
+        "snippet": "隐藏成就中全部解锁的行： 关闭 自动成就： 开启 已禁用所有成就的倍数加成。 带有 图标的成就同时会提供额外的奖励。 你",
+        "empty": false,
+        "scrollH": 2483,
+        "docOverflow": false
+      },
+      {
+        "idx": 8,
+        "name": "统计数据",
+        "textLen": 548,
+        "snippet": "查看内容摘要 概况 您总共制造了 1.09e161 个反物质。 你已经玩了 2.237 秒（现实时间）。 游戏中的你经历",
+        "empty": false,
+        "scrollH": 852,
+        "docOverflow": false
+      },
+      {
+        "idx": 9,
+        "name": "选项",
+        "textLen": 97,
+        "snippet": "导出存档 导入存档 重置游戏 保存游戏 选择存档 自动存档：30 秒 以文件形式导出 导入存档文件 显示距上次存档的时间",
+        "empty": false,
+        "scrollH": 715,
+        "docOverflow": false
+      }
+    ],
+    "emptyPages": [],
+    "shot": "_tools\\_r42\\shots\\r42_tabs_unlocked.png"
+  },
+  "pageErrors": [],
+  "freshShot": "_tools\\_r42\\shots\\r42_tabs_fresh.png"
+}
