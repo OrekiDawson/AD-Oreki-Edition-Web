@@ -40,6 +40,9 @@ import { Autobuyer } from "./autobuyers/autobuyers.js";
 import { bigCrunchResetRequest } from "./big-crunch.js";
 import { Laitela } from "./celestials/laitela/laitela.js";
 import { OREKI_IU25_COST } from "./secret-formula/reality/imaginary-upgrades.js";
+// [R47-A] _laiDiag.imCap 要读真实 IM 上限（getter 在 machines.js:83），
+// 之前写成裸标识符会被自身的 try/catch 吞成 null，等于诊断字段永久失效。
+import { MachineHandler } from "./machines.js";
 
 /** 进莱特拉 run 时本现实真实时间的上限（毫秒）。见上方 ② 的 30 s 判定。 */
 const LAT_RUN_ENTER_MAX_REAL_MS = 15000;
