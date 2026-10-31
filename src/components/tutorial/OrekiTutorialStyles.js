@@ -14,6 +14,22 @@ export const TUTORIAL_STYLE_ID = "oreki-tutorial-injected-style";
 
 const CSS = `
 .c-oreki-tut__scroll { overflow-x: hidden; }
+
+/* ── 底栏被裁穿（320/360 实测，命中测试确认）──────────────────────────────
+ * 现象：.c-oreki-tut__footer 里的「上一章 / 回到当前进度 / 下一章」整排只剩顶部
+ *   十几个像素，elementFromPoint 打在按钮中心拿到的是 .c-modal-message，
+ *   也就是「看得见一点、点不到」。
+ * 成因：.c-oreki-tut__layout 被 max-height 限高，进去的 .c-oreki-tut__main 是
+ *   min-height: auto，内部又是一块 max-height 的滚动盒加固定高度的表头/提示/底栏 ——
+ *   main 不肯收缩，子项合计超出 layout，多出来的部分被 .c-oreki-tut
+ *   （overflow-x: hidden 会把 overflow-y 一并算成 auto）裁掉，裁掉的正好是底栏。
+ * 修法：把可压缩的部分明确交给正文滚动盒，表头/提示/底栏不参与压缩。
+ */
+.c-oreki-tut__main { min-height: 0; }
+.c-oreki-tut__scroll { min-height: 0; }
+.c-oreki-tut__head,
+.c-oreki-tut__hint,
+.c-oreki-tut__footer { flex: 0 0 auto; }
 /* 关闭方式的提示：只要「能找到」，不抢视觉注意力，所以压小字号、压透明度 */
 .c-oreki-tut__hint {
   margin: 0.2rem 0 0.4rem;
