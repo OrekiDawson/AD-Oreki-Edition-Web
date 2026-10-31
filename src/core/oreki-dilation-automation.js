@@ -42,8 +42,6 @@
 import { PlayerProgress } from "./player-progress.js";
 import { OrekiEternityAutomation } from "./oreki-eternity-automation.js";
 import { OREKI_V_UNLOCK_REALITIES, OREKI_V_UNLOCK_DILATED_TIME } from "./secret-formula/celestials/v.js";
-import { OREKI_IU25_COST } from "./secret-formula/reality/imaginary-upgrades.js";
-import { Laitela } from "./celestials/laitela/laitela.js";
 
 /**
  * 深度挑战的推进顺序（每关打满 5 次才切下一关）。
@@ -281,22 +279,19 @@ export const OrekiDilationAutomation = {
       // 未 achieved 时**不 return**，落回下面的 `HOLD_MAX_MS` / `HOLD_STALL_MS` 护栏，
       // 不会把现实永久压死。
       if (PlayerProgress.dilationUnlocked()) {
-        const imReady = Number(Currency.imaginaryMachines.value) >= OREKI_IU25_COST;
-        // ── [Oreki R50 六修] 达标后必须走下面的 `HOLD_GRACE_MS` 宽限，不许当场放手 ──
+        // ── [Oreki R50 七修] 「IM 够 + 莱特拉已解锁」也不许无限压住 ────────────
         //
-        // 五修版在这里直接 `_release("dil-chain-done")`，实测（`r50-fresh4` 重载后
-        // t=300~480 s）表现为：DS1 一到手 → 膨胀起来 → `maxDT` 在 1 秒内就冲过阈值 →
-        // `achieved` 变真 → 立刻放手 → 现实清空 → `maxDT` 归 0 → 再打 EC 链，`releases`
-        // 一路涨到 17，而 `V` 始终是 false。原因是 `game.js` 里**现实自动化跑在 V 检查之前**，
-        // 放手太早，同帧的现实已经把 `records.thisReality.maxDT` 清零，
-        // V 看到的永远是 0 —— 这正是文件下方 `HOLD_GRACE_MS` 那段注释早已写明的坑。
+        // 六修在这里 `return true`，实测（`r50-fresh5`）确实把 V/IU15/莱特拉一路打到位
+        // （t=445 s 进莱特拉阶段，比 r50-fresh1 的 2044 s 快 4.6 倍），但随即卡死：
+        // `im=5.25e9 ≥ IU25 成本`、`ds6=true`、`tier=4`、`laiRun=false`，
+        // `realities` 从 t≈730 s 起冻在 80 到 1225 s **一动不动**（500 秒）。
+        // 原因是 IU25 的判据是「在莱特拉的现实中……达成现实」——它**需要一次现实**
+        // 才能真正结算，而压住现实恰好把这件事挡死；`driveLaitela` 又没能在窗口内
+        // 把 tier 推到 8 并起 run。于是「为了留住 DS6 而压住」变成「压住导致永远买不到」。
         //
-        // 所以：只有「IM 够 IU25 且莱特拉已解锁」才继续压住；其余情况（包括 achieved）
-        // 都落到下面的宽限分支，由它再压 `HOLD_GRACE_MS`（20 s）后放手。
-        const laiReady = Laitela.isUnlocked === true;
-        if (imReady && laiReady) return true;
-        // 还没达标：EC 链已满会让 `_completionMark()` 不再增长，
-        // 这时不能让它触发 `HOLD_STALL_MS` 的「无进展」判死，否则又回到「放手→清空」。
+        // 结论：压现实最多只能是一个**有界窗口**（下方 `HOLD_GRACE_MS` 的 20 s），
+        // 用它让同帧的 V / IU25 检查看到 maxDT 与 DS6，之后必须放手让现实跑起来。
+        // 所以这里不再 `return true`，一律落到宽限分支。
         if (!this.achieved) this._progressAtMs = now;
       }
 
