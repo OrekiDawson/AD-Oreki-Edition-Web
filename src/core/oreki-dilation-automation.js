@@ -44,8 +44,20 @@ import { OrekiEternityAutomation } from "./oreki-eternity-automation.js";
 import { VUnlocks } from "./celestials/V.js";
 import { OREKI_V_UNLOCK_REALITIES, OREKI_V_UNLOCK_DILATED_TIME } from "./secret-formula/celestials/v.js";
 
-/** 深度挑战的推进顺序（每关打满 5 次才切下一关） */
-const DEEP_EC_IDS = [9, 10, 11, 12];
+/**
+ * 深度挑战的推进顺序（每关打满 5 次才切下一关）。
+ *
+ * [Oreki R50] 9~12 → **8~12**。
+ * R49 及以前这里是 `[9, 10, 11, 12]`，而 EC8 交给「通用永恒自动化」按顺序推。
+ * 实测（R50 隔离新档 `_r50/r50-diag1.jsonl`，t≈400 s）证明那条路走不通：
+ *   · `ecDone = [5,5,5,5,5,5,5,0,0,0,0,0]` —— EC1~EC7 每轮都能打满，**EC8 恒 0**；
+ *   · `player.reality.unlockedEC = 62`（只有 EC1~5 的解锁位）；
+ *   · `TimeStudy(123)`（EC8 的 `config.requirement`）从没买过 ⇒
+ *     `TimeStudy.eternityChallenge(8).canBeBought` 恒 false（ec-time-study.js:83）。
+ * 因为自动现实每几秒就把 `player.eternityChalls` 与整棵研究树清空（reality.js:651/673），
+ * 通用路径永远停在 EC7。EC8 必须和 9~12 一样由本模块在「压住现实」时推进。
+ */
+const DEEP_EC_IDS = [8, 9, 10, 11, 12];
 /** DS1 的「时间研究前置」：这四个里有任意一个为真即可 */
 const DEEP_TT_STUDY_IDS = [231, 232, 233, 234];
 /** 压现实总时长上限（真实毫秒） */
@@ -163,18 +175,41 @@ export const OrekiDilationAutomation = {
       const now = Date.now();
       if (this._cooldownUntilMs && now < this._cooldownUntilMs) return false;
 
-      // 只在**真的打到深层**时压现实。EC11 打满说明 EC1~EC10 已经全部到位，
-      // 剩下只有 EC12 → DS1 这条短链；此时压现实的代价最小（实测每轮只多花 ~20 s），
-      // 而收益最大（现实每 ~25 s 就会把 EC 记录与整棵研究树清空）。
-      if (!EternityChallenge(11).isFullyCompleted) return this._release("shallow");
-
       // V 的第一项门槛是 realities ≥ 60（R37-A 由 200 下调，见 `OREKI_V_UNLOCK_REALITIES`）。
       // 没到之前压现实等于把现实次数按死，
       // 所以只允许极少数早期演练，其余时间必须让现实照常循环。
       // 注意：`Currency.realities.value` 在本工程里是**普通数字**（不是 Decimal），
       // 直接 `.gte()` 会抛 `is not a function` —— 第一次 300 s 真跑就是这么静默失效的，
       // 所以这里统一走 `Decimal.gte`，两种类型都能吃。
+      //
+      // [Oreki R50] 这一行从下方前移到 hold 判据之前（原来在 EC11 门禁之后），
+      // 因为下面新加的「EC8 通路」要用它。
       const atGate = Decimal.gte(Currency.realities.value, OREKI_V_UNLOCK_REALITIES);
+
+      // 只在**真的打到深层**时压现实。EC11 打满说明 EC1~EC10 已经全部到位，
+      // 剩下只有 EC12 → DS1 这条短链；此时压现实的代价最小（实测每轮只多花 ~20 s），
+      // 而收益最大（现实每 ~25 s 就会把 EC 记录与整棵研究树清空）。
+      //
+      // ── [Oreki R50] 打破「要 hold 才能打 EC11，要 EC11 才能 hold」的闭环 ──────
+      //
+      // 原来的判据是 `if (!EternityChallenge(11).isFullyCompleted) release("shallow")`，
+      // 而推进 EC8~EC12 的 `_driveEcChain()` **只在 hold 为真时被 `tick()` 调用**（:407-411）。
+      // 实测后果（R50 `r50-diag1`，真实新档 t=400 s）：realities 已 115、TT 1.5e7、
+      // `hold` 恒 false（`lastRelease="shallow"`、`releases=4`），
+      // `gates.notUnlocked=8583` —— 一帧都没进过 EC8，DS1/maxDT/V 全部为 0，
+      // 整局永久停在 `celestialsEnslaved`。这不是「天神死锁」，是 EC 驱动缺失。
+      //
+      // 新判据：EC11 未满时，只要 **EC1~EC7 已全部 5/5** 且 **现实次数已过 V 门槛**，
+      // 就允许压现实，让 `_driveEcChain()` 去把 EC8~EC12 打穿。
+      // 不放开到更早阶段的原因：realities < 60 时压现实会按死 V 的第一项门槛，
+      // 而 EC1~EC7 没满说明通用路径还在有效推进，没必要抢它的窗口。
+      // 防无限压死：`HOLD_MAX_MS`（240 s 总时长）、`HOLD_STALL_MS`（90 s 无完成即放手）、
+      // `HOLD_COOLDOWN_MS`（10 s 冷却）三条护栏都在下面原样生效。
+      const ec7Done = EternityChallenge(7).isFullyCompleted;
+      if (!EternityChallenge(11).isFullyCompleted && !(ec7Done && atGate)) {
+        return this._release("shallow");
+      }
+      // 门槛前的压现实（只有「EC11 已满」这条老路径才可能走到这里）仍受累计预算约束。
       if (!atGate && this._earlyHoldUsedMs >= EARLY_HOLD_BUDGET_MS) return this._release("grow-realities");
 
       // ── [Oreki R40-A2] 曾经想在这里加「DS6 已到手就放手」，**实测否决，不要再加** ──
@@ -333,6 +368,36 @@ export const OrekiDilationAutomation = {
         this._step = `respec:forbidden-ec${target}`;
         return { respec: `forbidden-ec${target}` };
       } catch (e) { this._step = `respec-err2:${e && e.message}`; }
+    }
+    // [Oreki R50] EC8~EC12 的「补前置研究」必须走原版 `purchaseUntil()`，不能只靠通用补路。
+    //
+    // 依据：`ECTimeStudyState.canBeBought`（ec-time-study.js:76-87）的第三条是
+    // `config.requirement.some(s => TimeStudy(s).isBought)`——EC8/9/10 分别是 123/151/181。
+    // R50 真实新档实测：`TimeStudy(151)`/`TimeStudy(181)` 都买上了，**`TimeStudy(123)` 从没买过**，
+    // 于是 `TimeStudy.eternityChallenge(8).canBeBought` 恒 false，EC8 一次都没进过。
+    // 通用 `buyTimeStudies()` 是按它自己的优先级补树，不会为了 EC8 专门去点 123 这条分叉。
+    //
+    // `purchaseUntil()` 是原版「Shift+点击 EC 研究」的入口（ec-time-study.js:54-74）：
+    // 先 `purchase()` → `buyStudiesUntil(studiesToBuy[id], id)` 把到该 EC 的整条前置买齐 → 再 `purchase()`。
+    // 只在 `unlocked === 0` 时调用：`purchase()` 的第一道闸就是 `unlocked !== 0` 直接 false，
+    // 开着别的 EC 时乱动研究树会把当前关的前置拆掉。
+    if (unlockedId === 0 && now - this._lastTreeMs > TREE_INTERVAL_MS) {
+      this._lastTreeMs = now;
+      try {
+        st.purchaseUntil();
+        if (st.isBought) {
+          this._actions++;
+          this._step = `purchaseUntil:${target}`;
+          return { until: target };
+        }
+        this._step = `until-fail:${target}`;
+      } catch (e) {
+        this._step = `until-err:${target}:${e && e.message}`;
+      }
+      try {
+        OrekiEternityAutomation.buyTimeStudies();
+      } catch (e) { this._step = `tree-err:${e && e.message}`; }
+      return null;
     }
     if (now - this._lastTreeMs > TREE_INTERVAL_MS) {
       this._lastTreeMs = now;
