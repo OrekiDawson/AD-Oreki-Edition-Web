@@ -185,7 +185,8 @@ function collectTexts(chapter) {
       if (!isPlainObject(num)) continue;
       push(num.label);
       push(num.value);
-      push(num.src);
+      // [R43] 不再 push(num.src)：源码路径已从玩家正文移除（见规则 5 的反转说明），
+      // 若这里继续收集，会把残留的 src 当成正文参与其它规则，掩盖真问题。
     }
   }
   if (chapter.table && Array.isArray(chapter.table.rows)) {
@@ -197,55 +198,10 @@ function collectTexts(chapter) {
   return texts;
 }
 
-/**
- * 规则 5 的实现：解析 `numbers[].src` 里的 路径[:行] 片段。
- * 允许的写法（教程里真实出现过的三种）：
- *   src/game.js:139-143, :176
- *   src/core/player.js:985-988 + modules/break_infinity.js:1546
- *   web/_tools/_r21-300.jsonl（milestone 首次无限）
- * 每段都要能落到一个真实存在的文件；带行号时行号不得超过该文件行数。
+/* [R43] 旧 checkSourceRef()（校验 numbers[].src 路径可定位）已随规则 5 反转一并删除。
+ * 原因：旧规则强迫教程正文写源码路径，而弹窗会把 src 直接渲染给玩家看。
+ * 现在 numbers 只允许 {label, value}；溯源证据见 docs/R43_tutorial_source_refs.md。
  */
-function checkSourceRef(src) {
-  const problems = [];
-  if (typeof src !== "string" || src.trim() === "") {
-    return ["src 为空"];
-  }
-  const segments = src.split(/[+;]/u).map(part => part.trim()).filter(Boolean);
-  if (segments.length === 0) problems.push("src 里没有可解析的片段");
-  let matchedAny = false;
-  for (const segment of segments) {
-    // 扩展名要按「长的在前」排列，否则 .jsonl 会被 .json 先匹配掉
-    const fileMatch = segment.match(/([A-Za-z0-9_@./-]+\.(?:jsonl|json|mjs|js|py|md|csv))/u);
-    if (!fileMatch) {
-      problems.push(`片段「${segment}」里找不到 文件名:行`);
-      continue;
-    }
-    matchedAny = true;
-    const relPath = fileMatch[1];
-    // src 里允许写三种基准路径：游戏根目录（src/...）、web/ 目录（_tools/...）、
-    // 以及工作区根（web/_tools/...）。逐个基准试，命中一个即可。
-    const candidates = [ROOT, path.resolve(ROOT, ".."), path.resolve(ROOT, "..", "..")]
-      .map(base => path.join(base, relPath));
-    const absPath = candidates.find(candidate => fs.existsSync(candidate));
-    if (!absPath) {
-      problems.push(`文件不存在：${relPath}`);
-      continue;
-    }
-    // 只解析「文件名之后」的数字：文件名里的日期/编号（如 _r21-300.jsonl）不是行号
-    const afterFile = segment.slice(segment.indexOf(fileMatch[0]) + fileMatch[0].length);
-    const numbers = (afterFile.match(/\d+/gu) || []).map(Number);
-    if (numbers.length === 0) continue;
-    const lineCount = fs.readFileSync(absPath, "utf-8").split(/\r?\n/u).length;
-    const maxLine = Math.max(...numbers);
-    // 文件名里的数字（例如 _r21-300.jsonl）会被当成行号，这里用行数兜底：
-    // 只有「明显超出文件行数」才判错，避免误伤文件名中的日期/编号。
-    if (maxLine > lineCount) {
-      problems.push(`${relPath} 只有 ${lineCount} 行，引用了第 ${maxLine} 行`);
-    }
-  }
-  if (!matchedAny && problems.length === 0) problems.push("src 里没有可解析的 文件名");
-  return problems;
-}
 
 function main() {
   const raw = fs.readFileSync(JSON_PATH, "utf-8");
@@ -312,7 +268,12 @@ function main() {
     }
   }
 
-  // ── 规则 5：numbers[].src 可定位 ────────────────────────────────────
+  // ── 规则 5：numbers[] 不得携带 src（源码路径属开发者信息）────────────
+  // [R43 反转] 旧规则要求 `numbers[].src` 非空且可定位，这实际上是在**强迫**
+  // 教程正文里写源码路径，而 OrekiTutorialModal 会把它直接渲染给玩家看。
+  // 用户 2026-10-31 明确要求「源码路径、行号：直接删除」，因此规则反转为：
+  //   numbers 只允许 {label, value} 两个键；出现 src 或任何多余键即失败。
+  // 溯源证据不再进正文，改写进 `docs/R43_tutorial_source_refs.md`（人工可查）。
   for (const chapter of chapters) {
     if (!Array.isArray(chapter.numbers)) continue;
     for (const [i, num] of chapter.numbers.entries()) {
@@ -320,15 +281,20 @@ function main() {
         record("5 numbers", false, `${chapter.id}.numbers[${i}] 不是对象`);
         continue;
       }
-      for (const field of ["label", "value", "src"]) {
+      for (const field of ["label", "value"]) {
         record(
           "5 numbers",
           typeof num[field] === "string" && num[field].trim() !== "",
           `${chapter.id}.numbers[${i}].${field} 为空`
         );
       }
-      const problems = checkSourceRef(num.src);
-      record("5 numbers", problems.length === 0, `${chapter.id}.numbers[${i}]「${num.label}」：${problems.join("；")}`);
+      const extraKeys = Object.keys(num).filter(key => !["label", "value"].includes(key));
+      record(
+        "5 numbers",
+        extraKeys.length === 0,
+        `${chapter.id}.numbers[${i}]「${num.label}」含禁用字段：${extraKeys.join("、")}`
+        + `（源码路径/行号不得出现在玩家教程，溯源改为 docs/R43_tutorial_source_refs.md）`
+      );
     }
   }
 

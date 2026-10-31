@@ -64,7 +64,7 @@
   "routes": [
     {
       "id": "eternity-ec-first",
-      "stageScope": ["eternity", "timeStudy"],
+      "stageScope": ["eternity", "timeStudy", "eternityChallenges", "dilation"],
       "title": "先刷永恒挑战再推时间之理",
       "steps": ["刷 EC 拿永久增益", "买时间之理", "推时间研究树"],
       "why": "EC 奖励是永久增益，越早拿越早复利",
@@ -72,7 +72,7 @@
     },
     {
       "id": "eternity-tt-first",
-      "stageScope": ["eternity"],
+      "stageScope": ["eternity", "timeStudy", "eternityChallenges", "dilation"],
       "title": "先堆时间之理再回头刷挑战",
       "steps": ["堆 EP 换时间之理", "买关键研究", "再回头刷 EC"],
       "why": "研究到手后 EC 更快",
@@ -80,7 +80,7 @@
     },
     {
       "id": "reality-glyph-first",
-      "stageScope": ["reality"],
+      "stageScope": ["reality", "glyphs", "realityTree"],
       "title": "先刷符文再推现实升级",
       "steps": ["刷高等级符文", "装备择优", "买现实升级"],
       "why": "符文等级决定后续全局倍率上限",
@@ -88,7 +88,7 @@
     },
     {
       "id": "reality-machine-first",
-      "stageScope": ["reality"],
+      "stageScope": ["reality", "glyphs", "realityTree"],
       "title": "先攒现实机器再刷符文",
       "steps": ["重复现实攒机器", "买现实升级", "再刷符文"],
       "why": "机器解锁的升级能放大符文收益",
@@ -96,7 +96,7 @@
     },
     {
       "id": "celestial-nav-order",
-      "stageScope": ["celestials"],
+      "stageScope": ["celestialsTeresa", "celestialsEffarig", "celestialsEnslaved", "celestialsV", "celestialsRa", "laitela"],
       "title": "按导航顺序推进天神",
       "steps": ["特蕾莎", "鹿颈长", "无名氏", "薇", "太阳神", "莱特拉"],
       "why": "每位天神的解锁以前一位为前提",
@@ -104,7 +104,7 @@
     },
     {
       "id": "celestial-parallel-v",
-      "stageScope": ["celestials"],
+      "stageScope": ["celestialsTeresa", "celestialsEffarig", "celestialsEnslaved", "celestialsV", "celestialsRa", "laitela"],
       "title": "在推进其他天神时并行做薇的三项",
       "steps": ["主流推进天神", "同时满足薇的三项记录"],
       "why": "薇的三项需要长时间同一次现实内累积，与其他天神并行能省墙钟",

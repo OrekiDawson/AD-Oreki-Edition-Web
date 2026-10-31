@@ -84,16 +84,6 @@ const CSS = `
 .c-oreki-tut__table th { font-weight: bold; color: var(--color-reality); }
 /* 原来是 nowrap，窄屏下会把「标签」列顶成固定 32% 且不可压缩，连带把数值列挤出容器 */
 .c-oreki-tut__key { width: 32%; }
-.c-oreki-tut__src {
-  display: block;
-  margin-top: 0.1rem;
-  font-size: 0.95rem;
-  opacity: 0.55;
-  word-break: break-all;
-}
-/* 360px 实测：src/core/dimboost.js:100-107 在西文长串上仍撑出 4px，
-   和单元格的 anywhere 一起兜住，保证窄屏不出横向滚动条 */
-.c-oreki-tut__src,
 .c-oreki-tut__text,
 .c-oreki-tut__list,
 .c-oreki-tut__trap,

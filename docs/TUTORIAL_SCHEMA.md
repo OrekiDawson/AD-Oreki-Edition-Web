@@ -41,7 +41,7 @@ JSON 有 `json.load` 兜底，语法错误在构建期直接报错。
 | 购买优先级 | `buyOrder` | array\<string\> | 有序清单，写清「先买什么、什么可以后买、什么不要买」。 |
 | 自动化配置 | `automation` | string | 本 MOD 已经代劳的部分要**直说不需要手动**，并写清哪个开关决定它。 |
 | 挑战攻略 | `challenges` | string \| null | 本阶段有挑战就写打法与顺序；没有就 `null`，不要写空字符串。 |
-| 关键数值 | `numbers` | array | `{label, value, src}`，`src` 必须能定位到源码 `文件:行` 或实测数据文件。 |
+| 关键数值 | `numbers` | array | `{label, value}`，**只允许这两个键**。源码路径/行号属于开发者信息，不得写进玩家正文；溯源统一放 `docs/R43_tutorial_source_refs.md`。 |
 | 完成判据 | `done` | string | 可观测的判据（界面上的数字 / 布尔状态），不要写「感觉可以了」。 |
 | 下一步路线 | `next` | string | 指向下一章或具体下一步动作。 |
 | 常见卡点 | `traps` | array\<string\> | 真实踩过的坑，不是泛泛而谈的「注意资源管理」。 |
@@ -75,7 +75,8 @@ JSON 有 `json.load` 兜底，语法错误在构建期直接报错。
 2. `chapters` 非空，`id` 唯一且连续（`ch00`、`ch01`…）；
 3. 每章十个内容字段存在且类型正确；`stageGoal` / `entry` / `done` 非空字符串；
 4. `steps` 非空（`draft: true` 的章节除外）；
-5. 每个 `numbers[].src` 非空，且形如 `路径:行` 或指向已存在的实测数据文件；
+5. 每个 `numbers[]` 元素**只含 `label` 与 `value` 两个键**；出现 `src` 等任何多余键即判失败
+   （玩家正文不允许出现源码路径，`src` 字段已下线）；
 6. 文本里禁止出现占位词：`TODO`、`待补`、`XXX`、`足够高`、`继续推进`；
 7. 末端章节（`stageKey == "doomed"`）必须包含终局判据数值 `1e1000` 或 `1000`；
 8. **禁用译名黑名单**：正文不得出现 `docs/TUTORIAL_GLOSSARY.md` 第四节列出的任何写法
