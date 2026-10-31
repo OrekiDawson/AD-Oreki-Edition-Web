@@ -1812,6 +1812,25 @@
     pointer-events: none;
   }
 
+  /* --------------------------------------------------------------------------
+     [Oreki R43-C] 抽屉展开时收起常驻教程入口
+     缺陷（静态几何，320/360 两档）：
+       · 抽屉面板宽 22rem = 220px（max-width 84vw 在 320 时是 268px，不起作用），
+         铺满整个可视高度；
+       · 教程入口 pill 是「右锚定 + 宽约 145px」，320 时左缘 ≈ 168px，
+         与抽屉面板在 x 168~220 区间横向重叠约 52px，纵向正好压在面板底部 48px 的页签带上；
+       · 两者同在根层 z-index 5，而 pill 由 installTutorialEntry() 追加到 body 末尾，
+         绘制顺序更后 ⇒ pill 盖住抽屉页签，点在重叠区会被 pill 的
+         click（stopPropagation）吞掉，切页签失败。
+       同时 pill 的 z-index(5) 高于遮罩(4)，抽屉展开时它仍是全亮状态，破坏遮罩层级。
+     修法：只在抽屉展开期间隐藏 pill（visibility 不触发重排），关掉抽屉立刻恢复。
+     用 body:has() 而不是给 pill 加状态位：pill 在 src/core 里注入，不改它的代码。
+     -------------------------------------------------------------------------- */
+  body:has(.c-modern-sidebar--open) .c-oreki-tut-entry {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   /* ---- 抽屉内的页签：横向可读，不再竖排 ----
      页签容器改成纵向 flex：否则 .l-tab-btn-inner 的 height:100% 会吃掉整个
      页签高度并盖在子页签上（它带 position: relative，定位元素永远画在

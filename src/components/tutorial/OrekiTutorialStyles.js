@@ -253,6 +253,25 @@ const CSS = `
   }
   .c-oreki-tut__hint { display: none; }
   .c-oreki-tut__scroll { max-height: none; }
+
+  /* [Oreki R43-C] 头压缩：640×320 实测头部占 52px，而正文滚动区只剩 87px（约 3 行），
+     弹窗总高 314px 已贴着 320px 的视口。这里把「标题 1.5rem + 副标题 1.15rem + 间距 +
+     下内边距」压成两行更紧的排版（52px → 约 33px），正文可视高度回到 100px 以上。
+     不删任何文字：副标题（例如「附录 · 不参与主线进度」）仍然完整显示。 */
+  .c-oreki-tut__head {
+    gap: 0;
+    padding-bottom: 0.3rem;
+  }
+
+  .c-oreki-tut__head-title {
+    font-size: 1.3rem;
+    line-height: 1.25;
+  }
+
+  .c-oreki-tut__head-subtitle {
+    font-size: 1rem;
+    line-height: 1.25;
+  }
 }
 `;
 
