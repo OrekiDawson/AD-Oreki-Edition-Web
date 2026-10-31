@@ -218,9 +218,12 @@ baseline 与 after-a 都在 9:58:49 **之前**结束；after-b 全程压在两�
 
 ### 5.4 没做到的（如实标注）
 
-- **没有最终版代码的干净跑分样本**。after-a 跑的是前一版，两版差异只有一处：
+- **没有最终版代码在干净宿主上的通关秒数**。after-a 跑的是前一版，两版差异只有一处：
   前一版把 `runReality` 提到 `buyRealityMachine` 前面（`buyRealityMachine` 是 `unsupported`，执行层本来就不动手 ⇒ 行为等价），
   最终版改成「只在原位换位」，reality 阶段顺序回到与 spec 逐字相同。**这处差异在 `[读码]` 层面无行为影响，但没有被单独跑分验证。**
+  ⇒ 部分弥补：**最终版确实在真实浏览器里连续跑了 979 条采样 / 999.3 s**（`r42-after-b`），
+  `smDeg = 0` 条、`smErr = ""`、`pageErrors` 无新增 ⇒ 「最终版能加载、能跑完整局、不降级」是 `[实测]`；
+  只有**那次的秒数**因宿主被两个 AVD 占满而不可用（见 §5.3）。
 - 存活探针 `r42-route-peek-a` 在 t=6.2 s 报出过 `eta=0s（threshold-reached）`，而当时现实并未解锁。
   已定位为「`TimeStudy.reality.cost` 只是必要条件」，并加了自证：`partial` 目标下若阈值已达成但目标未达成，一律报 `null`
   ＋ `threshold-met-but-goal-not-done`。修复后被单测覆盖（§7 两条断言），**未在真机上复测到该分支再次触发**（`[读码]`）。
