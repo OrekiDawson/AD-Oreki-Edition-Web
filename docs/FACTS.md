@@ -2664,3 +2664,150 @@ agent-k 报的是第 8 个判断（`:go` 那处），agent-b 报的是它上面�
 
 
 
+
+## C.55 正式 APK 的 SHA-256 与 R40 备份字节相同 ⇒ R41 的四个修复一个都没进正式包 `[实测]`
+
+**`release/反物质维度.apk` 与 `release/备份-R40重建前-1911.apk` 是同一个文件内容**：
+
+```
+090b9adbd0b4f8ad0a1b799d151c11e6af207ea93c55e13ea40441ba67d69f43  release/反物质维度.apk
+090b9adbd0b4f8ad0a1b799d151c11e6af207ea93c55e13ea40441ba67d69f43  release/备份-R40重建前-1911.apk
+```
+
+尽管 `反物质维度.apk` 的 mtime 是 `10-31 02:53`（比备份新了一天），内容一字未变。
+
+⇒ **R41 的四个提交（`a97580c` 八处极性 / `720f145` TARGET=1001 / `81cc909` AchAudit 首轮 / `80261b7` 删 ipMultAuto）没有任何一个在正式包里。**
+
+坐实这件事的旁证：R41 实测读数（`mode=2/xHighest=1e1`、`interval 150000→19440`）只能来自候选包，与正式包无关。候选包清单（SHA-256 前 16 位）：
+
+| 路径 | 大小 | SHA-256 |
+|---|---|---|
+| `_b_build/out/反物质维度.apk` | — | `167e60e9f6c074f6` |
+| `build/brake_probe/installed.apk` | 69,761,566 | `6b957726cab14f73` |
+| `build/knives_stage/反物质维度.apk` | 69,790,387 | `67562279429c97a2` |
+| `build/gate_stage/反物质维度.apk` | 69,786,291 | `4775b5e17ef66c9d` |
+| **`release/反物质维度.apk`（正式）** | 69,745,182 | **`090b9adbd0b4f8ad`** |
+
+⇒ 规则：**mtime 不能用来判断"这个包是什么版本"，只有 SHA-256 能。** 每次交付前必须报本地 SHA-256，并与「上一份有效版本」对比说明是否真的换了。
+
+⇒ 规则：**正式包只能由主 Agent 提升**。子 Agent 的构建一律放自己的构建根，报路径 + SHA-256，不许直接写 `release/`。
+
+
+## C.56 Android `GameEnd.endState` 读的是 `PelleRecords.totalAntimatter`，而该字段疑似没有玩法写入路径 `[读码，待 REA 证实]`
+
+### 一、读的一侧已确证
+
+`work/mod/smali/kajfosz/antimatterdimensions/celestials/pelle/b.smali` 的 `b()D` 就是 `GameEnd.endState`：
+
+```
+Player.p() → Celestials.d() → Pelle.h() → PelleRecords.a() → BigDouble
+  +1 → log10() → +1.0 → Math.log10() → -1.0
+再除以 ( Math.log10(TARGET) - 1.0 )
+```
+
+**读的是 `PelleRecords.totalAntimatter`，不是当前 `Currency.antimatter`。** 和 Web 同源（`game-end.js:65`）。
+
+### 二、写的一侧搜索结果（`work/mod/smali` 全树）
+
+`PelleRecords.totalAntimatter` 的写入点只有：
+
+| 位置 | 性质 |
+|---|---|
+| `Player$PelleRecords.smali:50` | 构造函数初始化 |
+| `Player$PelleRecords.smali:125` | setter `d(BigDouble)V` 本体 |
+| `player/e.smali:13422` | 调 setter，**存档反序列化** |
+| `ve3.smali:239` | 调 setter，`Lve3;` 工具类，看着也是存档/初始化路径 |
+
+`ug2.smali:37483` 读了 `PelleRecords.a()`，但**没找到它后面调 `d()` 写回**。
+
+### 三、Web 对照
+
+`src/core/currency.js:215-217`：
+
+```js
+if (Pelle.isDoomed) {
+  player.celestials.pelle.records.totalAntimatter =
+      player.celestials.pelle.records.totalAntimatter.max(value);
+}
+```
+
+**这是 Web 唯一的玩法期写入点**，挂在反物质货币的 setter 里。
+
+### 四、如果成立，后果是什么
+
+`totalAntimatter` 恒为初值 ⇒ `endState` 恒 0 ⇒ **即使 Break 了、AM 涨到 1e2000，也永远不会 `isGameEnd`**。
+这条比 BreakGate 更上游：补 IP、买满、Break 都做对了，终点仍不动。
+
+### 五、待办（不许用 rg 零命中当结论）
+
+必须用 REA 对**原版对照 APK** 取证：`PelleRecords->d` 的引用链、`ug2` 那段是否写回、`ve3` 的真实用途。
+结论出来前，本条只能标 `[读码]`，**不得**写成"已确认缺失"。
+
+
+## C.57 部署清单缺 `src/core/oreki-route-model.gen.js`：直接发布会让主线模块 404 `[实测]`
+
+### 一、事实
+
+`src/core/oreki-smart-strategy.js:40` 有一行**静态** import：
+
+```js
+import routeModel from "./oreki-route-model.gen.js";
+```
+
+而 `web/_deploy/filelist.txt`（部署清单，862 项）里**没有这一项**。
+
+线上现在没炸，是因为线上跑的是 `6e90ede` 时代的 `oreki-smart-strategy.js`（第 35 行只 import `./oreki-smart-strategy.gen.js`，没有 route-model）。
+**一旦按当前 main 重新发布，`oreki-smart-strategy.js` 会因 404 加载失败，连带整条 import 链断掉。**
+
+已补进 `filelist.txt` 第 862 行（紧跟 `oreki-smart-strategy.gen.js`），清单变为 863 项。
+
+### 二、独立闭包检查（不依赖 `--dry-run`）
+
+新脚本 `web/_tools/_r42/check_import_closure.py`：从入口 `src/main.js` 真实求静态 import 闭包，再拿闭包对清单。
+
+```
+从 src/main.js 可达 726 个模块
+闭包内、但不在 filelist（补之前 1 个：src/core/oreki-route-model.gen.js；补之后 0）
+filelist 里有、但源码不存在：0
+源码里未被闭包引用、也不在 filelist：2（oreki-dilation-probe.js / oreki-ec-probe.js，探针，正确排除）
+判定：PASS
+```
+
+**为什么不能只用 `--dry-run`**：`--dry-run` 回答的是「按清单同步会写哪些文件」，它把清单当成对的。
+清单本身漏项时，`--dry-run` 只会安静地少写一个文件，不会报错。**必须独立求闭包再对清单。**
+
+⇒ 规则：**每次发布前跑一次 `check_import_closure.py`，必须 PASS。**
+
+### 三、顺带发现的缺口：清单本身不在任何版本控制之下
+
+- `web/_deploy/filelist.txt` 与 `web/sync_deploy.py` 都在 `web/AD-Oreki-Edition` 仓库**外面**；
+- `web/` 与 `web/_deploy/` 都不是 git 仓库根（`git rev-parse --show-toplevel` 报 not a git repository）。
+
+⇒ **决定"发什么"的那份清单没有历史**。和 C.49（`_tools` 不在版本控制）是同一类缺口，但影响更大：改错一个字符就能让线上少一个模块，且事后无法追溯是谁改的。
+
+（本条只记录事实与建议，修法待定：把 `sync_deploy.py` + `filelist.txt` 移进某个仓库，或至少给清单加一份入库快照 + 校验。）
+
+
+## C.58 Pages 与 Web main 的真实差异只有 5 个文件；先归一行尾，否则会得出反向结论 `[实测]`
+
+### 一、差异清单
+
+`diff -rq` 直接比 `_deploy/site` 与 `AD-Oreki-Edition` 会报 **40+ 个文件不同**。
+按 CRLF→LF 归一化后重新比哈希，真实差异只有 **5 个**：
+
+| 文件 | 性质 |
+|---|---|
+| `src/core/intervals.js` | `dea0f47` 的 `version.txt` 修复，**尚未部署** |
+| `src/core/oreki-smart-executor.js` | 与 C.53 一致的调试计数差异 |
+| `src/core/oreki-smart-strategy.js` | 新增 route-model import（见 C.57） |
+| `src/core/oreki-tutorial-data.gen.js` | 教程正文 |
+| `src/components/tabs/options-gameplay/OptionsGameplayTab.js` | 阻塞空态文案 |
+
+只在 main 有的 6 个：`oreki-dilation-probe.js`、`oreki-ec-probe.js`、`oreki-route-model.gen.js`、`oreki-route-model.json`、`oreki-smart-strategy.json`、`oreki-tutorial-data.json`。
+**后五个里，只有 `oreki-route-model.gen.js` 是运行时依赖（C.57），其余是 `.gen.js` 的源文件或探针，正确排除。**
+
+### 二、规则
+
+**这就是 C.53 §二 那条"比对前先让两边可比特"的第二次实证。** 这次是同一条规则反向作用：不归一化会得到「40+ 个文件不一样、必须整站重发」的假警报。
+
+⇒ 规则：**做部署差异比对，第一个动作永远是归一化行尾，不是直接 `diff -rq`。**
