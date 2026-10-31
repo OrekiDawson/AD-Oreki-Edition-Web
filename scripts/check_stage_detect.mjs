@@ -209,10 +209,9 @@ const FIXTURES = [
   // ④ 无限维度与无限挑战（两个夹具：挑战中 / 不在挑战）
   { node: 4, label: "已 break、正在跑 IC", state: { infinities: 40, breakUnlocked: true, infinityRunning: true }, expect: "challenges" },
   { node: 4, label: "已 break、无挑战（刷 ID）", state: { infinities: 40, breakUnlocked: true }, expect: "infinityDimensions" },
-  // ⑤ 第一次永恒（一棵研究都没买）
-  { node: 5, label: "刚进永恒、0 研究", state: { infinities: 60, breakUnlocked: true, eternities: 1 }, expect: "eternity" },
-  // ⑥ 时间维度与时间研究
-  { node: 6, label: "已在研究树上（12 棵）", state: { breakUnlocked: true, eternities: 20, studies: 12 }, expect: "timeStudy" },
+  // ⑤⑥ 第一次永恒 + 时间研究（R45 起合并为一段，两个夹具命中同一个 stage）
+  { node: 5, label: "刚进永恒、0 研究", state: { infinities: 60, breakUnlocked: true, eternities: 1 }, expect: "eternityTimeStudy" },
+  { node: 6, label: "已在研究树上（12 棵）", state: { breakUnlocked: true, eternities: 20, studies: 12 }, expect: "eternityTimeStudy" },
   // ⑦ 永恒挑战
   { node: 7, label: "正在跑 EC5", state: { breakUnlocked: true, eternities: 20, studies: 12, eternityRunning: true }, expect: "eternityChallenges" },
   // ⑧ 时间膨胀

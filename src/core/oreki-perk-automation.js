@@ -26,8 +26,10 @@
 // · 受玩家既有的自动购买器总开关 `player.auto.autobuyersOn` 控制，关掉即完全停止；
 // · 毁灭现实（`Pelle.isDoomed`）不买：那一阶段 `Pelle.uselessPerks` 会让部分节点失效，
 //   而复兴节点**没有退点/重置入口**（`dev.respecPerks` 是开发工具），买错就是永久浪费；
-// · 手动优先：读 `OrekiSmartStrategy.debugState().manualHolds`，只要还有任何目标在保护窗口内
-//   就一秒不动 —— 与执行层的 `manualOverride` 同一条信号，不另建一套判定；
+// · 手动优先：只认「玩家自己买了一个节点」（`player.reality.perks.size` 的增量里
+//   扣掉本模块自己的购买数 > 0），随后让路 60 s。**不读** 执行层那份点击启发式
+//   （`OrekiSmartStrategy.debugState().manualHolds`）—— 那一份把「点页签 / 开弹窗」
+//   也算手动操作，会让复兴节点在新手期一直被压住，见 `_observeOwnership()` 的说明；
 // · 每秒最多买 1 个：点数只来自现实次数，买太快面板（「④ 正在执行」）看不清是谁买的，
 //   而且一次买一堆会让「手动接管」来不及生效；
 // · 不写任何 `player.*` 字段，不调 `Currency.perkPoints`，一切扣费/校验走 `purchase()`。
@@ -40,6 +42,11 @@
 
 /** 两次购买之间的最小墙钟间隔（真实毫秒）。 */
 const PERK_MIN_INTERVAL_MS = 1000;
+/**
+ * 玩家手动买了一个节点之后，本模块让路多久（真实毫秒）。
+ * 与 `spec.manualOverride.holdSeconds` 的 60 s 一致。
+ */
+const PERK_MANUAL_HOLD_MS = 60000;
 
 /** 只读观测：累计买到数、上一次失败原因。 */
 export const OrekiPerkAutomation = {
@@ -47,6 +54,12 @@ export const OrekiPerkAutomation = {
   _lastBuyMs: 0,
   _lastError: "",
   _lastPick: null,
+  /** 上一次观测到的已买节点数（用于识别「玩家手点」），null = 还没观测过 */
+  _lastObservedOwned: null,
+  /** 自上次观测以来本模块自己买到的数量（用于从增量里扣掉自己） */
+  _selfBuysSinceObserve: 0,
+  /** 玩家手动购买后的让路到期时刻（真实毫秒） */
+  _manualHoldUntil: 0,
 
   /** 是否允许动手。纯读，无副作用。 */
   get active() {
@@ -62,17 +75,45 @@ export const OrekiPerkAutomation = {
     }
   },
 
-  /** 玩家是否刚手动操作过（与执行层共用同一份 manualOverride 信号）。 */
-  _manualHoldActive(now) {
+  /**
+   * 玩家是否刚手动买过节点 → 本模块让路。
+   *
+   * ── 为什么不能用 `OrekiSmartStrategy` 的 manualHold ──────────────────────
+   * 那一份信号是**点击启发式**：`oreki-smart-executor.js` 的 `installManualWatch`
+   * 监听 `#ui` 上的任何 click，命中就按当前 goal 记 60 s。
+   * 但 `#ui` 是整块游戏界面 —— 切页签、点成就页、开弹窗、调倍率**全都算手动操作**。
+   * 玩家在新手期几乎一直在点，于是复兴节点会被一直压住：
+   *   perk 点数买不出去 ⇒ `reality.perksBought` 不动 ⇒ 自动机点数攒不到 100 ⇒
+   *   `automator.unlocked` 永假 ⇒ 策略的 realityTree 阶段与「复兴树」目标整段失效。
+   * 这是**代理信号与目标不匹配**，不是玩家操作太多。
+   *
+   * ── 换成本模块自己的精确信号 ────────────────────────────────────────
+   * 只认「已买集合真的变大了，而且不是本模块买的」：
+   *   `player.reality.perks.size` 由 `Perk.purchase()` 唯一写入，
+   *   所以增量减去本模块自己的购买数 > 0 ⇒ 玩家手点了一个节点。
+   * 语义与 spec `manualOverride` 完全一致（「玩家手动执行了某目标对应的动作」），
+   * 且**点页签不会让路** —— 假阳性归零。
+   */
+  _observeOwnership() {
     try {
-      const s = globalThis.OrekiSmartStrategy;
-      if (!s || typeof s.debugState !== "function") return false;
-      const holds = s.debugState()?.manualHolds;
-      if (!Array.isArray(holds)) return false;
-      return holds.some(h => h && h.remainMs > 0 && h.remainMs < 10 * 60 * 1000);
+      const owned = player.reality.perks.size;
+      if (this._lastObservedOwned === null) {
+        this._lastObservedOwned = owned;
+        return;
+      }
+      const gain = owned - this._lastObservedOwned;
+      if (gain > this._selfBuysSinceObserve) this._manualHoldUntil = Date.now() + PERK_MANUAL_HOLD_MS;
+      this._lastObservedOwned = owned;
+      this._selfBuysSinceObserve = 0;
     } catch (e) {
-      return false;
+      this._lastError = `observeOwnership: ${(e && e.message) || e}`;
     }
+  },
+
+  /** 玩家是否刚手动买过节点（见 `_observeOwnership` 的说明）。 */
+  _manualHoldActive(now) {
+    this._observeOwnership();
+    return now < this._manualHoldUntil;
   },
 
   /**
@@ -186,6 +227,9 @@ export const OrekiPerkAutomation = {
       const ok = perk.purchase();
       if (ok) {
         this._bought++;
+        // 记一笔「这一个是自己买的」，供 `_observeOwnership()` 从集合增量里扣掉；
+        // 不在这里改 `_lastObservedOwned`，否则同一帧里玩家又手点一个就会被漏判。
+        this._selfBuysSinceObserve++;
         this._lastBuyMs = now;
         this._lastPick = { ...pick, result: "bought" };
       } else {
@@ -227,6 +271,8 @@ export const OrekiPerkAutomation = {
       automatorPoints,
       next: pick,
       lastPick: this._lastPick,
+      // 让路必须可观测：0 = 没让路，>0 = 还剩多少毫秒（玩家自己买过节点）
+      manualHoldRemainMs: Math.max(0, this._manualHoldUntil - Date.now()),
       error: this._lastError,
     };
   },
