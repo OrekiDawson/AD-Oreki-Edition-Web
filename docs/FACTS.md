@@ -3126,3 +3126,69 @@ python -c "import zipfile,sys;n=zipfile.ZipFile(r'release/反物质维度.apk').
 ```
 
 输出为空 ⇒ **不许装机验收、不许发布**。
+
+## C.68 Android 教程正文「从未显示过」：`TutorialActivity` 四处判空极性全部写反 `[读码 + 实机]`
+
+### 一、现象与一个决定性的旁证
+
+装机包进「选项 → 打开 Oreki 中文教程」，界面只有 7 个节点，正文区显示
+「教程正文缺失（行数 0 / 章节 0 / 异常 null）」。
+
+先排除打包问题：**设备内 `base.apk` 里的 `assets/oreki_tutorial.txt` 是 114149 B、839 行、LF、UTF-8、首行正常**
+（`adb pull` 后解包核对）。资产是好的。
+
+**决定性旁证**：`:open_fail` 与 `:read_fail` **两条失败路径都会写 `diag`**。
+界面 `diag` 为 `null` ⇒ 两条失败路径都没走到 ⇒ **资产打开成功、第一行读出来了，是循环自己跳走的**。
+
+⇒ 规则：**「失败信息为空」本身就是证据。** 一个把异常写进 UI 的组件，只要它显示「异常 null」，
+就说明它根本没走进 catch —— 这时不要再去查 IO、查权限、查打包。
+
+### 二、四处都是 `if-eqz` / `if-nez` 写反（同一族）
+
+| # | 位置 | 错写 | 后果 |
+|---|---|---|---|
+| 1 | `:read_loop` 读循环 | `if-nez v1, :read_end` | 读到**非 null 行**就跳走 ⇒ 循环体一次不执行 ⇒ `lines.size()==0` |
+| 2 | `:close_stream` | `if-nez v0, :done` | reader 非 null 时跳过 `close()` ⇒ 流永不关闭（句柄泄漏，与正文无关但同病） |
+| 3 | `indexChapters` 入口 | `if-nez v0, :no_lines` | `lines` **有内容**时反而跳去 `:no_lines`（`chCount=0`）⇒ 即使读循环修好，章节索引也一个都建不出来 |
+| 4 | 第二遍填充 / 记录渲染 | `if-nez v6, :fill_next`、`if-nez v8, :rec_next` | 把**所有带标签的行**全跳过 ⇒ CH 分支与记录块渲染永远走不到 |
+
+四处均改为 `if-eqz`（= 为零才跳）。
+
+第 3、4 处**特别值得记**：只修第 1 处，「行数」会从 0 变成 839，但「章节」仍是 0、正文仍渲染不出来。
+**症状会变成「有行数没内容」，比全 0 更容易被误判成修好了。**
+
+### 三、极性的依据（`tagCode` 编码表）
+
+`tagCode(String)I`：`CH`→1、`TITLE`→2、`SUB`→3、`STAGE`→4、其余记录标签→5+、**无标签→0**。
+第一遍计数用的是 `if-eq v6, 1, :count_next`（tagCode == CH 才计数），
+与「0 才是无标签」互为印证。所以第二遍「跳过无标签行」必须写 `if-eqz v6`。
+
+**保留未改的一处**：`:no_header` 处 `if-nez v2` 里 `v2` 是 `stepHeaderDone:Z`，
+「为真则跳过」是正确语义，不是笔误。**不是所有 `if-nez` 都错，必须逐个判语义，不能批量替换。**
+
+### 四、为什么这四行能活这么久
+
+`build_mod.py` 的 `[R40H]` 断言（`build_mod.py:3924-3960`）检查的是**接线存在性**：
+`getAssets()` / `"oreki_tutorial.txt"` / `"oreki_tutorial.legacy.txt"` / `"\|"` / `split` /
+`showChapter` / `buildTabs` / `openInitialChapter` / `stage()` / `saveFontSize`，
+外加「`const-string` 里汉字 < 600」与「界面文案不许出现英文」。
+
+**一条都不检查条件跳转的方向。** 于是 10 条断言全绿，教程从上线起就没显示过一行正文。
+
+⇒ 这是 C.52「构建期断言只证明指令在，不证明行为对」的**第三例**（前两例：`verify_au4b` 全绿而 AU4b 是死的；`OrekiStageAuto` 七处全绿而整个类是死代码）。
+
+⇒ 规则：**接线断言必须配一条「反写法不存在」的断言**，例如：
+
+```python
+assert "if-eqz v1, :read_end" in src, "读循环极性丢了"
+assert "if-nez v1, :read_end" not in src, "读循环极性又写反了"
+```
+
+单靠「正确写法存在」不够——变异成另一种写法时前者仍可能命中子串。
+
+### 五、连带影响：Android 字号三档的「通过」需要重新验
+
+C.66 记的「同一段文字高 222 / 261 / 420 px」是在正文为空的状态下量的。
+当时页面上唯一的长文本是**那行红色诊断信息**。字号随设置变化是真实的，但**量的不是教程正文**。
+
+⇒ 修复后必须重测：量的必须是某一章的真实正文段落，并同时确认「行数 > 0 且章节 > 0」。
