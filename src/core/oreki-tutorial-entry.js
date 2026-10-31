@@ -33,7 +33,7 @@ function createEntryButton(doc) {
   button.id = TUTORIAL_ENTRY_ID;
   button.type = "button";
   button.className = "c-oreki-tut-entry";
-  button.title = "打开 Oreki 中文教程";
+  button.title = "内置教程（简体中文，随时可看）";
   button.setAttribute("aria-label", "打开 Oreki 中文教程");
 
   const icon = doc.createElement("span");
