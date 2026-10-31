@@ -4025,3 +4025,193 @@ Windows Edge 411 / 980 / 1280 三档实测「越界行 0、子元素溢出 0、�
 
 `docs/FACTS.md` 三处 inode `3940649674859546`、`nlink = 3`、SHA-256 一致（`f34e79e5756bdecb`）。
 本次追加同样使用原地读写，未破坏链接。
+
+## C.82 R49 交付台账与实测数据（2026-11-01 01:07–04:xx）`[实测]`
+
+### C.82.1 交付
+
+| 项 | 值 |
+|---|---|
+| Web 源码 | `f10968c`（教程同步：挑战启动即完成的前提与 autoEC 默认关闭） |
+| Web 前置（同轮并行会话） | `0d4f95b` §45、`fbd193c` 行宽收敛、`45b7373` EC 语义、`c98c325` FACTS、`9a4d893` autoEC 默认关闭 |
+| Pages 部署 | 部署仓 `e2ecf58`，864 文件，import 闭包 PASS（2 个 probe 模块未接线属正常） |
+| 线上核验 | `oreki.net/src/core/player.js` 第 529 行 `autoEC: false`；`oreki.css` 含 `min(96rem` ⇒ 新版本确实生效 |
+| Android 源码 | `a649196`（补提交 `DrawerInsetListener.smali` + `check_invoke_types.py`，此前已打进 APK 但漏提交） |
+| APK | `release/反物质维度.apk` 69,790,309 B，SHA-256 `d101ea0926f410c9…` |
+| 双网盘 | OneDrive 与小米云盘均 `d101ea09…` / 69,790,309 B（替换掉 10-31 23:23 的旧包 `5af2e259…`） |
+
+**Android 未重新构建的依据**：`find scripts/payload/smali -newermt "2026-11-01 00:22"` 结果 **0 个**，
+`build_mod.py` 最后修改 00:16。即 00:22 产出的 `release/反物质维度.apk` 与当前源码一致。
+包内已确认 `OrekiInstantChallenge` / `OrekiChallengeAuto` / `OrekiStageAuto` / `DrawerInsetListener` /
+`TutorialActivity` 均在 dex 中命中。
+
+### C.82.2 自动购买器六档矩阵（真机 + CDP 视口）
+
+真机 Redmi 23113RKC6C / Android 16，411 px 逻辑视口，真实 `getBoundingClientRect()`：
+
+| 视口来源 | vw | docW | 行数 | 子元素越界 | 行超视口 | 横向滚动 |
+|---|---|---|---|---|---|---|
+| 真机 Chrome 原生 | 411 | 411 | 18 | **0** | 0 | 无 |
+| CDP 320 | 320 | 320 | 16 | 0 | 0 | 无 |
+| CDP 360 | 360 | 360 | 16 | 0 | 0 | 无 |
+| CDP 393 | 393 | 393 | 16 | 0 | 0 | 无 |
+| **手机 Edge 980（桌面模式布局视口）** | 980 | 980 | 16 | **0** | 0 | 无 |
+| CDP 1280 | 1280 | 1280 | 16 | 0 | 0 | 无 |
+
+- R48 真机基线是「子元素超出所属槽右边界 **75–83 px**」，R49 实测为 **0**，修复真实有效。
+- 手机 Edge 调试通道：`chrome_devtools_remote_32336` → `adb forward tcp:9334`。
+- **口径说明**：980 档是在手机 Edge 进程里用 CDP 设置布局视口 + 桌面 UA 复现的，
+  **没有走 Edge 菜单里的「请求桌面网站」开关**。缺陷成因就是布局视口取 980，
+  所以这个测法覆盖缺陷本身；但菜单路径未走，如实记录为未完成项。
+
+### C.82.3 挑战「启动即完成」实测（隔离浏览器上下文，零存储）
+
+用 CDP `Target.createBrowserContext` 建真正全新存储（`localStorage` 空、`eternities=0`、`eternityChalls={}`）。
+
+**EC5**：`start(true)` 返回 `true` → `current` 写入 5 → **68 ms 后** `completions` 0→5、`current` 归零；
+12 次 × 50 ms 采样**全部稳定**（无反复、无重复结算）。
+
+**C2**：`start()` 后 `current=2` → 60 ms 内 `current=0`、`isCompleted=true`，8 次采样稳定。
+
+**IC1**：`start()` 后 `current=1` → 60 ms 内 `current=0`。
+
+**一条必须记住的干扰**：在后期存档上，`completedBits` 会在 3 秒内从 0 跳到 **8190**（12 个普通挑战全置位），
+IC 的 `isCompleted` 在 true/false 间闪。**这不是缺陷**，是原版
+`eternity.js:181 initializeChallengeCompletions()`：
+拿到「保留自动购买器」永恒里程碑后每次永恒都 `NormalChallenges.completeAll()`，
+`Achievement(133)` 解锁后同样 `InfinityChallenges.completeAll()`。
+⇒ 「未启动不涨完成数」在后期档**无法干净验证**，只能靠代码路径断言（入口是 `current !== 0`）。
+
+### C.82.4 Android 侧代码核对结论
+
+`OrekiInstantChallenge.smali` 已完整覆盖 C/IC/EC：三类各自先判 `current > 0`；
+C/IC 抬高 `maxAM` → 原版 `E(false)` 记完成 → `restoreMaxAM()` 还原；
+EC 循环 `F(false)` 补满且**带 2000 次安全上限**，只有次数真变大才结算 EP；
+幂等靠「完成次数变化 + `current` 归零」双闸门。
+`OrekiChallengeAuto` 的 `tryNormal/tryInfinity` 只走启动路径，未发现未启动直接补次数。
+Android 无独立 `autoEC` 字段，沿用原版 `player.reality.autoEC`（原版默认关闭），与 Web 改动后一致。
+
+**这是代码核对与包内确认，不是端到端实测** —— Android 挑战流程装机验证本轮未做。
+
+### C.82.5 两条操作教训
+
+1. **不得用模糊文字匹配点击游戏内开关**。本轮为关弹窗按「嗯呐/确定/关闭」匹配按钮，
+   误点了真机的「自动重试挑战」开关（`player.options.retryChallenge` 被置 true），
+   30 秒内已改回 `false` 并核对 UI。这正是上一轮「页面一直跳转」的成因。
+2. **`--user-data-dir` 必须用 `C:/…` 形式**。传 `/c/Users/…` 时 Edge 会解析成 `C:\c\Users\…`，
+   建立了一个错误目录且**看起来像新 profile 实则不是**（R48 遗留测试存档就在那里）。
+   用 `Target.createBrowserContext` 才是真正零存储，`localStorage` 为空不等于新档
+   —— 只有 `gameCreatedTime` 与页面加载时刻吻合、`realTimePlayed` 与墙钟吻合，才能认定是新档。
+
+### C.82.6 新档推进速度（抽样）
+
+全新存档 10000×、默认自动化、无人工操作，实测阶段推进：
+
+| 现实时间 | 永恒次数 | 现实次数 | 阶段 |
+|---|---|---|---|
+| 0 s（页面创建） | 0 | 0 | — |
+| ~90 s | 6.4e4 | 0 | — |
+| 150 s | 1.5e6 | 5 | 符文装备与现实升级（glyphs） |
+| 210 s | 3.6e87 | 10 | 同上 |
+
+`totalTimePlayed` 17.2 天 ÷ 10000 ≈ 149 s，与墙钟吻合 ⇒ **确认是全新档且速度倍率生效**。
+
+---
+
+## C.83　R50：真实通关路上的三个死锁（Web）
+
+R50 用隔离浏览器上下文（`Target.createBrowserContext`，非用户 Profile）跑真实新档，
+默认 10000×、不开教程、零人工点击。下面三条都是**实测字段证据**，不是读码推断。
+
+### C.83.1 死锁一：EC8~EC12 没有任何模块驱动（`r50-diag1`，t≈400 s）
+
+观测：`realities=115`、`timeTheorems=1.5e7`，但 `ecDone=[5,5,5,5,5,5,5,0,0,0,0,0]`、
+`player.challenge.eternity.unlocked=62`、`TimeStudy(123)` 从未购买、
+`OrekiCelestialAutomation.gates.notUnlocked=8583`、`ds1=false / maxDT=0 / V=false`，
+永久停在 `celestialsEnslaved`。
+
+根因三条同时成立：
+1. `DEEP_EC_IDS` 只有 `[9,10,11,12]`，EC8 交给通用路径，而现实每 ~25 s 清空
+   `player.challenge.eternity.unlocked` 与时间研究树，通用路径来不及补 123 分叉；
+2. `hold` 要求「EC11 已满」才压现实，而 `_driveEcChain()` 只在 `hold === true` 时被调用
+   ⇒ 「要 hold 才能打 EC11，要 EC11 才能 hold」闭环，`lastRelease="shallow"`；
+3. 补前置只调 `buyTimeStudies()`，它按自己的优先级补树，不会为 EC8 专门点 123。
+
+修复（`b192718`）：`DEEP_EC_IDS=[8,9,10,11,12]`；`hold` 改为「EC11 未满且（EC7 未满或
+未过 V 门槛）才放手」；`unlocked===0` 时改走原版 `purchaseUntil()`（等价 Shift+点击 EC 研究）。
+
+### C.83.2 死锁二：V 解锁后膨胀链自我关闭
+
+观测：V 解锁后 3 分钟 `ds1=false / ds6=false / tp=0 / maxDT=0 / im` 平在 1.98e9、
+`iu25=false`，卡在莱特拉前。
+
+根因：`hold`、`tick()`、`tickDilation()` 三处都以「V 已解锁」为停机条件，而 IU25 的
+`checkRequirement` 要求 `TimeStudy.reality.isBought`（DS6），DS6 在膨胀树里。
+
+修复（`3a778d5`）：三处停机条件改判 `ImaginaryUpgrade(25).isBought`；同时
+`buyImaginaryUpgrades()` 在买 IU15/IU25 前先用 IU1~IU10、IU13 抬 IM 上限。
+
+### C.83.3 死锁三：IM 上限低于 IU25 成本（物理上买不起）
+
+观测：`im` 连续 30 s 平在 3.16e9 不动，反推 `log10(uncappedRM)=6621`，
+而上限公式 `(log10(uncappedRM)-1000)² × …` 给出 3.16e9 < IU25 的 5e9。
+R37-A 的 100 倍系数是按 `log10(uncappedRM)=10722` 推的，R50 实测只有 6621。
+唯一能乘上限的 IU13 要求「在无名氏的现实中」+ 符文门票，本档 13 级拿不到。
+
+修复（`41933b3`）：`OREKI_IM_CAP_MULT` 100 → 300，上限抬到 ≈9.5e9（IU15 占 10.5%、
+IU25 占 53%）；并把「DS1+DS6 一买到就被放手冲掉」改成 IM 达标时不放手。
+
+### C.83.4 真实通关（当前代码的第一次终局）
+
+`r50-save2` 存档（01:56 从零开始）在 02:18 达到：
+
+```json
+{"perf":92214,"isGameEnd":true,"endState":2.6129516019644914,"stage":"doomed",
+ "realities":"355","doomed":true,"remnants":"632","keepAutobuyers":true,
+ "brk":true,"speed":40000}
+```
+
+墙钟约 22 分钟（< 180 分钟目标），`endState` 2.61 > 1，`speed` 已由动态提速抬到 40000。
+证据：`web/reports/_r50/r50-clear-evidence.txt`。
+**口径说明**：该档跨越了三次修复的落地时刻，不能严格证明「只用 bf55b0f 的代码从零到终局」；
+可复现的当前代码新档是 `2B2A4FCA`（02:19 起，页面加载时已含全部修复），见 C.83.5。
+
+### C.83.5 当前代码新档（`2B2A4FCA`）推进记录
+
+`startedAt=2026-10-31T18:19:14.210Z`，首状态 `eternities=0 / infinities=0 / realities=0 /
+ecDone=0 / speed=10000 / storageKeys=0`。
+
+| 墙钟 | 现实时间 | 阶段 | 现实次数 | EC 完成数（1→12） |
+|---|---|---|---|---|
+| 02:19 | 0 s | 开局 | 0 | 000000000000 |
+| 02:21 | 120 s | celestialsEnslaved | 30 | — |
+| 02:40 | 1132 s | celestialsEnslaved | 335 | 5 5 5 0 5 0 0 0 0 0 0 0 |
+| 02:42 | 1430 s | celestialsEnslaved | 415 | 5 5 5 5 5 0 0 0 0 0 0 0 |
+
+**这一轮的关键教训**：`ecDone` 里 EC1~EC5 是「先做能做的、顺序不固定」，单看
+「35 秒没推进」不能判定死锁；本轮 EC4 在 t≈1200 s 才补上，EC6/EC7 之后才轮到
+`hold` 放行去推 EC8~EC12。R49 的「35 秒冻结」结论（真死锁）**在 R50 未复现**，
+R50 的真死锁是 C.83.1~C.83.3 这三条，靠字段级证据定位。
+
+### C.83.6 教程中文化（R50-W5，`b578ad8`）
+
+需求：玩家不先懂英文缩写也要能读完整篇教程。做法与验收：
+
+- 唯一正文源 `src/core/oreki-tutorial-data.json`：233 个字符串、448 处替换。
+  EC/ID/IC/IM/RM/TD/DT/TP/IU/DM/DE → 永恒挑战/无限维度/无限挑战/虚幻机器/现实机器/
+  时间维度/膨胀时间/超光速粒子/虚幻升级/暗物质/暗能量；顺带 DU→膨胀升级、UI→界面、MOD→本作。
+- 每种缩写全篇只首次括注一次（「永恒挑战 12（EC12）」）；注释用占位符落盘，
+  防止被后两遍替换二次转换（第一版就踩过「（ID1~ID8）」变成「（无限维度 1~无限维度 8）」）。
+- **保留并给中文**：`autoEC`（配置键）、`SAM/SIP1/SIP2/SEP1~3/STP/TTF/ACH1~4/ACHNR/START`
+  （复兴树节点 ID，正文改为「起始反物质（SAM）」）、时间研究编号、`ALT+`、`Emoji` 记数法、
+  成就 41「无需 DLC」、`log10`/`max()`。
+- 附录 A 新增三列「中文名 · 英文缩写 · 用途」+「保留原样的技术标识」理由表。
+- **布局回归**：上游 `public/stylesheets/styles.css` 里有一条营销页遗留的
+  `section { float: right; width: 500px }`，教程每个 block 都是 `<section>`，
+  中文长句在 500px 窄栏里排不下，直接压到相邻栏上互相遮挡（第 9 章进入条件实测）。
+  修法：`.c-oreki-tut section { float: none; width: auto; }`，只作用于教程，不改上游。
+- 验收：`validate_tutorial.mjs` 十三项 PASS；真实打开教程后第 0/9 章与附录 A 的
+  `innerText` 裸缩写命中 **0**；桌面 1280×860、手机 390×844 截图核对不压字、不溢出。
+  Android 侧由 `scripts/oreki_tutorial_gen.py` 读同一份 JSON 生成 assets：
+  24 章 / 1160 条 / 40689 汉字 / 166158 字节，回读校验逐字一致。
+
