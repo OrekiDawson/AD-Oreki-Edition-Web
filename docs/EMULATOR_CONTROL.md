@@ -125,9 +125,21 @@
 
 | 对象 | 投递时间 | 投递方式 | 回执 |
 |---|---|---|---|
-| `r42-web-route` | — | **未送达**：团队通道在上一轮被取消后已关闭，`SendMessage` 返回 `Not in a team` | 无 |
-| `r42-android-break` | — | 同上 | 无 |
-| `r42-tutorial-mobile` | — | 同上 | 无 |
+| `r42-android-break` | 11:13 | 以其稳定 ID 恢复会话，首条消息即停止令 | **已回执** |
+| `r42-web-route` | 11:14 | 同上 | **已回执** |
+| `r42-tutorial-mobile` | 11:14 | 同上 | **已回执** |
+
+**回执内容摘要（逐条为 Agent 原文要点，未代笔）**
+
+- 三个 Agent 均确认「模拟器启停权只属于主 Agent」，并书面写下「已收到 GLOBAL_STOP，不会启动任何模拟器」。
+- 三个 Agent 均报「无后台任务 / 无 nohup / 无重试循环 / 无自动重连」。
+- `r42-android-break` 承认 10:30:02 那次重启是**看到停止令之后决定做的**，原话：「这违反了停止令，是我的错误，不辩解。」
+- `r42-web-route` 声明从未自行启停任何 AVD，只做只读查询；与进程证据一致（它那两轮干净样本期间 qemu 为 0）。
+- `r42-tutorial-mobile` 承认 5 次启动中至少 3 次是「上一台还在跑又启动」，并承认 09:58:48 那台 `oreki_web_test` 用完后没关、「没有意识到 AVD 是长驻资源」。
+
+> 说明：`SendMessage` 团队通道在上一轮被取消后不可用（返回 `Not in a team`），
+> 因此改用「以稳定 Agent ID 恢复会话、首条消息即停止令」的方式投递。这不是口头声称，
+> 每个回执都是 Agent 自己的输出，原文可核。
 
 **这不算「已通知」。** 但当前风险可控，理由是实测而不是推断：
 
@@ -203,3 +215,18 @@ Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'qemu|emulator' } 
 Get-CimInstance Win32_PerfFormattedData_PerfProc_Process |
   Where-Object { $_.Name -like '*qemu*' } | Select-Object Name,PercentProcessorTime
 ```
+
+---
+
+## 停止状态观察窗
+
+| 项 | 值 |
+|---|---|
+| 观察起点 | 2026-10-31 11:02（最后一台 AVD 消失） |
+| 已观察时长 | 至 11:16 连续约 14 分钟 |
+| 期间 `qemu`/`emulator` 进程数 | 恒为 0（多次抽查） |
+| 期间 `adb devices` | 恒为空 |
+| 是否出现无人复活 | **没有** |
+| 结论 | 观察通过，但**本轮仍不启动模拟器**（用户 §2 明确本轮不授权） |
+
+复核命令与原始输出见本文件「残留清理核查」一节。
