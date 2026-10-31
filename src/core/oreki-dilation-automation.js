@@ -41,7 +41,6 @@
 
 import { PlayerProgress } from "./player-progress.js";
 import { OrekiEternityAutomation } from "./oreki-eternity-automation.js";
-import { VUnlocks } from "./celestials/V.js";
 import { OREKI_V_UNLOCK_REALITIES, OREKI_V_UNLOCK_DILATED_TIME } from "./secret-formula/celestials/v.js";
 
 /**
@@ -170,7 +169,16 @@ export const OrekiDilationAutomation = {
     try {
       if (!player.auto.autobuyersOn) return this._release("off");
       if (Pelle.isDoomed) return this._release("pelle");
-      if (VUnlocks.vAchievementUnlock.isUnlocked) return this._release("v-unlocked");
+      // [Oreki R50] 原来这里是 `if (VUnlocks...isUnlocked) release("v-unlocked")`。
+      // 那是**第二个死锁**：V 解锁后本模块整体停机，但 IU25（解锁佩勒）的
+      // `checkRequirement`（imaginary-upgrades.js:362-363）要求
+      // `TimeStudy.reality.isBought`（DS6），而 DS6 在膨胀树里 ⇒ 必须先有 DS1
+      // ⇒ 必须先把 EC11/EC12 打满。V 一解锁就停 ⇒ EC8~EC12 再没人推 ⇒ DS1 永远没有
+      // ⇒ IU25 永远买不上 ⇒ 佩勒与终局永远到不了。
+      // 实测（R50 `r50-save1`，V 已解锁后 3 分钟）：`ds1=false / ds6=false /
+      // tp=0 / maxDT=0 / laiDim=0(已到 tier 8) / iu25=false`，卡在 laitela 阶段。
+      // 现在改成「IU25 买到才算这条链结束」。
+      if (ImaginaryUpgrade(25).isBought) return this._release("iu25-bought");
 
       const now = Date.now();
       if (this._cooldownUntilMs && now < this._cooldownUntilMs) return false;
@@ -211,6 +219,19 @@ export const OrekiDilationAutomation = {
       }
       // 门槛前的压现实（只有「EC11 已满」这条老路径才可能走到这里）仍受累计预算约束。
       if (!atGate && this._earlyHoldUsedMs >= EARLY_HOLD_BUDGET_MS) return this._release("grow-realities");
+
+      // ── [Oreki R50] 膨胀链收尾即放手，把现实还给「RM→IM」的产出 ──────────────
+      //
+      // 事实：IU25 要 `OREKI_IU25_COST = 5e9` 的虚幻机器，而 IM 只从现实产出的 RM 换算
+      // （`machines.js:31-45/103-106`）。压住现实就不再产生 RM ⇒ IM 停滞 ⇒ IU25 永远差钱。
+      // 实测（R50 `r50-save1`）：EC 已全 5/5、`ds1=true` 之后 `hold` 仍然一直是 true，
+      // 现实被压住，`im` 停在 1.7e9 不动。
+      // 所以：**DS1 与 DS6 同时在手**就立刻放手一个现实周期；下一次现实把研究树清空后
+      // `ds1/ds6` 变 false，hold 会自动重新压住并把 EC8~EC12 再打一遍。
+      // 这一放一压的节拍正好是「一轮 EC 全链 ≈ 十几秒 → 一次现实 → IM 继续逼近上限」。
+      if (PlayerProgress.dilationUnlocked() && TimeStudy.reality.isBought) {
+        return this._release("dil-chain-done", HOLD_COOLDOWN_MS);
+      }
 
       // ── [Oreki R40-A2] 曾经想在这里加「DS6 已到手就放手」，**实测否决，不要再加** ──
       //
@@ -448,7 +469,8 @@ export const OrekiDilationAutomation = {
     try {
       if (!player.auto.autobuyersOn) return null;
       if (Pelle.isDoomed) return null;
-      if (VUnlocks.vAchievementUnlock.isUnlocked) { this._phase = "idle"; return null; }
+      // [Oreki R50] 同 `hold`：停机条件是「IU25 已买」而不是「V 已解锁」。
+      if (ImaginaryUpgrade(25).isBought) { this._phase = "idle"; return null; }
 
       const now = Date.now();
 
