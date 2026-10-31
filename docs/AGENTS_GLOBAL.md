@@ -1366,4 +1366,4 @@ Android `oreki` 包机制类 **2 个 / 1,834 行**；`replicanti` / `eternityCha
 细节见 `FACTS.md C.34`。
 
 后续每轮用同一组命令复测（`ls src/core/oreki-*`、`grep -ril` 限定 oreki 包），
-把数字写进差异表，而不是写「大致对齐
+把数字写进差异表，而不是写「大致对齐」。

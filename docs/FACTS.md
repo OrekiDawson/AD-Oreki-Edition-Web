@@ -3192,3 +3192,77 @@ C.66 记的「同一段文字高 222 / 261 / 420 px」是在正文为空的状�
 当时页面上唯一的长文本是**那行红色诊断信息**。字号随设置变化是真实的，但**量的不是教程正文**。
 
 ⇒ 修复后必须重测：量的必须是某一章的真实正文段落，并同时确认「行数 > 0 且章节 > 0」。
+
+## C.69 一条能机械抓出「对象判空写反」的启发式；又抓到 `OrekiChallengeAuto` 两处 `[读码]`
+
+### 一、启发式
+
+```
+move-result-object vX   （可隔空行与 # 注释）
+        ↓
+if-nez vX, :label       ← 可疑
+```
+
+**理由**：`move-result-object` 拿回的是对象引用，`if-eqz`（为零才跳）= 「拿到 null 才跳走」。
+所以紧跟其后的守卫几乎总该是 `if-eqz`。写成 `if-nez` 等于「**拿到了才跳走**」，
+通常意味着把「成功」当成了「失败」。
+
+**必须跳过空行与注释行**才能用：这个代码库里这两句之间经常夹空行，
+第一次跑（要求紧邻）在未修的旧副本上命中 0 处，是假阴性。
+
+**验证方式**：拿一份**未修复的旧副本**跑，能命中已知的坏点才算数。
+本次在 `android/_h_build/scripts/payload/smali`（未修）命中 3 处，其中
+`TutorialActivity.smali:317` 是已确认的真 bug（C.68）—— 启发式成立。
+
+### 二、在旧副本上命中的 3 处，逐个判语义
+
+| 命中 | 判定 | 依据 |
+|---|---|---|
+| `TutorialActivity.smali:317` `if-nez v1, :read_end` | **错**（已修，C.68） | `readLine()` 非 null 就跳走 ⇒ 循环体不执行 |
+| `TutorialEntry.smali:57` `if-nez v0, :ctx_ok` | **对**，不动 | `v0 = getApplicationContext()`；非空就用它，为空才回落到 `p0`。语义正好是「拿到了才去 ctx_ok」 |
+| `OrekiChallengeAuto.smali:721` `if-nez v6, :fr_until` | **错**（已修） | 见下 |
+
+⇒ 规则：**启发式只用来找候选，最终判定必须读上下文。** 3 处里 1 处是对的，
+批量替换会把 `TutorialEntry` 改坏。
+
+### 三、`OrekiChallengeAuto` 那两处：代码自己就是矛盾的证据
+
+原写法：
+
+```
+invoke-virtual {v4, v6, v7}, ...studies/c;->D(ZLvh0;)Ljava/lang/Boolean;
+move-result-object v6
+if-nez v6, :fr_until          ← 非 null 就跳去兜底
+invoke-virtual {v6}, Ljava/lang/Boolean;->booleanValue()Z
+move-result v6
+if-eqz v6, :fr_bought         ← 为零（false）才算买上
+```
+
+两行**都反了**，而且反得互相掩盖：
+
+- `if-nez` 让「非 null」直接跳走 ⇒ 下面 `booleanValue()` **只在 v6 为 null 时可达** ⇒ **对 null 调 `booleanValue()` 就是 NPE**；
+- `if-eqz` 让「false（没买上）」跳去 `:fr_bought` ⇒ **当成买好了，这一关再也买不上**；而「true（买上了）」反而白跑一遍 `purchaseUntil`。
+
+⇒ 正常路径下（`D()` 返回非 null）表现是「每次都走整链补买」，
+而 `:fr_bought` 这条快路是**不可达的死代码**。所以它能「看起来工作」，只是慢，
+一旦 `D()` 返回 null 就会崩。
+
+改为 `if-eqz v6, :fr_until` + `if-nez v6, :fr_bought` 后语义自洽：
+null → `purchaseUntil` 兜底；非 null → 真则 `:fr_bought`（单击就买上，不跑昂贵路径），假则落 `:fr_until`。
+
+### 四、为什么 `build_mod.py:2530` 那条断言没能拦住
+
+断言是：
+
+```python
+assert ("...studies/c;->D(ZLvh0;)Ljava/lang/Boolean;|move-result-object v6|if-nez v6, :fr_until") in fill, (
+    "[R40B] 单击购买失败后没有落到 :fr_until（purchaseUntil 兜底被删）")
+```
+
+它的**意图**是「失败后要落兜底」，但它把「失败」和「`if-nez`」绑在了一起，
+于是**把错误的写法锁成了必须存在**。这就是 `stageKeyFor` 那次（`76692d8`）的同一个模式：
+**守卫自己写反，构建越绿，bug 越稳。**
+
+⇒ 规则：断言里出现条件跳转时，**断言必须同时覆盖「正写法存在」与「反写法不存在」**，
+并且注释要写清「这个寄存器此刻代表真还是假」。
+只写「某个带跳转的字符串必须出现」，等于给错误写法上保险。
