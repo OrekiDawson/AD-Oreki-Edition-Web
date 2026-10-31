@@ -43,6 +43,7 @@ import { PlayerProgress } from "./player-progress.js";
 import { OrekiEternityAutomation } from "./oreki-eternity-automation.js";
 import { OREKI_V_UNLOCK_REALITIES, OREKI_V_UNLOCK_DILATED_TIME } from "./secret-formula/celestials/v.js";
 import { OREKI_IU25_COST } from "./secret-formula/reality/imaginary-upgrades.js";
+import { Laitela } from "./celestials/laitela/laitela.js";
 
 /**
  * 深度挑战的推进顺序（每关打满 5 次才切下一关）。
@@ -259,8 +260,26 @@ export const OrekiDilationAutomation = {
       // 不会把现实永久压死。
       if (PlayerProgress.dilationUnlocked()) {
         const imReady = Number(Currency.imaginaryMachines.value) >= OREKI_IU25_COST;
-        if (this.achieved && !imReady) return this._release("dil-chain-done", HOLD_COOLDOWN_MS);
-        if (imReady) return true;
+        // ── [Oreki R50 四修] 「IM 够了」也不许无条件压住 ──────────────────────
+        //
+        // 三修只要求 `achieved` 就放手，IM 达标时仍然 `return true`。实测
+        // （`r50-fresh3`）：t=385 s V 解锁、`im=imCap=5.72e9` 后连续压住现实 **642 s**，
+        // `realities` 卡在 65 不动 —— 而 `OrekiIu15Sprint` 的 `armed` 分支恰恰要等
+        // **一次真实现实重置**把 `requirementChecks.reality.maxID1` 换成新对象、
+        // 归零之后才开始冲刺（oreki-iu15-sprint.js:147-152）。
+        // 现实被压死 ⇒ 干净窗口永不出现 ⇒ IU15 永不买 ⇒ 莱特拉永久锁 ⇒
+        // 持有 DS6 也没有任何下游能消费（IU25 的判据要求「在莱特拉的现实中达成现实」）。
+        //
+        // 所以压现实的**唯一合法收益**是「让 endgame 在同一帧里用 DS6 + 足够 IM 买 IU25」，
+        // 而这条通路要求莱特拉已解锁。莱特拉没解锁时，压现实只有代价没有收益：
+        // 直接放手，把干净现实还给 IU15 冲刺。
+        const laiReady = Laitela.isUnlocked === true;
+        if (this.achieved && (!imReady || !laiReady)) {
+          // 冷却必须 ≥ 一次现实的间隔（天体阶段 15 s），否则刚放手就又压回去，
+          // 现实同样一帧都插不进来。
+          return this._release("dil-chain-done", Math.max(HOLD_COOLDOWN_MS, 16000));
+        }
+        if (imReady && laiReady) return true;
         // 膨胀在跑但还没达标：EC 链已满会让 `_completionMark()` 不再增长，
         // 这时不能让它触发 `HOLD_STALL_MS` 的「无进展」判死，否则又回到「放手→清空」。
         this._progressAtMs = now;
