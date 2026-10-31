@@ -3593,3 +3593,50 @@ GET https://oreki.net/src/core/oreki-route-model.gen.js
 把「有在途改动」误判成「发布不安全」。实际上 `git archive HEAD` 只取已提交内容，
 在途改动天然不会进部署副本。现改为**列出在途改动并继续**，报告里写清
 「发布的是哪个 commit、哪些改动没进去」。
+
+---
+
+### C.78 模拟器控制权改版 + 真机屏幕标准落地（2026-10-31 11:25~11:35）
+
+**规则源码**：`AGENTS.md` §28（重写）+ §29（新增）。§28 标题里原来的「一次授权」已删——
+那四个字本身就是「主 Agent 也要审批」的残留。三处 `docs/AGENTS_GLOBAL.md` 因硬链接自动同步
+（1521 行，sha16 `cc1d673c8a73254b` 三处一致，实测）。
+
+**改了什么（不是加规则，是改冲突）**：
+
+| 位置 | 旧条款 | 现行 |
+|---|---|---|
+| §28 标题 | 「一次授权」 | 「主 Agent 自主启停」 |
+| 原 28.1 第 5 条 | 主 Agent 恢复也要「带编号的授权」 | 主 Agent 自主恢复，不需编号 |
+| §6.7.2 | **「测 Chrome 与测 App 必须用两个独立模拟器」** | 一台 AVD，串行 + 测前清场 |
+| 28.2 台账 | 「没有编号的授权一律无效」（套主 Agent） | 编号只登记**子 Agent 测试任务** |
+| `avd_check.py:49` | 引用 `AGENTS.md §21` | 引用 §28，并区分主/子 Agent |
+| 两仓 `AGENTS.md` 差异表 | 「唯一源 = §21」 | 指向 `WEB_ANDROID_DIFFERENCES.md` + §27 |
+
+**发现一个文档腐化事实：`AGENTS.md` 没有 §21。** 实际章节只到 §25~§29，但三处文档（两仓 AGENTS.md、`avd_check.py`、原 `EMULATOR_CONTROL.md`）
+都在引用「§21」当规则唯一源 —— 指向一个不存在的章节。**这类引用不会报错，只会让读的人找不到规则然后自己发明。**
+
+**真机目标 = Redmi K70**（Xiaomi 23113RKC6C / vermeer，用户 11:33 确认），3200×1440 / 560 dpi / 120 Hz。
+
+**`oreki_test` 改配后实测（11:29，原始读数）**：
+
+| 项 | 值 |
+|---|---|
+| `wm size` | `Physical size: 1440x3200`（无 override） |
+| `wm density` | `Physical density: 560` |
+| `dumpsys display` | `real 1440 x 3200`、`density 560 (560.0 x 560.0) dpi` |
+| **应用可用区** | **`1440 x 2896`**（`mOverrideDisplayInfo.app`） |
+| Insets | statusBars `[0,0][1440,136]`、navigationBars `[0,3032][1440,3200]` |
+| 校验 | 3200 − 136 − 168 = **2896**，与应用区精确吻合 |
+| dp | 411.4 × 827.4 dp |
+| 宽高比 | 物理 1:2.222，应用区 1:2.011（**两者不同，坐标不能按单一系数换算**） |
+
+**三条必须写成「未验证」的硬证据**（不是推断，是系统自报）：
+- HDR：`mSupportedHdrTypes=[]` → **不支持**。Dolby Vision / HDR10 / HLG / HDR10+ 全部无法验证。
+- 广色域：`colorMode 0, supportedColorModes [0]` → 不支持。
+- 120 Hz：声明 `supportedModes fps=120.00001`，但 `renderFrameRate 60.000004` + `refreshRateOverride 60.000004`
+  → **渲染锁 60**。`hw.lcd.vsync=120` 只改合成节拍，**据此写「120 Hz 已验证」是伪造**。
+- EDID 型号 QCM / 构建日期 06.2006：系统报的是 `EMU_display_0 / GPP / week=27 year=2006`，模拟器自报，非真实 EDID。
+
+**连带失效**：Android `AGENTS.md` §3 的 AVD 坐标表（1080×2340 / 440 dpi 实测）**整表作废**。
+不可乘 1.3333 换算：1080:2340（9:19.5）≠ 1440:3200（9:20），且 dp 宽 392.7 → 411.4，布局会重排。已在该节顶部加失效警示。
