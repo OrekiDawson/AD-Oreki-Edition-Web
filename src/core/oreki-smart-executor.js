@@ -142,15 +142,14 @@ const VERBS = {
   runReality: { policy: "owned", source: "reality", method: "tryReality", label: "现实重置" },
   // 现实机器（RM）不是买来的：由现实重置按公式产出，没有购买入口。
   buyRealityMachine: { policy: "unsupported", label: "买现实机器", why: "RM 由现实重置产出，原版无购买入口" },
-  // [Oreki R44] 复兴节点。原版有 `Perk(id).purchase()`（perks.js:40 的 SetPurchasableMechanicState），
-  // 但项目里**没有任何模块调用它**（`rg "Perks.add|Perk(" src/core` 只有存档迁移），
-  // 也没有注册进 `REGISTRY` 的 routine。所以这里的回答是「本层不代劳」——
-  // 不是「做不到」，而是「没有经过验证的购买顺序」：复兴树是图结构（只能买相邻节点），
-  // 乱买会把点数花在死路上，而点数只能靠现实次数拿。要代劳必须先有一个按连通性排序的模块。
-  buyRealityPerk: {
-    policy: "unsupported", label: "买复兴节点",
-    why: "没有自动化入口（perks.js 只有 purchase()，仓库内无调用点；图结构需要按连通性排序，未实现）"
-  },
+  // [Oreki R44] 复兴节点。原版有 `Perk(id).purchase()`（perks.js:40 的
+  // SetPurchasableMechanicState），扣 `Currency.perkPoints`、连通性由
+  // `isAvailableForPurchase`（perks.js:36-38）自己判。
+  // R44 之前这里写 unsupported，理由是「没有经过验证的购买顺序」——
+  // 现在这条理由由 `oreki-perk-automation.js` 消掉：它按当前已买集合做 BFS，
+  // 买「通往 automatorPoints 节点最短路」的第一步，不是固定 id 序列。
+  // 本层只代劳「模块本帧没买」的情况（同一个方法 `buyPerks()`，同一条购买路径）。
+  buyRealityPerk: { policy: "owned", source: "perk", method: "buyPerks", label: "买复兴节点" },
 
   // ── 挑战（归阶段模块）──
   challengeSpecificOrder: { policy: "delegated", label: "挑战专项顺序", why: "挑战内购买顺序由 oreki-instant-challenges.js / OrekiEternityAutomation 按挑战规则处理" },
