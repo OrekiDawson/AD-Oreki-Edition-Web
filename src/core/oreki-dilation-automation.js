@@ -42,6 +42,7 @@
 import { PlayerProgress } from "./player-progress.js";
 import { OrekiEternityAutomation } from "./oreki-eternity-automation.js";
 import { OREKI_V_UNLOCK_REALITIES, OREKI_V_UNLOCK_DILATED_TIME } from "./secret-formula/celestials/v.js";
+import { OREKI_IU25_COST } from "./secret-formula/reality/imaginary-upgrades.js";
 
 /**
  * 深度挑战的推进顺序（每关打满 5 次才切下一关）。
@@ -228,9 +229,17 @@ export const OrekiDilationAutomation = {
       // 现实被压住，`im` 停在 1.7e9 不动。
       // 所以：**DS1 与 DS6 同时在手**就立刻放手一个现实周期；下一次现实把研究树清空后
       // `ds1/ds6` 变 false，hold 会自动重新压住并把 EC8~EC12 再打一遍。
-      // 这一放一压的节拍正好是「一轮 EC 全链 ≈ 十几秒 → 一次现实 → IM 继续逼近上限」。
+      //
+      // ⚠️ [Oreki R50 二修] 但**IM 已经够 IU25 的那一刻不能放手**。
+      // 实测（同一份存档，`im` 抬到 5.29e9 之后）：一放手 → 现实立刻重置 →
+      // `ds1/ds6` 双双清零 → 下一轮 EC 全链又要重打，而 `driveLaitela` 要求
+      // 「DS6 在位 且 IM 够」同一帧成立 ⇒ 70 秒里 `ds6` 一次都没再为真，IU25 永远差临门一脚。
+      // 所以 IM 达标时改为继续压住现实，让 DS6 留在位，由 endgame 模块起 run 并买 IU25；
+      // IU25 一买上 `hold` 会在最上面按 `iu25-bought` 释放，不会永久压死现实。
       if (PlayerProgress.dilationUnlocked() && TimeStudy.reality.isBought) {
-        return this._release("dil-chain-done", HOLD_COOLDOWN_MS);
+        const imReady = Number(Currency.imaginaryMachines.value) >= OREKI_IU25_COST;
+        if (!imReady) return this._release("dil-chain-done", HOLD_COOLDOWN_MS);
+        return true;
       }
 
       // ── [Oreki R40-A2] 曾经想在这里加「DS6 已到手就放手」，**实测否决，不要再加** ──
