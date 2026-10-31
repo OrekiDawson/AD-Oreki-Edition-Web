@@ -3762,3 +3762,67 @@ achievements → statistics → options → shop，共 **11 项**。
 写「点底栏『维度』」会让 Web 玩家找不到入口。统一改为中性的「**「维度」页签**」。
 
 ⇒ **坐标表（C.26）仍然成立但只对 Android 有效**；不要拿它去描述 Web。
+
+## C.79 R43 候选版本封板（2026-10-31 18:20）`[实测]`
+
+### 基线
+
+| 项 | 值 |
+|---|---|
+| Web main（封板前） | `69924831a133485acce0243d0fa45159c87b06f5` |
+| Web 候选提交 | `ddc328e0cff9bcc3e10aca613c31072caa96549e` |
+| Web 上次部署基线 | `eef24c57cfda7c7921eab4431f8197f0ea8cfba4`（Pages `8b38022`，12:57） |
+| Android main（封板前） | `53594da57cb427c43d7c56f653e398e606ea33cc` |
+| Android 上次发布源码基线 | `b91f65bc6c40a20787e369b1b4fec72a8035e4ba` |
+| 上一版正式 APK（12:10，已投两云盘） | 69,782,195 B / `b399827dd38a5a0eabf7c073bdc1001d6770c5009bb06112af518a7370f799c0` |
+| `release/` 内 APK（11:04，更早） | 69,745,182 B / `090b9adbd0b4f8ad0a1b799d151c11e6af207ea93c55e13ea40441ba67d69f43` |
+
+⇒ **两云盘当前那份 12:10 的包，和 `release/` 里 11:04 的不是同一个**。替换正式包前必须按 SHA-256 认出各自来源，不能只看文件名。
+
+### 教程源（本次候选唯一源，两端共用）
+
+- `src/core/oreki-tutorial-data.json` 198,246 B，sha256 `ef95637b38bb76650677a0d383c5fa7fd05c58e1a1573a947af34c4126ccdbfa`
+- `src/core/oreki-tutorial-data.gen.js` 198,670 B，sha256 `5519b5cf54920b3f3087169559a9a55566271c130b617f0d7e5336fadfb0bd21`
+- `node scripts/validate_tutorial.mjs` → **2150 项 / 0 失败**（14 规则组，E1~E4 全 PASS）
+- `node scripts/gen_tutorial_module.mjs --check` → 发布门控通过（草稿 0 章）
+- 位置词清零：`rg -o "(顶部|侧栏|底栏|底部导航)的?「"` → **0**；`rg -c "侧栏"` → **0**
+  （封板前 32 处；其中 23 处是导航位置词属真错，10 处「顶部反物质 / 顶部按钮 / 页面顶部」是对的，未动）
+- `numbers[].src` 全量下线（170 条）；校验器规则 5 已反转为「出现多余键即失败」
+
+### 智能策略（唯一策略源）
+
+`src/core/oreki-smart-strategy.json` 35,224 B，nlink=2（与 `shared/spec/oreki-smart-autobuyer.json` 同 inode `8725724278916525`）
+`stages=20 / goals=18 / strategies=11 / blockers=2 / leaves=34`；`node scripts/check_stage_detect.mjs` 全通过
+（20 夹具各命中且仅命中 1 段、9368 个可达状态无重叠、18 条 goal 全部可求值、34 叶子 JSON↔LEAVES 逐字一致、解释器 0 处 `purchase`）。
+
+20 段顺序：`early / preInfinity / breakInfinity / challenges / infinityDimensions / eternity / timeStudy /
+eternityChallenges / dilation / reality / glyphs / realityTree / celestialsTeresa / celestialsEffarig /
+celestialsEnslaved / celestialsV / celestialsRa / laitela / pelle / doomed`。
+
+### Pages 部署制备（`_deploy/deploy_pages.py`，于 `ddc328e` 快照）
+
+```
+[1] branch=main HEAD=ddc328e
+[2] 清单 863 项
+[4] 已同步 863 个文件；快照中缺失 0 个
+[5] site/src 下不在清单里的残留：0 个
+[6] import 闭包：从 src/main.js 可达 726 个模块；闭包内缺清单 0；清单多 0 → PASS
+[7] site 仓库：新增 0、变更 29（含 oreki.css / 教程组件 / 策略与 route-model / changelog）
+```
+
+⇒ `filelist.txt` 已覆盖本次新增的全部模块，**不需要改清单**。
+
+### 长期规则入库
+
+用户 2026-10-31 18:10 下达的「长期协作规则 v1」已作为 **`AGENTS.md §31`** 落盘：
+根 `AGENTS.md` inode `8162774324763556` nlink 3（与两仓 `docs/AGENTS_GLOBAL.md` 同一文件），123,928 B，
+`check_agents_sync.py` → 三处 inode / SHA-256 一致。
+冲突裁决写在 §31 第十条：与 §25 的子 Agent 数量条款冲突时以 §31「上限 3 个」为准。
+
+### 本轮明确未做（下一轮）
+
+1. `TutorialProgress.stage()` 永不返回 `0x6`（打完莱特拉仍显示「现实」阶段）—— 需用原版门控条件修，未进本次构建。
+2. ch04（自动打破无限 + 无限点数 ×2 必须手点）与 ch05 整章重写。
+3. 双语附录 `apx_terms`（164 处）与 `apx_bilingual`（89 处）`中文：English` 形态待裁定。
+4. 教程正文里 24 组「中文 / English」对照（E 线已列清单，源在 Web json）。
+5. `OrekiTutorialModal.js:499` 等 4 处 `num.src` 死代码清理。
