@@ -3665,3 +3665,60 @@ GET https://oreki.net/src/core/oreki-route-model.gen.js
 
 **连带失效**：Android `AGENTS.md` §3 的 AVD 坐标表（1080×2340 / 440 dpi 实测）**整表作废**。
 不可乘 1.3333 换算：1080:2340（9:19.5）≠ 1440:3200（9:20），且 dp 宽 392.7 → 411.4，布局会重排。已在该节顶部加失效警示。
+
+### C.79 浏览器单实例化 + 教程三症状装机实证 + 交付核验（2026-10-31 12:20~13:20）
+
+**一、浏览器「反复开标签」的真实根因（已改代码，不是立规矩）**
+
+| 症状 | 根因 | 位置 | 修法 |
+|---|---|---|---|
+| 跑一次脚本多一个 Edge 实例 | `profileDir` 用 `Date.now()` ⇒ 物理上不可能复用 | `edge-launch.mjs` | 固定 `%TEMP%\oreki-cdp-shared-9300` |
+| 同端口已有实例仍新建 | 无条件 `spawn` | 同上 | 先探测 `/json/version`，通了就 `connect` |
+| 每次调用换端口 | `portCursor++` / 脚本各自写死 9355 / 9356 / 9376 | 同上 + `patch-launch.mjs` | 实例身份钉死 `OREKI_CDP_PORT`(9300)，传入 port 仅作备选探测 |
+| 每次调用多一个 Tab | `openGame()` 无条件 `newPage()` | 同上 | 按 `?orekiTag=<tag>` 复用；页面数 ≥ `OREKI_MAX_PAGES`(6) 抛错 |
+| 「复用」形同虚设 | `cleanup()` 会 close+kill 自建实例 | 同上 | 默认只 `disconnect`；`OREKI_CLOSE_ON_CLEANUP=1` 才真关 |
+
+**自证读数**（`web/_tools/_r42c/verify-reuse.mjs`，同一进程连跑三次，`pass: true`）：
+第 1 次 新建、页面 1→2；第 2/3 次 `reusedInstance=true`、页面 2→2、本 tag 页面恒为 1、`player`/`AntimatterDimension` 均就绪。
+
+**一条重要的反面教训**：曾写过「都没有就复用第一个页面」的档位。复用路径紧接着 `page.goto()`，
+跨 Agent 命中同一 Tab 会把对方正在跑的游戏页导航掉，受害方看到的是「采样断流 / `evaluate` hang 但 node 存活」，
+**极易误判成游戏代码卡死并把终局结论写反**。已删除该档位，改为到上限直接抛错。
+
+**二、教程三症状装机实证（`emulator-5554`，候选包 12:10 版，`b399827d…`）**
+
+| 症状 | 结论 | 实测证据 |
+|---|---|---|
+| 打开即落章 | **通过** | 点选项页蓝色入口后落在「第 4 章 无限升级与普通挑战」，不是空白页、不再是最后一章 |
+| 点页签切章 | **通过** | 依次点导航条：第4章→第3章→第0章→第1章→第2章，章号与标题逐次正确变化 |
+| 每章条数 | **通过** | 数据层 18 章，最少 27 条记录；STEP 128 条 / TRAP 89 条，无空章；设备上第 4 章与末章「⑩ 未实现/未验证」正文完整 |
+| 末章边界 | **通过** | 滚到导航条末尾点「旧·⑩ 未实现…」，正常渲染，`logcat` 无 FATAL / VerifyError |
+
+**坐标教训**：按截图比例换算的坐标连点三次全部落空（点在 `y=2592/2600`，按钮实际 `bounds="[370,2326][1070,2466]"`）。
+**装机点击必须先 `uiautomator dump` 取 bounds，不得按比例估算。**
+
+**遗留缺陷（已定位，未修）**：`logcat` 存在 `OrekiTutorial: options 容器未就绪，稍后重试` 每 800 ms 刷屏，
+至多 10 次。按钮实际已插入且可点，判定条件（`findViewWithTag` 命中 `scrollView_options` 子容器）与
+真实插入位置不一致，属噪声 + 无效重试，不影响功能。
+
+**三、终局真实墙钟（Agent A 实测，加速倍率口径）**
+
+新档 10000× 倍率下 **660 s 墙钟到 `GameEnd`**，`endState=2.598`；四次通关 660 / 694 / 600 / 658 s。
+1000× 副本（更接近"人真正在玩"）**2040 s = 34 min**。两者都远低于 180 min 门槛。
+若要求「不靠倍率」的纯人工节奏，本轮**无数据**，必须写「未验证」，不得用加速结果冒充。
+`player.records.totalTimePlayed` **含加速倍率，不能当墙钟**；墙钟只认 `performance.now()` 自累加（`r42c-wall-ms`）。
+
+**四、交付核验**
+
+| 项 | 结果 |
+|---|---|
+| 候选 APK | 69,782,195 B，sha256 `b399827dd38a5a0eabf7c073bdc1001d6770c5009bb06112af518a7370f799c0`，签名 v2/v3 均 OK |
+| OneDrive | 已覆盖 `C:\Users\Oreki\OneDrive\反物质维度.apk`，本地复核哈希一致；旧版归档 `反物质维度_090b9adb.apk` |
+| 小米云盘 | 已覆盖 `C:\Users\Oreki\小米云盘\反物质维度.apk`，本地复核哈希一致 |
+| 云端核验 | `attrs=0x20` 全本地，300 s 内未转云端占位 ⇒ 只能写「本地已替换、上传服务报告成功」，**不得写「云端内容已核验」** |
+| Pages | `https://oreki.net/src/core/oreki-tutorial-entry.js:36` 已含新文案，200 OK；`orekidawson.github.io` 301 → `oreki.net`（CNAME） |
+| 三仓推送 | site `8b38022`、web `eef24c5`、android `b91f65b`，均经本地代理 `127.0.0.1:7897` 推送成功 |
+
+**本轮发布包不含的两处改动**（构建时间早于改动）：
+`oreki_dark_theme.py` 的 4 个对比度色值（EC 研究进行中 / 自动购买器设置错误，FAIL 4→0，均达 WCAG AA）。
+随下一次构建生效。
