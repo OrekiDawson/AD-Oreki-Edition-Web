@@ -3266,3 +3266,117 @@ assert ("...studies/c;->D(ZLvh0;)Ljava/lang/Boolean;|move-result-object v6|if-ne
 ⇒ 规则：断言里出现条件跳转时，**断言必须同时覆盖「正写法存在」与「反写法不存在」**，
 并且注释要写清「这个寄存器此刻代表真还是假」。
 只写「某个带跳转的字符串必须出现」，等于给错误写法上保险。
+
+---
+
+## C.70 Web 的「智能策略」是查表，不是择优；`oreki-route-model.json` 从 R40 起是纯数据、无人读 `[读码]`
+
+### 一、结论
+
+`src/core/oreki-smart-strategy.js` 在 R42 之前的全部「决策」只有三行查表，
+**没有任何「比较两条路线并选更优」的动作**：
+
+| 行（HEAD `dd155f3`） | 做的事 |
+|---|---|
+| `:221-248` `detectStage()` | 按 `precedence` 取最大者；相等就 fail closed。没有比较。 |
+| `:295-297` | `findById(spec.goals, stage.goal)` / `findById(spec.strategies, stage.strategy)`，单条取。 |
+| `:336` | `priority: strategy.priority.slice()` —— 把 spec 里那个数组**原样**抄进决策对象。 |
+
+执行层同样是线性扫这个数组取第一个可执行的：`oreki-smart-executor.js:283-292` `pickExecutable()`。
+⇒ **顺序只在 spec 作者恰好写对时才对**，系统本身没有「还有别的走法」这个概念。
+
+### 二、模型写了，解释器没写
+
+`src/core/oreki-route-model.json`（182 行）已经完整定义了多路线择优：
+`filter` 6 条硬过滤、8 个评分维度与权重、9 条带 `stageScope` 的路线、
+`stability.minImprovementRatio = 0.15` / `cooldownSeconds = 300`、
+`replan` 的 5 个触发条件、`interface` 的 8 个查询方法。
+
+但 `rg -n "route-model" src/ scripts/` 在 R42 之前**只有一条命中**：
+`scripts/gen_spec_module.mjs:31` 的生成登记表。也就是说这份模型被生成成
+`oreki-route-model.gen.js` 之后，**从来没有模块 import 它**。
+（C.53 也记过：这两个文件在线上是 404 —— 因为连 import 都没有，部署时漏了也没人发现。）
+
+⇒ 规则：**「规则是数据不是代码」只保证数据不被写死，不保证数据被读取。**
+交付一份 spec 时必须同时交付「谁 import 它」的机械证据（`rg` 一条命中都没有 ⇒ 等于没做）。
+
+---
+
+## C.71 智能执行层整局只产生 3~4 次真实购买；同口径通关 771.2 s → 756.0 s `[实测]`
+
+### 一、执行层的真实吞吐（这是判断「值不值得优化它」的唯一依据）
+
+`_r40/r42-base-head.jsonl`（HEAD `dd155f3`，真实新档，1000 s / 961 条，**无模拟器负载**）：
+
+| 指标 | 读数 |
+|---|---|
+| `exTryN`（尝试次数） | **306** |
+| `exActN`（真的买到） | **3** |
+| 命中率 | 1.0% |
+| 最后一次动作分布 | `runReality@reality:0` 828 条、`equipBestGlyph@reality:0` 28、`buyRealityUpgrade@reality:0` 34、`eternity@eternity:0` 40、`buyTimeTheorem@eternity:0` 24 |
+| `takeoverWhileModuleActed` | **0**（购买权边界 B 在整局里没有被违反过） |
+
+⇒ 在 771 s 的整局里，执行层**只买到 3 样东西**。所以「把 15 个 owned 动词重新排序」
+这件事的**上限收益 = 3 次购买的时移**，不可能改变通关秒数量级。
+这条同时解释了 R40-S2 报告里「贡献接近于 0」的自我评价是对的。
+
+### 二、同口径前后对比（`pelle-probe` 1000 ms / 约 60 字段，10000× 起步）
+
+| 轮次 | 代码 | 墙钟区间 | 宿主负载 | `isGameEnd` 首真 |
+|---|---|---|---|---|
+| baseline | HEAD `dd155f3` | 9:23:13–9:39:51 | 无 | **771.2 s**（`doomed` 724 s） |
+| after-a | 路线层改动 | 9:40:39–9:57:18 | 无 | **756.0 s**（`doomed` 710 s） |
+
+两轮 `isGameEnd` 翻真后分别 **227.8 s / 243.0 s** 持续为 true（225 / 242 条采样全 true），
+`smDeg = 0`、`smErr = ""`、`pageErrors` 只剩 Google Tag Manager 的 CSP 噪声。
+
+**756.0 与 771.2 的差（−15.2 s / −2.0%）不能算改进**：改动后每个阶段的 `strategy.priority`
+与 spec 原序**逐字相同**（存活探针 `r42-route-peek-b`，8 个阶段全部 `rPriority === rSpecPriority`，
+`routeSwitches = 0`），行为等价 ⇒ 这个差是跑分本身的抖动。
+C.47 记的六次读数跨度 708~915.8 s，−2% 完全落在这个带里。
+
+### 三、`doomed` 段与 `100 现实` 里程碑（供后续对照）
+
+| 轮次 | 5 现实 | 20 现实 | 100 现实 | `doomed` | `isGameEnd` |
+|---|---|---|---|---|---|
+| baseline | 70.0 s | 257.0 s | 701.0 s | 724.0 s | 771.2 s |
+| after-a | 68.1 s | 222.1 s | 686.1 s | 710.0 s | 756.0 s |
+
+---
+
+## C.72 Android 模拟器会把 Web 跑分拖到「1000 s 内未到 doomed」；判回归前先查 qemu 启动时刻 `[实测]`
+
+### 一、现象
+
+同一份代码、同一台机器、同一口径，第三轮（`r42-after-b.jsonl`，10:06:55–10:23:34）
+**1000 s 内连 `doomed` 都没进**，而且在跑的是 `60 realities @999 s`
+（前两轮是 `100 realities @701/686 s`）。表面上像一次 30% 的严重回归。
+
+### 二、真实原因：两个 Android AVD 同时在跑
+
+`Get-Process qemu-system-x86_64-headless` 的启动时刻：
+
+| PID | 启动 | 检查时累计 CPU |
+|---|---|---|
+| 44224 | **9:58:49** | 8998 s |
+| 36832 | **10:04:32** | 707 s |
+
+而 baseline（9:23:13–9:39:51）与 after-a（9:40:39–9:57:18）都在 **9:58:49 之前结束**。
+third run 全程压在这两个模拟器上。
+
+机内轨迹也吻合：after-b **前 95 s 与基线一致**（`5 realities @69.1 s`），
+从 ~200 s 起才分叉（`20 realities @313.1 s`，基线 257 s）。
+**「开局正常、中段崩」是宿主抢 CPU 的形状，不是代码回归的形状** ——
+代码回归会从第一秒就一起变慢。
+
+### 三、规则（比这次结论更重要）
+
+1. **跑通关秒数前先记录宿主负载**：`Get-Process qemu-system-x86_64-headless,emulator` 的
+   `StartTime` 与 `CPU`，和 jsonl 的 `CreationTime` / `LastWriteTime` 放在一起比。
+   两个区间有交集 ⇒ 这一轮**作废**，不是回归。
+2. **判定「变慢」必须看分叉点**，不能只看终值。
+   同时对比一个早期里程碑（如 `5 realities`）与一个中段里程碑（如 `20 realities`）：
+   只有中段变慢 ⇒ 先怀疑宿主；两段同时变慢 ⇒ 才怀疑代码。
+3. 宁可多跑一轮干净的，也不要用被污染的样本改代码 —— 这次差一点因为 after-b
+   去「回退一个其实没有行为差异的改动」。
+
