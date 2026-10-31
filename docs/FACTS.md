@@ -4356,3 +4356,82 @@ R49/R50 之前该功能**只有读码与包内确认**，从未在设备上跑�
 `current` 由 12 变 0、完成位翻转、maxAM 跳到 goal」三条同时成立推出来的，
 不是直接测到的帧号。要拿到帧级证据需要在 smali 里加日志后重新构建（约 8 分钟构建
 + 装机），本轮受通关长跑占用时间未做，记为待办。
+
+### C.85　R50 续：膨胀链活锁的真实定位与五道修复（2026-11-01）
+
+**结论先行**：R49/R50 前期反复出现的「复兴树与黑洞之后停滞」在一个新的真实新档上
+**不是天神死锁，而是 `OrekiDilationAutomation` 的压现实判据造成的链式活锁**。
+定位方式是逐字段取证（不是读码推测），每一项都来自活页面 `Runtime.evaluate` 的返回值。
+
+#### C.85.1　现象（`r50-fresh2`，真实新档，2840 秒）
+
+| 采样 | realities | v | iu15 | maxDT | imCap | releases |
+| --- | --- | --- | --- | --- | --- | --- |
+| t=285 s | 75 | false | false | 0 | 2.7159e9 | — |
+| t=1500 s | 495 | false | false | 0 | 2.7159e9 | — |
+| t=2840 s | 880 | false | false | 0 | 2.7159e9 | 163 |
+
+`imCap` 从 t=285 s 起**冻结 2400 秒不动**，`maxDT` 全程 0，`EC` 完成数每 8~15 秒
+被现实清空一次后在 0~9 之间来回（`player.eternityChalls` 直读，`ecs` 字段）。
+
+#### C.85.2　因果链（每一环都有字段证据）
+
+1. `Laitela.isUnlocked = ImaginaryUpgrade(15).isBought`（`celestials/laitela/laitela.js:37`）；
+2. `OrekiIu15Sprint.canArm` 要求 `VUnlocks.vAchievementUnlock.isUnlocked === true`
+   （`oreki-iu15-sprint.js` 的 `canArm`），实测该项 `false`，`_phase` 恒 `idle`、`attempts=0`；
+3. V 的解锁是六项 `mainUnlock.progress() >= 1` 全满足；实测五项远超 1
+   （realities 13.58 / eternities 818.3 / infinities 592.3 / replicanti 436.6 / RM 2.28e13），
+   **只有 `dilatedTime` 为 0**（`maxDT = 0`）；
+4. `maxDT` 恒 0 的根因：`DS1` 买到后立刻被现实清空（`reality.js` 的
+   `player.dilation.studies = []`），膨胀一次都没启动过；实测 `r50-fresh2` 的
+   `ds6` 只在 t=90~110 s 短暂为真，随后归零；
+5. 为什么「买到就清空」：`hold` 的旧判据是「`DS1 && DS6` 在手上且 `IM < IU25 成本`
+   → 立刻 `_release("dil-chain-done")`」。`maxDT` 还是 0 时就放手 ⇒ 现实立刻清空
+   ⇒ 下一轮再打一遍 EC 全链 ⇒ 无限循环（`releases = 163`）；
+6. 连带的第二处死锁：缺膨胀乘数 ⇒ `maxEP` 只到 `1e3872681` ⇒ `log10(uncappedRM)=2907`
+   ⇒ `baseIMCap = (2907−1000)^2 × 300 = 1.09e9`；而 `player.reality.iMCap` **只升不降**，
+   冻结在历史峰值 2.7159e9 < IU25 成本 5e9 ⇒ IM 天花板本身也不够。
+
+**同一条链在别的档里只是「运气不同」**：`r50-fresh1` 因为某一轮凑巧让 `EC7` 打满，
+`hold` 才被放行，V 在 2044 s 解锁并最终 2530 s 通关；`r50-fresh2` 没这个运气，同样
+2840 s 仍在原地。所以这不是「某档坏了」，而是判据本身依赖一个每 8~15 秒就被清零的前提。
+
+#### C.85.3　五道修复（全部只改判据与护栏，不动原版游戏规则）
+
+| 提交 | 内容 | 实测效果 |
+| --- | --- | --- |
+| `27a27ee` | 放手判据由「IM 不够」改为「`maxDT` 已达标（`achieved`）」；去掉 DS6 前置 | 同一存档重载后：`imCap` 3.05e9→4.63e9，V/iu15 保持为真 |
+| `88dbdec` | 「IM 够 + 莱特拉已解锁」才允许继续压住，否则放手；冷却 10 s→16 s | `sprint` 由 idle→running，拿到 `maxID1=0` 的干净现实，`iu15` 转真、`lai` 转真 |
+| `8937954` | 闸门去掉「EC7 已满」前置（过 V 门槛后）；深层 EC 单次压现实上限 240 s→480 s | `r50-fresh4` 重载后 `releases` 17 次 / V 恒 false → 需要下一修 |
+| `8937954` | 达标后不得当场放手，必须走 `HOLD_GRACE_MS`（20 s）宽限 | 重载后 5 分钟：`releases=1`（原因 `grace-after-achieve`），`V=true / iu15=true / lai=true`，冲刺 `fails=0` |
+| `bb59a22` | 压现实彻底收敛为有界窗口，任何条件都不再无限压住 | `r50-fresh5`：t=445 s 进入莱特拉阶段（首轮 2044 s，**快 4.6 倍**） |
+
+**为什么「宽限 20 秒」是必需的（实测而非猜测）**：`game.js` 里现实自动化跑在
+天神检查之前，放手太早时同帧的现实已经把 `records.thisReality.maxDT` 清零，
+V 看到的永远是 0。`r50-fresh4` 重载后 5 分钟的对照实验：直接放手 ⇒ `releases` 17 次、
+V 恒 false；改走宽限 ⇒ `releases` 1 次、V 为真。
+
+#### C.85.4　仍然没做到的（如实记录）
+
+* `r50-fresh5` 在 t=1225 s 卡在莱特拉阶段：`im=5.25e9`（已够 IU25 的 5e9）、
+  `ds6=true`、`tier=4`、`laiRun=false`，`realities` 冻在 80 达 500 秒。原因是 IU25 的判据
+  「在莱特拉的现实中……达成现实」需要一次现实才能结算，而当时的判据仍在压住现实。
+  已由 `bb59a22` 改为有界窗口，`r50-fresh6` 正在验证，**结果未出之前不宣称已通关**。
+* 当前 HEAD 上**尚未**取得第二次 `isGameEnd === true` 的完整墙钟证据；
+  最后一次完整通关仍是 `r50-fresh1`（2530.2 s，endState 1.0214，HEAD `5ea342a`）。
+* Android 端的差距是结构性的，见 C.85.5。
+
+#### C.85.5　Android：自动化覆盖不到终局（结构性缺口，非本轮引入）
+
+清空存档后的真实新档实测（`gameCreatedTime` 与 `lastUpdate` 差 1621 s）：
+
+* 游戏时间推进比 **恒等于 20000**（`totalTimePlayed` Δ20404480 s / `realTimePlayed` Δ1020.2 s），
+  证明倍率生效、不是「倍率没开」；
+* 但同时刻仍停在**第一次无限**阶段：`realities=0 / eternities=0 / infinities=98 / galaxies=1`，
+  画面为「无限进度 50.57%」。Web 端同期已在做现实。
+* 原因在仓库自己的差异表 `WEB_ANDROID_DIFFERENCES.md`：第 165 行写「Android 自动化只覆盖
+  『首次无限 → 攒 IP → 拉间隔』这一段，永恒 / 现实 / 天神 / 佩勒的自动化都还没有」，
+  第 48/49/72/76/77 行逐项标为 `缺失 / 需修复`（时间研究自动购买、现实自动循环、
+  Break 闸门、莱特拉 tier、佩勒驱动）。
+* 结论：**Android 端在现有代码下不可能在 180 分钟内到达终局**，这不是靠调参能补的，
+  需要补移植上述模块。本轮不伪造通过，如实记为阻塞项。
