@@ -4506,3 +4506,55 @@ C.85.6 写的是「自动化只覆盖到攒 IP」。实测把范围收窄到一�
 **下一步最小修复点**：不是补整个「永恒/现实/天神自动化」（`OrekiEternity.smali` 已存在，覆盖永恒层），
 而是让 IP 倍率重复升级真的被买（当前 `OrekiStageAuto` 依赖原版 `Game.autoBuyerTick` 的 IPMult 块，
 实测该块在 10000× 下 0 次购买）。修通这一条，Break 门才有机会打开，后续层才谈得上验证。
+
+#### C.86.4　Android 阻塞点的二次修正：缺的是「无限升级自动购买」，不是 IP 倍率自动器
+
+C.86.3 把下一步写成「让 IP 倍率重复升级真的被买」。继续取证后必须修正这个说法：
+
+**(1) `player.auto.ipMult = true` 在 Break 之前本来就是空开关。**
+Web 端 `IPMultAutobuyerState.isUnlocked` 的实现（`src/core/autobuyers/prestige-currency-multiplier-autobuyer.js:12-14`）是
+
+```js
+get isUnlocked() {
+  return EternityMilestone.autobuyerIPMult.isReached && !Pelle.isDoomed;
+}
+```
+
+即「IP 倍率自动购买器」本身要靠**永恒里程碑**解锁，Break 之前不存在。Android 存档里那个
+`ipMult: true` 只是布尔位，原版 tick 块会先过 `isUnlocked` 再决定是否购买，所以它永远是空转。
+两端同构，不能算 Android 的缺陷。
+
+**(2) 真正的差在「谁去买 `InfinityUpgrade.ipMult` 这个可重复升级」。**
+Web 有 `src/core/oreki-early-automation.js::buyInfinityUpgrades()`：
+
+* 遍历 `InfinityUpgrade.all`，每帧**最多买 1 个**、走**单次 `purchase()`**；
+* 生效窗口 = 「已达成第一次无限」且「还没解锁永恒」，受 `player.auto.autobuyersOn` 控制；
+* 该文件第 30 行有明确取舍：「`InfinityUpgrade.ipMult` 故意**不**用 buyMax ——
+  它单次 ×2 IP 但只把永恒门槛平移 93 个反物质指数，对首次永恒几乎无贡献，却会瞬间吃光 IP」。
+
+Android 的 `OrekiStageAuto` / `OrekiBreakGate` 里没有对应路径：前者只翻开关、后者只升 interval
+（`OrekiBreakGate.smali` 的注释与 `oreki-break-infinity-gate.js` 一致，都只做 interval 升级）。
+于是 `ipMultUpgrades` 恒 0，`gainedIP` 恒为 1~2。
+
+**(3) 量化后果（同一份 Android 存档，相隔 990 秒两次采样）**
+
+| 字段 | 采样 A | 采样 B（+990 s） | 变化 |
+| --- | --- | --- | --- |
+| `infinities` | 735 | 791 | +56（**1 次坍缩 / 17.7 真实秒**） |
+| `infinityPoints` | 447 | 559 | +112（≈ **2 IP / 次坍缩**） |
+| `ipMultUpgrades` | 0 | 0 | 不变 |
+| `breakInfinityUpgradeBits` | 0 | 0 | 不变 |
+| `records.totalTimePlayed` | 2.5747e11 ms | 2.7728e11 ms | +1.98e10 ms（÷990 s = **20000×**，倍率正常） |
+
+Break 需要累计 32767 IP；按 2 IP/次、17.7 秒/次，差 32208 IP ⇒ 需再坍缩约 16104 次
+⇒ **约 79 小时**。这就是 Android 端 3.6 小时仍停在第一次无限量级的真实原因。
+
+**(4) 下一步的最小改动（已定位到入口，未实施）**
+
+在 `OrekiStageAuto.onAutoBuyerTick()` 的「已无限 && 未永恒 && 非 Doomed」窗口内，
+每帧买 1 个可负担的无限升级（与 Web 的 `buyInfinityUpgrades()` 同策略），不写解锁位、不改成本。
+
+**入口定位进度（如实记录，避免后来者走弯路）**：
+`ButtonInfinityUpgrade.smali` 里 `d()V`（:281）**只是按状态刷颜色**，不是购买入口；
+点击事件收敛到 `Lqg5;->u(Landroid/view/View;Landroid/widget/TextView;)V`（:987）。
+真正的可重复升级 purchase 混淆名尚未定位，因此本文件**不宣称该改动已实施或已验证**。
