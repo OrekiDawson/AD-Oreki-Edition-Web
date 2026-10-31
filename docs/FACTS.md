@@ -4215,3 +4215,100 @@ R50 的真死锁是 C.83.1~C.83.3 这三条，靠字段级证据定位。
   Android 侧由 `scripts/oreki_tutorial_gen.py` 读同一份 JSON 生成 assets：
   24 章 / 1160 条 / 40689 汉字 / 166158 字节，回读校验逐字一致。
 
+
+---
+
+## C.84 R50 真实新档通关 / Android 发布 / AVD 移动端实测（2026-11-01 03:00~04:00）
+
+### C.84.1 真实全新存档从零到终局：2530 秒（42 分 10 秒）
+
+验收标准（`docs/AGENTS_GLOBAL.md §3.1`）：真实全新存档、默认 10000×、不看教程、
+新手 0 门槛，从开始到终局现实时间 ≤ 180 分钟，唯一判据 `player.isGameEnd === true`
+且 `endState >= 1`。
+
+**结论：达标。** 样本 `r50-fresh1`（503 条，5 s 一次）。
+
+| 项 | 值 |
+| --- | --- |
+| 存档创建时刻 | `2026-10-31T18:19:14.212Z`（`startedAtMs=1793470754212`） |
+| 创建时校验 | `realities=0`、`infinities=0`、`eternities=0`、`ecDone=0`、`normalDone=0`、`storageKeys=0`、`speed=10000` |
+| 首样本 | `+8.9 s`，`stage=eternityTimeStudy`、`real=0`、`am=4.4e203817` |
+| 终局样本 | `+2530.2 s`，`stage=doomed`、`real=735`、`isEnd=true`、`end=1.0214385789143967` |
+| 墙钟总时长 | **2530 s = 42 分 10 秒**（上限 180 分钟，用掉 23.4%） |
+| `iu25` 达成 | `t=2481 s`（墙钟 +2490.1 s）——终局前 40 秒 |
+| 通关判据 | `player.isGameEnd === true` 且 `endState = 1.0214 ≥ 1` ✔ |
+
+**速度是 10000× 还是被改过？** 基础倍率全程默认：`getGlobalSpeedupFactor()` 在
+`t=0 ~ t=2511` 恒为 **10000**；直到 `t=2511`（墙钟 +2520 s）才出现 20000，
+`t=2521` 出现 40000。这是 `game.js:584 getGameSpeedupFactor()` 里
+`TIME_GLYPH / BLACK_HOLE / TIME_STORAGE / SINGULARITY_MILESTONE` 这些**游戏内机制**
+叠加出来的有效倍率（终局 Doom 阶段才点亮），不是外部脚本改速——`r50_monitor.mjs`、
+`new_game_ctx.mjs`、本目录所有 `.mjs` 都没有写 `player.speed` 的代码。
+也就是说：0 → `end=0.7506` 这段（占全程 99.6%）全部在 10000× 下完成。
+
+**对照样本 `r50-fresh1b`（不计入新档记录）**：它的 `t=0` 样本已经是
+`stage=celestialsEnslaved`、`real=70`、`ecs=5,5,5,5`，是从中局接管的第二次采样，
+不是新档；它自己在 `+2266 s` 时也到 `end=1.0723`，只能说明「中局 → 终局 37 分 46 秒」，
+不能当作从零起算的成绩。
+
+### C.84.2 Android 构建与双云盘发布（R50-A1）
+
+| 项 | 值 |
+| --- | --- |
+| 构建 | `./gradlew.bat build` 8 m 16 s，BUILD SUCCESSFUL |
+| 门禁 | `verifyRelease` 15/15、`verifyPatchContract` 34/34 |
+| 候选 APK | 69,794,405 B，SHA-256 `9dec09010c2b3a992bca133090e2087d65086a54f5f79d41092b00470d4ac4f6` |
+| versionCode / Name | 30190000 / 3.19.0 |
+| 签名 | v2 + v3，证书 `95960bce…` |
+| 替换 | `installToRelease` 覆盖 `release/反物质维度.apk`，哈希一致 |
+| 云盘 | `C:\Users\Oreki\OneDrive\反物质维度.apk`、`C:\Users\Oreki\小米云盘\反物质维度.apk`，两处 SHA-256 与源一致 |
+
+### C.84.3 AVD Chrome 真实移动端实测（1440×3200 @560dpi，Chrome 156.0.8078.47）
+
+原生视口 **411×750 CSS px、dpr 3.5、UA 含 Mobile、`meta viewport: width=device-width`**，
+`navigator.maxTouchPoints = 5`。七档测量（原生 + 320/360/393/411/980/1280）：
+
+| 视口 | 横向滚动 | 教程按钮可见 | 教程弹窗渲染 | 章节按钮 | 正文滚动区高 | 表格横向溢出 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 原生 411 | 无 | 是 | 是 | 24 | 379 px | 0 |
+| 320 | 无 | 是 | 是 | 24 | 185 px | 0 |
+| 360/393/411 | 无 | 是 | 是 | 24 | 379 px | 0 |
+| 980 | 无 | 是 | 是 | 24 | — | 0 |
+| 1280 | 无 | 是 | 是 | 24 | — | 0 |
+
+目录条 `overflow-x:auto`（`scrollWidth 5007 / clientWidth 302`，320 下），
+章节被截断属可横滚，不是缺陷；关闭按钮在 320 与 411 截图中均完整落在视口内。
+
+### C.84.4 本轮修掉的两处实测缺陷（`e035505` → Pages `9e64f86`）
+
+**① 膨胀页升级按钮被裁（真缺陷）**：`.l-dilation-upgrades-grid` 宽 660 px，
+`left=-124 / right=536`；10 个 `.o-dilation-upgrade` 里 **6 个在 411 视口外**
+（第一个 -109..81，第三个 331..521）。成因是 `grid__row` 为
+`flex + justify-content:center` 且按钮写死 `width:19rem` 不收缩，行宽 660 居中后
+左右各溢出 124 px，而 `.c-game-ui` 是 `overflow-x:hidden` → 两侧按钮**既看不见也点不到**。
+修法：`≤900px` 时行 `flex-wrap`、单元格外边距 1.5rem→0.4rem、
+按钮 `width:min(19rem, 50vw - 2.2rem)` 且 `height`→`min-height:9rem`。
+复测：411 下网格 `0..411`、**0 个按钮越界**（每行 184 px×2）；
+320 下 0 越界（每行 138 px×2）；1280 下仍是原样 660 px、0 越界（桌面零影响）。
+
+**② 教程短屏正文区过矮**：320×568 下正文滚动区仅约 150 px（布局盒写死 50vh）。
+修法 `@media (max-height:720px) { .c-oreki-tut__layout { height:72vh } }`，
+复测 320 下滚动区 185 px。
+
+**线上核验**：`oreki.css` SHA-256 `92ce0a559729cb936470cbd4458fd3dfc1ef17c1e2532c38327736151230281f`、
+`index.html` `6e47f5e35ebb6834e495bfe172297e055bb575784d45e866290731dc82504343`，
+与 `_deploy/site` 本地副本逐字节一致（不用耗时判断，用哈希）。
+
+### C.84.5 两条踩坑记录（下次直接省时间）
+
+1. **Android Chrome 的 CDP `/json` 暴露的 `id` 是别名，不能用**：拿 `/json` 里的
+   `id` 去 `Target.attachToTarget` 会「附着成功但 `Runtime.enable` / `Runtime.evaluate`
+   全部超时」。必须用 `Target.getTargets` 返回的真实 `targetId`（形如
+   `32983E98…`），附着后 `1+1` 立刻返回 2。
+2. **教程弹窗打不开不是教程的问题**：`GameUiComponentFixed.js:75-87` 是
+   `v-if / v-else-if` 链——`ModalProgressBar` → `CelestialQuoteModal`(`view.quotes.current`)
+   → `CelestialQuoteHistoryDisplay` → `PopupModal`(`view.modal.current`)。
+   只要有一条天体语录在播，`PopupModal` 整块就不渲染，此时
+   `Modal.orekiTutorial.isOpen === true`（它确实已是 `ui.view.modal.current`）但 DOM 里
+   一个 `.c-oreki-tut` 都没有。量教程前必须先 `Quote.clearAll()`。
+   这也是**上游原有行为**，不是本 MOD 引入的缺陷。
