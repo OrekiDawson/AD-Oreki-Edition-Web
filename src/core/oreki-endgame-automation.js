@@ -278,6 +278,12 @@ export const OrekiEndgameAutomation = {
       // 实测（R39 probe.mjs）：imLog10=10、OREKI_IU25_COST=5e9 时仍返回 false。
       return Number(Currency.imaginaryMachines.value) >= OREKI_IU25_COST;
     } catch (e) {
+      // [Oreki R42-C] 这里原来只有 `return false`。正是这个写法让 R39 那处 `.gte()`
+      // 的 TypeError 伪装成「前置不满足」，连续两轮都没人发现。
+      // 现在把异常存进 `_lastError`（debugState 与探针都会读它），仍然返回 false ——
+      // 记录与判定分开，不改变任何游戏行为。
+      const msg = `iu25: ${(e && e.message) || e}`;
+      if (this._lastError !== msg) this._lastError = msg;
       return false;
     }
   },

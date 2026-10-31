@@ -47,6 +47,45 @@ const RE = new RegExp(
   "g",
 );
 
+// ── 规则 2：Decimal 与 number 的隐式转换 ────────────────────────────────
+//
+// 起因（r42c-web-endgame 2026-10-31 实测）：`holdForRealityUpgrade10()` 里写着
+//   `player.eternities > 0`
+// 而 `extensions.js:232` 把 `Decimal.prototype.valueOf` 改成**直接 throw**
+// `Implicit conversion from Decimal to number`。于是这条判断每帧抛异常、
+// 被外层 catch 吞掉、恒为 false —— 「为现实升级 10 压住第一次永恒」从写下来就没生效过。
+// 规则 1（`.value.<方法>`）看不见这一类，必须单独加一条。
+//
+// 只认「确定是 Decimal」的已知路径，且运算符必须**紧贴**在该路径之后，
+// 这样 `player.antimatter.exponent >= 400`（取的是 number 属性）不会被误报。
+const DECIMAL_FIELDS = [
+  String.raw`player\.antimatter`,
+  String.raw`player\.matter`,
+  String.raw`player\.infinityPoints`,
+  String.raw`player\.eternityPoints`,
+  String.raw`player\.eternities`,
+  String.raw`player\.infinities`,
+  String.raw`player\.infinitiesBanked`,
+  String.raw`player\.infinitiesTotal`,
+  String.raw`player\.dilation\.tachyonParticles`,
+  String.raw`player\.dilation\.dilatedTime`,
+  String.raw`player\.reality\.realityMachines`,
+];
+/** `.value` 是 Decimal 的 Currency（与 NUMBER_CURRENCIES 互补） */
+const DECIMAL_CURRENCIES = [
+  "antimatter", "matter", "infinities", "infinitiesBanked", "infinitiesTotal",
+  "infinityPoints", "infinityPower", "eternities", "eternityPoints",
+  "timeShards", "timeTheorems", "tachyonParticles", "dilatedTime",
+  "realityMachines", "darkMatter", "realityShards", "replicanti",
+];
+
+const DECIMAL_PATHS = [...DECIMAL_FIELDS, String.raw`Currency\.(${DECIMAL_CURRENCIES.join("|")})\.value`];
+const RE_DECIMAL_CMP = new RegExp(
+  String.raw`(?:${DECIMAL_PATHS.join("|")})\s*(?:[<>]=?|[!=]==?|\+|-|\*|/)`,
+  "g",
+);
+const RE_DECIMAL_NUMBER = new RegExp(String.raw`Number\(\s*(?:${DECIMAL_PATHS.join("|")})\s*\)`, "g");
+
 /**
  * 返回问题清单（**不抛异常**）。按 §26.1，调用方必须用 `validate()`（会退出）
  * 而不是这个函数单独当断言。
@@ -61,10 +100,12 @@ export function scanText(code, file) {
     const line = lines[i];
     // 跳过整行注释（行内注释无法可靠区分，宁可多报）
     if (/^\s*(\/\/|\*|\/\*)/.test(line)) continue;
-    RE.lastIndex = 0;
-    let m;
-    while ((m = RE.exec(line)) !== null) {
-      problems.push({ file, line: i + 1, col: m.index + 1, text: m[0] });
+    for (const re of [RE, RE_DECIMAL_CMP, RE_DECIMAL_NUMBER]) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(line)) !== null) {
+        problems.push({ file, line: i + 1, col: m.index + 1, text: m[0].trim() });
+      }
     }
   }
   return problems;
@@ -98,6 +139,7 @@ export function validate(srcDir = SRC) {
 }
 
 function selftest() {
+  // 规则 1：NumberCurrency.value 上调用 Decimal 方法
   const bad = [
     "const a = Currency.imaginaryMachines.value.gte(5e9);",
     "const b = Currency.imaginaryMachines.value.log10();",
@@ -123,12 +165,36 @@ function selftest() {
     console.error(`[自测失败] 正例不应命中，实际 ${goodHits.length} 处：${JSON.stringify(goodHits)}`);
     process.exit(2);
   }
+
+  // 规则 2：Decimal 与 number 的隐式转换（`Decimal.prototype.valueOf` 会 throw）
+  const bad2 = [
+    "if (player.eternities > 0) return false;",
+    "const x = Number(player.antimatter);",
+    "if (Currency.eternityPoints.value >= 1e5) {}",
+  ].join("\n");
+  const good2 = [
+    "if (Currency.eternities.gt(0)) return false;",
+    "if (player.antimatter.exponent >= 400) return false;",
+    "const n = Number(Currency.infinityPoints.value.exponent);",
+    "if (player.realities > 5) {}", // NumberCurrency，比较合法
+  ].join("\n");
+  const bad2Hits = scanText(bad2, "<neg2>");
+  if (bad2Hits.length !== 3) {
+    console.error(`[自测失败] 规则 2 负例应命中 3 处，实际 ${bad2Hits.length} 处：${JSON.stringify(bad2Hits)}`);
+    process.exit(2);
+  }
+  const good2Hits = scanText(good2, "<pos2>");
+  if (good2Hits.length !== 0) {
+    console.error(`[自测失败] 规则 2 正例不应命中，实际 ${good2Hits.length} 处：${JSON.stringify(good2Hits)}`);
+    process.exit(2);
+  }
+
   // 关键的 fail-closed 检查：负例必须能被 validate 的同类入口拦住
   let threw = false;
   try {
     const tmp = path.join(HERE, "..", ".tmp-number-currency-selftest");
     fs.mkdirSync(tmp, { recursive: true });
-    fs.writeFileSync(path.join(tmp, "x.js"), bad);
+    fs.writeFileSync(path.join(tmp, "x.js"), bad + "\n" + bad2);
     validate(tmp);
   } catch (e) {
     threw = true;
@@ -139,7 +205,7 @@ function selftest() {
     console.error("[自测失败] validate() 没有对负例抛异常（断言形同不存在，见 §26.1）");
     process.exit(2);
   }
-  console.log("[自测通过] 负例 4/4 命中，正例 0 误报，validate() 会抛异常");
+  console.log("[自测通过] 规则1 负例 4/4、规则2 负例 3/3，正例 0 误报，validate() 会抛异常");
 }
 
 if (process.argv.includes("--selftest")) {
@@ -148,7 +214,8 @@ if (process.argv.includes("--selftest")) {
   selftest();
   try {
     validate();
-    console.log(`[通过] src/ 下 ${NUMBER_CURRENCIES.length} 个 NumberCurrency 均无 Decimal 方法误用`);
+    console.log(`[通过] src/ 下 ${NUMBER_CURRENCIES.length} 个 NumberCurrency 无 Decimal 方法误用；` +
+      `已知 Decimal 路径无与 number 的隐式转换（${DECIMAL_PATHS.length} 条路径）`);
   } catch (e) {
     console.error(`[失败] ${e.message}`);
     process.exit(1);
