@@ -3561,3 +3561,35 @@ C.72 记的判据是「比对 qemu 的 `StartTime` 与 jsonl 时间窗」。这�
 
 **未验证**：11:02 那次失败的确切原因（OOM？句柄竞争？）。空载复跑成功，只能记「高负载下瞬时失败」。
 ⇒ 通用教训：**任何会覆盖交付物的脚本，都必须先写临时文件再原子替换。**「以后小心」不是修复。
+
+## C.77 R42 Pages 部署：线上 404 的阻断项已消除 `[实测]`
+
+| 项 | 值 |
+|---|---|
+| 发布源 | `AD-Oreki-Edition@cff7b42`（main，已提交快照） |
+| 部署仓库 | `OrekiDawson/OrekiDawson.github.io`，`31a72e9 → cd7c964` |
+| 站点域名 | `oreki.net`（CNAME） |
+| 生成方式 | `web/_deploy/deploy_pages.py`：`git archive HEAD` 导快照 → 按 `filelist.txt` 863 项同步 |
+| 部署前差异 | `site/src` 陈旧残留 **0** 个；新增 1、变更 6 |
+
+**部署前的真实阻断项**：`src/core/oreki-route-model.gen.js` 被 `oreki-smart-strategy.js` 静态 import，
+但上一版 `filelist.txt` 没有它。若直接发布，主线模块加载即 404。
+本轮已补入清单，并用**独立 import 闭包检查**确认（不看 `--dry-run`）：
+从 `src/main.js` 可达 **726** 个模块，闭包内未被清单覆盖 **0**，清单里源码不存在 **0**。
+
+**线上核验**（不是「已推送」就完事）：
+```
+GET https://oreki.net/src/core/oreki-route-model.gen.js
+  第 1 次 404 → 第 2 次 404 → 第 3 次 200，12,170 字节，
+  sha256 前 16 位 9e5a71c6183f81e1 与本地部署副本逐字节一致
+```
+⇒ GitHub Pages 传播有延迟（约 20 s 后才 200），**「推送成功」不等于「线上已生效」，
+必须按内容哈希核对**。
+
+**未验证**：移动端在 Android Chrome 的真实行为（GLOBAL_STOP 期间不启模拟器）。
+本轮只做宿主视口模拟，不得表述为「全平台通过」。
+
+**流程改进**：`deploy_pages.py` 早先版本在工作树脏时直接 abort，
+把「有在途改动」误判成「发布不安全」。实际上 `git archive HEAD` 只取已提交内容，
+在途改动天然不会进部署副本。现改为**列出在途改动并继续**，报告里写清
+「发布的是哪个 commit、哪些改动没进去」。
