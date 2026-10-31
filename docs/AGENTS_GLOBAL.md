@@ -367,16 +367,23 @@ Wiki 用于理解机制，**不替代源码与实测**；冲突或证据不足�
 OneDrive 根目录的 `desktop.ini` 与 `.849C9593-…` 是同步必需文件，严禁移动。
 **所有开发文档一律用中文写、统一放 `docs/`**。
 
-### 6.7.2 测 Chrome 与测 App 必须用两个独立模拟器
+### 6.7.2 测 Chrome 与测 App **共用唯一 AVD，必须严格串行**（2026-10-31 11:25 修订）
 
-- 测 Web 版（Android Chrome）与测 Android MOD（App）**不得共用同一台 AVD**：避免互抢前台、
-  互相 `am force-stop` / `pm clear` 误杀导致墙钟数据作废。
-- 基准 AVD `oreki_test`（Android 14 / API 34 / 1080x2340 / density 440）；Chrome 侧要求版本 ≥ 156。
-- adb 真实路径：`android/AD_Oreki_Edition_Android/tools/platform-tools/adb.exe`
-  （`%LOCALAPPDATA%\Android\Sdk` 在本机不存在）。
+> **本节旧版标题是「测 Chrome 与测 App 必须用两个独立模拟器」，已废止。**
+> 旧版要求同时开两台 AVD，与用户 11:25 补充令「全程最多一台、Android 与 Web Chrome 必须串行」直接冲突，
+> 且实测两台 AVD 可占 6.4 核（FACTS C.75），是构建签名失败（INC-2026-1031-03）的诱因之一。
+> **现行为：一台 AVD，串行，靠「测前清场 + 测后复位」解决旧版担心的互相干扰。**
+
+- 唯一 AVD `oreki_test`（Android 14 / API 34 / **1440×3200 / density 560**，真机规格见 §29）。
+- **Android 应用测试与 Web Chrome 测试必须串行**，不得同时进行；切换用途时必须先做清场：
+  - 切到 Chrome 前：`adb shell am force-stop com.oreki.antimatterdimensions`
+  - 切到 App 前：`adb shell am force-stop com.android.chrome`（Chrome 包名按实际安装的 x86_64 变体核对）
+  - 长墙钟测量期间，**禁止对目标包执行** `force-stop` / `pm clear`。
+- 旧版担心的风险（互抢前台、`pm clear` 误杀导致墙钟数据作废）**仍然成立**，
+  但对策从「开第二台」改为「串行 + 清场 + 记录切换时刻」，墙钟区间跨切换的样本一律作废重测。
+- adb 真实路径：`C:\Users\Oreki\Android\Sdk\platform-tools\adb.exe`（`%LOCALAPPDATA%\Android\Sdk` 在本机不存在）。
 - 宿主静态服务器 `http://127.0.0.1:8099`；模拟器内访问宿主用 `http://10.0.2.2:8099`。
-- 上机前确认**没有其他 Agent 在同一台 AVD 上操作**；长墙钟测量期间禁止对目标包执行
-  force-stop / pm clear。
+- 上机前确认**没有其他 Agent 在同一台 AVD 上操作**；启停权只属于主 Agent（§28）。
 
 ## 7. 双端导航基准（2026-10-28 R5.7 用户确立，**本节是导航基准的唯一源**）
 
