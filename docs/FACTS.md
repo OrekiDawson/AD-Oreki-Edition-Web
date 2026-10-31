@@ -3062,6 +3062,14 @@ Android 侧「教程渲染五项验收」的第 1、2、4 项在当前包上**�
 
 ## C.66 Android 教程字号三档真实生效：同一段文字高度 222 / 261 / 420 px `[实测]`
 
+> **⚠ 本条结论部分作废（2026-10-31 10:2x 自查 + team-lead 指出）。**
+> 下面量到的那段文字，`bounds` 是 `44,686,1036,947`、内容是「教程正文缺失（行数 0 / 章节 0 / 异常 null）：请重装完整安装包……」，
+> **是红色诊断文案，不是教程正文**（见 C.68：四处判空极性写反，正文一次都没渲染过）。
+> 「字号设置能改变字号」这个结论仍然成立（三档读数两两不同，小/中比例 0.851 命中源码系数 0.85）；
+> 但「Android 教程正文的三档字号生效」**未验证**，必须等极性修复包重测。
+> 重测口径：行数 > 0 且 章节 > 0、量某一章真实正文段落、三档都要能在控件树里读到同一段的 `bounds`。
+> 脚本 `web/_tools/_r42/android-tutorial-accept.mjs` 已按这个口径写好硬门禁。
+
 ### 一、方法
 
 正文为空不影响量字号：界面上的报错文案本身就是正文 `TextView`。
@@ -3380,3 +3388,78 @@ third run 全程压在这两个模拟器上。
 3. 宁可多跑一轮干净的，也不要用被污染的样本改代码 —— 这次差一点因为 after-b
    去「回退一个其实没有行为差异的改动」。
 
+
+## C.73 ≤900px 下教程导航是**横向滚动条**（不是被裁），但它不会滚到当前章 `[实测]`
+
+### 一、起因
+
+`avd_w_320_tut.png`（Android Chrome 320 CSS px）里教程弹窗只剩正文、左侧看不到章节目录，
+第一反应是「导航被裁掉了」。实测否掉了这个判断。
+
+### 二、读数（AVD `oreki_web_test`，`wm density 540` → 320 CSS px）
+
+```
+layout : flex-direction: column   gap: 10px
+nav    : y=70  h=116.9  flex-direction: row  overflow-x: auto  overflow-y: hidden
+         scrollLeft=0   scrollWidth=5135   clientWidth=274   clientHeight=117
+按钮   : 25 个（18 章 + 7 附录，Web 端），每个高 114px、宽 145~316px
+可视带 : 只有 2 个按钮（第 0 章、第 1 章）
+当前章 : idx=13  x=2837.4  →  activeBtn 不在可视带内
+```
+
+代码依据：`web/AD-Oreki-Edition/public/stylesheets/oreki.css:659` 是 `@media screen and (max-width: 900px)`，
+其中 `:670-686` 明确写了 `flex-direction: row; overflow-x: auto; overflow-y: hidden`。
+⇒ **降级本身是设计意图**，截图里看不到左侧列表 = 横向条停在滚动起点，不是裁切。
+
+### 三、真正的缺陷
+
+横向条**不会跟随当前章**：正文停在第 13 章时，`scrollLeft` 仍是 0，当前章按钮在 x=2837 处，
+可视区里只有第 0、1 章。窄屏用户无法从目录判断自己在哪一章，也无法点回去。
+
+修法（渲染层，一行）：`show()` 之后 `nav.scrollLeft = activeBtn.offsetLeft - nav.clientWidth/2 + activeBtn.offsetWidth/2`。
+
+### 四、附带读数（不判缺陷）
+
+横向条高 116.9px，占 320×597 视口的 19.6%；按钮高 114px 是被多行章标题撑起来的。
+`.c-oreki-tut__main` 实测 y=196.9 / h=443.5（底沿 640.4），而 `.c-oreki-tut__layout` 底沿只到 514.1，
+**溢出 126.3px**；正文仍在自滚容器内（`scroll.h=261` / `scrollH=4157`，能滚到底），
+所以不影响可读性，但改导航条高度时要连带复核底栏位置。
+
+脚本：`web/_tools/_r42/nav-probe-320.mjs`、`nav-main-probe.mjs`。
+
+## C.74 Android 教程只有 18 章，**7 篇附录只存在于 Web 端** `[实测]`
+
+### 一、判据（team-lead 给的装机前判据，已脚本化）
+
+不看界面，直接从 APK 里数 `CH|` 行：
+
+```
+python web/_tools/_r42/apk_tut_asset_check.py <apk> 18
+```
+
+CH 行数 = 应该渲染出来的章节数；装机后界面章节数必须等于它，不等就是渲染层的问题，不是资产的问题。
+同时校验 `TITLE`/`SUB`/`STAGE` 是否与 `CH` 同数（不同数说明标签写出去了但章节没闭合）。
+
+### 二、读数
+
+| 对象 | 字节 | 行数 | CH | TITLE | 汉字 |
+|---|---|---|---|---|---|
+| `scripts/payload/assets/oreki_tutorial.txt` | 118219 | 854 | 18 | 18 | — |
+| `_b_build/out/反物质维度.apk` 内 `assets/oreki_tutorial.txt`（09:58 包） | 118269 | 853 | 18 | 18 | 26154 |
+
+### 三、附录去哪了
+
+`oreki-tutorial-data.json` 里 `chapters=18`、`appendices=7`（附录 A 术语表 / B 隐藏成就速查 / C 记数法 /
+D 中英界面对照 / E 卡住时的症状对照 / F 自动化总览 / G 本 MOD 与原版的差异清单）。
+
+但 `android/AD_Oreki_Edition_Android/scripts/oreki_tutorial_gen.py` 只遍历 `doc["chapters"]`（`:198`、`:394`、`:503`、`:574`、`:701`、`:754`），
+**全文没有 `appendices` 这个键**；资产标签表里也没有 APX 一类。⇒ Android 无论装机多少次都看不到这 7 篇。
+
+### 四、影响
+
+「两端共用同一份内容源」在**章节**这一层成立（18 章逐字一致），在**附录**这一层不成立。
+Android 用户缺失的是 7 篇查阅型资料（术语、成就、记数法、中英对照、卡点症状、自动化总览、差异清单），
+其中「中英界面对照」「卡点症状对照」正是新手最容易用到的两篇。
+
+要补需动 `oreki_tutorial_gen.py`（生成 APX 记录）+ `TutorialActivity.smali`（`tagCode` 认 APX、`buildTabs` 给「附·」前缀、
+`chapterForStage` 不受影响）。属于 smali / 构建链，本轮不改，登记待排期。
