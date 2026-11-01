@@ -258,8 +258,10 @@ cmp WEB_ANDROID_DIFFERENCES.md web/AD-Oreki-Edition/WEB_ANDROID_DIFFERENCES.md \
 
 | 差异 | 消除方式 | 证据 |
 |---|---|---|
-| 无限升级自动购买在列表首项 `return-void`，后续 16 项与 ipMult 分支永远轮不到 | `OrekiStageAuto.buyInfinityUpgrades` 改为 `goto :oreki_sa_iup_next` 继续遍历 | A27 实测 `infinityUpgradeBits` 0→2047；A28 待验 ipMult |
+| 无限升级自动购买在列表首项 `return-void`，后续 16 项与 ipMult 分支永远轮不到 | `OrekiStageAuto.buyInfinityUpgrades` 改为 `goto :oreki_sa_iup_next` 继续遍历 | A27 实测 `infinityUpgradeBits` 0→2047；A28 到 131071 |
 | ipMult 可重复升级被 `ID1.y()==0` 闸门永久挡住（全新档恒成立） | 改为「仅 ID1 已解锁但未买下时保留 IP」 | 同上 |
+| **ipMult 用 `fp3.D()` 购买 = 扣钱不涨级**（`uu1.E(Z)` 是空实现） | A29 改走原版路径：`ln0.i(cost)` 扣费 + `I()/J()` 涨级；成功判据变为真实状态变化 | FACTS C.98 / C.99；Web 侧用 `purchase()` 无此问题 |
+| **320px 下通知层盖住「大坍缩」按钮，点击命中率 44%** | `.l-notification-container { pointer-events: none }` + 子项 `auto` | Web 实测 44% → **97%**（`reports/_r51/run_320_fix.log`） |
 
 ### 15.3 仍然存在的最大功能缺口（按对通关的影响排序）
 

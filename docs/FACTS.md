@@ -5476,3 +5476,45 @@ case AUTO_CRUNCH_MODE.X_HIGHEST: return gainedInfinityPoints().gte(this.highestP
 **【待办】** 给可重复购买加「前后值比较」的防假成功闸：值没变即视为失败并进冷却，不再每 tick 重试。
 
 **【同源前例】** `resetBoost` 在 A27 也是每 tick「买到」一次（1007 次 / 25 s），见 `tasks/R51-AND-01.md` §五。
+
+## C.99　C.98 的根因与修复：`uu1.E(Z)` 是空实现，`D()` 对可重复升级只扣钱不涨级（2026年11月1日）
+
+**【读码】根因**：`fp3.D(Z,Lvh0;)` 的购买体是
+
+```
+a(p1) 为真 → y().i(x()) 扣钱 → E(true) → C(true,p1) → 返回 true
+```
+
+而 `uu1`（ipMult 的实现类）里：
+
+| 方法 | uu1 里的实现 | 后果 |
+| --- | --- | --- |
+| `E(Z)V` | **空实现**（`uu1.smali:287` 只有 `return-void`） | 等级不增加 |
+| `C(ZZ)V` | 未覆盖（用 `fp3` 的空实现） | 记录不更新 |
+| `A(Z)Z` | 覆盖为「成就 41 已解锁 且 非 Doomed」 | **不是「买得起」判据** |
+| `B()Z` | `ak1.u(this)` | 不是「已买」语义 |
+
+⇒ `D()` 对可重复升级**扣了 IP 但等级不变**，这正是 C.98 观察到的「返回 true ≠ 买到」。
+
+**【读码】正确路径**（原版 `a.smali:8820-8831`）：
+
+```
+cost   = uu1.x()LBigDouble;
+cursor = uu1.y()Lln0;            // IP 货币容器
+cursor.i(cost)                   // 内部先 f() 判买得起，再 l() 扣减，返回「真扣成功」
+purchases = uu1.I()J + 1
+uu1.J(purchases)                 // 写回等级
+```
+
+`ln0.f(BigDouble)Z` = `value.compareTo(cost) >= 0`（买得起）；
+`ln0.i(BigDouble)Z` = 买得起则扣减并返回 true（`ln0.smali:1101-1118`）。
+
+**【修复】** A29（提交 `a32d7ce`）：`OrekiStageAuto.buyInfinityUpgrades` 的 ipMult 段改为上面这条路径，
+成功判据变成**真实状态变化**——`i()` 返回 false 就什么都不做；只有真涨级才计数并打 `OREKI_IPM_LV`。
+
+**【双端核对】** Web 侧 `oreki-early-automation.js` 用的是原版 `InfinityUpgrade.ipMult.purchase()`
+（每帧最多 1 个、刻意不用 buyMax），走的是 JS 原版正确路径，**不存在此缺陷**。故只修 Android。
+
+**【判据教训】** 从此判断「Android 某升级是否真买到」只认三种存档字段差：
+`infinityUpgradeBits` 位翻转 / `ipMultUpgrades` 数值 +1 / `baseAmount/10`（C.97）。
+`OREKI_IPM_LV` 是**唯一**可信的 ipMult 计数日志——它只在 `J()` 真写入后触发。
