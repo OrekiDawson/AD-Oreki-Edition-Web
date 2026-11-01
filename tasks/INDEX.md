@@ -22,6 +22,7 @@
 | R50-AND-01 | Android 智能自动购买器缺口补齐与 ID/Eternity 推进 | android-agent | 进行中 | [R50-AND-01.md](R50-AND-01.md) |
 | R50-AND-02 | `tryBuyId1` 循环极性修复（A11） | main | **已完成** |  [R50-AND-02.md](R50-AND-02.md) |
 | R50-WEB-01 | Web 八修（莱特拉刷层）+ 统一调度器 | web-agent | 待验收 | [R50-WEB-01.md](R50-WEB-01.md) |
+| R50-DOC-01 | 四仓库 README 重写与长期维护制度 | main | 进行中 | [R50-DOC-01.md](R50-DOC-01.md) |
 | R50-TUT-01 | 中文教程全量中文化（消除全部英文残留） | tutorial-agent | 待领取 | [R50-TUT-01.md](R50-TUT-01.md) |
 | R50-REA-01 | 原版逆向：后续阶段入口与方法映射 | rea-agent | 进行中 | [R50-REA-01.md](R50-REA-01.md) |
 
