@@ -9,6 +9,11 @@
 | 编码 | UTF-8 无 BOM、纯 LF、以换行结尾 |
 | 序号格式 | 十进制层级：`1.` → `1.1` → `1.1.1`，与 `AGENTS.md §1` 的编号规则一致 |
 
+> **⚠ 2026年11月1日 16:53 重大变更（用户下达）**：项目全面改为**单 Agent 模式**（`AGENTS.md §60`）。
+> 本索引中凡涉及「多 Agent 并行、专项 Agent 派发、子 Agent 生命周期、Agent 认领/队列、busy/queueBusy、
+> 阶段性 Pause」的条目**一律失效**；`AGENTS.md` 对应章节标题已就地加「§60 废止」标记。
+> 保留有效的是：资源健康（§58）、快速迭代、中文协作（§57）、双端一致（§59）、正式交付流程。
+
 ## 1. 本索引的定位与用法
 
 ### 1.1 索引不承载规则正文
@@ -118,26 +123,27 @@
 | 51. | 任务单禁止第一人称 | AGENTS.md §51 |
 | 全局二 | 主控维护 Agent 登记表 | GLOBAL-RULES.md §二 |
 
-### 3.4 P3（13 节）
+### 3.4 P3（协作效率，**2026-11-01 16:53 起多 Agent 条目全部失效**）
 
-| 章节 | 名称 | 主源 |
-| --- | --- | --- |
-| 12. | 每轮先回收子 Agent | AGENTS.md §12 |
-| 25. | 子 Agent 数量与资源管理 | AGENTS.md §25 |
-| 31. | 长期协作规则 v1（Agent 调度与交付纪律） | AGENTS.md §31 |
-| 32. | 发布流程时间预算与超时处理 | AGENTS.md §32 |
-| 35. | 子 Agent 生命周期与自动回收 | AGENTS.md §35 |
-| 36. | 主 Agent 主动推进原则 | AGENTS.md §36 |
-| 37. | 双小时强制交付机制 | AGENTS.md §37 |
-| 39. | 子 Agent 持续工作与任务接续 | AGENTS.md §39 |
-| 40. | 子 Agent 强制终止与失联处置 | AGENTS.md §40 |
-| 55. | 后台构建与 Agent 阶段性 Pause | AGENTS.md §55 |
-| 56. | 主 Agent 统一统筹与 Android-Agent 按需调用 | AGENTS.md §56 |
-| 58. | AI 工作负载与资源健康监控（2026-11-01 用户下达） | AGENTS.md §58 |
-| 全局一 | 子 Agent 调度：并发上限 3 | GLOBAL-RULES.md §一 |
-| 全局三 | 完成即回收 | GLOBAL-RULES.md §三 |
-| 全局四 | 取消 / 超时 / 异常回收 | GLOBAL-RULES.md §四 |
-| 全局五 | 建新 Agent 的前置检查 | GLOBAL-RULES.md §五 |
+| 章节 | 名称 | 主源 | 现状 |
+| --- | --- | --- | --- |
+| 60. | **单 Agent 模式（全面取消多 Agent 并行）** | AGENTS.md §60 | **生效，P3 唯一协作主源** |
+| 58. | AI 工作负载与资源健康监控 | AGENTS.md §58 | 生效（「不增加并发」改为「不启动额外重型任务」） |
+| 32. | 发布流程时间预算与超时处理 | AGENTS.md §32 | 生效 |
+| 36. | 主 Agent 主动推进原则 | AGENTS.md §36 | 生效 |
+| 37. | 双小时强制交付机制 | AGENTS.md §37 | 生效 |
+| 12. | 每轮先回收子 Agent | AGENTS.md §12 | **已废止**（§60） |
+| 25. | 子 Agent 数量与资源管理 | AGENTS.md §25 | **已废止**（§60），仅「单文件单一 owner」保留 |
+| 31. | 长期协作规则 v1（Agent 调度） | AGENTS.md §31 | **已废止**，仅中文 commit 与交付纪律保留 |
+| 35. | 子 Agent 生命周期与自动回收 | AGENTS.md §35 | **已废止**（§60） |
+| 39. | 子 Agent 持续工作与任务接续 | AGENTS.md §39 | **已废止**（§60） |
+| 40. | 子 Agent 强制终止与失联处置 | AGENTS.md §40 | **已废止**（§60） |
+| 55. | 后台构建与 Agent 阶段性 Pause | AGENTS.md §55 | **Pause 部分废止**，后台构建与恢复七步保留 |
+| 56. | 主 Agent 统一统筹与 Android-Agent 按需调用 | AGENTS.md §56 | **已废止**（§60） |
+| 全局一 | 子 Agent 调度：并发上限 3 | GLOBAL-RULES.md §一 | **已废止**（§60） |
+| 全局三 | 完成即回收 | GLOBAL-RULES.md §三 | **已废止**（§60） |
+| 全局四 | 取消 / 超时 / 异常回收 | GLOBAL-RULES.md §四 | **已废止**（§60） |
+| 全局五 | 建新 Agent 的前置检查 | GLOBAL-RULES.md §五 | **已废止**（§60） |
 | 全局二十三 | 后台构建与 Agent 阶段性 Pause | GLOBAL-RULES.md §二十三 |
 | 全局二十四 | 主 Agent 统一统筹与专项 Agent 按需调用 | GLOBAL-RULES.md §二十四 |
 
