@@ -5005,6 +5005,47 @@ VerifyError: wide register v6 has type Double/Conflict
 这也为 C.88/A11 期间的「某些方法明明在调用链里却毫无日志」提供了一个新解释方向：
 先怀疑类被拒收，再怀疑逻辑错误。
 
+**⚠️ 修正与补充（2026-11-01T12:50+08:00，A13 期间实测，由 android-scheduler-agent 事故确认）**
+
+上面那条「绝不能写 v7/v9/v11/v13/v15」**表述不够准确**。精确判据是：
+
+> **写 high-half 是合法的，ART 只在「读」的时候报错。**
+
+实测证据（`OrekiAutomationScheduler.allow(String)` 的真实崩溃）：
+
+```
+const-wide/16 v9, 0x0    # v9:v10 成为 long 对
+...
+const/16 v10, 0x3e8      # 写 v10 —— 合法，ART 不报任何错
+...
+mul-int v7, v7, v10      # 把 high-half 当 int 读 —— 此处才被校验器拒收
+```
+
+ART 原文：`Verifier rejected class ... allow(String) failed to verify:
+[0x57] register v10 has type Precise High-half Constant: 0 but expected Integer`
+
+**危害在于写法合法、定义与使用相隔几十行**，肉眼看 log 与代码都看不出问题，
+直到装机冷启动才崩（`App.onCreate → OrekiSpeed.init`，即装了就打不开）。
+
+**同一批里还发现一颗未爆炸的雷**：`noteActed` 的 wide 零常量放在 v12:v13，
+而 v7 在后面被当 int 读 —— 当时没崩只是因为调用顺序没走到。只修报错那一处，
+下一轮换个顺序就会炸。最终共修 4 个方法（`allow` / `noteActed` / `clearPending` / `beginFrame`）。
+
+**既有三道静态闸门都拦不住这类问题**：
+
+| 闸门 | 为什么拦不住 |
+| --- | --- |
+| smali 汇编器 | 不管寄存器宽度语义，`assembled=true` 照样通过 |
+| `check_invoke_types.py` | 只检查 p 寄存器类型 |
+| `_lint_smali.py` | 只检查「编号 < .locals」 |
+
+**因此新增第四道闸门 `scripts/check_smali_wide_regs.py`**：
+带 kill 的线性数据流分析（写即失效，只报「读」）。已验证有效性——
+把该 bug 还原成最小样本能精确报出 `mul-int v7, v7, v10`，且对全 payload 26 个文件 0 误报。
+
+**教训**：「静态检查全绿」不等于「能启动」。`VerifyError` 是 ART 运行时校验，
+必须在装机后用「应用能否正常启动」来验证，不能拿汇编通过替代。
+
 #### C.91.2　Break 后的二次停滞：100 ms 自动器节拍 vs 每帧购买的购买死区【实测 + 推断】
 
 A10 新档端到端实测（屏常亮、已排除离线弹窗干扰）：
