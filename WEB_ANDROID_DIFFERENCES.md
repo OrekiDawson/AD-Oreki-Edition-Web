@@ -9,8 +9,10 @@
 > `git checkout / reset / pull / merge` 之后必须重新核对 `stat -c '%d %i'`，
 > 关系断了就按 §6 的安全流程重建。
 
-**最后更新**：2026-10-30（R40）
-**维护规则**：见项目根 `AGENTS.md` §21；每轮开工先读、收工必更新。
+**最后更新**：2026年11月1日（R51）
+**维护规则**：见项目根 `AGENTS.md` §21 与本节 §15；每轮开工先读、收工必更新。
+**自 R51 起的强制要求**：每轮涉及 Web / Android 功能变化时，必须同步评估本文件是否需要更新。
+本文件是**双端一致性事实清单**，不是待办列表——过期结论必须删改，不得堆积。
 
 ## 0. 怎么读这张表
 
@@ -34,7 +36,7 @@
 |---|---|---|---|---|---|---|---|---|
 | 游戏速度倍率 | `getGameSpeedupFactor()`，默认 F=10000，`OrekiSpeed` 注入点唯一 | `OrekiSpeed` / `apply` 注入，F=10000；时间补偿（记忆 √F / 动量 F / 暗物质 √F）另行注入 | 逻辑+性能 | 预期（DEX 侧只能改常量与调用点） | 同输入下「现实时间 vs 游戏内时间」比例一致 | 待验证 | Web `src/core/oreki-speed*.js`；Android `scripts/build_mod.py` 的 `[4n]` 天体时间补偿自检 | R41：两端各跑一次 F=1 / F=10000 对照表 |
 | 时间倍率下「已流逝时间」缩放 | 主循环按 `diff × F` | `IntervaledAutobuyerState.c()` 已改为按倍率缩放已流逝时间 | 逻辑 | 预期 | 自动购买器的「间隔」语义一致 | 待验证 | Android 构建日志 `[Oreki AC]` | R41 |
-| 终局判据 | `game-end.js`：`OFFSET = 1`、`TARGET = 1000`，`endState >= 1 ⟺ 反物质指数 ≥ 1000` | `patch_pelle_end_target()` 把两条 `const-wide` 立即数改成 `1.0` / `1000.0`，置位点与 `gameLoop` 不动 | 数值 | 预期 | 判据字面一致（1e1000） | 待验证（常量已对齐，未跑到佩勒） | Web `src/core/celestials/pelle/game-end.js`；FACTS §C.15 / §C.17 | R41：Android 侧跑到佩勒再验 |
+| 终局判据 | `game-end.js`：`OFFSET = 1`、`TARGET = 1000`，`endState >= 1 ⟺ 反物质指数 ≥ 1000` | `patch_pelle_end_target()` 把两条 `const-wide` 立即数改成 `1.0` / `1000.0`（后续修为 `1001.0`）；`OrekiPelleRecord.smali`（R42）补写 `PelleRecords.totalAntimatter`，由构建期断言强制挂在 `onAutoBuyerTick` | 数值 | 预期 | 判据字面一致（1e1000） | **待验证**（常量与记录写入都已就位，但从未跑到佩勒；`endState` 目前仍恒 0） | Web `src/core/celestials/pelle/game-end.js`；`OrekiPelleRecord.smali`；FACTS §C.15 / §C.17 / §C.59 | R51-AND-01：推进到佩勒再验 |
 | IU25 成本 | `OREKI_IU25_COST = 5e9`（原版 1.6e15） | 未确认是否同步 | 数值 | 需修复（若未同步） | 同一常量 | 未验证 | Web `secret-formula/reality/imaginary-upgrades.js` | R41 用 REA 查 Android 侧 IU25 成本常量 |
 | EC 入口资源门槛缩放 | `OREKI_EC_REQUIREMENT_DIVISOR = 100`（Reality 解锁前生效，`isOrekiBootstrapRun()` 判定） | 未确认是否有对应缩放 | 数值 | 需修复（若未同步，Android 会有不可达的 EC） | 同一缩放与同一生效窗口 | 未验证 | Web `src/core/time-studies/ec-time-study.js` | R41：REA 查 `requirementTotal` 对应方法 |
 | V 解锁阈值 | `realities 200 / dilatedTime 1e30 / replicanti 1e20000` | `patch_v_unlock_thresholds()` 同步三项（常量 + 进度分母两处） | 数值 | 预期 | 三项同时一致 | 待验证 | Android 构建日志 `[R34 Agent C]`；Web `secret-formula/celestials/v.js` | R41 |
@@ -45,7 +47,7 @@
 |---|---|---|---|---|---|---|---|---|
 | 维度自动购买 | 原版自动器 + `oreki-early-automation.js` 开局例行 | 原版自动器；`[Oreki AU2~AU7]` 把解锁条件放宽到「首次无限后」，并在 `Game.autoBuyerTick` 挂 `OrekiStageAuto.onAutoBuyerTick()` | 逻辑 | 预期（Android 侧原版解锁更晚） | 首次无限后即可自动买维度/速度/提升/星系/坍缩/IP 倍率 | 待验证 | Android 构建日志 `[Oreki AU2..AU8]` | R41 |
 | 维度批量购买退化 | 原版 `buyMax` 语义 | `[Oreki AB2]` 不可负担时退化为买 1 个（`OREKI_NO_AB2=1` 可关，仅用于 A/B 对照） | 逻辑 | 预期 | 开局不因买不起而完全停摆 | 待验证 | Android `patch_autobuyer_batch_fallback()` | R41 |
-| 时间维度 / 时间定理 / 时间研究自动化 | `oreki-eternity-automation.js`：`buyTimeDimensions` / `buyTimeTheorems` / `buyTimeStudies` / `buyDilationStudies`，每 30 帧一轮 | 未找到等价模块（原版只有手动 UI） | 缺失 | 需修复（这是 Android 无法推进到 Reality 的结构性原因） | Android 也应有同语义的时间研究自动购买 | 未验证 | Web `src/core/oreki-eternity-automation.js`；Android 侧无对应 payload 类（R40B 报告未列出） | R41：这是 Android 端**最高优先**缺口 |
+| 时间维度 / 时间定理 / 时间研究自动化 | `oreki-eternity-automation.js`：`buyTimeDimensions` / `buyTimeTheorems` / `buyTimeStudies` / `buyDilationStudies`，每 30 帧一轮 | **已实现**：`oreki/OrekiEternity.smali`（452 行，`tick()` → `buyTimeTheorems` / `buyTimeDimensions` / `buyNormalStudies` / `tryEternity`），由 `OrekiStageAuto.onAutoBuyerTick` 在 `isDoomed` 判定之后调用 | 逻辑 | 预期 | 同语义的时间研究自动购买 | **待验证**（代码存在且被调用，但**尚无一条运行期日志证明它真的买到过时间研究**） | Android `OrekiEternity.smali`；调用点 `OrekiStageAuto.smali` 的 `OrekiEternity.tick()` | R51：补 `OREKI_ET_*` 运行期日志后再判 |
 | 现实自动循环 | `oreki-reality-automation.js`：8 s / 15 s 分阶段节流 + 符文管理 | 未找到等价模块 | 缺失 | 需修复 | 同语义 | 未验证 | 同上 | R41 |
 | 符号/记数法 | 默认原版 Scientific | 默认 Scientific（`[DARK]`/记数法补丁） | UI | 预期 | 默认值一致 | 待验证 | Android 构建日志 | 已完成待复核 |
 | 金币下限 | 无此概念 | `[4d]` `getStds` 读取边界钳制 ≥ 10000 | 平台限制 | 预期（商店/广告体系是 Android 独有） | 不影响玩法 | 待验证 | Android 构建日志 `[4d]` | — |
@@ -69,8 +71,8 @@
 | 功能模块 | Web 实现 | Android 实现 | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 | 负责人/后续 |
 |---|---|---|---|---|---|---|---|---|
 | 首次现实入口 | `processManualReality(false)`（与玩家点按钮同一函数） | 原版 UI 按钮；自动化未确认 | 逻辑 | 缺失（Android 无自动现实） | 同语义 | 未验证 | Web `oreki-reality-automation.js` | R41 |
-| **Break 闸门（自动打破无限）** | `oreki-break-infinity-gate.js` `tryOpen()`：`!grantedThisSession && !Pelle.isDoomed` → 补差额 → `while(!hasMaxedInterval) upgradeInterval(false)` → `x0(true)`，同一 tick 三步连做 | **无自动入口**，只能手点。真实按钮序列已从原版 smali 抠出：`if(!Player.m()){ if(CrunchAutobuyerState.v()){ Player.x0(true); g61.a("BREAK_INFINITY"); autobuyer.a.c(); } }` | **缺失** | 需修复（R42 AD5b） | 必须走原版真实路径，**`a.c()` 不许省**（它让 Break 后所有自动购买器间隔免费拉满） | **未验证**：R41 实测 `brake=false / interval=19440 / ip=11`，闸门尚未实现 | `MainActivityBreakInfinityKt$loadViewsBreakInfinity$1$1.smali:126`；Web `gate.js:102-122` | R42：`OrekiBreakGate` |
-| **间隔阶段补贴（32767 IP）** | `BREAK_INTERVAL_TOTAL_COST = 2^15 − 1`；只补「差值」，会话级幂等，`!Pelle.isDoomed` 门内 | **无补贴**：`OrekiStageAuto` 只照价扣 IP，够一级买一级（所以 IP 卡在 11、interval 停在 19440） | **缺失** | 需修复（R42 AD5 B） | 补贴额必须从 `t()`/`u()` 动态推，**不许写死 32767**；只覆盖到 Break 那一刻（Break 后免费） | **未验证** | FACTS §C.48 / §C.59 第六节；Web `gate.js:46-51` | R42：与 BreakGate 同批 |
+| **Break 闸门（自动打破无限）** | `oreki-break-infinity-gate.js` `tryOpen()`：`!grantedThisSession && !Pelle.isDoomed` → 补差额 → `while(!hasMaxedInterval) upgradeInterval(false)` → `x0(true)`，同一 tick 三步连做 | **已实现**：`oreki/OrekiBreakGate.smali`（711 行），走原版真实序列（`Player.x0(true)` + `autobuyer.a.c()` 不省），并有 `OREKI_GATE / OREKI_GRANT / OREKI_BUY / OREKI_BREAK / OREKI_ABORT` 五类状态日志 | **实现差异** | 预期（实现语言不同，语义同源） | 必须走原版真实路径，`a.c()` 不许省 | **待验证**：A27 实测 `OREKI_GATE: window=1` 出现过一次，但 `brake` 仍为 false、`interval` 未到 100 ⇒ **闸门进过窗口但没落到 `:bg_do_break`** | `OrekiBreakGate.smali`；Web `gate.js:102-122` | R51-AND-01：先修 IP 收入（已做），再看闸门能否走完 |
+| **间隔阶段补贴（32767 IP）** | `BREAK_INTERVAL_TOTAL_COST = 2^15 − 1`；只补「差值」，会话级幂等，`!Pelle.isDoomed` 门内 | **已实现**：补贴逻辑并入 `OrekiBreakGate.smali`（`sGranted` 会话级幂等 + `OREKI_GRANT` 日志），差额由原版成本函数动态推算，未写死 32767 | 实现差异 | 预期 | 补贴额必须动态推、只覆盖到 Break 那一刻 | **待验证**：A27 日志里 `OREKI_GRANT` 一次都没出现 ⇒ 补贴分支从未进入（与闸门没走到补贴步骤一致） | `OrekiBreakGate.smali`；Web `gate.js:46-51` | R51-AND-01 |
 | 符文自动装备 | R40A 改为**只装空槽**：绝不替换已占用槽 | **无符文自动装备自动化** | 逻辑 | 需修复（Web 已修 bug，Android 无对应功能） | 不触发静默重置；能拿到 RU9/16/17/18/24 | 待验证（Web 修完未跑完整验收） | 见下方 §4.1 专项 | R41 |
 | 幻象机器（IM）类型坑 | `Currency.imaginaryMachines.value` 是 **Number**，调用 `.gte()/.lte()` 会 TypeError 且被 catch 吞成 `false` | 未确认（smali 侧无此 API 形态） | 逻辑 | 预期（平台 API 不同） | 判定结果一致 | 已验证（Web R39 修 `iu25ConditionsReady`） | FACTS §C.19 | — |
 | 莱特拉 tier 升级 | `OrekiEndgameAutomation.driveLaitela()`：`tier>=8` 前用有界 `holdReality` 抢 30 s 窗口；R40 新增「EC 链全通即提前压现实（90 s 上限）」护住 DS6 | 未找到等价自动化 | 缺失 | 需修复 | 能真实升到 tier 8 并买 IU25 | 待验证 | 见 FACTS §C.21~C.23 | R41 |
@@ -230,3 +232,45 @@ cmp WEB_ANDROID_DIFFERENCES.md web/AD-Oreki-Edition/WEB_ANDROID_DIFFERENCES.md \
    磁盘上是上一次的旧 XML，极易误读成「页面没变」。要控件树就走 FrameObserver 的 `/ui`（a11y 通道，无需 MediaProjection 授权）。
    另：`oreki_test` 在 `-gpu swiftshader_indirect` 下会**画面冻结但应用在跑**（screencap md5 恒定、logcat 正常），
    换 `-gpu angle_indirect` 才正常。见 FACTS §C.64。
+
+---
+
+## 15. R51（2026年11月1日）双端差异清单（五类标签）
+
+> 本节自 R51 起为**必更区**。每轮涉及功能变化时先改本节，再改对应分节。
+> 五类标签的语义（用户 2026-11-01 16:08 指定，不得混用）：
+> **【设计差异】** 有意保留的平台差异　**·　【实现差异】** 两端都实现但写法不同　**·　【功能缺口】** 一端有、另一端没有　**·　【待验证】** 无充分运行期证据　**·　【已解决】** 原差异已消除且有证据
+
+### 15.1 R51 涉及的八个主题
+
+| # | 主题 | 标签 | Web 位置 | Android 位置 | 当前事实与证据 | 后续任务 |
+|---|---|---|---|---|---|---|
+| 1 | 挑战「启动即完成」 | 【实现差异】+【待验证】 | `src/core/oreki-instant-challenges.js`（225 行，进入后按原版出口结算） | `OrekiInstantChallenge.smali`（挂 `Challenges.update` 入口）+ `patch_instant_challenge_rewards()` | 语义一致（进入→原版结算→发奖→幂等）。**IC1 有 AVD 实测**（IP 28→97、30 s 不重入）；**EC 全链无本轮实测**，最近一次是 R40B 的 EC12 完成次数 0→5 | R51-03：Web/Android 各自跑一遍 IC + EC，记录完成数与奖励 |
+| 2 | 智能调度器 | 【功能缺口】（**未接线**） | `src/core/oreki-smart-executor.js`（1185 行，唯一调度器，默认 3 s） | `oreki/OrekiAutomationScheduler.smali`（1352 行，设置页 + 持久化键齐备） | **A27 实测**：logcat 有 `OREKI_SCHED: init 调度：已启用 · 间隔 1 秒`，但 `OrekiStageAuto.smali` 与 `build_mod.py` **均无任何 `OrekiAutomationScheduler` 引用** ⇒ 调度器只初始化，**没有管辖任何动作**，从未出现 `OREKI_SCHED act` | R51-SCHED-01：接线 + 十项运行期验收 |
+| 3 | 教程 | 【已解决】（Web 侧待复核） | `src/core/oreki-tutorial-data.json`（唯一正文源） | 构建期生成 `assets/oreki_tutorial.txt`（A28 构建实测 167445 字节） | 单源已成立：Android 资产由 Web JSON 生成，不手写第二份。运行时渲染**未做逐页验收** | R51-05：Android 运行时逐页渲染 + 术语核对 |
+| 4 | 默认科学记数法 | 【已解决】 | 默认 Scientific，且**不覆盖**玩家已选 | `build_mod.py:4864` 起「默认科学记数法」补丁组 | 补丁存在且有构建期断言；**未做「玩家先改成 Emoji 再重启，记数法是否被覆盖」的运行期实测** | R51-05：补一条「改过记数法后重启不被覆盖」的实测 |
+| 5 | Android 深色模式 | 【设计差异】 | 深色主题（`public/stylesheets/oreki.css`） | 构建日志 `[DARK] activity ok(Theme.DeviceDefault → Theme.Material 固定深色)` | 原创页面统一深色，属平台设计选择；Web 是网页深色主题，实现不同但观感目标一致 | — |
+| 6 | Web 移动端适配 | 【待验证】 | 视口 320/360/393/411/980/1280 与安全区 | 原生布局，无此问题 | R51 正在做（`web/reports/_r51/`）。**此前从未完成六视口全量验收**，仅有 R40C 的定向修复 | R51-WEB-01 |
+| 7 | 终局判定 | 【实现差异】+【待验证】 | `src/core/celestials/pelle/game-end.js`：`OFFSET=1`／`TARGET=1000`，`endState>=1 ⟺ 反物质指数 ≥1000` | `celestials/pelle/b.smali` 常量镜像为 `1.0`／`1001.0`（`720f145`）；`OrekiPelleRecord.smali`（R42）补 `PelleRecords.totalAntimatter` 写入 | 常量等价已用位模式复核；`OrekiPelleRecord.tick()` 由构建期断言强制挂在 `onAutoBuyerTick`。**但从未跑到佩勒**，`endState` 仍恒 0 ⇒ 判据物理不可达 | R51-AND-01：推进到佩勒后再验 |
+| 8 | 挑战奖励结算 | 【实现差异】 | 原版结算路径 + 最速记录 | `patch_instant_challenge_rewards()` 补发 IP / 无限次数 / EP 并更新最速记录 | 走原版结算，不写完成位；幂等性有 R39 重启实测 | R51-03 |
+
+### 15.2 R51 中发现并已消除的差异
+
+| 差异 | 消除方式 | 证据 |
+|---|---|---|
+| 无限升级自动购买在列表首项 `return-void`，后续 16 项与 ipMult 分支永远轮不到 | `OrekiStageAuto.buyInfinityUpgrades` 改为 `goto :oreki_sa_iup_next` 继续遍历 | A27 实测 `infinityUpgradeBits` 0→2047；A28 待验 ipMult |
+| ipMult 可重复升级被 `ID1.y()==0` 闸门永久挡住（全新档恒成立） | 改为「仅 ID1 已解锁但未买下时保留 IP」 | 同上 |
+
+### 15.3 仍然存在的最大功能缺口（按对通关的影响排序）
+
+| # | 缺口 | 影响 | 位置 |
+|---|---|---|---|
+| 1 | Android 无现实（Reality）自动循环 | 永远停在永恒层 | Web 有 `oreki-reality-automation.js`（643 行），Android 无对应类 |
+| 2 | Android 无符文（Glyph）自动装备 | 拿不到 RU9/16/17/18/24 的符文形态要求 | Web `oreki-reality-automation.js` 的 `equipGlyphs()`（只装空槽） |
+| 3 | Android 无天神 / 莱特拉驱动 | 到不了 IU25 与 DS6 | Web `oreki-celestial-automation.js`（823 行）、`oreki-endgame-automation.js`（918 行） |
+| 4 | Android 无佩勒（毁灭现实）驱动 | `records.totalAntimatter` 涨不起来 ⇒ 终局不可达 | Web `driveDoomed()`；Android 原版通路完整但**没人调用** |
+| 5 | 调度器未接线 | 设置页的开关与间隔**实际不生效** | 见 §15.1 第 2 行 |
+
+> 注意：第 3、4 项**不是「原版没有这些代码」**——原版 APK 里 `celestials/` 七个天神与 `pelle/` 全在，
+> 缺的是**驱动层**（谁来按节奏调用它们）。见 §12 第 2 条。
+
