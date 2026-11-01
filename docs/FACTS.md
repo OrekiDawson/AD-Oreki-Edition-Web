@@ -5376,3 +5376,73 @@ crunch: mode=2（X_HIGHEST），xHighest=10，interval=100
 本节结论由 **tutorial-agent** 从「教程口径 + Web 源码」双侧证出（任务单 `R50-AND-05` §十五），
 主 Agent 仅做交叉核验与归档。方法论价值高于结论本身：
 **当 smali 里刨不动时，用「教程正文 + Web 源码」反查原版应有行为，往往更快。**
+
+### C.95　真机 dump 的换行是 `&#10;`：「整个 XML 里搜关键字」对多行文案恒不成立（2026-11-01）`[实测]`
+
+#### C.95.1　现象
+
+Android 上 `uiautomator dump` / `dumpsys` 导出的层级 XML 里，**多行文案的换行被转义成 `&#10;`**，
+不是 `
+`。实测样本（A17，`Oreki 设置` 页，29 节点）：
+
+```
+text="启用 Oreki 智能调度&#10;（关闭后所有 Oreki 自动动作立即停止，并清空待执行/冷却状态；…）"
+text="严格模式：任意两次自动操作之间都必须 ≥ 间隔&#10;（连原版等价的连续购买也一起被限制，会显著变慢甚至停滞。默认关闭。）"
+```
+
+于是「关键字出现在整段 XML 字符串里」这种判据，对**跨行文案恒不成立** ——
+文案明明在屏上，判定却说「未命中」。
+
+#### C.95.2　影响
+
+* R50-AND-04 的装机验证器（`scripts/verify_scheduler_device.py`）第 5 步：原实现 `关键字 in 整段XML`，
+  跨行文案会假阴性；本次已修。
+* R50-AND-05 可见性判定出现过同类假阴性。
+
+同一判据还有第二个缺陷：在整段 XML 上搜关键字会**误命中 `class="...关键字..."` / `resource-id`**，
+即假阳性。两个方向都错，所以「整段串搜」这件事本身不成立。
+
+#### C.95.3　正确做法
+
+1. **只比对节点的 `text` 属性值**，不要在整段 XML 上搜 —— 包括在 shell 里对 dump 文件做 `grep -c 关键字 dump.xml`：grep 不解码实体，跨行短语同样匹配不到，而且失败现象长得像「文案没渲染」，最容易被误判成 UI 缺陷；
+2. 比对前**先做实体解码**：`&#10;` → 换行、`&#13;` → 回车、`&amp;` → `&`、`&lt;`/`&gt;` → `<`/`>`、`&quot;`/`&apos;`；
+3. 「dump 里没有」有两种含义（**不存在** / **不在屏内**），断言「存在」时还要校验节点的 `bounds`
+   落在屏内，断言「不存在」时必须记录滚动次数，否则 PASS/FAIL 都可能是假的；
+4. 拿真机 dump 当**常驻 fixture**（`--fixture <xml>`）跑一遍解析器 —— mock 证明不了真机结构，
+   而这条缺陷正是「mock 里写真实换行、真机给 `&#10;`」才漏掉的。
+
+#### C.95.4　本节来源
+
+由 R50-AND-04 实现装机验证时实测发现（真机 dump 见 `reports/r50and04/ui_settings_before.xml`），
+tutorial-agent 同期在 R50-AND-05 遇到同一现象，双向印证。
+
+## C.96　坍缩自动器的阈值语义：三种模式比的都是 IP，不是反物质（2026-11-01）
+
+**【实测】Web 源码**（`web/AD-Oreki-Edition/src/core/autobuyers/big-crunch-autobuyer.js:139-146`）：
+
+```js
+case AUTO_CRUNCH_MODE.AMOUNT:    return gainedInfinityPoints().gte(this.amount);
+case AUTO_CRUNCH_MODE.TIME:      return Time.thisInfinityRealTime.totalSeconds > this.time;
+case AUTO_CRUNCH_MODE.X_HIGHEST: return gainedInfinityPoints().gte(this.highestPrevPrestige.times(this.xHighest));
+```
+
+三种模式比较对象全部是 **IP**，没有一种比反物质。
+
+**【读码】枚举值**：`AUTO_CRUNCH_MODE = { AMOUNT: 0, TIME: 1, X_HIGHEST: 2 }`（Web `constants.js:202-206`）。
+
+**【实测】Android A26 读数**（装机 75 秒，`mode=2 / xHighest=10`）：
+`dimensionBoosts 7→87`、`galaxies 1→11`、`infinities 42→4305`、`IP 5.3e7→6.09e8`、ID1 已买（`baseAmount=10`）、ID2 已解锁。
+
+**【推断，已作废】曾经认为「`F() = amount × 当前反物质`」**。这个推断在当时能解释两个现象，但被更简单的正确解释取代：`amount=1` 能坍缩是因为「本轮已得 IP ≥ 1」恒成立，`amount=1e1000` 不坍缩是因为该门槛永远够不着。**凡以「阈值乘以 AM」为前提的结论一律作废。**
+
+**【实测】正确策略**：Web 用 `X_HIGHEST + xHighest=10`（单次 IP 达本次永恒最高单次 IP 的 10 倍才坍缩），在两处做归一化——`isUnlocked`（`[Oreki AU4b]`）与 `reset()`（`[Oreki R26]`）。Android 必须同样处理，且每 tick 无条件执行即可天然满足「重置后重新归一化」。
+
+**教训**：`amount` 这个名字会误导人往反物质上想。判定任何阈值前，先去看比较式的**左边**是什么 getter，不要看字段名。
+
+## C.97　`bought` 是假指标，真实购买次数是 `baseAmount / 10`（2026-11-01）
+
+**【实测】** 存档里 `dimensions.infinity[i].bought` **恒为 0**，不随购买递增。
+真实购买次数 = **`baseAmount / 10`**（对应 smali `y()J`），ID1 买过 1 次时 `baseAmount = 10`。
+
+**【后果】** 曾多次把 `bought=0` 读成「没买成」，据此判断「解锁了但买不下」，全部误判。
+判 ID 是否已购买，一律看 `baseAmount / 10 > 0`，不看 `bought`。
