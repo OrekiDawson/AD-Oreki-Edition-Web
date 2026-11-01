@@ -4891,3 +4891,90 @@ adb shell settings put system screen_off_timeout 3600000
 
 C.89.4 的 09:47~09:58 数据来源于**既有存档的阶段验证**，不是全新存档端到端测试。
 Android 的端到端通关测试**仍未开始**。本节不宣称 Android 已解锁 ID1、已永恒、已通关。
+
+---
+
+### C.90　无限维度购买链的三道坑（A11 之后的新证据，2026-11-01）
+
+C.88.5 曾写「只要自动购买器调 `buySingle` 就会自动解锁」。这个说法对 Web 成立，
+**对 Android 不成立**——Android 的 `h(Z)` 对应 `buyMax` 而不是 `buySingle`，且它不会解锁。
+本节修正该结论并列出完整的三道坑。
+
+#### C.90.1　`InfinityDimensionState` 方法语义【读码，逐方法体核对】
+
+文件：`work/base_decoded/smali/kajfosz/antimatterdimensions/dimension/infinity/InfinityDimensionState.smali`
+
+| 方法 | 等价 Web | 依据 |
+| --- | --- | --- |
+| `i()V` | `buySingle()` | `:1724-1737` 首行 `if (!isUnlocked) { M(); return; }`；`:1892` `baseAmount += 10` |
+| `h(Z)V` | **`buyMax(auto)`** | `:1454` 算 `x()-y()`；`:1544` 用 `Li92;`(LinearCostScaling) 得 count/costMult/totalCost；`:1592` `count<=0` 即 return；`:1656` `baseAmount += 10*count` |
+| `M()Z` | `unlock()` | `:975`，派发 `INFINITY_DIMENSION_UNLOCKED` |
+| `G()Z` | `isUnlocked` | `:881` |
+| `y()J` | `purchases` | `:3936` |
+| `p()Z` | `canUnlock` | `thisEternity.maxAM >= 该层门槛` 且 IP 条件 |
+| `D()Z` | `isAvailableForPurchase` | `:608-612` 含 `if (!isUnlocked) return false` |
+
+**关键差异**：`h()` 第一句是 `if (!D()) return;`（`:1354-1362`），而 `D()` 里含
+`if (!isUnlocked) return false`（`:608-612`）。
+⇒ **未解锁时 `h()` 直接返回，且永远解不开锁。**
+「未解锁先 unlock」那条短路只存在于 `i()`，不在 `h()`。
+
+#### C.90.2　三道坑（A11 只修了第一道）
+
+| # | 坑 | 状态 |
+| --- | --- | --- |
+| 1 | `tryBuyId1` 循环头 `if-le` 极性错误，1→8 循环一次不执行 | **A11 已修**（`3f4b99f`） |
+| 2 | **`h(Z)` 不解锁**，只调 `h()` 时即使门槛达成也买不进 | **未修**，排 A12 |
+| 3 | `D()` 尾部 `:643-663` 形状为「`purchases >= cap` 才返回 true」，与 Web `!isCapped` 极性相反（存疑） | **未验证**，可能是「解锁后仍买不动」的第三道 |
+
+**C.88.5 的修正**：原文「调 `buySingle` 会自动解锁」仅对 Web 成立；
+Android 必须在自动购买路径里**显式调 `M()`**，不能依赖 `h()`。
+
+#### C.90.3　A11 实测归因修正
+
+A11 实测（commit `3f4b99f`）：`OREKI_ID_LOOP=1`（循环执行证明）、`OREKI_ID=0`、`bought` 全 0。
+当时归因为「`maxAM=1e941 < 1e1100`，`p()` 全为 false」。**该归因不完整**：
+即便 `maxAM` 达到 1e1100，只要没先调 `M()`，`h()` 仍会因 `D()` 返回 false 而直接 return。
+正确表述是「门槛未达 **且** 解锁链缺失」，两者叠加。
+
+#### C.90.4　正确的自动购买序列
+
+对齐 Web `infinity-dimension.js:398-409`（`InfinityDimensions.buyMax()` 内部先 unlock 再买）：
+
+```
+for tier in 1..8:
+    d = InfinityDimensionState.a(tier)
+    if (d.p())                      # canUnlock 闸门
+        if (!d.G()) d.M()           # 显式解锁，不能省
+        if (d.G())                  # 解锁成功
+            if (d.y() == 0) d.i()   # 首次走 buySingle，把 baseAmount 抬起来
+            d.h(1)                  # 再 buyMax 拉满
+```
+
+首次必须先 `i()`：`h()` 在 `count<=0` 时直接 return（`:1592`），`baseAmount` 为 0 时买不到。
+
+#### C.90.5　两个容易误判的点（防后人绕路）
+
+**1. `BigDouble` 是可变对象，不是 bug**
+`multiplyParts(DD)` 结尾 `iput-wide → mantissa/exponent` 后 `return-object p0`
+（`BigDouble.smali:2039` 段），`add(D)` → `addParts` 同形。
+所以 `i()`/`h()` 内部 `cost.multiply(...)` 之后**没有 `move-result` 是正常的原地改写**，
+不要往「ID 价格不涨」方向排查。
+
+**2. `OrekiEternity:255` 的 `if-gt v2, v3` 严重度低于预期**
+应当改为 `if-ge`（原版同构循环 `a.smali:13336`、`MainActivityInfinityDimensionsKt$...$2$1.smali:135`
+均用 `if-ge`），但 Android 的 `SparseIntArray.keyAt(index)` 仅在
+`sThrowForEmptyArrays=true` 时抛异常，而该开关**默认 false** ⇒ `keyAt(size)` 不崩溃，只读到 0。
+实际后果是「多跑一轮、把 key 0 当研究 id 传入」，且整块被 `.catch Ljava/lang/Throwable;` 吞掉。
+⇒ **应改，但它不是进度卡住的原因，低优先级。**
+
+#### C.90.6　终局写入点（供后续验收使用）【读码】
+
+`Player.I0(Z)V`（`Player.smali:8690`）是 `isGameEnd` 的写入方法。
+核心写 `true` 的位置在 `celestials/pelle/b.smali:414`（`d(D)V` 内，前置 `:398 j0()` 判断未结束）；
+UI 侧 `MainActivity$updateUI$9$onAnimationEnd$1.smali:172`；读档侧 `player/e.smali:39174`。
+
+#### C.90.7　本节边界
+
+不含任何「Android 已解锁无限维度」的宣称。截至本节，8 层 `isUnlocked` 仍全为 false、
+`bought` 全为 0。第 2、3 道坑未修，ID 购买链尚未打通。
