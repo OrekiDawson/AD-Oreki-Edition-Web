@@ -5560,6 +5560,30 @@ A30 起点 = 2026年11月1日 17:57:29（真实读数）。
 调度器只初始化未管辖动作。A31 已给 `allow()` 的六个拒绝出口加 `OREKI_SCHED deny <code>` 诊断
 （10 秒节流），待装机用运行期数据定位后修，**不盲改**。
 
+### C.99.3　调度器 `act` 恒缺的真因：三处极性写反（2026年11月1日，用户指出 + 【读码】确认）
+
+A30 实测 `OREKI_SCHED init` 正常、`act` 一条没有。根因不是接线缺失，而是
+`OrekiAutomationScheduler.smali` 里**三处条件分支极性写反**，且旧检查器只查「标记字符串在不在」，
+三处全绿。位置与语义：
+
+| # | 位置 | 原写法 | 实际后果 | 正确写法 |
+| --- | --- | --- | --- | --- |
+| 1 | `isContIdx(I)Z` | `if-ltz p0, :cont` | `if-ltz` 是「小于零才跳」⇒ idx 0~3（routine/early/eternity/eternityReset）**不跳**，直接返回 false ⇒ 四个连续型任务全被误判为非连续型，默认档被错误限流 | `if-gez p0, :cont` |
+| 2 | `allow()` 失败冷却 | `if-gtz v0, :gate` | deadline=0（**从未失败**）时 v0=0 不跳 → 拿 0 与 now 比 → 恒为负 → 下句 `if-lez…:deny` 拒绝 ⇒ **所有任务永远被拒** | `if-lez v0, :gate`，并补 `if-lez v0, :gate`（已过期）/ 否则 `goto :deny_5` |
+| 3 | `allow()` 时间戳选择 | `if-eqz v0, :global` | 默认档（v0=0）跳到 `:global` 读 `sLastBeatAt`（全系统节拍）、严格档读 `sLastAct[idx]`（每任务）—— **两模式正好互换** ⇒ 默认档被误施全局节拍，不同策略任务互相挤占 | `if-nez v0, :global` |
+
+**真值表（`isContIdx`，修复后逐项验证）**：`-1 → false`、`0/1/2/3 → true`、`4/8/10 → false`。
+
+**检查器升级**：`scripts/check_automation_scheduler.py` 从「字符串存在性」改为
+「语义断言 + 变异自测」，118 条。变异自测做法：把三处分别翻回错误写法，要求检查器**必须报错**。
+实测：真源码 118 全过；把 `if-gez p0` 改回 `if-ltz p0` → 立即 3 条失败；还原 → 恢复全过。
+**只加断言数量不算数，能对真改坏报红才算。**
+
+**真动作记账**：`OrekiStageAuto.onAutoBuyerTick()` 原先在 `OrekiBreakGate.tick()`（返回 void、
+内部多个提前返回）之后**无条件** `noteActed("breakGate")` —— 空转冒充成功、白吃节拍。
+改为前后状态快照：`Player.m()Z`（brake）与 `CrunchAutobuyerState.v()Z`（hasMaxedInterval），
+任一翻转才 `noteActed`，否则 `noteNoop`。`.locals` 由 1 扩到 6 存快照。
+
 **【当前瓶颈】** `inf` 在 27 停住 90 秒以上：`X_HIGHEST/10` 策略要求单次 gain ≥ 历史最高 IP ×10，
 `maxIP` 已被抬到 1e6 级，需要 gain 再涨一个数量级才坍缩。这与 Web 同策略同节奏（Web 599 s 通关），
 不是死锁，但**是真实等待**——ID1 需要 IP ≥ 1e8，按每轮 ×10 还需 2 轮左右。
