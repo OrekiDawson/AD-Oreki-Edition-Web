@@ -4588,3 +4588,193 @@ Break 需要累计 32767 IP；按 2 IP/次、17.7 秒/次，差 32208 IP ⇒ 需
   11 个中文名 **11 / 11** 命中，无括号注解 19 处**全部落在附录 A**（表格单元格 `TBL|` 标记）。
 
 结论：双端教程内容同源、缩写分布一致、正文裸露缩写为 0；此前「只需改源 JSON」的判断成立。
+
+---
+
+### C.87　R50-A8：Android 无限升级自动购买（入口定位 + 首轮实测）
+
+本节替换 C.86.4 末尾「真正的可重复升级 purchase 混淆名尚未定位」这一条 —— 入口已定位并已实测生效。
+
+#### C.87.1　逆向结论：六个混淆名一次说清【读码】
+
+在 `work/base_decoded/smali`（原版 base APK 反编译产物）逐个方法体核对：
+
+| 混淆名 | 真实语义 | 依据 |
+| --- | --- | --- |
+| `Laz1;` | `InfinityUpgrade` 持有类 | `a:Luu1;` = ipMult；`b..m` = 12 个一次性；`n..r` = `Lwy1/Lxy1/Lyy1/Lzy1/Lvy1` 5 个可重复项；`s:Ljava/util/List;` = `all`（17 项）；`t` = id 列表 |
+| `Lry1` | 一次性无限升级（`extends Lav extends Lfp3`） | `n:Ljava/lang/String;` = id 字符串；`D(ZLvh0;)Ljava/lang/Boolean;` 先过 `fp3.a(Z)` 再 `invoke-super` |
+| `Luu1` | **`InfinityUpgrade.ipMult`** | 全工程唯一写 `Player.ipMultUpgrades` 的地方：`uu1.J(J)V` → `Player->O0(J)V`；`I()J` → `Player->G()J` 读回 |
+| `Lfp3` | 通用「可购买」基类 | `a(Z)Z` = `!B() && z() && A()`；`D(ZLvh0;)` = 扣费 `y().i(x())` → `E(true)` → `C(true,Z)` |
+| `Lav` | 位图型升级基类（`extends Lfp3`） | `B()Z` = `J().e(I())` 读位；`E(Z)V` = `J().g(I())` 置位；`I()I` = `ak1.c`（该升级在 BitSet 里的下标） |
+| `Laz1;->a` 的解锁门 | 成就 41 | `uu1.A(Z)Z` → `Lz3;->a(0x29)` 即成就 41「购买 16 个无限升级」（Web 同名判据 `infinity-upgrades.js:337 checkRequirement: Achievement(41).isUnlocked`） |
+
+**购买入口**：`Lfp3;->D(ZLvh0;)Ljava/lang/Boolean;`，`Z=false` 即单次购买。
+与 UI 点击链 `MainActivityInfinityUpgradesKt$loadViewsInfinityUpgrades$5$1$1:38`
+调的是**同一个方法**；`invoke-super` 的接收者是 `Lfp3`（`ry1` 的祖父类，中间隔着 `av`）。
+两个实现体都没有 `COROUTINE_SUSPENDED` 分支，所以传 `null` 当 Continuation 是安全的。
+
+#### C.87.2　A8 实测：一次改动把「IP 只能线性爬」改成「IP 复利」【实测】
+
+构建：2026-11-01 08:54 `release/反物质维度.apk`（`classes.dex` 14176644 B 内可见
+`buyInfinityUpgrades`），装机到 `emulator-5554`，用**既有存档**（非新档）连跑，
+`adb pull /data/data/com.oreki.antimatterdimensions/files/player.json` 两次采样：
+
+| 字段 | 改动前（R50 上一轮） | 09:01 采样 | 09:06 采样（+300 s） |
+| --- | --- | --- | --- |
+| `ipMultUpgrades` | **0** | **6** | **7** |
+| `infinityUpgradeBits` | — | **65535**（16 个一次性全买齐） | 65535 |
+| `infinityPoints` | 559 | 3.78e6 | **1.16e7** |
+| `infinities` | 791 | 1065 | 1155 |
+| `auto.bigCrunch.interval` | 907 | **100.0**（拉满） | 100.0 |
+| `auto.bigCrunch.cost` | 1024 | 32768（第 16 级） | 32768 |
+| `brake` | false | **false** | **false** |
+
+同时点：`infinityUpgradeBits=65535` → 成就 41 达成 → 原版 `IPMultAutobuyerState` 那条
+（AU5 已放宽 `e02.n0()` 解锁门）开始真正买 ipMult ⇒ `ipMultUpgrades` 从 0 变 6/7。
+**即：C.86.4 里「`player.auto.ipMult` 是空开关」的成因是前置缺失，不是开关本身坏了。**
+坍缩节奏也从 17.7 真实秒/次加快到约 3.3 秒/次（300 s 内 +90 次）。
+
+#### C.87.3　必须记录的坑：`ry1.D(false,null)` 在「已买」的一次性升级上仍会返回 TRUE【实测】
+
+A8 首版直接以 `D()` 的返回值为「买到没买到」的判据，结果 logcat 里
+`OREKI_IUP_BUY: timeMult` 在 60 秒内打了 **3493 行**（≈1 行/tick，间隔 27 ms），
+而 `infinityUpgradeBits` 早就等于 65535 —— 说明这些「购买成功」是**空转**。
+
+根因：`ry1.D` 在 `fp3.a(Z)` 为假之后还有一条 Ra 记忆分支，满足条件时返回
+`Boolean.TRUE` 而不改任何一次性升级状态；循环于是每帧都在第 0 项提前 `return`，
+后面 16 项与 ipMult 分支永远轮不到。
+A9 修正：进循环先判 `Lav;->B()Z`（该升级的位是否已在 BitSet 里），为真直接跳过，
+**不再拿 `D()` 的返回值当状态判据**。
+
+#### C.87.4　仍未打通的一环：`brake` 仍为 false【实测】
+
+* `OrekiBreakGate` 的窗口在 08:58:54.457 打开过（`OREKI_GATE: window=1`），
+  说明「非 Doomed / 总开关开 / 不在挑战里」三条早退全部通过；
+* 但 15 分钟过去 `brake=false`、`OREKI_BREAK` **一行都没有**、`OREKI_ABORT` 也一行没有
+  —— 即既没成功也没走到任一失败出口；
+* A9 加了两条取证与一条兜底（`OREKI_BG_PRE` / `OREKI_BRK2`），结果见 C.88。
+
+本文件**不宣称** Android 已经 Break、已经永恒、已经通关。
+
+---
+
+### C.88　R50-A9 实测结论：Android 已打通 Break 层，但仍在 ID1 之前（2026-11-01）
+
+本节是 C.87.4 的**后续事实补充**。C.87.4 记录的是 A8 阶段的历史状态
+（「`brake` 仍为 false」），那段文字**保持原样不修改**——它是 A8 当时的真实观测，
+不能因为后来打通了就回头篡改历史。本节说明 A9 之后发生了什么。
+
+#### C.88.1　A9 已在既有存档实测打通 Break【实测】
+
+版本：Android `e56ebf328fc19f264dddd59657fa16f89ba6bf2f`（A9），
+`emulator-5554`，**既有存档**（非新档），`adb pull /data/data/com.oreki.antimatterdimensions/files/player.json`。
+
+| 字段 | C.87.4（A8） | A9 采样 ①  09:21:34 | A9 采样 ②  09:22:35 |
+| --- | --- | --- | --- |
+| `brake` | false | **true** | **true** |
+| `records.thisInfinity.maxAM` | 1e153 | 3.22492335183615e909 | 2.15118079378893e917 |
+| `ipMultUpgrades` | 0 | **7** | 7 |
+| `infinityUpgradeBits` | 65535 | **131071** | 131071 |
+| `infinityPoints` | 559 | **8.7593197e7** | **9.2818413e7** |
+| `infinities` | 791 | 1.418e3（1418） | 1418 |
+| `breakInfinityUpgradeBits` | 0 | **0** | **0** |
+| `eternities` | 0 | **0** | **0** |
+| `dimensions.infinity[0].isUnlocked` | — | **false** | **false** |
+| `dimensions.infinity[0].bought` | — | **0** | **0** |
+| `records.realTimePlayed` | — | 19228800 ms | 19288809 ms |
+
+`brake=true` 且 `thisInfinity.maxAM` 已到 1e909 / 1e917（远超 1e308 的普通上限），
+**这证明 Break 层在 Android 上真的打开了，不是只写了个字段**：
+Break 之后 AM 才能继续越过 1e308 这个原本的硬顶，而它现在到了 1e917。
+同一时刻 `infinityUpgradeBits` 从 65535 涨到 131071（新增第 17 位，即 2^16），
+`ipMultUpgrades` 0→7，`infinityPoints` 559→9.28e7 —— 这三项一起动，
+说明无限升级自动购买与 ipMult 复利链已经真实运转。
+
+#### C.88.2　「8.76e7」与「9.28e7」不是矛盾，是两次不同采样【实测】
+
+执行令要求核实这两个数字。查证结果：两者都对，来源是两个不同时间点的独立采样文件。
+
+* `reports/r50/player_a9.json`，mtime **09:21:34**，`infinityPoints = {mantissa: 8.7593197, exponent: 7.0}` → **8.7593197e7**
+* `reports/r50/player_a9b.json`，mtime **09:22:35**，`infinityPoints = {mantissa: 9.2818413, exponent: 7.0}` → **9.2818413e7**
+
+A9 提交信息里写的 8.76e7 取自 ①，我方本轮汇报里写的 9.28e7 取自 ②。
+两者相差 61 秒、约 522 万 IP。**不是数据冲突，引用时必须带上采样文件名与时间**。
+今后凡引用数值一律注明来源文件。
+
+#### C.88.3　09:22 采样显示 Eternity 与无限维度均未推进——不得宣称已通关【实测】
+
+同一份 `player_a9b.json` 里：
+
+* `eternities = {mantissa: 0.0, exponent: 0.0}` → **永恒一次都没做**
+* `breakInfinityUpgradeBits = 0` → **Break 升级一个没买**
+* `dimensions.infinity[0].isUnlocked = false`、`bought = 0` → **ID1 连解锁都没有**
+
+因此本轮**明确不宣称** Android 已永恒、已现实、已通关。A9 的成果边界就是「Break 层打通」。
+
+#### C.88.4　ID1 迟迟不解锁不是死锁，是两项门槛都还差【读码 + 实测对照】
+
+Web 原版判据（`src/core/dimensions/infinity-dimension.js`）：
+
+```js
+// :44-52  UNLOCK_REQUIREMENTS[1] = DC.E1100
+// :57     BASE_COSTS[1] = 1e8
+get antimatterRequirementReached() {
+  return player.records.thisEternity.maxAM.gte(this.amRequirement);   // :88
+}
+get ipRequirementReached() {
+  return !this.hasIPUnlock || Currency.infinityPoints.value.gte(this.ipRequirement);  // :96
+}
+get canUnlock() {
+  return (Perk.bypassIDAntimatter.canBeApplied || this.antimatterRequirementReached) &&
+    this.ipRequirementReached;   // :100-101
+}
+```
+
+即 **ID1 解锁 = `thisEternity.maxAM ≥ 1e1100` 且 `IP ≥ 1e8`**（两条件同时成立）。
+
+对照 A9 采样 ②：`thisInfinity.maxAM = 2.15e917`、`IP = 9.28e7`。
+
+* AM 侧：1e917 vs 1e1100 → **还差 183 个数量级**
+* IP 侧：9.28e7 vs 1e8 → **还差约 7.7%**
+
+注意 `antimatterRequirementReached` 读的是 **`thisEternity`** 不是 `thisInfinity`；
+在没有永恒之前两者等价，但一旦进入永恒就会分叉，后续回归必须以 `thisEternity` 为准。
+
+**结论**：Android 当前不是卡死，是进度真的还没到。真正缺的是让 AM 从 1e917 推到 1e1100 的
+持续增长能力（自动买 AD / 自动 galaxy / 自动维度推进），而不是解锁位没写。
+
+#### C.88.5　下一个缺口已定位：无限维度自动解锁/自动购买【读码】
+
+原版 `InfinityDimensionState.buySingle()` 第一行就是自动解锁：
+
+```js
+buySingle() {
+  if (!this.isUnlocked) return this.unlock();   // infinity-dimension.js:256
+  ...
+}
+```
+
+`unlock()` 内部先判 `canUnlock`，通过才置 `isUnlocked = true` 并派发
+`GAME_EVENT.INFINITY_DIMENSION_UNLOCKED`（:243-252）。也就是说
+**只要自动购买器调 `buySingle`，解锁会自动发生**，不需要单独调用 UI 的 `unlockNext()`。
+
+Web 端存在 `UnlockInfinityDimButton`（`src/components/ui-modes/prestige-header/`），
+但那只是手动 UI 包装；自动化路径靠 `buySingle` 的短路分支。
+**Android 侧 A9 只补了 `buyInfinityUpgrades` 与 `tryBreakInfinity`，尚无无限维度自动购买**——
+这是 C.87/C.88 之后的下一个明确缺口，需按 `Lfp3` 同思路定位 ID 的购买入口后补齐。
+
+#### C.88.6　测试纪律：两种测试必须分开记账
+
+执行令要求区分。今后所有 Android 结论必须标注属于哪一类：
+
+| 类型 | 起点 | 能证明什么 | 不能证明什么 |
+| --- | --- | --- | --- |
+| **阶段验证** | A9 已 Break 的既有存档快照 | 单个机制/单个缺口是否修好 | 不能证明新档能走到这里 |
+| **端到端通关** | **真正全新存档**（不修改存档伪造） | 180 分钟预算是否达标、`isGameEnd===true` | —— |
+
+C.88.1 的全部数据属于**阶段验证**。Android 的端到端通关测试**尚未开始**。
+
+#### C.88.7　本节边界
+
+本文件**不宣称**：Android 已解锁无限维度、已进入永恒、已到现实/天神/Pelle/终局。
+当前可确证的只有 C.88.1 那一张表：Break 层通了，路还长。
