@@ -5311,3 +5311,68 @@ mul-double/2addr v10, v8
 本节结论成立，但**修复尚未实施、未构建、未验证**。
 `dimensionBoosts` 是否真能从 32 往上走，需补丁落地并装机后实测确认。
 Android 仍未解锁 ID1、未永恒、未通关。
+
+---
+
+### C.94　IP 有两个来源，不能拿「IP 在涨」推断「坍缩在跑」（2026-11-01）
+
+本节修正一个被反复误用的前提，它导致过多次错误归因。
+
+#### C.94.1　修正：「IP 的唯一来源是坍缩」是错的【读码】
+
+**错误前提**（主 Agent 于 2026年11月1日 多次使用）：
+> IP 的唯一来源是坍缩，所以 IP 在涨就说明坍缩在跑。
+
+**实际**：IP 有**两条**独立来源。
+
+| 来源 | 位置 | 触发方式 |
+| --- | --- | --- |
+| 大坍缩结算 | `src/core/big-crunch.js:70` 与 IP 结算 | 每次坍缩 |
+| **`BreakInfinityUpgrade.ipGen` 被动产出** | **`src/core/big-crunch.js:190`**：`Currency.infinityPoints.add(BreakInfinityUpgrade.ipGen.effect × diff/60000)` | **每帧，完全不经过坍缩** |
+
+`ipGen` = Break Infinity 升级「无限点数自动生成」，10 级，每级 ×10。
+
+#### C.94.2　`infinities` 只有一个增量点，且每次必 +≥1【读码】
+
+* `src/core/big-crunch.js:70`：`Currency.infinities.add(gainedInfinities().round())` —— **唯一增量点**
+* `src/game.js:542`：`gainedInfinities()` 恒 `≥ 1`（挑战/佩勒特殊情形为 1，其余乘成就与时间研究）
+
+⇒ **不存在「坍缩了却加 0」**。所以 `infinities` 恒定 ⇒ 坍缩**确实**停了，不是计数 bug。
+
+#### C.94.3　三条决定性判据（不需要读教程，30 秒可定性）
+
+| 判据 | 坍缩真停了 | 计数 bug（若有） |
+| --- | --- | --- |
+| **每分钟 IP 增量 ≈ `ipGen.effect`** | 两数相等 | IP 增量**大于** ipGen ⇒ 有坍缩在结算 |
+| `records.thisInfinity.maxAM` | 在涨但 `infinities` 不动 ⇒ 卡在坍缩闸门 | 不涨 ⇒ AM 层另有阻塞 |
+| `records.thisInfinity.realTime` | 持续增长（本纪未重置） | 每 100ms 归零（坍缩在跑） |
+
+**第一条最快**：量 60 秒 IP 增量与 `ipGen.effect` 对账。
+
+#### C.94.4　本次实测（2026年11月1日 13:20 采样）
+
+```
+infinities = 42（从 03:00 起未变）
+IP         = 9.172e5（从 7.37e5 涨 24%）
+AM         = 3.865e1384，maxAM = 1e1385
+crunch: mode=2（X_HIGHEST），xHighest=10，interval=100
+```
+
+**结论**：坍缩确实停了（`infinities` 恒 42），IP 上涨来自 `ipGen`。
+原因是 `X_HIGHEST/10` 在「AM 单调增长」局面下永不触发——AM 每帧刷新 maxAM，`AM ≥ 10×maxAM` 永不成立。
+
+#### C.94.5　由此暴露的方法论问题
+
+当天此前至少三次推断建立在这个错误前提上：
+* 「IP 在涨 ⇒ 坍缩在跑 ⇒ 我们之前说坍缩停了是错的」
+* 「要么计数 bug，要么 IP 有旁路」（实际就是旁路，且是**已知设计**）
+* 「所有依赖 `infinities` 的判断都不可信」
+
+**教训**：在把某个量当作「唯一来源」之前，必须先确认它真的只有一条路径。
+`rg` 一次写入点比推理一百次要可靠——本例只需 `rg "infinityPoints.add" src/core/` 就能发现两条来源。
+
+#### C.94.6　本节来源
+
+本节结论由 **tutorial-agent** 从「教程口径 + Web 源码」双侧证出（任务单 `R50-AND-05` §十五），
+主 Agent 仅做交叉核验与归档。方法论价值高于结论本身：
+**当 smali 里刨不动时，用「教程正文 + Web 源码」反查原版应有行为，往往更快。**
