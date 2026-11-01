@@ -5446,3 +5446,33 @@ case AUTO_CRUNCH_MODE.X_HIGHEST: return gainedInfinityPoints().gte(this.highestP
 
 **【后果】** 曾多次把 `bought=0` 读成「没买成」，据此判断「解锁了但买不下」，全部误判。
 判 ID 是否已购买，一律看 `baseAmount / 10 > 0`，不看 `bought`。
+
+## C.98　`D(false,null)` 返回 true ≠ 真的买到：`OREKI_IPM_BUY` 刷到 11600 次，`ipMultUpgrades` 只有 4（2026年11月1日）
+
+**【实测】** A28 装机 8 分钟读数（AVD `oreki_test`，存档 `player.json`）：
+
+| 指标 | 值 |
+| --- | --- |
+| logcat `OREKI_IPM_BUY` 计数 | **11600**（仍在增长） |
+| 存档 `ipMultUpgrades` | **4** |
+| 存档 `infinityUpgradeBits` | **131071**（= 2^17−1，17 个一次性 IU 全买满） |
+| `auto.bigCrunch.interval` | **100**（已升满 15 级） |
+| `auto.bigCrunch.cost` | 32768 |
+| `player.break` | **true**（Break 已打通） |
+| `infinities` / `IP` | 729 / 7.59e4 |
+| `records.thisEternity.maxIP` | 1.006e5 |
+
+**【结论】** `fp3.D(Z,Lvh0;)Ljava/lang/Boolean;` 对 `az1.a`（ipMult 可重复升级）**会连续返回 true 而不真正提升等级**。
+`OREKI_IPM_BUY` 打的是「`D()` 返回 true 的次数」，不是「等级」。**不能拿它当购买成功证据**（与 C.52「断言只证明指令在」同源）。
+
+**【危害】** 每次假成功都可能伴随一次 IP 扣除，IP 因此在 1e4 量级反复波动（实测 7.7e4 → 9.8e3 → 7.6e4），
+永远攒不到 ID1 解锁所需的 **1e8**。这是 A28 之后的新瓶颈，不是数值不够。
+
+**【正确判据】** 判断某升级是否真买到，只认**存档字段前后差**：
+- 一次性升级 → `infinityUpgradeBits` 的位翻转
+- 可重复升级 → `ipMultUpgrades` 数值 +1
+- 无限维度 → `baseAmount / 10`（见 C.97）
+
+**【待办】** 给可重复购买加「前后值比较」的防假成功闸：值没变即视为失败并进冷却，不再每 tick 重试。
+
+**【同源前例】** `resetBoost` 在 A27 也是每 tick「买到」一次（1007 次 / 25 s），见 `tasks/R51-AND-01.md` §五。
