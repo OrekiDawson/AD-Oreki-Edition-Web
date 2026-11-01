@@ -5696,3 +5696,57 @@ A30 新档，起点 = 2026年11月1日 17:57:29（真实读数），相对时刻
 
 **【教训】** 一个「代码上不可能」的矛盾，只要有直接读数证据，就说明我们对运行期的假设错了；
 此时应停止改代码，先把读数固化成事实。
+
+## C.103　首次永恒之后，无限层自动化被一道硬门永久掐死（2026年11月1日，【读码】+【实测】）
+
+### 事实
+
+`android/.../oreki/OrekiStageAuto.smali` 的 `onAutoBuyerTick()` 里原有一段：
+
+```
+invoke-static {}, Lkajfosz/antimatterdimensions/oreki/OrekiStageAuto;->eternitiesZero()Z
+move-result v0
+if-eqz v0, :oreki_sa_try_end
+```
+
+`eternitiesZero()`（同文件）实现是 `Player.x()（eternities）compareTo 0 == 0 → true`。
+因此 `if-eqz` 跳转的条件是 **eternities != 0**，即**首次永恒之后**直接跳到方法末尾。
+
+**被跳过的调用（整段永久失效）**：
+
+`enableIpMultAutobuyer` / `autoSacrifice` / `upgradeBulkAll` /
+`buyInfinityUpgrades` / `upgradeCrunchInterval` / `breakGate` / `breakUpgrades` / `tryBuyId1`。
+
+### 为什么这是通关时间墙，而不是「阶段结束就该停」
+
+1. 每次永恒都会清空整个无限升级层（原版 `eternityReset`），
+   而 `buyInfinityUpgrades` 是 Oreki 自补、**原版自动器里没有**的一层。
+   停在永恒之后 = 此后每一轮无限都拿不到这批乘数。
+2. `tryBuyId1` 的判据是 `records.thisEternity.maxAM >= ID.k()` ——
+   本来就是**永恒内**语义，被这道门废掉等于无限维度永不购买。
+3. `autoSacrifice` / `upgradeBulkAll` 都是每轮无限都要重做的动作。
+
+### 修复
+
+删除该门（提交 `5ea92f1`）。安全性依据：每个调用点自带守卫
+（ipMult 幂等 / `canSacrifice` / `hasMaxedBulk` / `canBeBought` /
+`hasMaxedInterval` / `!Player.m()` / ID 门槛），当前阶段不适用时退化为空操作，
+不会重复扣费、不会重复购买。
+
+### 构建期守卫
+
+`scripts/build_mod.py` 里原本有**两条**断言锁在这道门上，删门后必须先改它们，否则构建红：
+- `POLARITY` 表里 `"eternitiesZero()==false（已经永恒过）才停" → if-eqz` 一条 → 换成
+  「`eternitiesZero()` 之后不得直跳 `:oreki_sa_try_end`」的正向正则守卫；
+- `verify_eternity_chain()` 里用 `eternitiesZero` 当「策略块分叉点」排序句柄 → 换成
+  `OrekiStageAuto;->tryBuyId1()V`（策略块末尾的等价句柄），保留「永恒层必须排在策略块之前」的原意。
+
+**【教训】** 删除一段被多处断言锁死的代码，成本不在删，而在找出所有锁它的断言。
+本次因此白跑两次 Gradle 构建（各约 3–5 分钟）。
+
+### 同批另一项
+
+`OrekiAutomationScheduler` 默认调度间隔 3 秒 → **1 秒**（R57 执行令要求）。
+必须三处同改：`sIntervalDefault` 字段默认、`<clinit>` 的 `sIntervalSec` 初值、
+`init()` 里 `SharedPreferences.getInt` 的缺省回退值。玩家已存的值照原样读回。
+运行期实测证据：`OREKI_SCHED: init 调度：已启用 · 间隔 1 秒 · 单任务档`。
