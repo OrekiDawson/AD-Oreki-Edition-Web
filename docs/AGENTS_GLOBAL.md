@@ -3081,3 +3081,51 @@ rg -n "\b(I|We|My|Our|we|my|our)\b" tasks/*.md
 ```
 
 发现后**人工判断**是否真第一人称（`自我锁定`、`sacCount:I` 之类是误报），只改真的。
+
+---
+
+## 52. 多 Agent 同仓库并发的 Git 纪律（2026-11-01 由 tutorial-agent 的竞态报告确立）
+
+### 一、现象与真因
+
+**现象**：`git add` 返回成功，紧接着 `git commit` 报 `nothing to commit`；重跑一次即正常。
+
+**真因**：多个 Agent 同时在同一个仓库操作时，`git add` 与 `git commit` 之间的窗口里，
+另一个 Agent 的 `git add` / `commit` 重写了 `.git/index`，把先前暂存的内容覆盖掉。
+
+**曾误判**：早先把这个现象解释为「硬链接导致 git stat 缓存不识别变更」，用 `touch` 绕过。
+`touch` 有时能"修好"是因为它顺带改动了 mtime 让缓存失效，但**根因是 index 竞态，不是硬链接**。
+
+### 二、规则（强制）
+
+1. **`git add` 与 `git commit` 必须在同一条命令里**（用 `&&` 连接），中间不插入任何其他操作。
+   不要把 `add` 单独跑一次、再去跑别的、再回来 `commit`。
+
+2. **提交前用 `git diff --cached --stat` 确认真的暂存上了**：
+   输出为空说明 index 被覆盖，本次提交会变成空提交或漏文件，必须重来。
+
+3. **任务单（`tasks/*.md`）的 commit 一律由主 Agent 做**。
+   原因：三处硬链接共用同一 inode，子 Agent 各自 `add`/`commit` 必然互相干扰，
+   且会让两个仓库的 index 同时变脏。
+   子 Agent 只回写本地文件，然后向主 Agent 报告「已回写」。
+
+4. 子 Agent 提交自己的**代码**时，也只提交自己负责的文件（用明确路径，不用 `-a` / `git add .`），
+   避免把其他 Agent 的在途改动一起带走。
+
+5. 遇到 `nothing to commit` 时**不要慌着 `--amend` 或 `reset`**，先 `git status` 看清状态，
+   确认没有别人的改动被误加，再重跑 add+commit。
+
+### 三、与硬链接的关系
+
+硬链接文件（`docs/FACTS.md`、`docs/AGENTS_GLOBAL.md`）**确实**会有一个额外问题：
+git 用 `(mtime, size, inode)` 判断变更，同一 inode 被外部改写后 stat 缓存可能未失效，
+导致 `git status` 看不到变更。
+
+**两个问题要分清**：
+
+| 现象 | 真因 | 处理 |
+| --- | --- | --- |
+| `status` 看不到已改的硬链接文件 | stat 缓存 | `touch` 一下再 `add` |
+| `add` 成功但 `commit` 说没有变更 | index 竞态 | 把 add+commit 合成一条命令重跑 |
+
+**不要用一个方案去套另一个问题。**
