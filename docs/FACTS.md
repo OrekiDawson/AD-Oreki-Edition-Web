@@ -5167,3 +5167,106 @@ C.92.1 之前，主 Agent 曾用「UI 显示每秒 ×1.01」推算「涨 1 个�
 
 C.92.2 是**推断**，尚未完成验证。8 层无限维度 `isUnlocked` 仍全为 false、
 `bought` 全为 0，Android 仍未打通 ID 购买链，更未通关。
+
+---
+
+### C.93　Android 停滞的真根因：少同步 Web 的 `[Oreki AD1]` 维度提升削弱补丁（2026-11-01）
+
+本节记录今天最终定位到根因的过程，以及一个**双端等价核对方法的重大教训**。
+
+#### C.93.1　真根因：AD8 需求斜率 15/次 vs 5/次【读码 + 数值验证】
+
+Web 在 `src/core/dimboost.js:111-123` 有一个**本项目自己加的削弱补丁**：
+
+```js
+// [Oreki AD1] 原版 15/次 的 AD8 需求斜率在 Break 后会把成长反馈环卡死：
+// R12 实测（干净驱动、无坍缩、150 s）：提升冻结在 32、星系 6，
+// 反物质 15 s 就冲到 1e914 后 135 s 只再涨 15 个数量级并趋缓，
+// 因为下一级提升要求 AD8 数量随次数线性抬升，而 AD8 自身已买不起。
+// 改成 5/次 让提升继续、产量继续复利；其余（基础 20、折扣、EC5、charged 效果）全不动。
+//
+// [Oreki R25] 斜率必须钳在 ≥1。`discount` 是时间研究 211/222 的效果之和，
+// 买到 211 后 discount 正好 = 5，原来的 `(5 - discount)` 于是变成 0：
+// AD8 的需求量从此恒为 20 不再增长，而 maxBuyDimBoosts()（:256）用
+// `increase = req2.amount - req1.amount` 做线性外推，一旦 AD8 数量恰好等于 20
+// 就出现 0/0 = NaN → bulkRequirement(NaN) →「Cannot read properties of undefined」
+// 每帧抛出，gameLoop 直接停摆。
+```
+
+**Android 端仍是原版 15/次，没有这个补丁。**
+
+数值验证（`work/base_decoded/smali/kx0.smali`，方法 `a(D)Ljx0;` = `bulkRequirement`）：
+
+```
+:cond_0
+const/16 v3, 0x8                              # tier == 8
+if-ne v2, v3, :cond_1
+const-wide/high16 v8, 0x4014000000000000L     # 5.0
+sub-double v8, v0, v8                         # targetResets - 5
+const-wide/high16 v10, 0x402e000000000000L    # 15.0   ← 原版斜率，未打补丁
+sub-double/2addr v10, v4                      # 15 - discount
+mul-double/2addr v10, v8
+```
+
+**对账**：
+
+| 项 | 值 |
+| --- | --- |
+| 当前 `dimensionBoosts` | 32 → `targetResets` = 33 |
+| Android（15/次） | `20 + (33−5)×15 = 440` → 扣 `InfinityUpgrade.resetBoost` 等后 **实测 431** |
+| Web（5/次） | `20 + 28×5 = 160` ⇒ 当前 `AD8 = 420` **立刻满足** |
+
+**且 Web 补丁注释里描述的冻结态「提升冻结在 32、星系 6」，与 Android 实测一字不差**
+（`dimensionBoosts=32`、`galaxies=6`）。
+
+⇒ **`db` 停在 32、`gal` 停在 6、AD8 停在 420、`maxAM` 只能靠第四维度缓慢爬升——全是它的下游症状。**
+
+#### C.93.2　修复要点（三条，缺一不可）
+
+1. **斜率 15 → `max(1, 5 − discount)`**
+   —— 必须同时做 Web `[Oreki R25]` 的钳制，否则 `discount = 5` 时
+   `(5 − discount) = 0` → AD8 需求量恒为 20 → `maxBuyDimBoosts()` 的
+   `0/0 = NaN` → 每帧抛异常、gameLoop 停摆（Web 已实测过这个事故）。
+2. **幂等 + 锚点断言**：找得到 `0x402e000000000000L # 15.0` 才改，
+   找不到必须**抛异常失败**而非静默跳过；重复执行不叠加。
+3. **寄存器安全**：改法需要第二对 double 寄存器，
+   写错会触发 `VerifyError` **拒收整个类** → 该类所有调用静默失效（C.91.1 教训）。
+   改前必须数清 `.locals` 与占用。
+
+落点在 `scripts/build_mod.py` 新增 patch 函数 + 构建期改写 `kx0.smali`，不在 `OrekiStageAuto.smali`。
+
+#### C.93.3　方法论教训：双端等价不能只看 `git log`
+
+这次的根因**不是新 bug，是同步遗漏**：Web 修过、Android 没跟。
+
+**今后做双端等价核对，必须逐个 patch 对，而不是比较提交历史或功能表现。**
+具体做法：
+
+1. 在 Web 侧 `rg "\[Oreki [A-Z0-9]+\]" src/core/` 列出**所有带项目标记的补丁点**
+2. 对每一条，到 Android 的 `scripts/payload/smali/` 与 `build_mod.py` 里找对应实现
+3. 产出「Web 补丁 ↔ Android 实现」对照表，**缺失项单列**
+4. 这张表应进 FACTS 并在每轮双端核验时复用
+
+`[Oreki AD1]`、`[Oreki AD4]`、`[Oreki AU4b]`、`[Oreki R25]` 这些标记是**最好的索引**。
+
+#### C.93.4　今日四次错误假设（诚实记录）
+
+定位到真根因之前，先后有四个假设被数据推翻：
+
+| # | 假设 | 提出方 | 被推翻的原因 |
+| --- | --- | --- | --- |
+| 1 | `holdCrunch` 的 IP 门槛导致停止坍缩、AM 上不去 | android-agent | `infinities` 恒 42，根本没在坍缩 |
+| 2 | `autoSacrifice()` 反复清零维度导致产量崩塌 | 主 Agent | `sacrificed` 冻结，献祭没在跑 |
+| 3 | tickspeed 抢走 AM 导致维度买不起 | 主 Agent | `totalTickBought` 恒 340，一分钱没花 |
+| 4 | 产量公式漏乘计数频率（66 个数量级差距） | 主 Agent | 把 BigDouble 锯齿的两端当两个时刻读错 |
+
+**共同原因**：数据不足时急于定性；其中 2 次与 BigDouble 序列化 `{mantissa, exponent}` 的读取错误有关
+（另一次是 C.89.2 的 `xHighest = 1.0×10^1` 误读成 1.0）。
+
+**纪律**：连续多次假设被推翻时，应停止假设、改为分层测量（见 C.92.4 的判据分层）。
+
+#### C.93.5　边界
+
+本节结论成立，但**修复尚未实施、未构建、未验证**。
+`dimensionBoosts` 是否真能从 32 往上走，需补丁落地并装机后实测确认。
+Android 仍未解锁 ID1、未永恒、未通关。
