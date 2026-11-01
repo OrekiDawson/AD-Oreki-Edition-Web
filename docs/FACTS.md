@@ -4978,3 +4978,93 @@ UI 侧 `MainActivity$updateUI$9$onAnimationEnd$1.smali:172`；读档侧 `player/
 
 不含任何「Android 已解锁无限维度」的宣称。截至本节，8 层 `isUnlocked` 仍全为 false、
 `bought` 全为 0。第 2、3 道坑未修，ID 购买链尚未打通。
+
+---
+
+### C.91　Android Break 后二次停滞：节拍死区与 bulk 差异（2026-11-01）
+
+本节记录 A10/A11 阶段暴露的两个新事实，以及一条会静默瘫痪整条自动化链的 smali 纪律。
+
+#### C.91.1　`VerifyError` 会静默吃掉整条自动化链【实测】
+
+android-agent 给 `OrekiBreakGate.tick()` 加探针时写了 `const/4 v7, 0x3`，
+而 `v6/v7` 在该方法里是 **double 的宽寄存器对**。ART 校验结果是：
+
+```
+VerifyError: wide register v6 has type Double/Conflict
+```
+
+**后果不是「探针不生效」，而是整个类被 ART 拒收**：
+`OrekiBreakGate.tick()` 每帧抛异常，被 `onAutoBuyerTick` 的 `try/catch` 吞掉，
+于是**排在它后面的 `tryBreakInfinity`、`tryBuyId1` 也一并永远不执行**，且日志上没有任何异常痕迹。
+
+**纪律**：`oreki/*.smali` 中凡 `.locals 16` 且用到 `v6 / v8 / v10 / v12 / v14` 的方法，
+**绝不能写 `v7 / v9 / v11 / v13 / v15`**（它们是宽寄存器对的高半）。
+新增探针前先数一遍该方法已有的宽寄存器占用。
+
+这也为 C.88/A11 期间的「某些方法明明在调用链里却毫无日志」提供了一个新解释方向：
+先怀疑类被拒收，再怀疑逻辑错误。
+
+#### C.91.2　Break 后的二次停滞：100 ms 自动器节拍 vs 每帧购买的购买死区【实测 + 推断】
+
+A10 新档端到端实测（屏常亮、已排除离线弹窗干扰）：
+
+| 时刻 | 里程碑 |
+| --- | --- |
+| 02:50 | 新档 |
+| 02:52 | AM 1e172、无限 11 次 |
+| 03:00:35 | **Break 成功**（`OREKI_BRK2`，`brake=true`） |
+| 03:08 | AM 1e837、无限 42 次、IP 1e5 |
+
+即 **首次无限约 90 s、Break 约 10 分钟**。这一段的推进速度是正常的。
+
+**问题出在 Break 之后**：03:01→03:17 之间 AM 从 1e559 涨到 1e909（仍在涨），
+但 `AD1.bought` 1340→1350 后**冻结**、`AD8.bought` 420 冻结、`sacrificed` 733 冻结、`infinities` 42 冻结。
+
+量化死结：`AD1` 下一次价格 `1e934`，当前 AM `1e909`；买 10 个只给约 `×2.2` 产量而价格涨约 1 个数量级
+——**单次购买是亏的**。能提供乘法器的三条路同时被堵：
+维度提升/星系被「需要 431 个第八维度，而 AD8 价格 1e969」挡住；
+无限维度被 ID1 的 `1e1100` 门槛挡住；无限升级已买满。
+
+机理解释【推断】：8 个 AD 自动器的 interval 是 **100 ms**，而 10000× 速度下这 100 ms 对应
+**1000 秒游戏时间**；`OrekiSpeed.apply(D)` 只按倍率缩放游戏时间差，不提高 tick 频率。
+于是每 100 ms 里游戏产量能跨几十个数量级，但价格只涨一点，形成「AM 在涨、价格不动」的死区。
+对照 Web：`tryOrekiEarlyRoutine()` 是**每帧**（16.7 ms）调购买，快约 6 倍。
+
+#### C.91.3　更关键的分叉：Web 有 `bulk`，Android 待确认【读码】
+
+`web/AD-Oreki-Edition/src/core/autobuyers/antimatter-dimension-autobuyer.js`：
+
+```js
+get bulk() {
+  return this.hasUnlimitedBulk ? 1e100 : Math.clampMax(this.data.bulk, this.bulkCap);
+}
+get hasUnlimitedBulk() { return Achievement(61).isUnlocked; }   // 成就 61 = 打破无限
+get bulkCap() { return 512; }
+
+tick() {
+  switch (this.mode) {
+    case AUTOBUYER_MODE.BUY_SINGLE: buyOneDimension(tier); break;
+    case AUTOBUYER_MODE.BUY_10:     buyMaxDimension(tier, this.bulk); break;   // 传 bulk，不是常量 10
+  }
+}
+```
+
+**要点**：`BUY_10` 这个分支名有误导性——它调 `buyMaxDimension(tier, this.bulk)`，传的是 `bulk`。
+而 `bulk` 在**成就 61（打破无限）解锁后变为 1e100**，即「每次买满」。
+
+Android 侧实测 `mode=10` 且 `AD1.bought` 每次正好 +10，**与 Web 的「买满」并非同一语义**。
+若确认 Android 缺少 `bulk` 等价机制，则单次购买量差约 98 个数量级，
+死区的根因就不是节拍（6 倍），而是单次购买量（1e98 倍）。
+
+**待验证**（四条，已下发给 android-agent）：
+1. Android `AntimatterDimensionAutobuyerState` 有无 `bulk` 等价字段；
+2. 有无 `hasUnlimitedBulk` 等价物（成就 61 的等价判据）；
+3. Android 购买方法是否接受 count/limit 参数（对应 `buyMaxDimension(tier, bulk)`）；
+4. 若确无 bulk，应在自动器路径上直接调「买满」入口，而非改自动器内部。
+
+#### C.91.4　本节边界
+
+C.91.2 的「首次无限 90 s / Break 10 分钟」是**全新存档端到端实测**（A10 构建），可信；
+但 Break 之后的停滞**尚未解决**，因此不构成「Android 能通关」的任何证据。
+8 层无限维度 `isUnlocked` 仍全为 false、`bought` 全为 0。
