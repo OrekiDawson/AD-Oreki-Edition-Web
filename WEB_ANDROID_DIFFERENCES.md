@@ -70,7 +70,7 @@
 
 | 功能模块 | Web 实现 | Android 实现 | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 | 负责人/后续 |
 |---|---|---|---|---|---|---|---|---|
-| 首次现实入口 | `processManualReality(false)`（与玩家点按钮同一函数） | 原版 UI 按钮；自动化未确认 | 逻辑 | 缺失（Android 无自动现实） | 同语义 | 未验证 | Web `oreki-reality-automation.js` | R41 |
+| 首次现实入口 | `processManualReality(false)`（与玩家点按钮同一函数） | **已实现**：`oreki/OrekiReality.smali`，走原版 `prestige/f;->f()Z`（canReality）+ `prestige/f;->b(Cont)`（与原版现实自动器同一条路径）；最小间隔 2 秒（R58 由 1 秒改到与 Web 同值） | 逻辑 | 无（R59 起已接线并由 `onAutoBuyerTick` 每帧调用） | 同语义 | **读码 + 静态**；未在 AVD 上跑到 Reality 阶段 | Web `oreki-reality-automation.js`；`OrekiReality.smali` | R58/R59 已更新，R41 结论作废 |
 | **Break 闸门（自动打破无限）** | `oreki-break-infinity-gate.js` `tryOpen()`：`!grantedThisSession && !Pelle.isDoomed` → 补差额 → `while(!hasMaxedInterval) upgradeInterval(false)` → `x0(true)`，同一 tick 三步连做 | **已实现**：`oreki/OrekiBreakGate.smali`（711 行），走原版真实序列（`Player.x0(true)` + `autobuyer.a.c()` 不省），并有 `OREKI_GATE / OREKI_GRANT / OREKI_BUY / OREKI_BREAK / OREKI_ABORT` 五类状态日志 | **实现差异** | 预期（实现语言不同，语义同源） | 必须走原版真实路径，`a.c()` 不许省 | **待验证**：A27 实测 `OREKI_GATE: window=1` 出现过一次，但 `brake` 仍为 false、`interval` 未到 100 ⇒ **闸门进过窗口但没落到 `:bg_do_break`** | `OrekiBreakGate.smali`；Web `gate.js:102-122` | R51-AND-01：先修 IP 收入（已做），再看闸门能否走完 |
 | **间隔阶段补贴（32767 IP）** | `BREAK_INTERVAL_TOTAL_COST = 2^15 − 1`；只补「差值」，会话级幂等，`!Pelle.isDoomed` 门内 | **已实现**：补贴逻辑并入 `OrekiBreakGate.smali`（`sGranted` 会话级幂等 + `OREKI_GRANT` 日志），差额由原版成本函数动态推算，未写死 32767 | 实现差异 | 预期 | 补贴额必须动态推、只覆盖到 Break 那一刻 | **待验证**：A27 日志里 `OREKI_GRANT` 一次都没出现 ⇒ 补贴分支从未进入（与闸门没走到补贴步骤一致） | `OrekiBreakGate.smali`；Web `gate.js:46-51` | R51-AND-01 |
 | 符文自动装备 | R40A 改为**只装空槽**：绝不替换已占用槽 | **无符文自动装备自动化** | 逻辑 | 需修复（Web 已修 bug，Android 无对应功能） | 不触发静默重置；能拿到 RU9/16/17/18/24 | 待验证（Web 修完未跑完整验收） | 见下方 §4.1 专项 | R41 |
@@ -276,3 +276,48 @@ cmp WEB_ANDROID_DIFFERENCES.md web/AD-Oreki-Edition/WEB_ANDROID_DIFFERENCES.md \
 > 注意：第 3、4 项**不是「原版没有这些代码」**——原版 APK 里 `celestials/` 七个天神与 `pelle/` 全在，
 > 缺的是**驱动层**（谁来按节奏调用它们）。见 §12 第 2 条。
 
+
+---
+
+## 附：R57-B 状态更正（2026年11月2日，【实测】）
+
+本节只纠正旧行里已失效的状态标记，**不复制 R51 旧结论**。
+
+| 项 | 旧标记 | 现标记 | 依据 |
+|---|---|---|---|
+| 首次现实入口（第 73 行「Android 无自动现实」） | 缺失 | **已实现**：`oreki/OrekiReality.smali`，走原版 `prestige/f;->f()Z`（canReality）+ `prestige/f;->b(Cont)`（原版现实自动器同一条路径） | 读码；尚未在 AVD 上跑到 Reality |
+| 首次永恒后无限层自动化 | 未知 | **已修并已实测**：删除 `onAutoBuyerTick` 里 `eternitiesZero()` 的硬门。受控夹具（`eternities=1e1`）实测 `ipMultUpgrades` 6→13、`IP` 9.3e6→1.14e13 | FACTS C.104 |
+| ID1 解锁门槛 | 「疑似把成本当门槛」 | **论断作废**：maxAM 到 5.55e3118 后 `ID解锁=[0,1,2]`、`ID买次=[2,1,1]`，说明 `k()` 分支正常，无需修改 | FACTS C.104 |
+| 调度默认间隔 | Android 3 秒 / Web 3 秒 | **两端均 1 秒**（Android R57-A 改，Web R57-B 改），Android 已见 `OREKI_SCHED: init … 间隔 1 秒` | 实测 + 读码 |
+| Reality 升级 / 符文 / Dilation / Celestial / Laitela / Pelle 驱动 | 缺失 | **仍然缺失**（未变）。本批未动这些层 | 读码：Android 侧无对应类 |
+
+## 附：R58 更正（2026年11月2日，【读码】）
+
+**推翻两条旧结论**（此前把它们标成「Android 缺失」是错的）：
+
+| 能力 | 旧标记 | 更正 | 依据 |
+|---|---|---|---|
+| Reality 升级自动购买 | Android 缺失 | **原版已有**：`Game.autoBuyerTick`（`a.smali:7697` 起）在 **9401 行无条件调用** `reality/upgrades/b;->a(Cont)` | 读码 |
+| Dilation 自动推进 | Android 缺失 | **原版已有**：同方法 **9360 附近无条件调用** `eternity/dilation/b;->a(Cont)` | 读码 |
+
+**真正仍缺的**（未变）：
+
+| 能力 | Android | Web |
+|---|---|---|
+| 符文自动装备 | **未实现**（原版无自动装备） | 已实现 `equipGlyphs()` |
+| Celestial 驱动 | **未实现** | 已实现 823 行 |
+| Laitela / Pelle 驱动 | **未实现** | 已实现 918 行 |
+| 现实节奏收敛 | 仅 2 秒最小间隔（R58 由 1 秒改到 2 秒） | 完整：膨胀窗口 + 阶段节拍 + 天神压制 |
+
+**部署状态**：Pages 已从 R50 的旧产物（与源码差 47 个文件、`.json` 数据文件整体缺失）
+同步到与源码逐文件一致（`cebc601`）。
+
+## 附：R59 更正（2026年11月2日）
+
+| 能力 | Android 状态 | Web 状态 | 证据等级 |
+|---|---|---|---|
+| 符文自动装备（只填空槽） | **代码已修正但运行期未生效**（`oreki/OrekiGlyphAuto.smali`）：R59/R60 五处极性全反、R62 修到第六处，另有**第七处根因**——`GlyphType` 被 R8 改写为 `.super Ljava/lang/Object;`（不是 `java.lang.Enum` 子类），调 `Enum->name()` 让 ART 拒收整个类（实测 1461 条 VerifyError），已改 `Object.toString()` | 已实现 `equipGlyphs()` | Android：读码 + 静态 + 装机（VerifyError 0）；**装备正例仍未取得**——用 869 份存档里的 `637` 造出 3/5 空槽夹具（加载成功），但 `OREKI_GLYPH` 仍 0 条，具体卡点未定 |
+| 符文满槽不替换 | 已实现（找不到 null 槽直接返回） | 已实现（`freeSlot < 0 → continue`） | 读码 |
+| 现实后立即补装 | 天然满足（每 tick 检查） | **本轮新增**当帧补装 | Web 读码 |
+| RU9/16/17/18/24 形态推进 | **未实现** | 已实现 `satisfyGlyphRequirements()` | — |
+| Celestial / Laitela / Pelle 驱动 | **未实现** | 已实现 

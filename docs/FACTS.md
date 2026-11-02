@@ -5914,3 +5914,115 @@ C.107 说「旧版符文对象被反序列化拒绝」。本轮实测更准确�
 唯一能加载的 `realities=3` 夹具（`r60_fx_ronly.json`）实测 `maxEP=0`、`eternities=0`、`dilation.studies=[]`，
 离 `canReality`（EP 指数 ≥ 4000 + 膨胀研究）还很远。
 ⇒ 要拿正例，必须先真跑到首次 Reality，没有捷径。
+
+## C.109　R62：869 份存档全部可解码 + 符文第七处根因（GlyphType 不是 Enum）+ 现实清 RU 的时间墙（2026年11月2日）
+
+### 一、869 份存档：格式与解码方法（【实测】869/869 全部成功）
+
+来源 `C:/Users/Oreki/Downloads/反物质维度安卓全存档-870个.zip`
+（9 246 021 字节，SHA-256 `0b970629…`；869 个 `.txt`，无嵌套压缩）。
+
+**不能自己拼 base64**——载荷做过字符替换，直接 `base64.b64decode` 必然失败
+（`Incorrect padding` / `invalid code lengths`）。正确解码在仓库里已有：
+`android/AD_Oreki_Edition_Android/scripts/savecodec.py`，顺序是
+
+```
+strip() → 去 BOM → 去前缀 "AntimatterDimensionsAndroidSaveFormat"
+        → 去 "AAA" → 去尾部 "EndOfSavefile"
+        → 替换 "0b"→"+" / "0c"→"/" / "0a"→"0"   ← 关键，缺这步必失败
+        → 补 '=' 到 4 的倍数 → base64 → gunzip → JSON
+```
+
+本轮我用标准库重新摸了一遍格式，绕了 5 次弯路才对上；**下次直接用 savecodec.decode**。
+
+**索引结果**（`reports/r51/saves_index.json`）：
+
+| 指标 | 数量 |
+|---|---|
+| 可解码 | 869 / 869 |
+| `realities > 0` | 470 |
+| 背包符文非空 | 470 |
+| 最高进度 | `Cel7+endgame`（realities ≈ 9.27e6，7 个天神全开） |
+
+存档 `version = 30110200`（3.11.2），当前包 `30190000`（3.19.0），
+字段比当前版本少 3 个（`creditsFinished` / `pendingPurchasedOfflineMs` /
+`savedFinalRiftCheckpoint`），补齐后**可以正常加载**（实测：载入后 `realities`
+与 `antimatter` 均保持，文件字节数不变）。
+
+### 二、符文存档里 `active` 是**紧凑数组**，不能塞 `null`
+
+想造「有空槽」的夹具时，把 `active` 某位置设为 `null` 会让**整份存档被拒**
+（载入后回落新档：`realities 1731→0`、`active/inventory` 全空、79276→28142 字节）。
+正确做法是**删掉数组尾部元素**（`active = active[:3]`），游戏会按「已装备 3 枚」处理。
+⇒ 反过来也说明：R59~R62 的 `OrekiGlyphAuto` 在**运行时**找 `null` 槽是对的
+（`Glyphs->e` 是定长数组，未装备位置为 null），但**存档层**不能写 null。
+
+### 三、符文第七处根因：`GlyphType` 不继承 `java.lang.Enum`（【实测】VerifyError）
+
+修完第六处极性后，装上新包立刻打出 **1461 条** `VerifyError`：
+
+```
+Verifier rejected class OrekiGlyphAuto: tick() failed to verify:
+[0x56] 'this' argument 'Precise Reference: GlyphType'
+       not instance of 'Reference: java.lang.Enum'
+```
+
+根因：`reality/glyphs/GlyphType.smali` 的声明是 **`.super Ljava/lang/Object;`** ——
+R8 把 Kotlin `enum` 改写成普通类，它并不是 `java.lang.Enum` 的子类。
+而代码里写的是 `invoke-virtual {v10}, Ljava/lang/Enum;->name()`。
+ART 因此**拒收整个类**，`tick()` 一次都没执行。
+
+**为什么前几轮没暴露**：六处极性全反，代码根本走不到这一行。
+⇒ 教训：**「极性全反」会掩盖后面的类型错误**；修完极性必须立刻跑一次真机。
+
+修法：改 `Object.toString()`（GlyphType 继承 Object，合法；R8 的 enum 型类保留枚举名）。
+
+### 四、Android 现实自动化的时间墙：每 2 秒现实会把 RU 清空（【实测】）
+
+夹具 `realities=1731`、`realityUpgradeBits=0xFFFFF`（20 位全满）、
+`teresa.pouredAmount=1.136e21`。40 秒采样：
+
+| 采样 | realities | pouredAmount |
+|---|---|---|
+| 起点 | 1.731 | 1.1358942413702872e+21 |
+| +20 s | 1.732 | 同值（一位没变） |
+| +40 s | 1.732 | 同值 |
+
+原因：每次现实都清空 `reality.upgradeBits` → 下一帧「RU 全买完」不成立 →
+Teresa 不浇 → 永远回到起点。Web 侧有 `holdReality` + 膨胀窗口 + 天神压制，
+Android 侧此前**只有 2 秒最小间隔，没有任何 hold**。
+
+修法：`OrekiTeresaAuto.isHolding()`（只在「RU 全买完且未浇满 1e24」时为真），
+`OrekiReality` 在它为真时不现实。RU 没买完时照常现实攒 RM，不会死锁。
+
+### 五、特蕾莎浇注的真实入口（【读码】逐指令）
+
+`kajfosz/antimatterdimensions/a.smali` 的 `public static r()V`（主循环 `a.smali:14331` 每帧调用）：
+
+```java
+long now = System.currentTimeMillis();
+if (MainActivity.yo) {                    // 「浇注按钮被按住」
+    double diff = (now - a.l) / 1000.0;   // 真实秒差
+    if (yr4.g()) {                        // pouredAmount < 1e24
+        yr4.i += diff;
+        double rate  = (teresa.poured + 1e6) * 0.01;
+        double delta = min(pow(yr4.i, 2.0) * rate, rm.toDouble());
+        double p     = min(delta, 1e24 - yr4.i()) + yr4.i();
+        teresa.setPouredAmount(p);        // m(D)V
+    }
+}
+```
+
+⇒ **浇注整件事挂在 `MainActivity.yo` 这一个布尔值上**。
+所以 `OrekiTeresaAuto` 只置/撤这个标志，不复制公式：浇注量、速率、RM 扣费、
+解锁判定全部走原版同一段代码，时间基准天然是真实毫秒。
+
+`MainActivity.yo` 是 `public static`（`MainActivity.smali:156`），
+写它的只有两处：`wt.smali`（触摸监听：按下置真、抬起置假）与
+`MainActivity.dispatchTouchEvent`（只在 ACTION_UP 时置假）。
+⇒ 我们不碰屏幕时把它置真，它不会被 UI 冲掉。
+
+### 六、`BitSet->a()` 是基数，不是最高位（【读码】）
+
+`.method public final a()I` 的实现是 `iget-wide bits:J` + `Long.bitCount` + 返回 int。
+所以「一次性 RU 是否全买完」= `upgradeBits.a() >= 20`。
