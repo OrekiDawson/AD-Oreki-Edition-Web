@@ -6144,3 +6144,146 @@ Android 教程由 `scripts/oreki_tutorial_gen.py` 从同一源生成，本轮回
   `hy.A(Z)Z` 是 canBeBought 判定（`!K() && Player.m()`），**没有找到 purchase 入口**。
   在没找到真实购买方法前不写调用（R62 教训：猜错一次等于整类被 ART 拒收）。
 - 因此本轮「零手动通关」目标仍差这一段：玩家需要手动买 12 条 Break 升级。
+
+---
+
+## C.112　R65：Break 升级购买链打通 + 调度器记账根因（2026年11月2日，【读码】+【AVD 实测】）
+
+### 一、Android Break Infinity 升级的**真实购买入口**（R64 未找到的那个）
+
+R64 只确认了 `hy.A(Z)Z` 是「可购买判定」，并据此判断「购买入口还没找到」，于是整轮没写调用。
+本轮从原版 Break 页按钮的点击监听器一路抠到底，链路是：
+
+```
+MainActivityBreakInfinityKt$loadViewsBreakInfinity$2$1.invokeSuspend
+  → Lfp3;->D(ZLvh0;)Ljava/lang/Boolean;          ← 唯一购买入口（suspend，方法体内无挂起点）
+      → a(Z)Z           可购买综合判定 = !B() && z() && A(Z)
+      → y().i(x())      货币扣费（Lln0.i：先 f() 判够不够，再 l() 真扣）
+      → E(true)         置已购位（av.E → J().g(I()) → Player.o() = breakInfinityUpgradeBits）
+      → C(true, auto)   购买后回调（可重复升级在这里加次数）
+```
+
+继承链：`hy → av → fp3`（`hy.smali:105` 的构造调用直接打 `Lfp3;-><init>`），
+12 个实例全在 `oy.m`（`List<fp3>`，构造时用 `new-array [Lfp3;` 建好）。
+
+**结论：`fp3.D(false, null)` 与玩家在 Break 页点一下按钮是同一条代码路径。**
+mod 侧不写位图、不扣 IP、不算价格 —— 这是「不伪造、不绕过原版」的硬前提。
+
+关于 `Lvh0;`（Continuation）：`D` 被编译成 suspend 方法，但方法体逐指令核对**没有任何挂起点**
+（无 `COROUTINE_SUSPENDED` 返回、无状态机分发），第二个参数从未被读取，传 null 安全。
+
+### 二、调度器「没有真正接管」的**真实原因**（两处极性，R51 起就存在）
+
+`WEB_ANDROID_DIFFERENCES.md` §15.3 一直记着「Android 调度器没有真正接管阶段自动化」。
+本轮定位到：**不是没接线，是记账方法本身恒空转**。
+
+`OrekiAutomationScheduler.noteActed` / `noteNoop` 的首个判定都写成：
+
+```
+idxOf(id) → v
+if-gez v, :done        ← 错
+```
+
+按 FACTS C.51 基准（`if-ltz` = v<0 才跳、`if-gez` = v>=0 才跳），**任务 id 合法（v>=0）时反而直奔 :done**，
+于是：
+
+- `sLastAct[task]` 永不更新 ⇒ `allow()` 的间隔闸门**恒放行**；
+- `sServed` / `sActionCount` 永不累加 ⇒ `OREKI_SCHED act` **一条都不出现**；
+- `sNoopUntil` 永不写入 ⇒ R56 的「3 秒无效重试冷却」**从未生效**。
+
+运行期证据（R65 首个能编译的包，13:42:57）：把存档的 `breakInfinityUpgradeBits` 从 511 改成 256
+（8 条变回未购买）后重开，logcat 出现
+
+```
+13:42:57.783 OREKI_BRKUP: 0
+13:42:57.790 OREKI_BRKUP: 1
+...
+13:42:57.865 OREKI_BRKUP: 7      ← 8 条全部买下，总耗时 82 ms
+```
+
+**82 毫秒买 8 条 = 1 秒间隔完全没生效**，且全程没有一条 `OREKI_SCHED act`。
+改成 `if-ltz` 后同一测试的间隔才符合预期（见 §五）。
+
+顺带清掉 `noteActed` 里两行早期调试残留 `invoke-static {v14, v14}, Log;->i`（v14 从未初始化）。
+
+### 三、`OrekiEternity` 的另一处同源极性（首次永恒永远不触发）
+
+`tryEternity()` 里：
+
+```
+v0 = compareTo(gainedEP, Player.EP.copy().multiply(10))
+if-gez v0, :et_end      ← if-gez = v0>=0 才跳
+```
+
+即「收益已过 10 倍 → 跳过永恒；收益还不够 → 按永恒」，与注释、与 Web `tickEternity()` 完全相反。
+实测佐证：续跑档 `eternities` 恒为 0，而反物质峰值已 **1e4653**、ID1~ID3 都买下了 —— 卡点不在资源。
+本轮改为 `if-ltz`（v0<0 才跳过）。
+
+### 四、Web 端重写（原实现「能买但推不动进度」）
+
+`src/core/oreki-autobuy-break-infinity.js` 原实现是「遍历 → canBeBought → purchase，能买的全买」，两个问题：
+
+1. 一拍买光所有 → `runCycle` 的「一拍最多一个真动作」失效，且无法表达先后顺序；
+2. 没有预算概念 → 数组序靠后的 5e11 / 1e15 一旦买得起就买，而 ID1 门槛是 IP 4e8（Android）/1e8（Web）。
+
+现在与 Android 逐条等价：**候选 = canBeBought 且 2×价格 ≤ 当前 IP，取最便宜的一条，一次调用只买一条**。
+`2×价格 ≤ IP` 保证单笔购买不让余额腰斩，也就不可能把 IP 砸到 ID1 门槛以下。
+
+Web 实测（`web/_tools/r65-break-shop.mjs`，真实页面 + 真实 `player`）：
+
+| 段 | 操作 | 结果 |
+|---|---|---|
+| A | IP=1e7，清空已购，连续直接调用 5 次 | 每次返回 1；已购 0→1→2→3→4；IP 1e7→9.99e6→9.94e6→9.84e6→8.84e6→7.84e6（**逐笔按原价扣除**） |
+| B | IP=1e9，恢复主循环跑 20 s | `infinitiedGeneration`（2e7）被调度器自动买下，Break 已购 5→6 条，IP 9.85e8→5.95e8 |
+| C | IP=1e10 直接调用 | 返回 1，买下最便宜的 6.25e8 |
+| C2 | **预算闸**：最便宜 6.25e8、IP 设 9.375e8（够买但不足两倍） | **返回 0，一条都不买** |
+
+C2 是本轮「不得耗尽 ID1 关键 IP」这条要求的直接反证：规则确实在拦。
+
+### 五、Android 运行期数据（同一台 oreki_test AVD）
+
+| 指标 | R64 终档 | R65 实测 |
+|---|---|---|
+| `breakInfinityUpgradeBits` | **0** | **511**（9 条一次性升级全部买下） |
+| `breakInfinityRebuyables` | — | `[8, 6, 10]`（3 条可重复升级也买了） |
+| IP | 7.09e7 | **9.15e28** |
+| `infinities` | 179 | 4.35e6 |
+| `records.thisEternity.maxAM` | 1e1365 | **1.05e4653** |
+| ID | 未解锁 | ID1 / ID2 / ID3 已解锁并购买（logcat `OREKI_ID: 1/2/3`） |
+| 坍缩模式 | TIME / 1 s | TIME / 1 s（`auto.bigCrunch.mode=1, time=1`） |
+
+存档直接读自 `/data/data/com.oreki.antimatterdimensions/files/player.json`（emulator root），
+原件与改写件留存在 `android/AD_Oreki_Edition_Android/reports/r65/`。
+
+### 六、本轮踩到并已修的三个 ART / 汇编坑
+
+1. **`Invalid register: v16. Must be between v0 and v15`** —— `invoke-static {vA,vB}` / `move-exception` /
+   `const-string` 用 4 位寄存器编码，只认 v0~v15。首版把 locals 开到 24 → 汇编期直接失败。
+   现固定 `.locals 16`，每个寄存器一种类型且恰好用满。
+2. **`Cannot get the location of a label that hasn't been placed yet`** —— `.catch ... :handler` 指向的标签
+   写成 `:catch_0`（实际标签是 `:bs_catch`）。smali 不报「标签不存在」，而是在 dexlib2 写 code item 时才抛，
+   栈里看不到文件名。已加构建期断言（`build_mod.py` 4b：所有 `.catch` 的三个标签必须已定义）。
+3. **`[0x7A] register v12 has type Undefined but expected Integer`** —— v12（选中下标）只在循环体内赋值，
+   循环一次没进 `:bs_take` 时在 `:bs_pick` 处是 Undefined。凡「只在循环体内赋值、循环外要读」的寄存器，
+   必须在循环前先 `const/4` 定义。
+
+### 七、本轮教程覆盖登记（源 JSON 单一源，Android 由 `oreki_tutorial_gen.py` 生成）
+
+| 改动 | 教程位置 | 覆盖内容 |
+|---|---|---|
+| Break 升级自动购买（真实购买入口） | 第 5 章第 9 步（新增，章内由 10 步变 12 步） | 改了什么、玩家可见效果（格子自己变灰）、节奏（每 1 秒最多一条）、R64 前是缺口 |
+| 「最便宜且不伤余额」的选择规则 | 第 5 章第 10 步（新增） | 候选条件、`2×价格 ≤ IP`、为什么不按页签顺序、不会砸到 ID1 门槛以下 |
+| 开关与 1~60 秒间隔 | 第 5 章第 11 步（新增） | 怎么关、怎么调、跨重启保存、关闭后原版自动器照常工作 |
+| ID1 门槛的平台差异 | 第 6 章第 1 步（改写） | Android 4e8 / Web 1e8，明确「保留原版差异，不机械统一」 |
+| ID1~ID8 的解锁+购买路径 | 第 6 章第 2 步（改写） | 先走原版解锁入口再「买最大」，并列出 8 层反物质阈值 |
+| 旧教程「需手动买 12 条」的失效宣传 | 第 5 章第 9 步（原第 8 步整段替换） | 该说法已与实测矛盾，按 R64 规则同轮纠正 |
+
+### 八、未完成（如实记录）
+
+- **全新存档 3 小时通关未验证**。本轮全部运行期数据都来自 R64 续跑档（`reports/r65/player_r65_live.json`），
+  按 R65 执行令 §10.1，这只能用于定位瓶颈，**不能冒充新档成绩**。
+- 调度器记账修好后，各策略任务才第一次真正受 1 秒节拍约束；「修复后的稳态节奏」只跑了十余分钟，
+  不足以判断是否拖慢前期（原 R51 曾因限流过狠导致 146 s 仍在 preInfinity）。
+- `tryBuyId1()` 每帧无条件打 `OREKI_ID`（logcat 实测 30 秒 2782 条），属于日志洪水，
+  会挤掉其它 tag 的证据；本轮靠 `adb logcat -G 16M` 规避，**未改代码**。
+- 特蕾莎浇注 `pouredAmount` 仍未增长；符文装备正例仍未取得（沿用 R62 状态）。
