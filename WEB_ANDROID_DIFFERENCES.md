@@ -338,3 +338,36 @@ Android 侧关键接口（逐指令确证，详见 FACTS C.106）：
 **本轮修正的一条错误推断**：曾认为「现实每 2 秒清空 `reality.upgradeBits`」导致
 Teresa 不浇；实测 `upgradeBits` 在现实后**仍为 0xFFFFF**（RU 是一次性永久解锁，现实不清），
 该因果链不成立，真实卡点待查。
+
+---
+
+## 附：R65 状态（2026年11月2日，全部以运行期证据为准）
+
+### 15.4 本轮七项差异的当前状态
+
+| # | 能力 | Android | Web | 证据 |
+|---|---|---|---|---|
+| 1 | Break Infinity 升级自动购买 | **已实现并实测**：`oreki/OrekiBreakShop.smali`，走原版 `fp3.D(Z,Continuation)Boolean`（与 Break 页按钮同一条路径）。存档 `breakInfinityUpgradeBits` 0 → **511**，`breakInfinityRebuyables` = `[8,6,10]` | **已重写并实测**：`src/core/oreki-autobuy-break-infinity.js`，同样「最便宜且 2×价格 ≤ IP」规则，一次一拍买一条 | Android：logcat `OREKI_BRKUP: 0..7` + 存档直读；Web：`_tools/r65-break-shop.mjs` A/B/C/C2 四段 |
+| 2 | 坍缩策略 | 实测沿用 R64 两段式：`auto.bigCrunch.mode=1`（TIME）、`time=1`；买过 Break 升级后走 X_HIGHEST/10 分支未在本轮重测 | 同 R64（`shouldHoldCrunch` + `OrekiSmartStrategy`） | 存档字段直读 |
+| 3 | ID1 解锁与购买 | **已解锁并购买**：logcat `OREKI_ID: 1/2/3`，说明原版 `M()`（解锁）+`h(true)`（买最大）链路可用 | `tryFirstId1AutoUnlock()` → `InfinityDimensions.buyMax()`（同「Max All」按钮） | Android logcat；Web 读码 |
+| 3b | ID1 的 IP 门槛 | **4e8**（原版 Android 值） | **1e8**（原版 Web 值） | 两端各自原版公式；教程第 6 章已注明差异，不做机械统一 |
+| 4 | 智能策略识别 | 未改：仍由 `OrekiStageAuto` 分流，**未接 `oreki-smart-strategy.json`** | 已接：JSON 为唯一策略源，`OrekiSmartStrategy.evaluate()` 只读解释 | 读码 |
+| 5 | 自动化调度 | **本轮才真正生效**：`noteActed`/`noteNoop` 的 `if-gez` 极性错误修好前，记账恒空转（无 `act` 日志、间隔恒放行）。修复后 logcat 出现 `OREKI_SCHED: act breakShop @…`，`dbg` 行显示 `idx=11 iv=1` | `runCycle()` 单时钟 + `didAct()` 判定 | logcat 原文见 FACTS C.112 |
+| 6 | 动作间隔 | 间隔读取正确（`iv=1`）、节拍记账正确；**但启动瞬间 8 条升级仍被连买（12~39 ms）**，稳态无候选可买，无法再取间隔正例 → **记为未解释缺陷** | 间隔闸门 R50 起生效，本轮 A/B 两段实测按节拍放行 | 见「未完成」 |
+| 7 | 挑战启动即完成 | 未改动（沿用 R4 的 `OrekiChallengeAuto` / `OrekiInstantChallenge` 注入点） | 未改动（`tryInstantCompleteChallenges()` 仍在 `EternityChallenge(12).tryFail()` 之前） | **本轮未做运行期取证** |
+| 8 | 教程覆盖 | 由 `oreki_tutorial_gen.py` 从同一 JSON 生成，构建期回读校验通过 | 同源直读 | 构建日志 `oreki_tutorial.txt: 170291 字节` |
+
+### 15.5 本轮**消除**的一条旧差异
+
+§15.3 第 5 行「调度器未接线 ⇒ 设置页的开关与间隔实际不生效」**部分作废**：
+
+- 接线本身早在 R51 就完成了（`OrekiStageAuto.onAutoBuyerTick` 里有 `beginFrame`/`allow`/`noteActed`）；
+- 真正的问题是 `noteActed` / `noteNoop` 的**首个判定极性反了**（`if-gez` 应为 `if-ltz`），
+  于是记账恒空转、`OREKI_SCHED act` 一条都不出现，看起来就像「没接线」。
+- 现已修好并有 act 日志为证。
+
+### 15.6 本轮新增的**未解释**差异（诚实记录）
+
+| 现象 | 观测 | 已排除 | 结论 |
+|---|---|---|---|
+| 启动瞬间连买 8 条 Break 升级，间隔 12~39 ms | logcat `act breakShop` 的 `taskGap=12/13/15/16/37/39` | 已排除：`idx` 错误（dbg 显示 11）、`iv` 读 0（dbg 显示 1）、`noteActed` 空转（act 行本身存在）、间隔闸门极性（已改 `if-lt` 并重建，行为未变） | **未定位**。按 R65 收敛令，不再为单条日志新增构建；下一轮改用「静态断言 + 单方法级夹具」定位，不再整包构建 |
