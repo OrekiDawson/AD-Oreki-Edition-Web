@@ -5822,3 +5822,42 @@ R57-A 记录过一条推断：maxAM=2.09e1373 时 ID 全部未解锁，怀疑 `k
 10 000 ms，于是「现实就绪后先给膨胀研究 1 十秒窗口」这段保护**在解除压制的第一帧就被跳过**，
 立刻现实 → 清空 `maxDT`，正是该函数注释里描述的病（DS1 拿不到 → RU18 拿不到 → Teresa 不出现）。
 已改为压制期间 `this._readySince = 0`。
+
+## C.106　Android 符文（Glyph）真实接口与「只填空槽」的安全依据（2026年11月2日，【读码】逐指令）
+
+### 逐项确证（`reality/glyphs/i.smali` = 原版 `Glyphs`，`Glyph.smali` = `Glyph`）
+
+| 用途 | 真实签名 | 证据 |
+|---|---|---|
+| 装备槽数组 | `Glyphs->e:[L.../Glyph;` | `L()` 里 `sget-object ... i;->e:[Glyph;` 后 `aput-object v2, v0, v1` 清空、`aput-object p0, v0, p1` 写入 |
+| 装备（写入指定槽） | `Glyphs->L(Glyph;I)V` | 同上；随后 `Glyph->x(I)` 把槽号记回符文 |
+| 背包列表 | `Player->Q()Player$Reality;->d()Player$Glyphs;->e()Ljava/util/List;` | `Glyphs->C()` 的实现就是这条链再 `new ArrayList(Collection)` |
+| 槽位号 | `Glyph->l()I` → 字段 `idx` | **不是等级**（容易误判，特此记录） |
+| 等级 | `Glyph->m()I` → 字段 `level` | |
+| 强度 | `Glyph->e()D` | 内部用 `type` + `rarity` |
+| 稀有度 | `Glyph->n()D` → 字段 `rarity` | |
+
+### 「装备不会触发 Reality」的硬证据
+
+`Glyphs->L(Glyph;I)V` 全长 222 行，方法体内：
+**`prestige/f->` 出现 0 次，`ProcessReality`/`processReality` 出现 0 次。**
+
+对照 Web：`Glyphs.equip()` 在目标槽**已占用**时会走 `swapIntoActive()`，后者含
+`finishProcessReality({ reset: true })` = 一次**不发奖励**的完整现实重置。
+Android 侧 `L` 本身不含该回调，但为与 Web 行为对齐、并避免任何未知分支，
+`OrekiGlyphAuto` 仍**只填空槽**：找不到空槽直接返回，不替换、不卸下、不交换。
+
+### 未确证、因此未使用的方法
+
+- `Glyphs->K(Glyph;I)V`
+- `Glyphs->b(Glyph;)V`（Ra 的 `allGamespeedGlyphs` 调它，但究竟是「装备」还是「入包」未定）
+
+在语义未定的情况下不写调用 —— 误触一次替换就是一次无奖励现实重置，代价远大于收益。
+
+### 已实现（`oreki/OrekiGlyphAuto.smali`）
+
+`tick()Z`：取 `i->e` 找第一个 null 槽 → 取背包 List → 跳过 `l() >= 0`（已装备）
+→ 按 `m() × e()` 取最大 → `Glyphs->L(glyph, slot)` → 打一行 `OREKI_GLYPH`。
+每 tick 最多装一枚，装满即变空转；不写任何存档字段，幂等性完全由原版 `idx` 决定。
+
+**未实现**：RU9/16/17/18/24 的「恰好 N 个」形态推进（需要先卸下再装，涉及 `K`/卸下语义与阈值）。
