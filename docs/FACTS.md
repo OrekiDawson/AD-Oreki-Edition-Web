@@ -6287,3 +6287,99 @@ C2 是本轮「不得耗尽 ID1 关键 IP」这条要求的直接反证：规则
 - `tryBuyId1()` 每帧无条件打 `OREKI_ID`（logcat 实测 30 秒 2782 条），属于日志洪水，
   会挤掉其它 tag 的证据；本轮靠 `adb logcat -G 16M` 规避，**未改代码**。
 - 特蕾莎浇注 `pouredAmount` 仍未增长；符文装备正例仍未取得（沿用 R62 状态）。
+
+---
+
+## C.113　R66：调度间隔根治 + 策略源接入 + Gradle 增量构建（2026年11月3日，【读码】+【静态检查】+【实测】）
+
+### 一、间隔不生效的根治（第一优先级）
+
+R65 已排除 idx / iv / noteActed / 极性四项，仍无法解释「8 条升级 80 ms 内连买」。
+R66 换了个角度：**不在 noteActed 之外找原因，而是不再依赖 noteActed**。
+
+机制层修复（`OrekiAutomationScheduler`）：
+
+| 新增 | 作用 |
+|---|---|
+| `sReserve:[J` | 每任务一个「进行中动作」时间戳 |
+| `reserveOk(I)Z` | allow() 通过间隔闸门后、**返回 true 之前**占位；已有未过期预约则返回 false |
+| `clearReserve(String)` | noteActed / noteNoop / noteFail 统一释放 |
+| `:deny_7 "reserved"` | 独立拒绝原因，不再与 `disabled` / `interval` 混淆 |
+| 预约窗口 2000 ms | 调用方异常未提交时自动过期，**不会把任务永久卡死** |
+
+关键点：预约写在 allow() 内部，因此「外层还没提交时间戳、内层又申请」这种调用（同帧多次
+调用 / 同步重入 / 模块内部二次进入）一定会被第二道闸拦住，不再取决于 noteActed 是否被执行。
+
+同时修 `:deny_iv` 的 reason：原先直接落到 `:deny_1` 被写成 `disabled`（误导）。
+
+**确定性语义夹具**（新增 `scripts/fixture_scheduler_semantics.py`，不装机、不构建）：
+静态接线 10 项 + 语义场景 14 项，全部通过。覆盖用户列出的全部边界：
+
+| 场景 | 期望 | 结果 |
+|---|---|---|
+| 第一次合法动作 | 放行 | PASS |
+| 1 ms 后重复申请（未提交） | 拒绝 | PASS |
+| 满 999 ms | 拒绝 | PASS |
+| 满 1000 ms | 放行 | PASS |
+| 60 秒档 59.999 s / 60 s | 拒绝 / 放行 | PASS |
+| no-op 后 1 ms | 被重试冷却挡 | PASS |
+| no-op 不推进成功时间戳（60 秒档放大差异） | 仍按上次成功计时 | PASS |
+| MOD 自动化关闭 | 立即拒绝 | PASS |
+| 原版总开关关闭 | 拒绝（不绕过玩家意愿） | PASS |
+| 严格档：另一任务 1 ms / 1000 ms | 拒绝 / 放行 | PASS |
+| 默认档：另一任务 1 ms | 放行（单任务语义） | PASS |
+| 异常未提交 1.9 s / 2.0 s | 挡住 / 自动恢复 | PASS |
+| **80 ms 内申请 8 次** | **只放行 1 次** | **PASS** |
+
+### 二、OREKI_ID 日志洪水
+
+R65 实测 30 秒 2782 条（每帧每层一条），把 logcat 环形缓冲区冲掉，同时刻的
+`OREKI_BRKUP` / `OREKI_SCHED` 证据被挤丢——R65 一度因此误判「没买到」。
+改为「购买次数 `InfinityDimensionState.y()` 前后比较，变了才打」，语义不变、不再刷屏。
+
+### 三、策略源接入（第二优先级）
+
+- 新增 `scripts/gen_smart_strategy.py`：把 `oreki-smart-strategy.json` 在**构建前**编译成
+  `oreki/OrekiStrategyData.smali`。19 阶段 / 20 合取项 / 73 子句 / 19 叶子 / 3 常量。
+- 编译方式是 **DNF（析取范式）**：Android 侧只需两层循环 + 逐子句 double 比较，
+  没有递归、没有栈。选它是因为 JSON 里 19 个条件几乎全是 `all[] + not(leaf)`，只有 3 处 `any`。
+- 新增 `oreki/OrekiSmartStrategy.smali`：只读解释器 —— 2 秒节流求值，选出优先级最高且成立的阶段，
+  打一行 `OREKI_GOAL stage=<i> <id> goal=<goal> unknownLeaf=<n>`。**不买、不点、不写存档。**
+- 叶子接线：目前已确证 7 个（`player.break`→`Player.m()`、`player.dimensionBoosts`→`Player.u()D`、
+  `player.infinities`→`Player.C()`、`player.realities`→`Player.P()`、`progress.infinityUnlocked`→
+  `OrekiAuto.hasInfinity()`、`pelle.doomed`→`pelle/c.q()`）。其余 12 个**没有在 REA 里逐条核对到 getter**，
+  统一返回 0 并累加 `sUnknown`，日志里显式暴露——绝不假装取到了值。
+- 新增构建断言：`OrekiSmartStrategy` / `OrekiStrategyData` 必须在 payload 里；
+  `gen_smart_strategy.py --check` 可判定生成物是否与 JSON 一致。
+
+### 四、Gradle 增量构建（新增长期规则，用户 2026-11-02 确立）
+
+**真实基线（实测，替换早期估计）：**
+
+| 项 | 数值 |
+|---|---|
+| `work/base_decoded` | **27744 文件 / 0.40 GB**（不是 11 万 / 1.7 GB） |
+| 整棵树 `(path,size,mtime)` 滚动哈希 | **4.2 s** |
+| `scripts/payload`（35 文件）内容哈希 | 17 ms |
+| `scripts/*.py`（69 文件）内容哈希 | 150 ms |
+| 指纹总计 | **约 4.4 s**（对 8.5 分钟构建可忽略） |
+
+**实现**：`scripts/build_fingerprint.py` + `build.gradle` 的 `fingerprintInputs` / `onlyIf`。
+`assembleRelease` 可跳过；`installToRelease` / `publishRelease` 经 `taskGraph.whenReady`
+置 `forceFullBuild` 强制全量。
+
+**实测四态验证：**
+
+| 场景 | digest | 结果 |
+|---|---|---|
+| 无基线 | — | STALE |
+| 提交基线后连续两次 | `15ee47006f368417` | 两次 UP-TO-DATE |
+| 给一个 payload smali 加 2 个空格 | `63121e9064e21f3a` | STALE |
+| 还原那 2 个空格 | `15ee47006f368417` | UP-TO-DATE（恢复） |
+
+**一个真实坑**：Git autocrlf 与编辑器保存会改换行风格，导致指纹「无意义变化」。
+已在哈希前对文本类文件做 CRLF→LF 归一化（换行不影响 smali 汇编与 APK 字节）。
+
+**未启用（【待验证】，不是已实现）**：`org.gradle.caching`（任务全是 Exec 调外部脚本，
+无原生 inputs/outputs，强开会错误命中）、`configuration-cache`（用了 taskGraph.whenReady
+与项目级可变状态）、`parallel`（任务链串行，收益为零）。
