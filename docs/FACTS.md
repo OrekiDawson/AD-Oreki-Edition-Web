@@ -5783,3 +5783,42 @@ R57-A 记录过一条推断：maxAM=2.09e1373 时 ID 全部未解锁，怀疑 `k
 
 **【方法论】** 一个「看起来像 bug」的行为，在拿到跨过门槛后的对照采样之前，不能定案。
 本次若按 R57-A 的推断直接改 `tryBuyId1`，会把本来正确的逻辑改坏。
+
+## C.105　现实升级与膨胀的自动购买**原版每帧就在跑**，不是 Android 缺口（2026年11月2日，【读码】）
+
+### 事实
+
+`kajfosz/antimatterdimensions/a.smali` 的 `b(Lkotlin/coroutines/jvm/internal/ContinuationImpl;)Ljava/lang/Object;`
+（`Game.autoBuyerTick` 的挂起体，起于 7697 行）里，**按顺序无条件**调用：
+
+| 行 | 调用 | 语义 |
+|---|---|---|
+| 9360 前后 | `eternity/dilation/b;->a(Cont)` | 膨胀（Dilation）自动购买 |
+| 9401 | `reality/upgrades/b;->a(Cont)` | **现实升级自动购买**（`RealityUpgrades$autobuy$1` 是它的状态机） |
+
+两处都在 `TickProfiler$Phase` 切换之间、没有任何 `if` 门挡在调用点前面，
+即：**只要原版自动购买器解锁，Android 每 tick 都会自动买现实升级与膨胀升级。**
+
+### 对差距表的影响（重要，避免重复造轮子）
+
+之前把「Reality 升级购买」「Dilation 自动推进」列为 Android「未实现」是**错的**：
+这两块由原版自动器承担，Oreki 侧不需要另写一套。真正缺的是：
+
+1. **符文装备**（原版没有自动装备；Web 有 `equipGlyphs()`）。
+2. **Celestial / Laitela / Pelle 驱动**（原版全是界面按钮，没有自动器）。
+3. **解锁那批自动器本身**所需的 RM / 现实升级前置。
+
+### 顺带修正：现实最小间隔
+
+`OrekiReality.smali` 原本 `0x3e8`（1 秒）就允许再次现实，而 Web `REALITY_MIN_INTERVAL_MS = 2000`。
+现实会清空 `eternityChalls`、整棵时间研究树与 `maxDT`，1 秒一次等于把
+「买满 EC → 建研究分叉 → 拿膨胀研究 1」整条链每秒打断一次。
+已改为 `0x7d0`（2 秒），与 Web 同值。
+
+### 顺带修正：Web 现实节奏的一个真实缺陷
+
+`oreki-reality-automation.js` 的 `shouldReality()` 里，天神压制（`holdReality === true`）
+只 `return false`，**没有清 `_readySince`**。压制一旦解除，`now - _readySince` 早已远超
+10 000 ms，于是「现实就绪后先给膨胀研究 1 十秒窗口」这段保护**在解除压制的第一帧就被跳过**，
+立刻现实 → 清空 `maxDT`，正是该函数注释里描述的病（DS1 拿不到 → RU18 拿不到 → Teresa 不出现）。
+已改为压制期间 `this._readySince = 0`。
