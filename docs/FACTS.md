@@ -6080,3 +6080,67 @@ t=180 → t=450（7.5 分钟）：
 - 没有改任何代码：三个候选修复（Break 升级购买 / X_HIGHEST 校准 / 恢复周期坍缩）
   都需要先确证 `P()` 的真实写入目标，否则改了也不知道有没有生效。
 - 因此**本轮不构建 APK**（无代码变更，不拿未验证改动换交付）。
+
+## C.111　R64：Break 后坍缩改为两段策略 + 教程与代码对齐（2026年11月2日，【读码】+【AVD 实测】+【静态】）
+
+### 一、根因复核：`xHighest` 实测是 1，不是 10（修正 C.110 的一处措辞）
+
+`r63_final.json` 的 `auto.bigCrunch` 完整结构：
+
+```json
+{"amount":{"mantissa":1.0},"increaseWithMult":true,"mode":2,"time":1.0,
+ "xHighest":{"mantissa":1.0},"cost":32768.0,"interval":100.0,"isActive":true}
+```
+
+`mode=2`(X_HIGHEST)、**`xHighest=1.0`**、`time=1.0`。
+C.110 写「`amount` 即 xHighest」是错的——`amount` 是 AMOUNT 模式的阈值，X_HIGHEST 用的是独立字段 `xHighest`。
+访问器已逐指令确证：`L()` → `iget-object xHighest`，`P(BigDouble)` → `iput-object xHighest`。
+
+### 二、坍缩为什么停：门槛在数值而不是闸门
+
+X_HIGHEST 判据 = `gainedIP >= thisEternity.maxIP × xHighest`。
+实测 `thisEternity.maxIP = 2.87e7`、`xHighest = 1.0` ⇒ 要求单次坍缩给出 ≥ 2.87e7 IP。
+而单次坍缩的收益长期追不上这个峰值 ⇒ **条件永不满足 ⇒ 7.5 分钟零坍缩**（`infinities` 恒 27）。
+IP 只能靠 `ipGen` 被动收入（1e6 → 2.4e7），而 Android 3.19.0 的 ID1 要 IP **4e8**，差 14 倍且越等越远。
+
+`xHighest` 已经是 1，再往下调没有意义 ⇒ 本轮**换模式**而不是调参数。
+
+### 三、修法：两段式坍缩策略（`OrekiStageAuto.applyCrunchPolicy`）
+
+| 阶段 | 判据 | 策略 |
+|---|---|---|
+| 未 Break | `Player.m() == false` | 不干预 |
+| 已在 TIME | `I() == 1` | 原样放手（尊重玩家） |
+| Break 后、Break 升级位图为空 | `Player.o().a() == 0` | **TIME 模式 + 1 秒** |
+| 买过任意 Break 升级 | 位图非空 | X_HIGHEST + 10（原终局策略） |
+
+**为什么 TIME 模式安全**：ID1 的反物质门槛读 `thisEternity.maxAM`（本永恒峰值，坍缩不清零），
+实测已是 1.0e1365 > 1e1100；会被坍缩清零的只有 `thisInfinity.maxAM`，它不是 ID 的判据。
+
+同步修 `if-gtz` → `if-gez`：`compareTo` 在 xHighest==10 时返回 0，原写法不退出 ⇒
+每帧重写 `P(10)` 并打一行 `OREKI_AU4B`（R63 实测 7.5 分钟 14314 行）。改后 <10 才写、==10 跳过、>10 保留。
+`build_mod.py` 的极性表条目与 `verify_au4b` 断言已同步更新（不是删除守卫）。
+
+### 四、教程与代码对齐（新增长期规则的首次执行）
+
+**发现一处错误宣传**：教程第 5 章原第 7 步写「12 个打破无限升级由程序每帧逐条买下」，
+但 R63 真新档实测 `breakInfinityUpgradeBits` 从头到尾是 **0**，同一个真新档里程序一条都没买过。
+这属于「宣传了未实现的功能」，已按新规则改正为如实说明（需玩家手动点，并标注为已知缺口）。
+
+**本轮教程覆盖登记**（源：`web/AD-Oreki-Edition/src/core/oreki-tutorial-data.json`）：
+
+| 改动 | 教程位置 | 覆盖内容 |
+|---|---|---|
+| 两段式自动坍缩策略 | 第 5 章「打破无限」新增 1 步（现 10 步） | 修改内容、玩家可见效果、无需操作、适用阶段（Break 后）、玩家自选模式不被覆盖 |
+| `if-gtz`→`if-gez` 消除每帧重写 | 同上一步的附带说明（不单列） | 纯内部性能修复，玩家不可见 → 合并到技术说明，此处登记 |
+| 教程第 7 步纠错 | 第 5 章第 7 步原地改写 | 删除失效说法，改为「需手动购买 12 条 Break 升级」 |
+| `build_mod.py` 守卫同步 | 不涉及玩家 | 纯构建期断言 |
+
+Android 教程由 `scripts/oreki_tutorial_gen.py` 从同一源生成，本轮回读校验 **1157 条记录逐字一致**（上轮 1156，+1 即新增那步）。
+
+### 五、本轮未实现（明确）
+
+- **Break Infinity 升级自动购买仍未实现**。已确证 `oy.smali` 只持有 12 个静态实例（`a`~`l`，类型 `Lhy;`），
+  `hy.A(Z)Z` 是 canBeBought 判定（`!K() && Player.m()`），**没有找到 purchase 入口**。
+  在没找到真实购买方法前不写调用（R62 教训：猜错一次等于整类被 ART 拒收）。
+- 因此本轮「零手动通关」目标仍差这一段：玩家需要手动买 12 条 Break 升级。
