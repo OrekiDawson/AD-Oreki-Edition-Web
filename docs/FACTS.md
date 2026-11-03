@@ -6719,3 +6719,109 @@ Web 不需要新增代码：它的坍缩策略本来就允许反物质继续成�
 
 **下一步（需一次诊断构建，不是盲改）**：在 `tryEternity` 里把三个闸门的实际结果打出来
 （`hold` / `f()` / `EP 比较` 各一位），即可确定是哪一个为假。届时按结果只改一处。
+
+### 八、R68 最终定位：`f()` 恒假的直接原因是「不坍缩 ⇒ maxIP 不刷新」
+
+最后一次采样（同一时刻）：
+
+| 字段 | 值 |
+|---|---|
+| `thisEternity.maxAM` | **1.07e5255** |
+| `thisEternity.maxIP` | **1.5e309**（自探针注入后从未变化） |
+| 当前 IP | 3.89e308 |
+| `eternities` / `EP` | 0 / 0 |
+| `OREKI_HOLD` | `hold=1 → hold=0`（闸门已正确放开） |
+
+**判读**：`maxAM` 已达 1e5255（远超 1.797e308），闸门也已放开，但 `maxIP` 一动不动。
+`maxIP` 只在**发生坍缩**时刷新；而 `maxAM` 能长到 1e5255 恰恰说明**坍缩从未发生**
+（否则每秒一次会把 AM 清零到 1e300 量级）。即：**大坍缩自动器处于关闭状态**。
+
+于是链条闭合：
+`坍缩不触发 → maxIP 不刷新 → f() = maxIP ≥ requiredIPForEP(1) 恒假
+→ tryEternity 在第二道闸门返回 → 永远不永恒`
+
+**结论**：`holdCrunch` 只负责「允许」坍缩，不负责「触发」坍缩。在闸门放开之后，
+必须确保**至少发生一次坍缩**（把 `maxIP` 顶到 1.797e308），永恒资格才会成立。
+
+**下一轮唯一改动**（一处，不需再猜）：
+在 `holdCrunch` 放开的那一帧，若 `eternities==0 && maxAM ≥ 1.797e308`，则
+**主动触发一次大坍缩**（走原版 `bigCrunchResetRequest` / 自动器的 tick），
+而不是被动等自动器。完成后再由 `tryEternity` 调 `prestige/c.c(...)` 完成永恒。
+
+---
+
+## C.116　R69：永久永恒的参数真值与「假运行期证据」纠正（2026年11月3日）
+
+### 一、原版真值：`c.d(...)` 的实参元组（REA 逐行）
+
+`autobuyer/EternityAutobuyerState.smali:1010-1037`（原版自动永恒）实际发出：
+
+```
+const/16 v6, 0xd                 # 默认参数掩码 0b1101
+sget-object v0, prestige/c;->a   # INSTANCE
+const/4 v1, 0x0
+const/4 v2, 0x1                  # ← 第二位 = true
+const/4 v3, 0x0
+const/4 v4, 0x0                  # Boolean = null
+move-object v5, p1 ; check-cast → ContinuationImpl
+invoke-static/range {v0..v6}, prestige/c;->d(...)
+```
+
+掩码 0xD = bit0/bit2/bit3 置位 ⇒ 参数 1、3、4 走默认值，**只有第二位被真正传入**。
+R68 的 `c.c(false,false,false,null)` 把这一位传成 false，且换了没有掩码的 `c.c`——
+注释写 `(false,true,false,null)`、实参却是 `(false,false,false,null)`，属于**注释与代码不一致**的缺陷。
+R69 已还原为 `c.d(...)` + `(0,1,0,null)` + `0xD` + 真实 Continuation 实例，
+并把「实参元组」写进 `build_mod` 的 ET1 断言与 `fixture_eternity_gate`（23 项）。
+
+### 二、永恒资格的真实门槛是 **1**，不是 1.797e308
+
+```
+c.f()  = ThisEternity.i() (maxIP) >= c.h()
+c.h()  = r51.c() != null ? b.M(b.I()) : lu.C
+r51.c()= Player.q().a().b()  // 永恒挑战 current
+         current > 0 ? r51.a(current) : null
+lu.C   = BigDouble(1.0, 0.0, false, 4, null) = 1
+```
+
+不在永恒挑战中（`challenge.eternity.current = 0`）时 `r51.c()` 为 null ⇒ **门槛 = 1**。
+所以 `maxIP = 6.5e30` 时 `f()` **为真**。R68 记的「maxIP 1.5e309 但 f() 为假」是错误推断。
+
+### 三、R68 的运行期证据**作废**（重要纠正）
+
+R68 全部采样期间，游戏实际停在**标题/离线收益界面**（`开始游戏` 按钮未点），
+自动化并未进入主循环；读到的「反物质从 1.79e308 涨到 1.39e1497、无限次数增加」
+是**离线结算写回存档**的结果，不是自动坍缩在跑。截图与日志已存档
+（`reports/r68/r69_screen.png`）。
+
+因此 R68 的「坍缩仍在每秒触发 ⇒ 闸门没生效」推论**不成立**，需重测。
+
+### 四、进入游戏后的真实状态（R69 实测）
+
+点击 `开始游戏` 并关闭首次弹窗后：
+
+| 采样 | eternities | EP | maxAM | maxIP |
+|---|---|---|---|---|
+| r1 | 0 | 0 | 5.25e4859 | 6.22e30 |
+| r5 | 0 | 0 | 2.22e4862 | 6.54e30 |
+
+`OREKI_HOLD: hold=1 → hold=0`（闸门正确放开）；`OREKI_GOAL stage=13`（策略层正常）；
+无 `OREKI_ET_EXC`、无 VerifyError/FATAL。
+
+三闸门逐个核对：`hold=false` ✓、`f() = maxIP≥1 = true` ✓、`gainedEP ≥ EP×10` ✓。
+**三个闸门全过，`c.d(...)` 也按原版实参调用，但 `eternities` 仍为 0。**
+
+### 五、剩余根因（本轮结论）
+
+`c.c` 是 **suspend 函数**：内部对第 5 参做 `instance-of Eternity$eternity$1`，
+命中才走恢复路径。我们传的 `OrekiEcContinuation` 不是该类 ⇒ 走「首次调用」分支 ⇒
+一旦方法体遇到挂起点就返回 `COROUTINE_SUSPENDED`，而**没有任何东西会恢复它**。
+这与「无异常、无结算」的现象完全吻合。
+
+**下一轮唯一动作**（三选一，都需一次构建）：
+1. 用真实构造器造 `Eternity$eternity$1`（先读 `<init>` 签名与所需 continuation），
+   并在返回 `COROUTINE_SUSPENDED` 后主动 resume；
+2. 或走原版按钮 `c.b()`，先把 `player.options.confirmations.eternity` 临时置 false
+   （走 `e()` 分支，b() 内部会用真实 `CoroutineScope` 启动，能自行恢复），完成后再还原；
+3. 或在 mod 侧建立一个真实 `CoroutineScope`，用 `launch { c.c(...) }` 的方式驱动。
+
+**验收状态（如实）**：`eternities` 仍为 0、EP 仍为 0，**本轮首要目标未达成**。
