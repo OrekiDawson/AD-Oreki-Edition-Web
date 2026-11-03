@@ -6700,3 +6700,22 @@ R67 曾把「永恒入口」从 `c.d(...)` 换成 `c.b()V`，当时判断「入�
 | 结算路径 | `prestige/c.b()V` | 原版 `eternity()` |
 
 Web 不需要新增代码：它的坍缩策略本来就允许反物质继续成长，这是「殊途同归」而不是不一致。
+
+### 七、R68 第二轮：入口四选一的运行期排除（未达成验收，如实记录）
+
+| 入口 | 是否完成永恒 | 证据 |
+|---|---|---|
+| `prestige/c.d(...)`（R65/R66） | 否 | 自造 Continuation 与 `Eternity$eternity$1` 状态机不匹配 |
+| `prestige/c.b()V`（R67） | 否，**只弹窗** | 方法体：`if (f())` → 读 `Confirmations.h()` → 为真时 `new-instance Eternity$confirmEternity$1`；存档实测 `confirmations.eternity = true` |
+| `prestige/c.e()V` | 否，同样构造 Modal | invoke 列表为 `n(I,Object[])String` 格式化 + `c(g;String;String;Integer;Runnable;vi1;I)V`（Modal 构造） |
+| `prestige/c.c(ZZZ,Boolean,Continuation)` | 否，**无异常** | 这是 `Eternity$eternity$1` 的唯一引用者，即协程本体；传 `OrekiEcContinuation` 后 `instance-of` 为假、按首帧执行，但 `eternities` 仍为 0 且 logcat 无 `OREKI_ET_EXC` |
+
+**额外排除**：把 `auto.eternity.isActive` 置真（原版永恒自动器）也不触发 —— 该自动器在首次永恒前未解锁，属正常。
+
+**当前确定结论**：
+1. 闸门死锁（`p()`）已修，`OREKI_HOLD: hold=1 → hold=0` 证明窗口能正确放开；
+2. 反物质已能突破 1.797e308（实测 5e308 / 7e308）；
+3. 仍未完成永恒，**剩余卡点在资格判定 `f()` 或协程首帧**，两者都缺少可直接读取的运行期数值。
+
+**下一步（需一次诊断构建，不是盲改）**：在 `tryEternity` 里把三个闸门的实际结果打出来
+（`hold` / `f()` / `EP 比较` 各一位），即可确定是哪一个为假。届时按结果只改一处。
