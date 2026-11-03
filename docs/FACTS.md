@@ -6825,3 +6825,164 @@ R68 全部采样期间，游戏实际停在**标题/离线收益界面**（`开�
 3. 或在 mod 侧建立一个真实 `CoroutineScope`，用 `launch { c.c(...) }` 的方式驱动。
 
 **验收状态（如实）**：`eternities` 仍为 0、EP 仍为 0，**本轮首要目标未达成**。
+
+---
+
+## C.117　R70：首次永恒真正打通 —— 用原版协程启动器（2026年11月3日）
+
+### 一、R65~R69 五种入口全部失败的**共同**原因
+
+前几轮一直在换「调哪个方法」，但没换「怎么驱动它」。`prestige/c.c(...)` 是 **suspend 函数**，
+方法体开头就是：
+
+```
+instance-of v0, p5, Lkajfosz/antimatterdimensions/prestige/Eternity$eternity$1;
+if-eqz v0, :cond_0
+    ... 复用已有状态机（恢复路径）
+:cond_0
+    new-instance v0, Eternity$eternity$1 ; <init>(this, p5)   # 新建状态机
+```
+
+我们传进去的是 `OrekiEcContinuation`（不是 `Eternity$eternity$1`）⇒ 走「新建」分支 ⇒
+方法体一旦遇到挂起点就 `return COROUTINE_SUSPENDED`，而**调用方是普通同步代码，
+没有任何 scope 会来恢复它** ⇒ 没有异常、没有结算，只有「调用成功」的假象。
+这就是「入口换了四种、参数也对、日志全绿，`eternities` 永远 0」的物理原因。
+
+### 二、原版真正可用的启动路径（读码定案）
+
+`prestige/c.b()` 在「确认关闭」时的 `:cond_7` 分支：
+
+```
+new-instance v0, Lkajfosz/antimatterdimensions/prestige/Eternity$confirmEternity$4;
+const/4 v2, 0x1 ; const/4 v1, 0x0
+invoke-direct {v0, v2, v1}, Lkotlin/coroutines/jvm/internal/SuspendLambda;-><init>(ILvh0;)V
+invoke-static {v0, v3}, Lkajfosz/antimatterdimensions/g;->p(Lvi1;Z)V
+```
+
+- `Eternity$confirmEternity$4.invokeSuspend` 只做一件事：`c.d(..., mask 0xF)`；
+  它自己是**真正的 SuspendLambda**，由游戏 scope 驱动状态机 ⇒ 挂起点能被恢复。
+- `g.p(lambda, Z)` = `MainActivity.launchOnGameScope`：取 `MainActivity.Co` 协程作用域
+  并 `nq5.A(scope, ..., lambda, 3)`。第二参为 false 时**先查 `a.o(0)`**（暂停 / 反作弊冻结），
+  命中就 `return-void`，不留日志 —— 模拟器上存档时间戳落后于系统时间时正是这个分支。
+
+R70 采用：`new Eternity$confirmEternity$4(1, null)` + `g.p(lambda, true)`（无条件启动）。
+**不伪造任何协程对象**，不写 `eternities` / EP / 解锁位。
+
+### 三、一次被夹具当场推翻的误判（必须记录）
+
+本轮中途我曾把 EP 收益闸门 `if-ltz v0, :et_end` 判为「极性写反」，理由是
+「compareTo >= 0 表示收益够，却返回」。**这是错的**：
+
+| 助记符 | 真实语义 |
+|---|---|
+| `if-eqz` | v == 0 时跳 |
+| `if-nez` | v != 0 时跳 |
+| `if-ltz` | **v < 0 时跳** |
+| `if-gez` | v >= 0 时跳 |
+| `if-gtz` | v > 0 时跳 |
+| `if-lez` | v <= 0 时跳 |
+
+`if-ltz` 是「小于零才跳」⇒ 原写法 `compareTo < 0（收益不足）才返回` **本来就是对的**。
+`fixture_eternity_gate.py` 的判定表当场给出 3 条 FAIL，把它按了回去。
+这条已写进断言：**必须是 if-ltz，改成 if-gez 会在 EP=0 时永久拦住首次永恒**。
+
+同一轮里另外两处才是真的写错（新增代码自己写反）：
+`sEtPending` 分派应为 `if-eqz`、TTL 递减应为 `if-lez`，均已修正并有断言锁定。
+
+### 四、Android 新增：现实升级 10 保护（与 Web 等价）
+
+`OrekiEternity.holdForRu10()`：
+- 条件：`eternities == 0` && `log10(IP) < 400` && 未放弃过；
+- 计时：`SystemClock.elapsedRealtime()`（不受改系统时间影响），**最多 10 秒**；
+- 超时置 `sRu10GaveUp` 一次性闩锁 ⇒ 本局不再压，物理上不可能长期压死自动永恒；
+- 位置：在 `f()` 之后、10 倍收益之前，与 Web `tickEternity` 的顺序一致。
+
+### 五、防重入
+
+`sEtPending / sEtTtl / sEtBefore`：发起后置 pending，每帧比对 `log10(eternities)` 是否变化；
+变化即释放；未变化则递减 TTL（600 帧）兜底。**不会重复发起，也不会永久卡死**。
+
+### 六、双端对照
+
+| 项 | Android | Web |
+|---|---|---|
+| 启动方式 | `new Eternity$confirmEternity$4(1,null)` + `g.p(...,true)` | 原版 `eternity(false, true)` |
+| 资格 | `prestige/c.f()` | `Player.canEternity` |
+| RU10 保护 | `holdForRu10()`：10 秒 + 一次性闩锁 | `holdForRealityUpgrade10()`：10 秒 + `_ru10GaveUp` |
+| 收益闸门 | `gainedEP >= EP×10`（`if-ltz`） | `gainedEternityPoints().lt(EP×10)` → 返回 |
+| 回归测试 | `fixture_eternity_gate.py`（33 项） | `scripts/check_eternity_gate.mjs`（25 项） |
+
+### 七、R69 结论的更正
+
+R69 写「参数元组 `(false,true,false,null)` + mask 0xD 是原版自动器的真值」——**这条本身没错**
+（`EternityAutobuyerState:1010-1037` 逐行可查），但它**不是**首次永恒的可用入口：
+自动器自己是 suspend 调用链的一环，由外层协程驱动；我们不在那条链上。
+R70 因此改为「进同一条链」而不是「复刻它的参数」。
+
+### 八、R70 第一次装机实测：`IllegalAccessError`（包内可见的 lambda）
+
+第一版 APK（`db7d6a5e…`）装机后，`OREKI_ET_EXC` 每帧抛出：
+
+```
+Illegal class access: 'kajfosz.antimatterdimensions.oreki.OrekiEternity'
+  attempting to access 'kajfosz.antimatterdimensions.prestige.Eternity$confirmEternity$4'
+```
+
+读码确认：`Eternity$confirmEternity$4` 的声明是
+
+```
+.class final Lkajfosz/antimatterdimensions/prestige/Eternity$confirmEternity$4;
+```
+
+**没有任何访问标志 ⇒ 包内可见**。`OrekiEternity` 在 `...oreki` 包里，跨包 new 它必然被 DEX 拒绝。
+
+**修法**：新增 `scripts/payload/smali/kajfosz/antimatterdimensions/prestige/OrekiEternityLaunch.smali`
+（`public final`，与 lambda 同包），只放三行：
+
+```
+new-instance Eternity$confirmEternity$4 ; (1, null)
+invoke-static g;->p(Lvi1;Z)V            ; true
+```
+
+`OrekiEternity.tryEternity()` 改为 `invoke-static OrekiEternityLaunch;->run()V`。
+
+**这条也说明「日志有异常」不等于「有日志」**：R65~R69 的 `OREKI_ET_EXC` 一直是空的，
+因为那时**根本没走到启动代码**（被 suspend 与旧入口挡住）；本轮第一次真正走到，
+才把这个访问权限问题暴露出来。
+
+**守卫已加**：`fixture_eternity_gate` 现在断言「转发类必须 public」「必须在 oreki 包里
+只能出现 `OrekiEternityLaunch;->run()`、不得出现 `Eternity$confirmEternity$4`」
+「转发类不得读写 `Player.x()/y()`」。
+
+### 九、R70 运行期验收：首次永恒**真实达成**（2026-11-03 15:04）
+
+最终 APK：`c5a17de30fbf0b51aa2d23ac342b4be516c2b55d101e829875cb5f25e80e9e5b`（69,806,693 B）。
+
+测试方式：AVD `oreki_test`（1440×3200）+ 受控存档 `reports/r70/et_fixture.json`
+（只把当前/本永恒期反物质设为 1.5e309、无限点数设为 2.5e401，**`eternities` 与 EP 都保持 0**），
+装机 → 推存档 → 点「开始游戏」→ 进入主循环后观察。
+
+| 观察点 | 结果 |
+|---|---|
+| `OREKI_ET: launch via OrekiEternityLaunch` | 出现（说明真正走到启动代码） |
+| `eternities` | **0 → 1** |
+| `eternityPoints` | **0 → 3** |
+| 反物质 / 无限点数 | 被原版重置（IP=0，AM 回落到 1e183 重新增长） |
+| `thisEternity.maxAM / maxIP` | 已重置（2.499e221 / 0） |
+| `options.confirmations.eternity` | **仍为 true**（玩家原始设置未被改动） |
+| `OREKI_ET_EXC` / VerifyError / FATAL | 0 条 |
+| 界面证据 | 打破无限页显示「你拥有 **1** 永恒次数」；时间维度页已解锁并显示「你拥有 **3** 永恒点数」 |
+| 重置后自动化 | 继续运行：IP 回到 9.04e6、无限升级已回购、AM 持续增长 |
+
+证据文件：`reports/r70/v6.png`（1 永恒次数）、`reports/r70/v2.png`（3 永恒点数 + 时间维度页）、
+`reports/r70/live2.json`（存档快照）。
+
+**一次性通过的关键**：把「构造 lambda + 交给游戏作用域」放进同包的
+`prestige/OrekiEternityLaunch`。第一版 APK 直接在 `oreki` 包里 new 那个包内可见的 lambda，
+每帧 `IllegalAccessError`；改成转发类后一次成功。
+
+### 十、R70 未完成
+
+- 全新存档（非受控存档）的首次永恒墙钟未计时；本轮只验证了「机制通了」。
+- Web 六视口（320/360/390/430/768/1280）移动端布局未在本轮实测。
+- Android 仍缺 `ecEntryPending`（EC 入口等待）等价保护，EC 阶段前可能过早永恒。

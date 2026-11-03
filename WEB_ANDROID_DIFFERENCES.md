@@ -457,3 +457,37 @@ Android 尚有 12 个叶子未接线，后期阶段会被 fail-closed 判为不�
 | 12 个未接线叶子 | 未接（`celestial.*Unlocked`、`challenge.*Running`、`progress.{eternity,reality,dilation}Unlocked`、`timeStudy.studiesBought`、`reality.{perks,upgrades}Bought`、`game.endState`、`automator.unlocked`） |
 | 挑战「启动即完成」 | 本轮无新运行期取证（沿用 R62/R64） |
 | Reality / Glyph / Celestial / Laitela / Pelle | 未推进 |
+
+---
+
+## 附：R70 状态（2026年11月3日）
+
+### 18.1 首次永恒：Android 改为「进原版协程链」
+
+| 项 | R69 及以前 | R70 |
+|---|---|---|
+| 启动方式 | `prestige/c.d(...)` + 自造 `OrekiEcContinuation` | `new Eternity$confirmEternity$4(1,null)` + `g.p(lambda, true)` |
+| 为什么失败 | 自造 Continuation 不是 `Eternity$eternity$1`，挂起点返回 `COROUTINE_SUSPENDED` 且无人恢复 | 由 `MainActivity.Co` 作用域驱动，挂起点自动恢复 |
+| 防重入 | 无 | `sEtPending` + `log10(eternities)` 变化或 600 帧超时释放 |
+| 现实升级 10 保护 | 无 | `holdForRu10()`：10 秒上限 + 一次性闩锁 |
+| Web | 已有 `eternity(false, true)` | 逻辑未改，新增 25 项回归测试 |
+
+### 18.2 关于 `if-ltz` 的一次误判（双端共用的教训）
+
+`if-ltz` 是「小于零时跳转」，不是「大于等于零」。R70 中途据此误改过一次 EP 收益闸门，
+被 Android 夹具与 Web 回归同时拦下。两端断言现已锁死该行必须为 `if-ltz`。
+
+### 18.3 两端的顺序差异（有意保留）
+
+| 顺序 | Android | Web |
+|---|---|---|
+| 1 | `holdCrunch()`（反物质成长窗口） | `active`（总开关 / 挑战 / Pelle） |
+| 2 | `prestige/c.f()`（永恒资格） | IU15 冲刺保护 |
+| 3 | `holdForRu10()` | `Player.canEternity` |
+| 4 | 收益 ≥ EP×10 | `holdForRealityUpgrade10()` |
+| 5 | 启动原版协程 | `ecEntryPending()` |
+| 6 | — | 收益 ≥ EP×10 → `eternity(false, true)` |
+
+Android 没有 `ecEntryPending` / IU15 冲刺这两项：前者是 EC 入口等待（Android 由
+`OrekiInstantChallenge` + `OrekiChallengeAuto` 另行判定），后者是网页版独有的
+`OrekiIu15Sprint` 模块。**玩家可见结果一致**：资格不足、收益不足、需要保护时都不按。

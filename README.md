@@ -333,6 +333,19 @@ node _tools/verify-viewport-matrix.mjs AD-Oreki-Edition 8300
 
 ---
 
+## 10.5 自测脚本（改对应模块后必须跑）
+
+| 脚本 | 覆盖 | 用法 |
+| --- | --- | --- |
+| `scripts/check_stage_detect.mjs` | 阶段识别的互斥 / 可达 / 目标可求值 | `node scripts/check_stage_detect.mjs` |
+| `scripts/check_eternity_gate.mjs` | 自动永恒的七条闸门 + 现实升级 10 保护（含「EP=0 首次永恒必须放行」） | `node scripts/check_eternity_gate.mjs` |
+| `scripts/validate_tutorial.mjs` | 内置教程与 JSON 单源一致 | `node scripts/validate_tutorial.mjs` |
+
+自动永恒这一条尤其重要：闸门写反的表现是「看着在跑、永久 0 次、没有任何报错」，
+只能靠这两个脚本当场抓出来。
+
+---
+
 ## 11. 反馈
 
 个人项目，没有 issue 模板。报告问题时请附上：**提交哈希、倍率设置、复现步骤、浏览器与版本、
