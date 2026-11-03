@@ -6986,3 +6986,84 @@ invoke-static g;->p(Lvi1;Z)V            ; true
 - 全新存档（非受控存档）的首次永恒墙钟未计时；本轮只验证了「机制通了」。
 - Web 六视口（320/360/390/430/768/1280）移动端布局未在本轮实测。
 - Android 仍缺 `ecEntryPending`（EC 入口等待）等价保护，EC 阶段前可能过早永恒。
+
+---
+
+## C.118　R71：EC 入口保护 + 大坍缩「第三种模式点不动」的根因（2026年11月3日）
+
+### 一、大坍缩三种模式：根因是**每帧执行的副作用**，不是按钮没接事件
+
+`src/core/autobuyers/big-crunch-autobuyer.js` 的 `isUnlocked` 是一个 **每帧都会被读** 的 getter
+（`AutobuyerBox.update()`、自动器 tick、`hasMaxedInterval` 判定都会调）。R26-AU4b 为了防「AMOUNT + amount=1
+把反物质永久卡在 1.8e308」，在里面写了：
+
+```js
+if (unlocked && this.data.mode === AUTO_CRUNCH_MODE.AMOUNT && Decimal.lt(this.data.amount, 10)) {
+  this.data.mode = AUTO_CRUNCH_MODE.X_HIGHEST;
+  this.data.xHighest = new Decimal(10);
+}
+```
+
+后果：玩家只要选中 AMOUNT 且 `amount < 10`，**下一次 UI 读取就把它改回 X_HIGHEST**。
+玩家视角就是「点下去立刻弹回另一个选项 = 这个模式点不动」。这不是点击事件问题，
+也不是索引/映射问题，而是**读 getter 时顺手改了存档状态**。
+
+修法：把归一化改成**一次性迁移**：
+
+- 加实例标志 `_au4bNormalized`（不写存档，不改存档结构）；
+- **再加 `this.data.lastTick === 0`** —— 只有「从未 tick 过」才迁移。这一条保证
+  **重启读档后也不会重跑**：跑过一次 `lastTick` 就永久 > 0，之后玩家的任何选择都不再被覆盖。
+
+为什么必须两个条件：只有实例标志 → 重启后新实例会再迁一次，玩家的 AMOUNT 又被改掉；
+只有 `lastTick === 0` → 同一会话内如果自动器一直没跑起来，每帧都会重复尝试（虽然幂等，但语义更脏）。
+
+回归测试 `scripts/check_crunch_modes.mjs`（**14 项**）**直接执行真实 getter 源码**
+（从文件切出方法体，用 `Function.call(instance)` 运行，不是重写一份逻辑），覆盖：
+首次接管仍归一化一次、归一化后玩家改回不再被弹、`lastTick>0` 时三种模式都能留住、
+重启读档后三种模式都保住、连续切换 5 次不残留、归一化不碰 time/interval/isActive/increaseWithMult。
+
+### 二、Android 侧同一缺陷**不存在**（如实记录）
+
+Android 走的是原版 Kotlin 的 `CrunchAutobuyerState`，没有我们这段 AU4b 归一化；
+本作的 Android 补丁只做「首次无限后一次性把 isActive 置 true」（AU4c），不碰 mode。
+因此「选了被弹回」的可复现路径只存在于网页版。Android 端本轮**没有盲改 UI**：
+Compose 的选项渲染没有证据支持有缺陷，盲改风险高于收益。
+
+### 三、EC 入口保护（Android 新增，与 Web `ecEntryPending` 等价）
+
+Web 的 `tickEternity()` 早已有 `ecEntryPending()`；Android 没有对应闸门，
+于是「EC 已解锁、正攒 EP/TT 准备进去」时，自动永恒会把刚攒好的资源清空 ⇒ 永远差一点。
+
+新增 `OrekiEternity.ecHoldForStart()`（只读判定）：
+
+```
+current == 0            # 当前不在任何挑战
+unlocked > 0            # 至少解锁过一关 EC
+r51.a(unlocked) != null # 取得到挑战对象
+!y()                    # 该 EC 还没满级（y() = 完成次数 == 动态上限）
+```
+
+四条同时成立 ⇒ 本帧不按永恒。**防死锁**：`sEcHoldTtl` 每次命中加一，超过 **300 帧（约 5 秒）**
+无条件放行；条件不成立立刻清零，不会累积成永久锁。
+
+### 四、R71 运行期观察（R70 存档续跑，eternities=1 / EP=1）
+
+| 观测 | 值 |
+|---|---|
+| `timestudy.amBought / ipBought / epBought` | 0 / 1 / 1（TT 通过 IP 与 EP 两条原版渠道买到了） |
+| `timestudy.maxTheorem` | 2 |
+| EP | 3 → 1（花在 TT 上，属正常） |
+| `infinities` | 0 → 1.71e6 → 持续增长（大坍缩自动器在跑） |
+| `auto.bigCrunch` | `isActive=true, mode=1(TIME), lastTick>0` |
+| `challenge.eternity` | `completions` 全 0、`current=0`（尚未解锁 EC） |
+
+即：**永恒后的 TT/TD/学说购买链是通的**，卡点在「EP 太少、EC 还没解锁」，
+需要更多轮永恒把 EP 顶上去 —— 这是原版节奏，不是断点。
+
+### 五、未完成
+
+- EC 解锁与首次 EC 完成**未在本轮跑出来**（EP 只有 1，离 EC1 的解锁成本还很远）。
+- 时间维度购买**未确认**（存档无 `timeDimensions` 键，需按 `dimensions.time` 口径重查）。
+- Web 六视口未实测；本轮无桌面 Chrome。
+- Android 大坍缩第三模式**未在界面上实测**（模拟器连续弹「反作弊 / 语言 / 成就辅助」对话框，
+  自动化点击被挡住）。已改用「同源代码 + 真实 getter 执行」的回归测试代替，并明确标注不是界面实测。

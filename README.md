@@ -339,6 +339,7 @@ node _tools/verify-viewport-matrix.mjs AD-Oreki-Edition 8300
 | --- | --- | --- |
 | `scripts/check_stage_detect.mjs` | 阶段识别的互斥 / 可达 / 目标可求值 | `node scripts/check_stage_detect.mjs` |
 | `scripts/check_eternity_gate.mjs` | 自动永恒的七条闸门 + 现实升级 10 保护（含「EP=0 首次永恒必须放行」） | `node scripts/check_eternity_gate.mjs` |
+| `scripts/check_crunch_modes.mjs` | 大坍缩三种触发模式：可选、可留住、重载后保持、切换不残留（**直接执行真实 getter 源码**） | `node scripts/check_crunch_modes.mjs` |
 | `scripts/validate_tutorial.mjs` | 内置教程与 JSON 单源一致 | `node scripts/validate_tutorial.mjs` |
 
 自动永恒这一条尤其重要：闸门写反的表现是「看着在跑、永久 0 次、没有任何报错」，
