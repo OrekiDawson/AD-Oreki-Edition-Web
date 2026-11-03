@@ -481,6 +481,70 @@ python scripts/build_fingerprint.py --check       # 判定是否 stale（Gradle 
 ./gradlew installToRelease                         # 强制真实构建（发布链路）
 ```
 
+**四、优化必须以官方文档为依据**
+
+参考（按优先级）：
+
+1. Android Developers 中文 · 优化构建速度 — https://developer.android.google.cn/build/optimize-your-build?hl=zh-cn
+2. Android Developers 中文 · Build Analyzer — https://developer.android.google.cn/build/build-analyzer?hl=zh-cn
+3. Gradle · Performance — https://docs.gradle.org/current/userguide/performance.html
+4. Gradle · Best practices for performance — https://docs.gradle.org/current/userguide/best_practices_performance.html
+
+对应到本项目的落实点：
+
+| 官方原则 | 本项目做法 |
+|---|---|
+| 先用 Build Analyzer / 性能分析定位真实耗时，不凭感觉改配置 | `./gradlew assembleRelease --profile` 产出 `build/reports/profile/`；耗时分布见 §6.5.1 一 |
+| 正确声明输入输出与任务依赖 | 每条 `Exec` 显式 `dependsOn`；无法用 Gradle 原生 input 的用 `build_fingerprint.py` 兜底 |
+| 消除不必要的始终运行任务 | 逐个复核 `outputs.upToDateWhen { false }`：`assembleRelease` 已改为 `onlyIf`；`verifyRelease`/`verifyPatchContract` 保留（秒级、且是交付闸门） |
+| 逐步启用增量 / Build Cache / Configuration Cache | 增量已启用并验证；Build Cache 与 Configuration Cache **尚未启用**，理由与前置条件见 Android `docs/GRADLE_BUILD.md §9.7`，不得写成已完成 |
+| 耗时逻辑放执行阶段，不放配置阶段 | `build.gradle` 配置阶段只做路径与变量计算；所有 Python 调用都在 `Exec`/`doLast` 里 |
+| 大型输入树分阶段、文件级检测 | 分级指纹：payload/脚本走内容哈希，`work/base_decoded` 走 `(path,size,mtime)` 滚动哈希（4.2 s / 27744 文件） |
+| 确定性无副作用任务才可缓存 | 当前只有 `assembleRelease` 具备确定性，但它有外部写（apktool 重建 `work/mod`），**故不启用缓存** |
+| 签名 / 发布 / 云盘复制必须明确执行 | `installToRelease` / `publishRelease` 由 `taskGraph.whenReady` 强制全量，永不跳过 |
+| 确认无共享写入才并行 | `work/mod` 是共享工作树，**禁止并发构建**；`org.gradle.parallel=false` 保持不变 |
+| 开发与发布用不同任务组合 | 开发用 `assembleRelease`（可跳过）；发布用 `installToRelease` / `publishRelease`（强制全量） |
+| 不盲目升级 Gradle/AGP/JDK | 仍用仓库内 `tools/jdk/jdk-17.0.20.1+1`，本项无收益不动 |
+
+**五、验收口径（用户 2026-11-02 指定，缺一不可）**
+
+- **A** 输入未变化，连续构建时可跳过的任务显示 `UP-TO-DATE` 或 `FROM-CACHE`；
+- **B** 修改一个真实 smali 输入后，相关任务重新执行，下游任务也重新执行；
+- **C** 修改教程或构建脚本后，对应生成与检查任务正确失效，不得继续用旧结果；
+- **D** 正常执行与缓存恢复的有效产物一致（SHA-256 核对）；**未启用 Build Cache 时，
+  以「指纹恢复后 digest 一致 + 产物 SHA-256 不变」作为等价证明，并注明未使用 FROM-CACHE**；
+- **E** 最终 APK 仍通过原有完整性、安装与运行验证。
+
+### 6.5.2 语义夹具优先于「构建 + logcat」（2026-11-03 用户确立，长期有效）
+
+> 用户原话：「不要再只检查 Smali 中是否存在某条指令。必须建立真正的语义夹具。」
+
+**背景（本轮实测代价）**：R65 与 R66 各烧掉 6~7 次整包构建（每次 8~10 分钟），
+原因全是同一个模式 —— **极性写反 → 编译通过 → 装机后日志不对 → 猜一处改一处**。
+R67 定位到 R66 的 `stage=-1` 是**六处叠加**错误（fill 守卫 / leaf 边界 / 取反 / 名字越界 /
+未接线返回值 / 缺算子），任何单点修复都看不到效果。
+
+**规则**
+
+1. **涉及分支极性的改动，必须先有夹具，再改代码**。适用范围：
+   `fill/leaf/evalStage/nameOf/goalOf/tryEternity/allow/noteActed/noteNoop` 这类
+   「比较 + 条件跳转」密集的方法。
+2. **夹具必须跑真实数据**，不得只断言「某条指令存在」。合格形态：
+   - 从生成产物（smali 数据表）解析出真实结构，用与目标平台**逐指令等价**的模型求值；
+   - 与权威源（策略 JSON）逐项对照，随机环境批量比对；
+   - 覆盖边界：等于 / 差一个最小步长 / 越界 / 负数 / NaN / 取反。
+3. **夹具必须进构建断言**（`build_mod.py` 4b），失败即中止，不等到 apktool。
+4. **夹具失败时改代码，不改期望**。确需改期望，必须在 commit message 写明「为什么旧期望是错的」。
+5. 现有夹具（改动这些文件后必须全绿）：
+   | 夹具 | 覆盖 | 项数 |
+   |---|---|---|
+   | `scripts/fixture_scheduler_semantics.py` | 调度间隔 / no-op / 严格档 / 预约 | 24 |
+   | `scripts/fixture_strategy_semantics.py` | 策略数据表 / 六算子 / fail-closed / 全阶段正反例 / drives | 70 |
+   | `scripts/fixture_eternity_gate.py` | 首次永恒三闸门（从 smali 提取助记符 + 用户判定表） | 11 |
+6. **仍未验证的事不能写成已完成**：夹具证明的是「语义正确」，不是「运行期达到目标」。
+   `eternities` 是否真的增长、`isGameEnd` 是否真的为真，必须另有运行期证据。
+
+
 ## 6.6. Android 交付顺序：APK 优先于源码 push（2026-10-30 用户确立，长期有效，**本节是发布顺序的唯一源**）
 
 > 用户原话：「安卓交付 apk 比 push 源码优先。」

@@ -160,6 +160,7 @@
 | 6.4. | 充分利用 REA 反编译取证 | AGENTS.md §6.4 |
 | 6.5. | Android 构建批次化 | AGENTS.md §6.5 |
 | 6.5.1. | Gradle 增量构建与构建缓存（分级指纹 / onlyIf 跳过 / 发布强制全量） | AGENTS.md §6.5.1 |
+| 6.5.2. | 语义夹具优先于「构建 + logcat」（极性改动先有夹具 / 夹具进构建断言） | AGENTS.md §6.5.2 |
 | 13. | 迁移与状态核验：分级校验预算 | AGENTS.md §13 |
 | 20. | 长期开发规则（十三条） | AGENTS.md §20 |
 | 23. | Android 观测工具 frame-observer 优先 | AGENTS.md §23 |

@@ -371,3 +371,89 @@ Teresa 不浇；实测 `upgradeBits` 在现实后**仍为 0xFFFFF**（RU 是一�
 | 现象 | 观测 | 已排除 | 结论 |
 |---|---|---|---|
 | 启动瞬间连买 8 条 Break 升级，间隔 12~39 ms | logcat `act breakShop` 的 `taskGap=12/13/15/16/37/39` | 已排除：`idx` 错误（dbg 显示 11）、`iv` 读 0（dbg 显示 1）、`noteActed` 空转（act 行本身存在）、间隔闸门极性（已改 `if-lt` 并重建，行为未变） | **未定位**。按 R65 收敛令，不再为单条日志新增构建；下一轮改用「静态断言 + 单方法级夹具」定位，不再整包构建 |
+
+---
+
+## 附：R66 状态（2026年11月3日）
+
+### 16.1 R65 遗留「间隔不生效」是否已解决
+
+**已解决（运行期正例）**。同一受控夹具（`breakInfinityUpgradeBits` 511→256）下：
+
+| 版本 | 8 条 Break 升级耗时 | `taskGap` |
+|---|---|---|
+| R65 | **82 ms** | 4~27 ms |
+| R66 | **7.07 s** | 999~1019 ms |
+
+修复方式：**不再继续调 `allow()` 的分支极性**，改为在 `OrekiBreakShop` 内部用
+`sLastBuyAt` + `Scheduler.intervalMs()` 自守闸门（三次比较，语义无歧义），
+调度器那道闸门保留作双保险。同时新增 `sReserve` 原子预约，防同一调用栈内的重入。
+
+### 16.2 策略源共享
+
+| 项 | Android | Web |
+|---|---|---|
+| 唯一策略源 | `oreki-smart-strategy.json`（构建期编译成 `OrekiStrategyData.smali`） | 同一份 JSON（`oreki-smart-strategy.js` 解释） |
+| 阶段数 | 19（全部编译进数据表） | 19 |
+| 取值叶子 | 19 个，已接线 7 个（break / dimensionBoosts / infinities / realities / infinityUnlocked / doomed），其余标 `unknownLeaf` 计数 | 全部 |
+| 输出 | 日志 `OREKI_GOAL stage=<i> <id> goal=<goal> unknownLeaf=<n>`；`sStage` 供后续 UI 读取 | 面板 + `evaluate()` |
+| 是否驱动动作 | **否**（只判断，动作仍走各阶段模块的原版入口） | 由 `OrekiSmartExecutor` 执行 |
+
+### 16.3 尚未对齐/未完成
+
+| 项 | 状态 |
+|---|---|
+| Android 策略面板 UI | 未做（目前只有日志与 `sStage` 静态字段） |
+| 12 个未接线叶子 | 未接（`celestial.*Unlocked`、`challenge.*Running`、`timeStudy.studiesBought`、`game.endState` 等），都需逐个在 REA 里核对 getter |
+| 首次 Eternity | 仍未触发（`eternities` 实测为 0）；R65 已修 EP 门槛极性，当前卡点待查 |
+| 挑战「启动即完成」 | 本轮未做新的运行期取证 |
+| Reality / Glyph / Celestial / Laitela / Pelle | 本轮未推进（沿用 R62 状态） |
+| 全新存档 3 小时通关 | 未验证（本轮数据全部来自续跑档 + 受控夹具） |
+
+---
+
+## 附：R67 状态（2026年11月3日）
+
+### 17.1 R66「策略层恒定 stage=-1」已定位并修复
+
+根因是 **6 处叠加**，首因是 `StrategyData.fill()` 的守卫写反：
+
+| # | 位置 | 错误 | 现在的语义 |
+|---|---|---|---|
+| 1 | `fill()` 守卫 | `if-eqz v0, :ret`（null 就返回） | 独立的 `sFilled` 标记 + `if-nez`；全部数组填完才置位 |
+| 2 | `leaf()` 边界 | `if-lt p0, len, :l_zero`（合法下标返回 0） | `if-ltz p0 → NaN`（负数）、`if-ge p0, len → NaN`（越界） |
+| 3 | `evalStage()` 取反 | `if-ne v13, v3`（neg≠0 跳过取反） | `if-eqz v13, :es_check`（neg==0 才跳过） |
+| 4 | `nameOf()` | 多余 `if-ltz p0, :n_out` | 只检查上界 |
+| 5 | 未接线叶子 | 返回 `0.0`（= 假，`not()` 会翻成真） | 返回 **NaN** → 合取项 fail-closed + `degraded=1` |
+| 6 | 算子表 | 缺 eq / gt | 六算子齐全，未知算子构建期 `SystemExit` |
+
+日志格式：`stage=<i> <id> goal=<goal> unknownLeaf=<n> degraded=<0|1>`。
+
+### 17.2 首次永恒：`holdCrunch()` 极性反了
+
+`tryEternity()` 里 `if-eqz v0, :et_end` = **false 才结束** ⇒ 需要保护时反而按永恒、窗口关闭后不按。
+改为 `if-nez`。判定链现为：`holdCrunch（true 跳过）→ canEternity（false 跳过）→ gainedEP ≥ EP×10（不足跳过）`。
+
+### 17.3 策略驱动（Android 新增，Web 已有等价能力）
+
+| 项 | Android（R67 新增） | Web（既有） |
+|---|---|---|
+| 依据 | 当前阶段的 `strategy` 名（同一份 JSON） | `decision.strategy.priority` |
+| 门控对象 | `reality` / `glyph` / `teresa` 三个后期模块 | 全体动作按 priority 排序 |
+| 规则 | **黑名单**：仅 `growth` / `fastUnlock` 时禁用 | 优先级自然靠后 |
+| 失败策略 | `sStage < 0` → 全部放行（fail-open） | `decision.ok !== true` → 全帧不动（fail-closed） |
+| 面板/日志 | `OREKI_GOAL ... degraded=` | `degraded` / 新增 `degradedCount` / `degradedStops` |
+
+**为什么 Android 用黑名单而 Web 用排序**：Web 的叶子全部可用，priority 能精确表达；
+Android 尚有 12 个叶子未接线，后期阶段会被 fail-closed 判为不成立、停在较早阶段，
+白名单会把后期模块永久禁掉。黑名单只覆盖「还没第一次无限」两个绝对不可能的阶段。
+
+### 17.4 本轮未完成（双端一致）
+
+| 项 | 状态 |
+|---|---|
+| 全新存档 3 小时通关 | **未验证**。本轮运行期证据来自续跑档 + 受控夹具 |
+| 首次永恒运行期确认 | 待本次构建装机后观察 `eternities` 是否从 0 增长 |
+| 12 个未接线叶子 | 未接（`celestial.*Unlocked`、`challenge.*Running`、`progress.{eternity,reality,dilation}Unlocked`、`timeStudy.studiesBought`、`reality.{perks,upgrades}Bought`、`game.endState`、`automator.unlocked`） |
+| 挑战「启动即完成」 | 本轮无新运行期取证（沿用 R62/R64） |
+| Reality / Glyph / Celestial / Laitela / Pelle | 未推进 |
