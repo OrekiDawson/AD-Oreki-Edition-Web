@@ -1,0 +1,15 @@
+启动 headless Edge（profile C:\Users\Oreki\AppData\Local\Temp\r51-shot-8bjXXA）
+采集基准存档…
+基准存档 8675 字符，无限已解锁=true
+
+=== 320x640 ===
+  状态 无限=true 永恒=47598（等到永恒=true）
+  溢出 0px ｜ 裁切 0 ｜ 小目标 3
+  抽屉 展开=true 宽=220 页签=9 滚=640/640
+  页签 9 个，异常 0
+    永恒：越界1
+    现实：越界1
+  自动购买器：自动购买器开关=可点，自动购买器复选框=可点，自动购买器间隔输入=可点
+  大坍缩：134x84 命中 97% 遮挡 DIV.o-notification.o-notification--overflow×1
+
+原始数据：reports\_r51\raw.json

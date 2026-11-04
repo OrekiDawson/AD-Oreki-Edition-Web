@@ -1,0 +1,27 @@
+启动 headless Edge（profile C:\Users\Oreki\AppData\Local\Temp\r51-shot-WaI3HI）
+采集基准存档…
+基准存档 8574 字符，无限已解锁=true
+
+=== 320x640 ===
+  状态 无限=true 永恒=6480（等到永恒=true）
+  溢出 0px ｜ 裁切 0 ｜ 小目标 3
+  抽屉 展开=true 宽=220 页签=9 滚=640/640
+  页签 9 个，异常 0
+    永恒：越界1
+    现实：越界1
+  自动购买器：自动购买器开关=可点，自动购买器复选框=可点，自动购买器间隔输入=可点
+  大坍缩：134x84 命中 44% 遮挡 DIV.o-notification.o-notification--error×6,DIV.l-notification-container×11,DIV.o-notification.o-notification--overflow×1
+
+=== 360x740 ===
+  状态 无限=true 永恒=6480（等到永恒=true）
+  溢出 0px ｜ 裁切 0 ｜ 小目标 0
+  抽屉 展开=true 宽=220 页签=9 滚=740/740
+  页签 9 个，异常 0
+    成就：越界8
+  自动购买器：自动购买器开关=可点，自动购买器复选框=可点，自动购买器间隔输入=可点
+  大坍缩：194x111 命中 100% 全可点
+
+=== 393x852 ===
+  状态 无限=true 永恒=5832（等到永恒=true）
+  溢出 0px ｜ 裁切 0 ｜ 小目标 0
+  抽屉 展开=false 宽=220 页签=9 滚=852/852

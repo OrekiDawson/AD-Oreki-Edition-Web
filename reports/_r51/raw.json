@@ -1,0 +1,4694 @@
+{
+ "320x640": {
+  "viewport": "320x640",
+  "reachedEternity": true,
+  "first": {
+   "viewport": {
+    "w": 320,
+    "h": 640,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 320,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 320,
+    "docClientW": 320,
+    "deltaDoc": 0,
+    "bodyScrollW": 320,
+    "uiScrollW": 377,
+    "pageScrollW": 377,
+    "elements": []
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 283,
+      "y": 600,
+      "w": 28,
+      "h": 28
+     },
+     "screenPct": 0.4,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "c-oreki-nav__toggle",
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "screenPct": 0.9,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 218,
+      "y": 5,
+      "w": 96,
+      "h": 35
+     },
+     "screenPct": 1.6,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "blocker": null
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 283,
+      "y": 600,
+      "w": 28,
+      "h": 28
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 0,
+     "y": 519,
+     "w": 320,
+     "h": 2446
+    },
+    "scrollW": 320,
+    "clientW": 320,
+    "textLen": 2813
+   },
+   "state": {
+    "antimatter": "8.7999889999e+24",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175390472.04199964",
+    "infinitiesStr": "516643",
+    "eternitiesStr": "12424",
+    "lsLen": 3,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "dimensionSave"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": []
+   }
+  },
+  "shot": "reports\\_r51\\shots\\320x640.png",
+  "drawerShot": "reports\\_r51\\shots\\320x640_drawer.png",
+  "drawer": {
+   "open": true,
+   "x": 0,
+   "w": 220,
+   "scrollH": 640,
+   "clientH": 640,
+   "tabCount": 9
+  },
+  "tabs": [
+   {
+    "i": 0,
+    "name": "维度",
+    "available": true,
+    "x": 109.5,
+    "y": 23,
+    "clickAt": {
+     "x": 109,
+     "y": 23
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1427,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "docOverflow": 0,
+     "len": 917,
+     "head": "买到 10 个 维度献祭已自动化（成就 118） 购买最大数量（M） 购买10个维度的加成倍数：×6.16 | 献祭加成：×3.01e7487 计数频率价格: 6e849,860 购买最大数量 计数频率：1.99e91828 / 秒 | ×"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "textLen": 2080,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 1,
+    "name": "自动化",
+    "available": true,
+    "x": 109.5,
+    "y": 69,
+    "clickAt": {
+     "x": 109,
+     "y": 125
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 3416,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "docOverflow": 0,
+     "len": 1050,
+     "head": "暂停自动购买器 禁用所有自动购买器 将反物质维度自动购买器设为购买单个 按住 ? 键以打开快捷键列表。 自动购买器间隔与时间相关设置始终采用现实时间计算，因此 不受任何可能改变游戏运行速度的因素影响。 未显示数量限制的自动购买器默认拥有无限"
+    },
+    "detail": {
+     "name": "自动化",
+     "overflow": 0,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "textLen": 2182,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 2,
+    "name": "挑战",
+    "available": true,
+    "x": 109.5,
+    "y": 143,
+    "clickAt": {
+     "x": 109,
+     "y": 171
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 2446,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "docOverflow": 0,
+     "len": 1434,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "textLen": 2814,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 3,
+    "name": "无限",
+    "available": true,
+    "x": 109.5,
+    "y": 217,
+    "clickAt": {
+     "x": 109,
+     "y": 217
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 2069,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "docOverflow": 0,
+     "len": 832,
+     "head": "在升级列表的每一列中，升级必须按从上到下的顺序依次购买。 反物质维度获得基于游玩时间的倍数加成 当前: ×2.98 第一和第八反物质维度获得基于无限次数的倍数加成 当前: ×2.5e5 时间研究 31 之后：×4.05e21 第三和第六反物"
+    },
+    "detail": {
+     "name": "无限",
+     "overflow": 0,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "textLen": 1274,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 4,
+    "name": "永恒",
+    "available": true,
+    "x": 109.5,
+    "y": 263,
+    "clickAt": {
+     "x": 109,
+     "y": 263
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 4552,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "docOverflow": 0,
+     "len": 3319,
+     "head": "导出时间研究树 下次永恒后重置时间研究树 导入时间研究树 11 第一时间维度获得基于计数频率的加成 当前: ×8.79e28 价格： 1 时间之理 21 复制器加成无限维度的倍数计算公式变得更好 (log2(x)^2)+x^0.032 当前"
+    },
+    "detail": {
+     "name": "永恒",
+     "overflow": 0,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "textLen": 6282,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [
+      {
+       "p": "button.c-reality-button.infotooltip.c-reality-button--unlocked > div.l-reality-button__contents > div.infotooltiptext",
+       "l": 300,
+       "r": 384,
+       "kind": "clipped"
+      }
+     ],
+     "overCount": 1,
+     "scrollableCount": 69
+    },
+    "ok": true
+   },
+   {
+    "i": 5,
+    "name": "现实",
+    "available": true,
+    "x": 109.5,
+    "y": 309,
+    "clickAt": {
+     "x": 109,
+     "y": 309
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1535,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "docOverflow": 0,
+     "len": 400,
+     "head": "你可能需要在现实前完成 5 件事情。 （点击以展开） 符文等级因子 ▼ 0.0160×永恒点数^0.500 16.282 0.0250×复制器^0.400 × 0.0536 0.0250×膨胀时间^1.300 × 0.3412 最终等级 1"
+    },
+    "detail": {
+     "name": "现实",
+     "overflow": 0,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "textLen": 958,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [
+      {
+       "p": "button.c-reality-button.infotooltip.c-reality-button--unlocked > div.l-reality-button__contents > div.infotooltiptext",
+       "l": 300,
+       "r": 384,
+       "kind": "clipped"
+      }
+     ],
+     "overCount": 1,
+     "scrollableCount": 14
+    },
+    "ok": true
+   },
+   {
+    "i": 6,
+    "name": "成就",
+    "available": true,
+    "x": 109.5,
+    "y": 355,
+    "clickAt": {
+     "x": 109,
+     "y": 355
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 8726,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "docOverflow": 0,
+     "len": 569,
+     "head": "隐藏成就中全部解锁的行： 关闭 当前成就提供以下倍数加成： 反物质和无限维度：×9.897 带有 图标的成就同时会提供额外的奖励。 11 12 13 14 15 16 17 18 21 22 23 24 25 26 27 28 31 32 "
+    },
+    "detail": {
+     "name": "成就",
+     "overflow": 0,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "textLen": 2605,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 7,
+    "name": "统计数据",
+    "available": true,
+    "x": 109.5,
+    "y": 401,
+    "clickAt": {
+     "x": 109,
+     "y": 401
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 684,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "docOverflow": 0,
+     "len": 425,
+     "head": "查看内容摘要 概况 您总共制造了 3.45e1.333e9 个反物质。 你已经玩了 1 分 5 秒（现实时间）。 你的存档创建于 2026/11/1 21:33:40（1 分 6 秒之前）。 你已阅读 0 条新闻。 你已发现 0 条不同的新"
+    },
+    "detail": {
+     "name": "统计数据",
+     "overflow": 0,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "textLen": 791,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 8,
+    "name": "选项",
+    "available": true,
+    "x": 109.5,
+    "y": 447,
+    "clickAt": {
+     "x": 109,
+     "y": 447
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 715,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "docOverflow": 0,
+     "len": 100,
+     "head": "导出存档 导入存档 重置游戏 保存游戏 选择存档 自动存档：30 秒 30 以文件形式导出 导入存档文件 显示距上次存档的时间： 开启 打开自动备份存档菜单 存档名称： 按住 ? 键以打开快捷键列表。"
+    },
+    "detail": {
+     "name": "选项",
+     "overflow": 0,
+     "tabScrollW": 320,
+     "tabClientW": 320,
+     "textLen": 307,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   }
+  ],
+  "autoTab": {
+   "probes": [
+    {
+     "label": "自动购买器开关",
+     "found": true,
+     "w": 296,
+     "h": 48,
+     "clickable": true,
+     "blocker": null
+    },
+    {
+     "label": "自动购买器复选框",
+     "found": true,
+     "w": 22,
+     "h": 22,
+     "clickable": true,
+     "blocker": null
+    },
+    {
+     "label": "自动购买器间隔输入",
+     "found": true,
+     "w": 178,
+     "h": 48,
+     "clickable": true,
+     "blocker": null
+    }
+   ],
+   "box": {
+    "w": 320,
+    "x": 0
+   },
+   "overflow": 0
+  },
+  "autoShot": "reports\\_r51\\shots\\320x640_auto.png",
+  "bigCrunch": {
+   "found": true,
+   "w": 134,
+   "h": 84,
+   "y": 43,
+   "inView": true,
+   "hitRatio": 97,
+   "clickable": false,
+   "blockers": [
+    "DIV.o-notification.o-notification--overflow×1"
+   ]
+  },
+  "afterTabs": {
+   "viewport": {
+    "w": 320,
+    "h": 640,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 320,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 320,
+    "docClientW": 320,
+    "deltaDoc": 0,
+    "bodyScrollW": 320,
+    "uiScrollW": 377,
+    "pageScrollW": 377,
+    "elements": []
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 283,
+      "y": 600,
+      "w": 28,
+      "h": 28
+     },
+     "screenPct": 0.4,
+     "covers": [
+      {
+       "el": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-btn.o-primary-btn--disabled",
+       "areaPct": 4,
+       "centerCovered": false,
+       "text": "计数频率价格: 9e852,902"
+      }
+     ],
+     "coveredCount": 1
+    },
+    {
+     "float": "c-oreki-nav__toggle",
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "screenPct": 0.9,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 218,
+      "y": 5,
+      "w": 96,
+      "h": 35
+     },
+     "screenPct": 1.6,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "blocker": null
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 283,
+      "y": 600,
+      "w": 28,
+      "h": 28
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 0,
+     "y": 519,
+     "w": 320,
+     "h": 1427
+    },
+    "scrollW": 320,
+    "clientW": 320,
+    "textLen": 2080
+   },
+   "state": {
+    "antimatter": "4.46248737984685e+852339",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175401590.04199964",
+    "infinitiesStr": "2484453",
+    "eternitiesStr": "12424",
+    "lsLen": 3,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "dimensionSave"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": []
+   }
+  }
+ },
+ "360x740": {
+  "viewport": "360x740",
+  "reachedEternity": true,
+  "first": {
+   "viewport": {
+    "w": 360,
+    "h": 740,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 360,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 360,
+    "docClientW": 360,
+    "deltaDoc": 0,
+    "bodyScrollW": 360,
+    "uiScrollW": 397,
+    "pageScrollW": 397,
+    "elements": []
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 323,
+      "y": 700,
+      "w": 28,
+      "h": 28
+     },
+     "screenPct": 0.3,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "c-oreki-nav__toggle",
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "screenPct": 0.7,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 251,
+      "y": 5,
+      "w": 103,
+      "h": 35
+     },
+     "screenPct": 1.3,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "blocker": null
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 323,
+      "y": 700,
+      "w": 28,
+      "h": 28
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 0,
+     "y": 519,
+     "w": 360,
+     "h": 2375
+    },
+    "scrollW": 360,
+    "clientW": 360,
+    "textLen": 2817
+   },
+   "state": {
+    "antimatter": "3.3688966199248727e+891409",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175439128.0486142",
+    "infinitiesStr": "1150476",
+    "eternitiesStr": "14628",
+    "lsLen": 3,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "dimensionSave"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": []
+   }
+  },
+  "shot": "reports\\_r51\\shots\\360x740.png",
+  "drawerShot": "reports\\_r51\\shots\\360x740_drawer.png",
+  "drawer": {
+   "open": true,
+   "x": 0,
+   "w": 220,
+   "scrollH": 740,
+   "clientH": 740,
+   "tabCount": 9
+  },
+  "tabs": [
+   {
+    "i": 0,
+    "name": "维度",
+    "available": true,
+    "x": 109.5,
+    "y": 23,
+    "clickAt": {
+     "x": 109,
+     "y": 23
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1427,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "docOverflow": 0,
+     "len": 917,
+     "head": "买到 10 个 维度献祭已自动化（成就 118） 购买最大数量（M） 购买10个维度的加成倍数：×6.16 | 献祭加成：×1.84e7855 计数频率价格: 1e891,700 购买最大数量 计数频率：1.65e96154 / 秒 | ×"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "textLen": 2080,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 1,
+    "name": "自动化",
+    "available": true,
+    "x": 109.5,
+    "y": 69,
+    "clickAt": {
+     "x": 109,
+     "y": 125
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 3376,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "docOverflow": 0,
+     "len": 1050,
+     "head": "暂停自动购买器 禁用所有自动购买器 将反物质维度自动购买器设为购买单个 按住 ? 键以打开快捷键列表。 自动购买器间隔与时间相关设置始终采用现实时间计算，因此 不受任何可能改变游戏运行速度的因素影响。 未显示数量限制的自动购买器默认拥有无限"
+    },
+    "detail": {
+     "name": "自动化",
+     "overflow": 0,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "textLen": 2182,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 2,
+    "name": "挑战",
+    "available": true,
+    "x": 109.5,
+    "y": 143,
+    "clickAt": {
+     "x": 109,
+     "y": 171
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 2375,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "docOverflow": 0,
+     "len": 1437,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "textLen": 2817,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 3,
+    "name": "无限",
+    "available": true,
+    "x": 109.5,
+    "y": 217,
+    "clickAt": {
+     "x": 109,
+     "y": 217
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 2069,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "docOverflow": 0,
+     "len": 832,
+     "head": "在升级列表的每一列中，升级必须按从上到下的顺序依次购买。 反物质维度获得基于游玩时间的倍数加成 当前: ×2.98 第一和第八反物质维度获得基于无限次数的倍数加成 当前: ×2.5e6 时间研究 31 之后：×4.07e25 第三和第六反物"
+    },
+    "detail": {
+     "name": "无限",
+     "overflow": 0,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "textLen": 1274,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 4,
+    "name": "永恒",
+    "available": true,
+    "x": 109.5,
+    "y": 263,
+    "clickAt": {
+     "x": 109,
+     "y": 263
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 4496,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "docOverflow": 0,
+     "len": 3274,
+     "head": "导出时间研究树 下次永恒后重置时间研究树 导入时间研究树 11 第一时间维度获得基于计数频率的加成 当前: ×1.41e30 价格： 1 时间之理 21 复制器加成无限维度的倍数计算公式变得更好 (log2(x)^2)+x^0.032 当前"
+    },
+    "detail": {
+     "name": "永恒",
+     "overflow": 0,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "textLen": 6203,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [
+      {
+       "p": "button.c-reality-button.infotooltip.c-reality-button--unlocked > div.l-reality-button__contents > div.infotooltiptext",
+       "l": 320,
+       "r": 404,
+       "kind": "clipped"
+      }
+     ],
+     "overCount": 1,
+     "scrollableCount": 67
+    },
+    "ok": true
+   },
+   {
+    "i": 5,
+    "name": "现实",
+    "available": true,
+    "x": 109.5,
+    "y": 309,
+    "clickAt": {
+     "x": 109,
+     "y": 309
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1518,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "docOverflow": 0,
+     "len": 400,
+     "head": "你可能需要在现实前完成 5 件事情。 （点击以展开） 符文等级因子 ▼ 0.0160×永恒点数^0.500 17.403 0.0250×复制器^0.400 × 0.0536 0.0250×膨胀时间^1.300 × 0.3576 最终等级 1"
+    },
+    "detail": {
+     "name": "现实",
+     "overflow": 0,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "textLen": 958,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [
+      {
+       "p": "button.c-reality-button.infotooltip.c-reality-button--unlocked > div.l-reality-button__contents > div.infotooltiptext",
+       "l": 320,
+       "r": 404,
+       "kind": "clipped"
+      }
+     ],
+     "overCount": 1,
+     "scrollableCount": 14
+    },
+    "ok": true
+   },
+   {
+    "i": 6,
+    "name": "成就",
+    "available": true,
+    "x": 109.5,
+    "y": 355,
+    "clickAt": {
+     "x": 109,
+     "y": 355
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 6602,
+     "tabScrollW": 393,
+     "tabClientW": 360,
+     "docOverflow": 0,
+     "len": 570,
+     "head": "隐藏成就中全部解锁的行： 关闭 当前成就提供以下倍数加成： 反物质和无限维度：×10.500 带有 图标的成就同时会提供额外的奖励。 11 12 13 14 15 16 17 18 21 22 23 24 25 26 27 28 31 32"
+    },
+    "detail": {
+     "name": "成就",
+     "overflow": 0,
+     "tabScrollW": 393,
+     "tabClientW": 360,
+     "textLen": 2606,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [
+      {
+       "p": "div.l-achievement-grid__row.c-achievement-grid__row--completed > div.l-achievement-grid__cell.o-achievement.o-achievement--unlocked > div.o-achievement__tooltip",
+       "l": -35,
+       "r": 165,
+       "kind": "clipped"
+      },
+      {
+       "p": "div.l-achievement-grid__row.c-achievement-grid__row--completed > div.l-achievement-grid__cell.o-achievement.o-achievement--unlocked > div.o-achievement__tooltip",
+       "l": 193,
+       "r": 393,
+       "kind": "clipped"
+      },
+      {
+       "p": "div.l-achievement-grid__row.c-achievement-grid__row--completed > div.l-achievement-grid__cell.o-achievement.o-achievement--unlocked > div.o-achievement__tooltip",
+       "l": -35,
+       "r": 165,
+       "kind": "clipped"
+      },
+      {
+       "p": "div.l-achievement-grid__row.c-achievement-grid__row--completed > div.l-achievement-grid__cell.o-achievement.o-achievement--unlocked > div.o-achievement__tooltip",
+       "l": 193,
+       "r": 393,
+       "kind": "clipped"
+      },
+      {
+       "p": "div.l-achievement-grid__row > div.l-achievement-grid__cell.o-achievement.o-achievement--unlocked > div.o-achievement__tooltip",
+       "l": -35,
+       "r": 165,
+       "kind": "clipped"
+      },
+      {
+       "p": "div.l-achievement-grid__row > div.l-achievement-grid__cell.o-achievement.o-achievement--locked > div.o-achievement__tooltip",
+       "l": 193,
+       "r": 393,
+       "kind": "clipped"
+      }
+     ],
+     "overCount": 72,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 7,
+    "name": "统计数据",
+    "available": true,
+    "x": 109.5,
+    "y": 401,
+    "clickAt": {
+     "x": 109,
+     "y": 401
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 666,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "docOverflow": 0,
+     "len": 434,
+     "head": "查看内容摘要 概况 您总共制造了 7.99e1.523e9 个反物质。 你已经玩了 1 分 54 秒（现实时间）。 你的存档创建于 2026/11/1 21:33:40（1 分 57 秒之前）。 你已阅读 0 条新闻。 你已发现 0 条不同"
+    },
+    "detail": {
+     "name": "统计数据",
+     "overflow": 0,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "textLen": 800,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 8,
+    "name": "选项",
+    "available": true,
+    "x": 109.5,
+    "y": 447,
+    "clickAt": {
+     "x": 109,
+     "y": 447
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 715,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "docOverflow": 0,
+     "len": 100,
+     "head": "导出存档 导入存档 重置游戏 保存游戏 选择存档 自动存档：30 秒 30 以文件形式导出 导入存档文件 显示距上次存档的时间： 开启 打开自动备份存档菜单 存档名称： 按住 ? 键以打开快捷键列表。"
+    },
+    "detail": {
+     "name": "选项",
+     "overflow": 0,
+     "tabScrollW": 360,
+     "tabClientW": 360,
+     "textLen": 307,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   }
+  ],
+  "autoTab": {
+   "probes": [
+    {
+     "label": "自动购买器开关",
+     "found": true,
+     "w": 336,
+     "h": 48,
+     "clickable": true,
+     "blocker": null
+    },
+    {
+     "label": "自动购买器复选框",
+     "found": true,
+     "w": 22,
+     "h": 22,
+     "clickable": true,
+     "blocker": null
+    },
+    {
+     "label": "自动购买器间隔输入",
+     "found": true,
+     "w": 178,
+     "h": 48,
+     "clickable": true,
+     "blocker": null
+    }
+   ],
+   "box": {
+    "w": 360,
+    "x": 0
+   },
+   "overflow": 0
+  },
+  "autoShot": "reports\\_r51\\shots\\360x740_auto.png",
+  "bigCrunch": {
+   "found": true,
+   "w": 134,
+   "h": 84,
+   "y": 43,
+   "inView": true,
+   "hitRatio": 100,
+   "clickable": true,
+   "blockers": []
+  },
+  "afterTabs": {
+   "viewport": {
+    "w": 360,
+    "h": 740,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 360,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 360,
+    "docClientW": 360,
+    "deltaDoc": 0,
+    "bodyScrollW": 360,
+    "uiScrollW": 397,
+    "pageScrollW": 397,
+    "elements": []
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 323,
+      "y": 700,
+      "w": 28,
+      "h": 28
+     },
+     "screenPct": 0.3,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "c-oreki-nav__toggle",
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "screenPct": 0.7,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 251,
+      "y": 5,
+      "w": 103,
+      "h": 35
+     },
+     "screenPct": 1.3,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "blocker": null
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 323,
+      "y": 700,
+      "w": 28,
+      "h": 28
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 0,
+     "y": 519,
+     "w": 360,
+     "h": 1427
+    },
+    "scrollW": 360,
+    "clientW": 360,
+    "textLen": 2080
+   },
+   "state": {
+    "antimatter": "8.16786747422959e+894085",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175450207.0486142",
+    "infinitiesStr": "8001353.999999999",
+    "eternitiesStr": "14628",
+    "lsLen": 3,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "dimensionSave"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": []
+   }
+  }
+ },
+ "390x844": {
+  "viewport": "390x844",
+  "reachedEternity": true,
+  "first": {
+   "viewport": {
+    "w": 390,
+    "h": 844,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 390,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 390,
+    "docClientW": 390,
+    "deltaDoc": 0,
+    "bodyScrollW": 390,
+    "uiScrollW": 412,
+    "pageScrollW": 412,
+    "elements": [
+     {
+      "p": "div.l-equipped-glyphs-and-effects-container > div.l-equipped-glyphs > div.l-equipped-glyphs__slots",
+      "l": 234,
+      "r": 414,
+      "w": 180,
+      "text": ""
+     },
+     {
+      "p": "div.l-equipped-glyphs-and-effects-container > div.l-glyph-info-wrapper > div.c-current-glyph-effects.l-current-glyph-effects.c-current-glyph-effects-with-top-border",
+      "l": 257,
+      "r": 707,
+      "w": 450,
+      "text": "已装备符文的加成效果： 虚空 无（装备符文才能应用符文的加成效果）"
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 24,
+      "r": 624,
+      "w": 600,
+      "text": ""
+     }
+    ]
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 353,
+      "y": 804,
+      "w": 28,
+      "h": 28
+     },
+     "screenPct": 0.2,
+     "covers": [
+      {
+       "el": "div.l-equipped-glyphs > div.l-equipped-glyphs__buttons > button.l-glyph-equip-button.c-reality-upgrade-btn",
+       "areaPct": 12.9,
+       "centerCovered": false,
+       "text": "符文卸下后移动到\n         主仓库"
+      }
+     ],
+     "coveredCount": 1
+    },
+    {
+     "float": "c-oreki-nav__toggle",
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "screenPct": 0.6,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 211,
+      "y": 5,
+      "w": 173,
+      "h": 69
+     },
+     "screenPct": 3.6,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": true,
+     "inViewport": true,
+     "clickable": false,
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "blocker": "div#ui-container.ui-wrapper.new-ui > div#ui-fixed.c-game-ui--fixed > div.l-modal-overlay.c-modal-overlay.progress-bar-modal"
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 353,
+      "y": 804,
+      "w": 28,
+      "h": 28
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 0,
+     "y": 519,
+     "w": 390,
+     "h": 1518
+    },
+    "scrollW": 390,
+    "clientW": 390,
+    "textLen": 958
+   },
+   "state": {
+    "antimatter": "4.286980697420434e+148472",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175378282.6811966",
+    "infinitiesStr": "49264",
+    "eternitiesStr": "11412",
+    "lsLen": 3,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "dimensionSave"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": [
+     "c-modal"
+    ]
+   }
+  },
+  "shot": "reports\\_r51\\shots\\390x844.png",
+  "drawerShot": "reports\\_r51\\shots\\390x844_drawer.png",
+  "drawer": {
+   "open": false,
+   "x": -224,
+   "w": 220,
+   "scrollH": 844,
+   "clientH": 844,
+   "tabCount": 9
+  },
+  "tabs": [
+   {
+    "i": 0,
+    "name": "维度",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 23,
+    "clickAt": {
+     "x": -115,
+     "y": 23
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 2360,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "docOverflow": 0,
+     "len": 1438,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "textLen": 2818,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 1,
+    "name": "自动化",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 69,
+    "clickAt": {
+     "x": -115,
+     "y": 69
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "docOverflow": 0,
+     "len": 549,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 2,
+    "name": "挑战",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 143,
+    "clickAt": {
+     "x": -115,
+     "y": 171
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "docOverflow": 0,
+     "len": 549,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 3,
+    "name": "无限",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 217,
+    "clickAt": {
+     "x": -115,
+     "y": 217
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "docOverflow": 0,
+     "len": 551,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "textLen": 1577,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 4,
+    "name": "永恒",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 263,
+    "clickAt": {
+     "x": -115,
+     "y": 263
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "docOverflow": 0,
+     "len": 566,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "textLen": 1609,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 5,
+    "name": "现实",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 309,
+    "clickAt": {
+     "x": -115,
+     "y": 309
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "docOverflow": 0,
+     "len": 566,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "textLen": 1609,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 6,
+    "name": "成就",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 355,
+    "clickAt": {
+     "x": -115,
+     "y": 355
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "docOverflow": 0,
+     "len": 569,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "textLen": 1612,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 7,
+    "name": "统计数据",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 401,
+    "clickAt": {
+     "x": -115,
+     "y": 401
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "docOverflow": 0,
+     "len": 568,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "textLen": 1611,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 8,
+    "name": "选项",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 447,
+    "clickAt": {
+     "x": -115,
+     "y": 447
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "docOverflow": 0,
+     "len": 568,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e4 购买最大数量 计数频率：1.125 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 390,
+     "tabClientW": 390,
+     "textLen": 1611,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   }
+  ],
+  "autoTab": {
+   "probes": [
+    {
+     "label": "自动购买器开关",
+     "found": false
+    },
+    {
+     "label": "自动购买器复选框",
+     "found": false
+    },
+    {
+     "label": "自动购买器间隔输入",
+     "found": false
+    }
+   ],
+   "box": null,
+   "overflow": 0
+  },
+  "autoShot": "reports\\_r51\\shots\\390x844_auto.png",
+  "bigCrunch": {
+   "found": true,
+   "w": 194,
+   "h": 111,
+   "y": 73,
+   "inView": true,
+   "hitRatio": 0,
+   "clickable": false,
+   "blockers": [
+    "DIV.o-tab-btn.o-tab-btn--modern-tabs×8",
+    "DIV.l-tab-btn-inner×24"
+   ]
+  },
+  "afterTabs": {
+   "viewport": {
+    "w": 390,
+    "h": 844,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 390,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 390,
+    "docClientW": 390,
+    "deltaDoc": 0,
+    "bodyScrollW": 390,
+    "uiScrollW": 390,
+    "pageScrollW": 390,
+    "elements": []
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 353,
+      "y": 804,
+      "w": 28,
+      "h": 28
+     },
+     "screenPct": 0.2,
+     "covers": [
+      {
+       "el": "div.c-dimension-row.l-dimension-row-infinity-dim.l-dimension-single-row > div.l-dim-row-multi-button-container.c-modern-dim-tooltip-container > button.o-primary-btn.o-primary-btn--id-auto.o-primary-btn--disabled",
+       "areaPct": 9.3,
+       "centerCovered": false,
+       "text": "购买最大数量"
+      }
+     ],
+     "coveredCount": 1
+    },
+    {
+     "float": "c-oreki-nav__toggle",
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "screenPct": 0.6,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 281,
+      "y": 5,
+      "w": 103,
+      "h": 35
+     },
+     "screenPct": 1.1,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "blocker": null
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 353,
+      "y": 804,
+      "w": 28,
+      "h": 28
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 0,
+     "y": 537,
+     "w": 390,
+     "h": 1156
+    },
+    "scrollW": 390,
+    "clientW": 390,
+    "textLen": 1376
+   },
+   "state": {
+    "antimatter": "1902.9286941575401",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175587805.03805694",
+    "infinitiesStr": "0",
+    "eternitiesStr": "0",
+    "lsLen": 5,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "backupSave-0-1",
+     "dimensionSave",
+     "backupTimes-0"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": []
+   }
+  }
+ },
+ "412x915": {
+  "viewport": "412x915",
+  "reachedEternity": true,
+  "first": {
+   "viewport": {
+    "w": 412,
+    "h": 915,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 412,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 412,
+    "docClientW": 412,
+    "deltaDoc": 0,
+    "bodyScrollW": 412,
+    "uiScrollW": 423,
+    "pageScrollW": 423,
+    "elements": [
+     {
+      "p": "div.l-equipped-glyphs-and-effects-container > div.l-equipped-glyphs > div.l-equipped-glyphs__slots",
+      "l": 245,
+      "r": 425,
+      "w": 180,
+      "text": ""
+     },
+     {
+      "p": "div.l-equipped-glyphs-and-effects-container > div.l-glyph-info-wrapper > div.c-current-glyph-effects.l-current-glyph-effects.c-current-glyph-effects-with-top-border",
+      "l": 257,
+      "r": 707,
+      "w": 450,
+      "text": "已装备符文的加成效果： 虚空 无（装备符文才能应用符文的加成效果）"
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 35,
+      "r": 635,
+      "w": 600,
+      "text": ""
+     }
+    ]
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 375,
+      "y": 875,
+      "w": 28,
+      "h": 28
+     },
+     "screenPct": 0.2,
+     "covers": [
+      {
+       "el": "div.l-equipped-glyphs > div.l-equipped-glyphs__buttons > button.l-glyph-equip-button-short.c-reality-upgrade-btn",
+       "areaPct": 2.6,
+       "centerCovered": false,
+       "text": "打开符文显示选项"
+      }
+     ],
+     "coveredCount": 1
+    },
+    {
+     "float": "c-oreki-nav__toggle",
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "screenPct": 0.5,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 226,
+      "y": 5,
+      "w": 180,
+      "h": 69
+     },
+     "screenPct": 3.3,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": true,
+     "inViewport": true,
+     "clickable": false,
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "blocker": "div#ui-container.ui-wrapper.new-ui > div#ui-fixed.c-game-ui--fixed > div.l-modal-overlay.c-modal-overlay.progress-bar-modal"
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 375,
+      "y": 875,
+      "w": 28,
+      "h": 28
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 0,
+     "y": 519,
+     "w": 412,
+     "h": 1502
+    },
+    "scrollW": 412,
+    "clientW": 412,
+    "textLen": 958
+   },
+   "state": {
+    "antimatter": "5.53712356057769e+659178",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175386028.16009182",
+    "infinitiesStr": "917454",
+    "eternitiesStr": "11412",
+    "lsLen": 3,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "dimensionSave"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": [
+     "c-modal"
+    ]
+   }
+  },
+  "shot": "reports\\_r51\\shots\\412x915.png",
+  "drawerShot": "reports\\_r51\\shots\\412x915_drawer.png",
+  "drawer": {
+   "open": false,
+   "x": -224,
+   "w": 220,
+   "scrollH": 915,
+   "clientH": 915,
+   "tabCount": 9
+  },
+  "tabs": [
+   {
+    "i": 0,
+    "name": "维度",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 23,
+    "clickAt": {
+     "x": -115,
+     "y": 23
+    },
+    "inView": false,
+    "alreadyActive": true,
+    "changed": false,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "docOverflow": 0,
+     "len": 1438,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 1,
+    "name": "自动化",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 69,
+    "clickAt": {
+     "x": -115,
+     "y": 125
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "docOverflow": 0,
+     "len": 549,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 2,
+    "name": "挑战",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 143,
+    "clickAt": {
+     "x": -115,
+     "y": 171
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "docOverflow": 0,
+     "len": 551,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "textLen": 1577,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 3,
+    "name": "无限",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 217,
+    "clickAt": {
+     "x": -115,
+     "y": 217
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "docOverflow": 0,
+     "len": 566,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "textLen": 1609,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 4,
+    "name": "永恒",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 263,
+    "clickAt": {
+     "x": -115,
+     "y": 263
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "docOverflow": 0,
+     "len": 566,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "textLen": 1609,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 5,
+    "name": "现实",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 309,
+    "clickAt": {
+     "x": -115,
+     "y": 309
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "docOverflow": 0,
+     "len": 568,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "textLen": 1611,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 6,
+    "name": "成就",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 355,
+    "clickAt": {
+     "x": -115,
+     "y": 355
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "docOverflow": 0,
+     "len": 568,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e4 购买最大数量 计数频率：1.125 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "textLen": 1611,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 7,
+    "name": "统计数据",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 401,
+    "clickAt": {
+     "x": -115,
+     "y": 401
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "docOverflow": 0,
+     "len": 569,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e4 购买最大数量 计数频率：1.125 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "textLen": 1612,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 8,
+    "name": "选项",
+    "available": true,
+    "x": -114.89999389648438,
+    "y": 447,
+    "clickAt": {
+     "x": -115,
+     "y": 447
+    },
+    "inView": false,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 1523,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "docOverflow": 0,
+     "len": 569,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e4 购买最大数量 计数频率：1.125 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 412,
+     "tabClientW": 412,
+     "textLen": 1612,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   }
+  ],
+  "autoTab": {
+   "probes": [
+    {
+     "label": "自动购买器开关",
+     "found": false
+    },
+    {
+     "label": "自动购买器复选框",
+     "found": false
+    },
+    {
+     "label": "自动购买器间隔输入",
+     "found": false
+    }
+   ],
+   "box": null,
+   "overflow": 0
+  },
+  "autoShot": "reports\\_r51\\shots\\412x915_auto.png",
+  "bigCrunch": {
+   "found": true,
+   "w": 194,
+   "h": 111,
+   "y": 73,
+   "inView": true,
+   "hitRatio": 0,
+   "clickable": false,
+   "blockers": [
+    "DIV.o-tab-btn.o-tab-btn--subtab×4",
+    "DIV.l-tab-btn-inner×24",
+    "DIV.subtabs×4"
+   ]
+  },
+  "afterTabs": {
+   "viewport": {
+    "w": 412,
+    "h": 915,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 412,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 412,
+    "docClientW": 412,
+    "deltaDoc": 0,
+    "bodyScrollW": 412,
+    "uiScrollW": 412,
+    "pageScrollW": 412,
+    "elements": []
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 375,
+      "y": 875,
+      "w": 28,
+      "h": 28
+     },
+     "screenPct": 0.2,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "c-oreki-nav__toggle",
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "screenPct": 0.5,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 303,
+      "y": 5,
+      "w": 103,
+      "h": 35
+     },
+     "screenPct": 0.9,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 6,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "blocker": null
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 375,
+      "y": 875,
+      "w": 28,
+      "h": 28
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 0,
+     "y": 537,
+     "w": 398,
+     "h": 1140
+    },
+    "scrollW": 398,
+    "clientW": 398,
+    "textLen": 1376
+   },
+   "state": {
+    "antimatter": "6728.98975596702",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175744756.0469473",
+    "infinitiesStr": "0",
+    "eternitiesStr": "0",
+    "lsLen": 5,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "backupSave-0-1",
+     "dimensionSave",
+     "backupTimes-0"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": []
+   }
+  }
+ },
+ "768x1024": {
+  "viewport": "768x1024",
+  "reachedEternity": true,
+  "first": {
+   "viewport": {
+    "w": 768,
+    "h": 1024,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 768,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 768,
+    "docClientW": 768,
+    "deltaDoc": 0,
+    "bodyScrollW": 768,
+    "uiScrollW": 768,
+    "pageScrollW": 768,
+    "elements": [
+     {
+      "p": "div.l-player-glyphs-column > div.l-equipped-glyphs-and-effects-container > div.l-glyph-info-wrapper",
+      "l": 644,
+      "r": 968,
+      "w": 324,
+      "text": "已装备符文的加成效果： 虚空 无（装备符文才能应用符文的加成效果）"
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 306,
+      "r": 906,
+      "w": 600,
+      "text": ""
+     }
+    ]
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 605,
+      "y": 974,
+      "w": 157,
+      "h": 44
+     },
+     "screenPct": 0.9,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 582,
+      "y": 5,
+      "w": 180,
+      "h": 69
+     },
+     "screenPct": 1.6,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": false
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 605,
+      "y": 974,
+      "w": 157,
+      "h": 44
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 56,
+     "y": 519,
+     "w": 712,
+     "h": 1192
+    },
+    "scrollW": 712,
+    "clientW": 712,
+    "textLen": 958
+   },
+   "state": {
+    "antimatter": "4.450219087832281e+849379",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175387326.75299478",
+    "infinitiesStr": "739407",
+    "eternitiesStr": "11412",
+    "lsLen": 3,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "dimensionSave"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": [
+     "c-modal"
+    ]
+   }
+  },
+  "shot": "reports\\_r51\\shots\\768x1024.png",
+  "tabs": [
+   {
+    "i": 0,
+    "name": "维度",
+    "available": true,
+    "x": 28,
+    "y": 22,
+    "clickAt": {
+     "x": 28,
+     "y": 22
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1815,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "docOverflow": 0,
+     "len": 1436,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "textLen": 2816,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 1,
+    "name": "自动化",
+    "available": true,
+    "x": 28,
+    "y": 67,
+    "clickAt": {
+     "x": 28,
+     "y": 67
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1815,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "docOverflow": 0,
+     "len": 1437,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "textLen": 2817,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 2,
+    "name": "挑战",
+    "available": true,
+    "x": 28,
+    "y": 112,
+    "clickAt": {
+     "x": 28,
+     "y": 112
+    },
+    "inView": true,
+    "alreadyActive": true,
+    "changed": false,
+    "after": {
+     "tabH": 1815,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "docOverflow": 0
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "textLen": 2817,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 3,
+    "name": "无限",
+    "available": true,
+    "x": 28,
+    "y": 157,
+    "clickAt": {
+     "x": 28,
+     "y": 157
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1815,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "docOverflow": 0,
+     "len": 1438,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "textLen": 2818,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 4,
+    "name": "永恒",
+    "available": true,
+    "x": 28,
+    "y": 202,
+    "clickAt": {
+     "x": 28,
+     "y": 202
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 1815,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "docOverflow": 0,
+     "len": 1438,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "textLen": 2818,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 5,
+    "name": "现实",
+    "available": true,
+    "x": 28,
+    "y": 247,
+    "clickAt": {
+     "x": 28,
+     "y": 247
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1515,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "docOverflow": 0,
+     "len": 549,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 6,
+    "name": "成就",
+    "available": true,
+    "x": 28,
+    "y": 292,
+    "clickAt": {
+     "x": 28,
+     "y": 292
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 1515,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "docOverflow": 0,
+     "len": 549,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 7,
+    "name": "统计数据",
+    "available": true,
+    "x": 28,
+    "y": 337,
+    "clickAt": {
+     "x": 28,
+     "y": 337
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 1515,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "docOverflow": 0,
+     "len": 549,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 8,
+    "name": "选项",
+    "available": true,
+    "x": 28,
+    "y": 382,
+    "clickAt": {
+     "x": 28,
+     "y": 382
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1515,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "docOverflow": 0,
+     "len": 551,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 712,
+     "tabClientW": 712,
+     "textLen": 1577,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [],
+     "smallCount": 0,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   }
+  ],
+  "autoTab": {
+   "probes": [
+    {
+     "label": "自动购买器开关",
+     "found": false
+    },
+    {
+     "label": "自动购买器复选框",
+     "found": false
+    },
+    {
+     "label": "自动购买器间隔输入",
+     "found": false
+    }
+   ],
+   "box": null,
+   "overflow": 0
+  },
+  "autoShot": "reports\\_r51\\shots\\768x1024_auto.png",
+  "bigCrunch": {
+   "found": true,
+   "w": 194,
+   "h": 111,
+   "y": 73,
+   "inView": true,
+   "hitRatio": 0,
+   "clickable": false,
+   "blockers": [
+    "DIV.l-modal-overlay.c-modal-overlay×32"
+   ]
+  },
+  "afterTabs": {
+   "viewport": {
+    "w": 768,
+    "h": 1024,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 768,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 768,
+    "docClientW": 768,
+    "deltaDoc": 0,
+    "bodyScrollW": 768,
+    "uiScrollW": 768,
+    "pageScrollW": 768,
+    "elements": []
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 605,
+      "y": 974,
+      "w": 157,
+      "h": 44
+     },
+     "screenPct": 0.9,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 569,
+      "y": 5,
+      "w": 193,
+      "h": 69
+     },
+     "screenPct": 1.7,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [],
+   "smallTargetCount": 0,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": false
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 605,
+      "y": 974,
+      "w": 157,
+      "h": 44
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 56,
+     "y": 537,
+     "w": 712,
+     "h": 1515
+    },
+    "scrollW": 712,
+    "clientW": 712,
+    "textLen": 1612
+   },
+   "state": {
+    "antimatter": "1052.764755653137",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175645331.6950221",
+    "infinitiesStr": "0",
+    "eternitiesStr": "0",
+    "lsLen": 3,
+    "lsKeys": [
+     "oreki-game-speed",
+     "oreki-game-speed-dynamic",
+     "dimensionSave"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": [
+     "c-modal"
+    ]
+   }
+  }
+ },
+ "1024x768": {
+  "viewport": "1024x768",
+  "reachedEternity": true,
+  "first": {
+   "viewport": {
+    "w": 1024,
+    "h": 768,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 1024,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 1024,
+    "docClientW": 1024,
+    "deltaDoc": 0,
+    "bodyScrollW": 1024,
+    "uiScrollW": 1009,
+    "pageScrollW": 1009,
+    "elements": [
+     {
+      "p": "div.l-player-glyphs-column > div.l-equipped-glyphs-and-effects-container > div.l-glyph-info-wrapper",
+      "l": 788,
+      "r": 1238,
+      "w": 450,
+      "text": "已装备符文的加成效果： 虚空 无（装备符文才能应用符文的加成效果）"
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     },
+     {
+      "p": "div.l-player-glyphs-column > div.l-glyph-inventory > div.l-glyph-inventory__row",
+      "l": 499,
+      "r": 1099,
+      "w": 600,
+      "text": ""
+     }
+    ]
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 861,
+      "y": 726,
+      "w": 157,
+      "h": 36
+     },
+     "screenPct": 0.7,
+     "covers": [],
+     "coveredCount": 0
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 795,
+      "y": 5,
+      "w": 219,
+      "h": 72
+     },
+     "screenPct": 2,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [
+    {
+     "p": "div.information-header > div.l-game-header__challenge-text > button.o-primary-btn",
+     "w": 74,
+     "h": 25,
+     "text": "退出膨胀"
+    },
+    {
+     "p": "div.l-glyph-sacrifice-options.c-glyph-sacrifice-options.l-glyph-sidebar-panel-size > div.o-glyph-inventory-management-group > button.c-glyph-inventory-option",
+     "w": 190,
+     "h": 27,
+     "text": "按等级排序 按符文等级排序"
+    },
+    {
+     "p": "div.l-glyph-sacrifice-options.c-glyph-sacrifice-options.l-glyph-sidebar-panel-size > div.o-glyph-inventory-management-group > button.c-glyph-inventory-option",
+     "w": 190,
+     "h": 27,
+     "text": "按强度排序 按等级×稀有度降序排序"
+    },
+    {
+     "p": "div.l-glyph-sacrifice-options.c-glyph-sacrifice-options.l-glyph-sidebar-panel-size > div.o-glyph-inventory-management-group > button.c-glyph-inventory-option",
+     "w": 190,
+     "h": 27,
+     "text": "按词条排序 按符文词条分组"
+    },
+    {
+     "p": "div.l-glyph-sacrifice-options.c-glyph-sacrifice-options.l-glyph-sidebar-panel-size > div.o-glyph-inventory-management-group > button.c-glyph-inventory-option",
+     "w": 190,
+     "h": 27,
+     "text": "清除空格 将所有符文转移至最早可用槽位"
+    },
+    {
+     "p": "div.l-glyph-sacrifice-options.c-glyph-sacrifice-options.l-glyph-sidebar-panel-size > div.o-glyph-inventory-management-group > button.c-glyph-inventory-option",
+     "w": 190,
+     "h": 27,
+     "text": "添加保护行"
+    },
+    {
+     "p": "div.l-glyph-sacrifice-options.c-glyph-sacrifice-options.l-glyph-sidebar-panel-size > div.o-glyph-inventory-management-group > button.c-glyph-inventory-option",
+     "w": 190,
+     "h": 27,
+     "text": "移除保护行"
+    },
+    {
+     "p": "div.l-glyph-sacrifice-options.c-glyph-sacrifice-options.l-glyph-sidebar-panel-size > div.o-glyph-inventory-management-group > button.c-glyph-inventory-option",
+     "w": 190,
+     "h": 27,
+     "text": "增减保护格数量的同时移动符文： 关闭"
+    },
+    {
+     "p": "div.l-glyph-sacrifice-options.c-glyph-sacrifice-options.l-glyph-sidebar-panel-size > div.o-glyph-inventory-management-group > button.c-glyph-inventory-option",
+     "w": 190,
+     "h": 27,
+     "text": "自动排序模式： 无"
+    },
+    {
+     "p": "div.l-glyph-sacrifice-options.c-glyph-sacrifice-options.l-glyph-sidebar-panel-size > div.o-glyph-inventory-management-group > button.c-glyph-inventory-option",
+     "w": 190,
+     "h": 27,
+     "text": "自动清除空格： 关闭"
+    },
+    {
+     "p": "div.l-equipped-glyphs > div.l-equipped-glyphs__buttons > button.c-reality-upgrade-btn.l-glyph-equip-button-short",
+     "w": 106,
+     "h": 25,
+     "text": "在现实时卸下符文"
+    },
+    {
+     "p": "div.l-equipped-glyphs > div.l-equipped-glyphs__buttons > button.l-glyph-equip-button.c-reality-upgrade-btn",
+     "w": 106,
+     "h": 35,
+     "text": "符文卸下后移动到 主仓库"
+    },
+    {
+     "p": "div.l-equipped-glyphs > div.l-equipped-glyphs__buttons > button.l-glyph-equip-button-short.c-reality-upgrade-btn",
+     "w": 106,
+     "h": 25,
+     "text": "打开符文显示选项"
+    }
+   ],
+   "smallTargetCount": 13,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": false
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 861,
+      "y": 726,
+      "w": 157,
+      "h": 36
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 128,
+     "y": 231,
+     "w": 881,
+     "h": 1077
+    },
+    "scrollW": 881,
+    "clientW": 881,
+    "textLen": 958
+   },
+   "state": {
+    "antimatter": "1.6267054473901488e+156067",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175384177.39404446",
+    "infinitiesStr": "724639",
+    "eternitiesStr": "11412",
+    "lsLen": 5,
+    "lsKeys": [
+     "oreki-game-speed",
+     "backupSave-0-5",
+     "oreki-game-speed-dynamic",
+     "dimensionSave",
+     "backupTimes-0"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": [
+     "c-modal"
+    ]
+   }
+  },
+  "shot": "reports\\_r51\\shots\\1024x768.png",
+  "tabs": [
+   {
+    "i": 0,
+    "name": "维度",
+    "available": true,
+    "x": 64,
+    "y": 92,
+    "clickAt": {
+     "x": 64,
+     "y": 92
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1343,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "docOverflow": 0,
+     "len": 1436,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "textLen": 2816,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [
+      {
+       "p": "div.information-header > div.l-game-header__challenge-text > button.o-primary-btn",
+       "w": 74,
+       "h": 25,
+       "text": "退出膨胀"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 147,
+       "h": 25,
+       "text": "自动重试挑战： 关闭"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 173,
+       "h": 25,
+       "text": "显示所有已知挑战： 关闭"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      }
+     ],
+     "smallCount": 7,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 1,
+    "name": "自动化",
+    "available": true,
+    "x": 64,
+    "y": 137,
+    "clickAt": {
+     "x": 64,
+     "y": 137
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1343,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "docOverflow": 0,
+     "len": 1437,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "textLen": 2817,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [
+      {
+       "p": "div.information-header > div.l-game-header__challenge-text > button.o-primary-btn",
+       "w": 74,
+       "h": 25,
+       "text": "退出膨胀"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 147,
+       "h": 25,
+       "text": "自动重试挑战： 关闭"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 173,
+       "h": 25,
+       "text": "显示所有已知挑战： 关闭"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      }
+     ],
+     "smallCount": 7,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 2,
+    "name": "挑战",
+    "available": true,
+    "x": 64,
+    "y": 182,
+    "clickAt": {
+     "x": 64,
+     "y": 182
+    },
+    "inView": true,
+    "alreadyActive": true,
+    "changed": false,
+    "after": {
+     "tabH": 1343,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "docOverflow": 0
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "textLen": 2817,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [
+      {
+       "p": "div.information-header > div.l-game-header__challenge-text > button.o-primary-btn",
+       "w": 74,
+       "h": 25,
+       "text": "退出膨胀"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 147,
+       "h": 25,
+       "text": "自动重试挑战： 关闭"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 173,
+       "h": 25,
+       "text": "显示所有已知挑战： 关闭"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      }
+     ],
+     "smallCount": 7,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 3,
+    "name": "无限",
+    "available": true,
+    "x": 64,
+    "y": 227,
+    "clickAt": {
+     "x": 64,
+     "y": 227
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 1343,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "docOverflow": 0,
+     "len": 1438,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "textLen": 2818,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [
+      {
+       "p": "div.information-header > div.l-game-header__challenge-text > button.o-primary-btn",
+       "w": 74,
+       "h": 25,
+       "text": "退出膨胀"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 147,
+       "h": 25,
+       "text": "自动重试挑战： 关闭"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 173,
+       "h": 25,
+       "text": "显示所有已知挑战： 关闭"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      }
+     ],
+     "smallCount": 7,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 4,
+    "name": "永恒",
+    "available": true,
+    "x": 64,
+    "y": 272,
+    "clickAt": {
+     "x": 64,
+     "y": 272
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 1343,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "docOverflow": 0,
+     "len": 1438,
+     "head": "自动重试挑战： 关闭 显示所有已知挑战： 关闭 再次完成永恒挑战可获得更高奖励，最多可重复 5 次。 奖励效果永久生效，也无需购买对应的永恒挑战时间研究。 当你重置已解锁的永恒挑战时，无需重新达成次要解锁条件即可再次解锁（直至完成该挑战）；"
+    },
+    "detail": {
+     "name": "挑战",
+     "overflow": 0,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "textLen": 2818,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [
+      {
+       "p": "div.information-header > div.l-game-header__challenge-text > button.o-primary-btn",
+       "w": 74,
+       "h": 25,
+       "text": "退出膨胀"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 147,
+       "h": 25,
+       "text": "自动重试挑战： 关闭"
+      },
+      {
+       "p": "div.l-challenges-tab__header > div.c-subtab-option-container > button.o-primary-btn.o-primary-btn--subtab-option",
+       "w": 173,
+       "h": 25,
+       "text": "显示所有已知挑战： 关闭"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      },
+      {
+       "p": "div.c-challenge-box.l-challenge-box.c-challenge-box--eternity > div > button.o-challenge-btn.o-challenge-btn--completed.o-challenge-btn--unenterable",
+       "w": 150,
+       "h": 30,
+       "text": "已完成"
+      }
+     ],
+     "smallCount": 7,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 5,
+    "name": "现实",
+    "available": true,
+    "x": 64,
+    "y": 317,
+    "clickAt": {
+     "x": 64,
+     "y": 317
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 802,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "docOverflow": 0,
+     "len": 549,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+       "w": 120,
+       "h": 30,
+       "text": "买到 10 个"
+      },
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.o-primary-btn--sacrifice.o-primary-btn--disabled",
+       "w": 480,
+       "h": 25,
+       "text": "维度献祭已禁用（需要 5 个维度提升）"
+      },
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+       "w": 120,
+       "h": 30,
+       "text": "购买最大数量（M）"
+      },
+      {
+       "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-btn.o-primary-btn--disabled",
+       "w": 300,
+       "h": 25,
+       "text": "计数频率价格: 1e3"
+      },
+      {
+       "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-max-btn.o-primary-btn--disabled",
+       "w": 100,
+       "h": 25,
+       "text": "购买最大数量"
+      }
+     ],
+     "smallCount": 5,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   },
+   {
+    "i": 6,
+    "name": "成就",
+    "available": true,
+    "x": 64,
+    "y": 362,
+    "clickAt": {
+     "x": 64,
+     "y": 362
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 802,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "docOverflow": 0,
+     "len": 549,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+       "w": 120,
+       "h": 30,
+       "text": "买到 10 个"
+      },
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.o-primary-btn--sacrifice.o-primary-btn--disabled",
+       "w": 480,
+       "h": 25,
+       "text": "维度献祭已禁用（需要 5 个维度提升）"
+      },
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+       "w": 120,
+       "h": 30,
+       "text": "购买最大数量（M）"
+      },
+      {
+       "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-btn.o-primary-btn--disabled",
+       "w": 300,
+       "h": 25,
+       "text": "计数频率价格: 1e3"
+      },
+      {
+       "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-max-btn.o-primary-btn--disabled",
+       "w": 100,
+       "h": 25,
+       "text": "购买最大数量"
+      }
+     ],
+     "smallCount": 5,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 7,
+    "name": "统计数据",
+    "available": true,
+    "x": 64,
+    "y": 407,
+    "clickAt": {
+     "x": 64,
+     "y": 407
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": false,
+    "after": {
+     "tabH": 802,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "docOverflow": 0,
+     "len": 549,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "textLen": 1575,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+       "w": 120,
+       "h": 30,
+       "text": "买到 10 个"
+      },
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.o-primary-btn--sacrifice.o-primary-btn--disabled",
+       "w": 480,
+       "h": 25,
+       "text": "维度献祭已禁用（需要 5 个维度提升）"
+      },
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+       "w": 120,
+       "h": 30,
+       "text": "购买最大数量（M）"
+      },
+      {
+       "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-btn.o-primary-btn--disabled",
+       "w": 300,
+       "h": 25,
+       "text": "计数频率价格: 1e3"
+      },
+      {
+       "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-max-btn.o-primary-btn--disabled",
+       "w": 100,
+       "h": 25,
+       "text": "购买最大数量"
+      }
+     ],
+     "smallCount": 5,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": false
+   },
+   {
+    "i": 8,
+    "name": "选项",
+    "available": true,
+    "x": 64,
+    "y": 452,
+    "clickAt": {
+     "x": 64,
+     "y": 452
+    },
+    "inView": true,
+    "alreadyActive": false,
+    "changed": true,
+    "after": {
+     "tabH": 802,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "docOverflow": 0,
+     "len": 551,
+     "head": "买到 10 个 维度献祭已禁用（需要 5 个维度提升） 购买最大数量（M） 购买10个维度的加成倍数：×2.10 | 献祭加成：×1.00 计数频率价格: 1e3 购买最大数量 计数频率：1.000 / 秒 | ×1.125 加成 / 升级"
+    },
+    "detail": {
+     "name": "维度",
+     "overflow": 0,
+     "tabScrollW": 881,
+     "tabClientW": 881,
+     "textLen": 1577,
+     "clipped": [],
+     "clippedCount": 0,
+     "small": [
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+       "w": 120,
+       "h": 30,
+       "text": "买到 10 个"
+      },
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.o-primary-btn--sacrifice.o-primary-btn--disabled",
+       "w": 480,
+       "h": 25,
+       "text": "维度献祭已禁用（需要 5 个维度提升）"
+      },
+      {
+       "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+       "w": 120,
+       "h": 30,
+       "text": "购买最大数量（M）"
+      },
+      {
+       "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-btn.o-primary-btn--disabled",
+       "w": 300,
+       "h": 25,
+       "text": "计数频率价格: 1e3"
+      },
+      {
+       "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-max-btn.o-primary-btn--disabled",
+       "w": 100,
+       "h": 25,
+       "text": "购买最大数量"
+      }
+     ],
+     "smallCount": 5,
+     "over": [],
+     "overCount": 0,
+     "scrollableCount": 0
+    },
+    "ok": true
+   }
+  ],
+  "autoTab": {
+   "probes": [
+    {
+     "label": "自动购买器开关",
+     "found": false
+    },
+    {
+     "label": "自动购买器复选框",
+     "found": false
+    },
+    {
+     "label": "自动购买器间隔输入",
+     "found": false
+    }
+   ],
+   "box": null,
+   "overflow": 0
+  },
+  "autoShot": "reports\\_r51\\shots\\1024x768_auto.png",
+  "bigCrunch": {
+   "found": true,
+   "w": 194,
+   "h": 111,
+   "y": 73,
+   "inView": true,
+   "hitRatio": 0,
+   "clickable": false,
+   "blockers": [
+    "DIV.l-modal-overlay.c-modal-overlay×32"
+   ]
+  },
+  "afterTabs": {
+   "viewport": {
+    "w": 1024,
+    "h": 768,
+    "dpr": 1,
+    "vvScale": 1,
+    "vvWidth": 1024,
+    "metaViewport": "width=device-width, initial-scale=1"
+   },
+   "overflow": {
+    "docScrollW": 1024,
+    "docClientW": 1024,
+    "deltaDoc": 0,
+    "bodyScrollW": 1024,
+    "uiScrollW": 1009,
+    "pageScrollW": 1009,
+    "elements": []
+   },
+   "clipped": [],
+   "clippedCount": 0,
+   "floatingOcclusion": [
+    {
+     "float": "c-oreki-tut-entry",
+     "rect": {
+      "x": 861,
+      "y": 726,
+      "w": 157,
+      "h": 36
+     },
+     "screenPct": 0.7,
+     "covers": [
+      {
+       "el": "div.c-dimension-row.l-dimension-row-antimatter-dim.c-antimatter-dim-row > div.l-dim-row-multi-button-container.c-modern-dim-tooltip-container > button.o-primary-btn.o-primary-btn--new.o-primary-btn--disabled",
+       "areaPct": 13.1,
+       "centerCovered": false,
+       "text": "已锁定\n           \n        "
+      },
+      {
+       "el": "div.c-dimension-row.l-dimension-row-antimatter-dim.c-antimatter-dim-row > div.l-dim-row-multi-button-container.c-modern-dim-tooltip-container > button.o-primary-btn.o-primary-btn--new.o-primary-btn--disabled",
+       "areaPct": 8,
+       "centerCovered": false,
+       "text": "已锁定\n           \n        "
+      }
+     ],
+     "coveredCount": 2
+    },
+    {
+     "float": "l-notification-container",
+     "rect": {
+      "x": 780,
+      "y": 5,
+      "w": 234,
+      "h": 72
+     },
+     "screenPct": 2.1,
+     "covers": [],
+     "coveredCount": 0
+    }
+   ],
+   "smallTargets": [
+    {
+     "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+     "w": 120,
+     "h": 30,
+     "text": "买到 10 个"
+    },
+    {
+     "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.o-primary-btn--sacrifice.o-primary-btn--disabled",
+     "w": 480,
+     "h": 25,
+     "text": "维度献祭已禁用（需要 5 个维度提升）"
+    },
+    {
+     "p": "div.l-antimatter-dim-tab.c-game-tab > div.modes-container > button.o-primary-btn.l-button-container",
+     "w": 120,
+     "h": 30,
+     "text": "购买最大数量（M）"
+    },
+    {
+     "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-btn.o-primary-btn--disabled",
+     "w": 300,
+     "h": 25,
+     "text": "计数频率价格: 1e5"
+    },
+    {
+     "p": "div.l-tickspeed-container > div.tickspeed-buttons > button.o-primary-btn.tickspeed-max-btn.o-primary-btn--disabled",
+     "w": 100,
+     "h": 25,
+     "text": "购买最大数量"
+    }
+   ],
+   "smallTargetCount": 5,
+   "keyButtons": [
+    {
+     "label": "购买维度",
+     "found": false
+    },
+    {
+     "label": "大坍缩",
+     "found": false
+    },
+    {
+     "label": "侧栏开合",
+     "found": false
+    },
+    {
+     "label": "教程入口",
+     "found": true,
+     "inViewport": true,
+     "clickable": true,
+     "rect": {
+      "x": 861,
+      "y": 726,
+      "w": 157,
+      "h": 36
+     },
+     "blocker": null
+    },
+    {
+     "label": "自动购买器开关",
+     "found": false
+    }
+   ],
+   "header": null,
+   "tab": {
+    "rect": {
+     "x": 128,
+     "y": 249,
+     "w": 881,
+     "h": 802
+    },
+    "scrollW": 881,
+    "clientW": 881,
+    "textLen": 1612
+   },
+   "state": {
+    "antimatter": "6939.87926313659",
+    "break": true,
+    "slot": 0,
+    "playTimeStr": "175664238.6130933",
+    "infinitiesStr": "0",
+    "eternitiesStr": "0",
+    "lsLen": 5,
+    "lsKeys": [
+     "oreki-game-speed",
+     "backupSave-0-5",
+     "oreki-game-speed-dynamic",
+     "dimensionSave",
+     "backupTimes-0"
+    ],
+    "errs": 0,
+    "firstErr": null,
+    "modals": [
+     "c-modal"
+    ]
+   }
+  }
+ }
+}
