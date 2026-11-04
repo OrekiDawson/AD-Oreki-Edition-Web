@@ -7536,3 +7536,100 @@ ANDROID_JAR = pathlib.Path("C:/Users/Oreki/Android/sdk/platforms/android-34/andr
 | 升级 emulator 37.2.12→37.2.13 | 现有 emulator 已满足 AVD 运行；改它会影响已在用的 3 个 AVD，风险大于收益 |
 | 升级 system-image android-34 2.0.0→4.0.0 | 会改动 `oreki_test` 依赖的镜像；本轮未授权删除/重建 AVD |
 | 设置 `ANDROID_HOME` | 指令要求「不擅自修改系统级环境变量」；项目已不依赖它 |
+
+---
+
+## C.124　R77：双端调度器节拍修复 + Android 首个业务类 Kotlin 转译（2026年11月4日，【读码】+【实测】）
+
+### 一、Android 调度器「1 秒间隔无效」的真实根因（三处叠加）
+
+R65/R66 都在查「极性写反」「noteActed 没被调用」，方向对了但没查全。R77 逐行读
+`OrekiAutomationScheduler`（1830 行 Smali）后确认是**三处独立缺陷叠加**：
+
+| # | 缺陷 | 后果 |
+|---|---|---|
+| 1 | **连续型豁免**：`routine/early/eternity/eternityReset` 在闸门之前直接 `return true`，既不过间隔、也不占本帧名额 | 这 4 条完全脱离全局时钟 |
+| 2 | **首帧跳过预约**：`sLastAct == 0` 时直接 `return true`，**完全跳过 `reserveOk()`** | 首帧每个任务各拿一次名额 ⇒ 启动瞬间多任务同时放行 |
+| 3 | **默认档是单任务档**：每条任务各自计时，不同任务互不阻塞 | 8 条任务首帧全放行 ⇒ 「8 条升级 12~39 ms 内连买」 |
+
+关键事实：Android 侧那 4 个「连续型」id **根本没有调用点**（`grep` 全 payload 只命中
+调度器自身）。所以缺陷 1 在当前代码里是「潜在雷」而非现实成因；现实成因是 2 + 3。
+
+### 二、更重要的发现：5 个真实购买动作完全绕过调度器
+
+`OrekiStageAuto.onAutoBuyerTick` 里，以下 5 个方法原本都是**每帧无条件直接调用的
+void 方法**，`allow/noteActed` 一次都没调：
+
+```
+autoSacrifice / upgradeBulkAll / buyInfinityUpgrades / upgradeCrunchInterval / tryBuyId1
+```
+
+调度器当时只管辖 `reality / breakGate / breakUpgrades / breakShop` 四条，
+而**真正花钱买升级的这 5 条一条都没被管**。这才是「间隔形同虚设」的主因。
+
+### 三、R77 的修复语义（Kotlin 实现）
+
+| 规则 | 实现 |
+|---|---|
+| 全局统一节拍 | `allow()` 第一道闸恒为 `lastBeatAt`，与档位无关 |
+| 首帧也占位 | 放行前一律 `reserveOk()`，杜绝同帧重入 |
+| no-op 不占节拍 | `noteNoop` 不推进 `lastBeatAt`，立即让位 |
+| 同帧最多 1 个真动作 | `frameActed` 命中后其余全拒 |
+| 关闭即停 | `setEnabled(false)` → `allow` 恒 false + `clearPending()` |
+| 改间隔立即生效 | `setIntervalSec` 写内存镜像（`@Volatile`）|
+| 每拍最多 1 级 | `upgradeCrunchInterval` 循环上限 16 → 1 |
+
+### 四、Kotlin 全量转译（用户 2026-11-04 令后的实际落地）
+
+`OrekiAutomationScheduler` 从 **1830 行 Smali 完整重写为 Kotlin object**：
+
+| 项 | 值 |
+|---|---|
+| 源文件 | `scripts/payload/kotlin/kajfosz/antimatterdimensions/oreki/OrekiAutomationScheduler.kt` |
+| ABI 方法数 | **21 个 public static**（与旧 Smali 版逐字一致） |
+| 编译 | kotlinc 2.4.21 + JDK 27，`-classpath android.jar` |
+| D8 | 产出 `build/kt/classes.dex`，**12,584 B** |
+| APK 槽位 | `classes4.dex`（原 APK 已有 3 个 dex，自动探测槽位） |
+| 装包实证 | `logcat -s OREKI_SCHED` → `init 调度：已启用 · 间隔 1 秒 · 单任务档（每条任务各自计时，且全部受全局节拍约束）` |
+
+**注意**：`kotlinc -classpath` **不接受 dex 输入**（实测 `error: source entry is not a
+Kotlin file`）。因此 Kotlin 层访问游戏类一律走 `Class.forName` + 反射，
+见 `originalAutobuyersOn()`。这是工具链约束，不是"无法迁移"的例外。
+
+### 五、构建期守卫（防止"源码改了但没进 APK"）
+
+- `build_kotlin.py` 的 `EXPECTED_ABI` 表逐个方法用 `javap` 断言；任一缺失即构建失败。
+- `KOTLIN_OWNED_CLASSES` 是 Kotlin 已接管类的唯一清单；`build_mod.py` 读该清单，
+  逐个删除对应 Smali 版，条件是「dex 里确实含该类」——绝不因 .kt 存在就删。
+- `check_smali_descriptors.py` 增加 `_kotlin_dex_descriptors()`：
+  把 `build/kt/classes.dex` 里的类描述符并入「已定义集合」，
+  否则正常迁移会被误报成「引用了不存在的类」（本次实际踩到，23223 个类里缺 1 个）。
+
+### 六、R77 构建结果
+
+| 项 | 值 |
+|---|---|
+| 命令 | `python scripts/build_mod.py`（Gradle assembleRelease 同一入口） |
+| 结果 | EXIT=0，完整产物 |
+| APK | `release/反物质维度.apk`，69,786,271 B |
+| SHA-256 | `b825262f64a9aa50c952dc864873bff695b7c7ac19617ea4a5aa3f850408e0df` |
+| DEX | classes 14.2M / classes2 9.66M / classes3 7.4K / **classes4 12,584 B** |
+| 版本 | 3.19.0 / 30190000（**非 3.20**，不得冒充） |
+| 签名 | v2+v3 通过 |
+
+### 七、AVD（R77 恢复）
+
+| 项 | 值 |
+|---|---|
+| 名称 | `oreki_test`（唯一） |
+| Android | 16 / **API 36** |
+| ABI | **x86_64**（ARM64 在 x86_64 主机无法启动，已确认并放弃） |
+| 分辨率 | **1440×3200**（`wm size` 实测） |
+| Chrome | com.android.chrome 133.0.6943.137 |
+
+### 八、待办
+
+- Web 侧同一语义实现未完成（本轮时间被 Kotlin 转译与构建链排障占满）。
+- 5 个购买动作的 `allow/noteActed` 接线尚未落地（需在 OrekiStageAuto 侧改造，
+  而该文件仍是 Smali —— 按 §64 需先转译再改，属下一轮工作）。
+- 3.20 的 8 个补丁锚点仍未迁移。

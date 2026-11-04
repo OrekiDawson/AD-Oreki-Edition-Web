@@ -56,6 +56,14 @@
 
 ## 3. 快速开始
 
+### 3.0 构建与依赖模式（长期规则，详见 `AGENTS.md` §8）
+
+- 生产构建**默认离线**：只用 `node_modules/` 里已装好的依赖，不联网。
+- 只有 `package.json` 新增了本地没有的包时才联网补装，补完必须验证一次不联网构建可通过。
+- 不跑 `npm update` / `npm audit fix` 这类会改动锁定版本的操作。
+- 详细条文（含 Android Kotlin 化对 Web 的影响边界）见仓内 `AGENTS.md` §8 与工作区根 `AGENTS.md` §63~§65。
+
+
 ### 3.1 直接在线玩
 
 打开 **<https://oreki.net>** 即可，无需安装。存档保存在浏览器 `localStorage`。

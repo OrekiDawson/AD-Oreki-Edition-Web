@@ -241,3 +241,34 @@ stat -c '%d %i %n' WEB_ANDROID_DIFFERENCES.md \
 
 **同时注意**：最高目标已更新为「新手无教程、全新存档、真实墙钟 ≤180 分钟通关」，
 Web 与 Android 各自独立通过（口径唯一源 = 工作区根 `AGENTS.md` §22）。
+
+---
+
+## 8. Gradle / 构建模式与 Android Kotlin 化边界（2026-11-04 起长期生效）
+
+> 规则口径唯一源 = 工作区根 `AGENTS.md` §63 / §64 / §65。本节只写 **Web 侧的适用方式**，
+> 不重复条文，避免两份规范漂移。
+
+### 8.1 构建模式
+
+Web 侧生产构建（`npm run build` / `node build.mjs`，以 `package.json` 实际脚本为准）
+**默认不联网**：只用 `node_modules/` 里已装好的依赖。
+
+需要联网安装依赖的唯一情形：`package.json` 新增了本地 `node_modules` 里没有的包。
+此时按 §63.3 只补该包，补完立刻验证一次**不联网**构建可通过，再恢复日常离线。
+
+不得为了"顺手更新"而跑 `npm update` / `npm audit fix` 这类会改动锁定版本的操作。
+
+### 8.2 Android 全量 Kotlin 化的影响面（Web 侧只需知道的三件事）
+
+1. **Web 端不受 Kotlin 规则约束** —— 继续用 Web 原生技术（原生 JS / 现有模块体系）实现。
+2. **双端用户可见行为必须一致**：Android 改了调度语义、间隔行为、开关行为时，
+   Web 必须在同一轮内对齐（或明确记录差异与原因）。
+3. **不得为了"双端一致"而把 Android 的 Kotlin 实现细节搬到 Web**，
+   也不得为了"Web 好写"而让 Android 侧退回 Smali。
+
+### 8.3 反混淆成果的共享
+
+`oreki-smart-strategy.json`、`oreki-route-model.*`、双端差异表属于 §65 的
+"必须纳入 Git 的分析成果"，任何一侧修改都要在同一轮内同步，不能只留在本地。
+
