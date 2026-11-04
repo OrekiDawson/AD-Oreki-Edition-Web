@@ -7322,3 +7322,217 @@ Android 原生支持多 dex，改动面最小。
 供有管理员权限时一键执行（只追加、不覆盖、不重复，并回读校验）。
 
 现有兜底不依赖全局 Java：`gradlew` 与 `build.gradle` 都按目录扫描 `tools/jdk/*`。
+
+---
+
+## C.122　R76-G：工具链升级到 Gradle 9.8.2 + JDK 27 + Kotlin 2.4.21（2026年11月4日）
+
+### 一、本机真实环境（不是推测）
+
+| 项 | 实际值 |
+|---|---|
+| 系统级 `JAVA_HOME` | `C:\Program Files\Java\jdk-27.0.1.0.3`（Machine 级） |
+| JDK 版本 | Oracle JDK **27.0.1.0.3**，build 27.0.1.0.3+1-2，2026-10-25 |
+| 系统 Path | 含 `%JAVA_HOME%\bin` |
+| Scoop Gradle | `C:\Users\Oreki\scoop\apps\gradle\9.8.2`，shim 在 `C:\Users\Oreki\scoop\shims\gradle` |
+| 全局 Gradle 版本 | **9.8.2**（2026-10-19 构建，内置 Kotlin 2.4.10 / Groovy 4.0.33） |
+| 仓库内 JDK | `tools/jdk/jdk-17.0.20.1+1`、`tools/jdk/jdk-21.0.13+9` |
+
+> 注意：**WorkBuddy 终端不继承系统新环境变量**（R75 曾误判为「无 JAVA_HOME / 无管理员权限」）。
+> 实际是会话级未刷新；系统级配置一直是对的。本文件据此更正 R75 的结论。
+
+### 二、关键事实：本项目不使用 AGP，也不使用 Kotlin Gradle Plugin
+
+`build.gradle` 与 `settings.gradle` 中：
+
+- `com.android.application` 出现 **0 次**
+- `org.jetbrains.kotlin` 出现 **0 次**
+- 无 `plugins {}`、无 `buildscript`、无 `repositories`、无 `dependencies`
+- 无 `gradle/libs.versions.toml`
+
+项目形态是「Gradle 负责任务编排，真正构建由 `scripts/build_mod.py`
+（apktool + smali 补丁 + zipalign + apksigner）完成」，Kotlin 由**命令行 kotlinc** 编译。
+所以「升级 AGP / 升级 Kotlin Gradle Plugin」在本项目里**没有落点**，
+不能编造版本号。真实可升级的是：Gradle Wrapper、JDK、命令行 kotlinc。
+
+### 三、Gradle 9 的破坏性变更（实际踩到并修复）
+
+Gradle 9 移除了 `Task.exec {}`（Gradle 8 只是弃用告警）。升级后首次构建直接失败：
+
+```
+Execution failed for task ':verifyEnvironment'
+> Could not find method exec() for arguments [...] on task ':verifyEnvironment'
+```
+
+修法：项目级注入 `ExecOperations`，5 处 `exec {}` 全部改为 `runExec {}`：
+
+```groovy
+import org.gradle.process.ExecOperations
+def execOps = project.services.get(ExecOperations)
+def runExec = { Closure cfg -> execOps.exec(cfg) }
+```
+
+这是**真实的 API 不兼容**，不是环境问题。
+
+### 四、JDK 兼容性结论（有实测证据）
+
+| 组合 | 结果 |
+|---|---|
+| Gradle **8.10.2**（原 Wrapper）+ JDK 27 | **失败**：`Unsupported class file major version 71`（71 = Java 27）。Groovy 3.0.22 的 ASM 不认 Java 27 字节码 |
+| Gradle **9.8.2**（新 Wrapper）+ JDK 27 | **成功**：9m51s 完整 Release 构建 |
+
+Gradle 9.8.2 发行说明首条即「Java 27 support」，与其内置 Groovy 4.0.33 / Kotlin 2.4.10 匹配。
+
+### 五、Kotlin 2.4.21 离线包核对（不靠文件名认定）
+
+| 文件 | 大小 | 完整性 | 版本证据 |
+|---|---|---|---|
+| `kotlin-compiler-2.4.21.zip` | 86 MB | 133 条目，`testzip()` 无损坏 | `kotlinc/build.txt` = `2.4.21` |
+| `kotlin-gradle-plugin-2.4.21.jar` | 30 MB | 16190 条目，无损坏 | MANIFEST `Implementation-Version: 2.4.21` |
+| `kotlin-native-image-windows-x86_64-2.4.21.zip` | 105 MB | 79 条目，无损坏 | 顶层目录带 2.4.21 |
+
+**KGP JAR 依赖状况（重要限制）**：
+- 无 `.pom`、无 `.module`（无 Maven 元数据）
+- 不内嵌依赖：`gnu/trove` 0 个类、`kotlinx/coroutines` 0 个类
+- 结论：**不能只把 JAR 丢进 libs 就宣称插件安装成功**。缺 POM 与传递依赖
+  （kotlin-compiler-embeddable、trove4j、kotlinx-coroutines、kotlin-daemon-embeddable 等）。
+  本项目不用 KGP，因此该限制不影响交付，但如实记录。
+
+### 六、Kotlin 编译器升级实测（2.1.0 → 2.4.21）
+
+`tools/kotlinc` 已替换为 2.4.21（旧版备份在 `tools/kotlinc-2.1.0-backup`）。
+
+| 检查项 | 2.1.0 | 2.4.21 |
+|---|---|---|
+| `kotlinc -version` | kotlinc-jvm 2.1.0 | kotlinc-jvm **2.4.21**（JRE 27.0.1.0.3） |
+| class 文件 major version | 52 | **52**（一致） |
+| OrekiTrace 6 个静态方法 | gEnter/gSkip/ctTrue/ctFalse/buyTrue/buyFalse | **完全相同** |
+| D8 转 dex | 1792 B | **1824 B**（Kotlin 元数据差异，ABI 未变） |
+| `build_kotlin.py --clean` | 正常 | **正常，6 秒** |
+
+**ABI 逐字一致**，`build_kotlin.py` 无需改动（其内置 ABI 断言自动通过）。
+
+### 七、本次构建结果
+
+| 项 | 值 |
+|---|---|
+| 命令 | `gradle assembleRelease --offline`（Scoop Gradle 9.8.2 + JDK 27） |
+| 结果 | **BUILD SUCCESSFUL in 9m 51s** |
+| APK | `build/gradle-stage/反物质维度.apk`，69,782,175 B |
+| SHA-256 | `621f2bb94767b753964670c4db2ba8bc11cc2c028a8fadf6da02598552b854ad` |
+| 版本 | 3.19.0 / 30190000（**未冒充 3.20**） |
+| DEX | classes / classes2 / classes3 / **classes4（Kotlin 2.4.21，1824 B）** |
+| 签名 | v2 + v3 验证通过，证书 SHA-256 `95960bce…` |
+| 3.19 补丁回归 | **44 / 44 PASS** |
+
+### 八、Wrapper 升级注意事项
+
+用 `gradle wrapper --gradle-version 9.8.2` 生成后，`gradlew` 首次运行需下载
+`gradle-9.8.2-bin.zip`。本机网络直连 `services.gradle.org` 超时，
+因此**本次构建验证使用 Scoop 的本地 9.8.2 发行版**（`gradle` 命令），
+Wrapper 文件本身已正确指向 9.8.2，网络恢复后 `gradlew` 即可用。
+未做任何"跳过必要任务"的降级。
+
+### 九、验收策略变更
+
+同日起执行 §62「日常实机优先，版本更新完整回归」：
+日常改动不再强制跑 44 项静态探测；**游戏版本升级（如 3.19→3.20）仍必须完整回归**。
+本次工具链升级属 §62.4「特殊情况」，验证范围为：完整 Release 构建 + 3.19 补丁回归 + 实机启动。
+
+---
+
+## C.123　R76-SDK：Android SDK Command-line Tools 核对（不降级）（2026年11月4日）
+
+### 一、结论先行
+
+下载包 `commandlinetools-win-15859902_latest.zip` 的 `source.properties` 为：
+
+```
+Pkg.Revision=22.0
+Pkg.Path=cmdline-tools;22.0
+```
+
+而本机已安装的是：
+
+```
+C:\Users\Oreki\Android\sdk\cmdline-tools\latest\source.properties
+Pkg.Revision=23.0
+Pkg.Path=cmdline-tools;23.0
+```
+
+**已安装版本 23.0 比下载包 22.0 更新**。按「不降级」原则，**未安装该下载包**，
+现有 23.0 完整保留。文件名里的 `15859902` 是 Google 的下载 ID，不是版本号；
+版本必须以包内 `source.properties` 为准。
+
+### 二、下载包完整性（仅核对，未安装）
+
+| 项 | 结果 |
+|---|---|
+| 大小 | 155,655,386 B（149 MB） |
+| ZIP 完整性 | 330 条目，`testzip()` 无损坏 |
+| 顶层结构 | `cmdline-tools/`（单层，符合官方结构） |
+| 关键工具 | `bin/sdkmanager.bat`、`bin/avdmanager.bat`、`bin/android.exe`、`bin/apkanalyzer.bat` |
+| 版本证据 | `source.properties` → `Pkg.Revision=22.0` |
+
+顶层就是 `cmdline-tools/`，解压到 `sdk/` 下会得到 `sdk/cmdline-tools/...`，
+不存在「多嵌套一层」问题；但因版本更旧，**未采用**。
+
+### 三、当前 SDK 实际状态（2026-11-04 实测）
+
+SDK 根目录：`C:\Users\Oreki\Android\sdk`
+
+| 组件 | 已安装 | 可升级到 |
+|---|---|---|
+| `cmdline-tools/latest` | **23.0.0** | — |
+| `emulator` | 37.2.12 | 37.2.13 |
+| `platform-tools` | **37.0.1** | — |
+| `platforms/android-34` | 3.0.0 | — |
+| `platforms/android-36` | 2.0.0 | — |
+| `system-images/android-34/default/x86_64` | 2.0.0 | 4.0.0 |
+| `system-images/android-36/google_apis/x86_64` | 7.0.0 | — |
+
+**无 `build-tools` 目录**：本项目不依赖 SDK 的 build-tools，
+D8/apksigner/zipalign 全部走仓库内 `tools/bt/android-14/`。
+这与「非 AGP 工程」的形态一致。
+
+`ANDROID_HOME` / `ANDROID_SDK_ROOT` 两个环境变量**均未设置**；
+项目通过脚本内探测定位 SDK（见下），不依赖这两个变量。
+
+### 四、工具可用性实测
+
+| 工具 | 结果 |
+|---|---|
+| `sdkmanager --version` | 正常，输出 `1.1.16717390 (Android CLI)`（新版已把 sdkmanager 转为 android CLI 的包装，并有 deprecation 提示） |
+| `sdkmanager --list_installed` | 正常，返回上表 |
+| `avdmanager list avd` | 正常，列出 3 个 AVD |
+
+**AVD 全部保留**：`oreki_test`、`oreki_phone_test`、`oreki_web_test`
+（`C:\Users\Oreki\.android\avd\` 下 6 个文件完好）。
+
+注意：`avdmanager` 需要 `JAVA_HOME`；WorkBuddy 终端默认不继承系统变量，
+显式设置 `JAVA_HOME=C:\Program Files\Java\jdk-27.0.1.0.3` 后正常。
+
+### 五、修复：`build_kotlin.py` 的硬编码 SDK 路径
+
+原代码：
+
+```python
+ANDROID_JAR = pathlib.Path("C:/Users/Oreki/Android/sdk/platforms/android-34/android.jar")
+```
+
+这是个人绝对路径，换机器/换 SDK 根目录即失效，也不该出现在 Git 跟踪文件里。
+
+改为 `_find_android_jar()`：优先读 `ANDROID_HOME` / `ANDROID_SDK_ROOT`，
+其次常见默认位置，最后按 `platforms/android-*` 最高版本回落；
+仍优先 `android-34`（本项目 d8/资源基线按它验证过）。
+
+实测解析结果：`C:\Users\Oreki\Android\sdk\platforms\android-34\android.jar`（存在）。
+
+### 六、未做的操作及原因
+
+| 操作 | 原因 |
+|---|---|
+| 安装 22.0 cmdline-tools | 比已装的 23.0 旧，降级违反指令 |
+| 升级 emulator 37.2.12→37.2.13 | 现有 emulator 已满足 AVD 运行；改它会影响已在用的 3 个 AVD，风险大于收益 |
+| 升级 system-image android-34 2.0.0→4.0.0 | 会改动 `oreki_test` 依赖的镜像；本轮未授权删除/重建 AVD |
+| 设置 `ANDROID_HOME` | 指令要求「不擅自修改系统级环境变量」；项目已不依赖它 |
