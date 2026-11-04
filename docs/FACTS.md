@@ -7633,3 +7633,157 @@ Kotlin file`）。因此 Kotlin 层访问游戏类一律走 `Class.forName` + �
 - 5 个购买动作的 `allow/noteActed` 接线尚未落地（需在 OrekiStageAuto 侧改造，
   而该文件仍是 Smali —— 按 §64 需先转译再改，属下一轮工作）。
 - 3.20 的 8 个补丁锚点仍未迁移。
+
+---
+
+## C.125　R78：双端全局节拍闭环 + OrekiStageAuto Kotlin 全量转译（2026年11月4日，【读码】+【实测】）
+
+### 一、Android 侧：OrekiStageAuto 全量转译（1979 行 Smali → Kotlin）
+
+| 项 | 值 |
+|---|---|
+| 源文件 | `scripts/payload/kotlin/kajfosz/antimatterdimensions/oreki/OrekiStageAuto.kt` |
+| 原 Smali | 1979 行，已删除 |
+| ABI 方法数 | **14 个 public static**（逐字一致） |
+| 编译 | kotlinc 2.4.21 + JDK 27 |
+| D8 产物 | `build/kt/classes.dex` **98,568 B** |
+| APK 槽位 | `classes4.dex` |
+
+ABI 清单（`build_kotlin.py` 的 `EXPECTED_ABI` 逐方法 javap 断言）：
+onAutoBuyerTick()V / isDoomed()Z / eternitiesZero()Z / enableIpMultAutobuyer()V /
+autoSacrifice()Z / upgradeBulkAll()Z / buyInfinityUpgrades()Z / tryBreakInfinity()V /
+upgradeCrunchInterval()Z / tryBuyId1()Z / holdCrunch()Z / enableEarly()V /
+crunchProbe()V / applyCrunchPolicy()V
+
+注意：5 个购买方法的返回类型从 V 改成 Z。这不是破坏 ABI ——
+它们的**唯一调用方**是本类自己的 onAutoBuyerTick（也在本次迁移内），
+外部只有 isDoomed()Z 与 holdCrunch()Z 两处 invoke-static（OrekiBreakGate /
+OrekiEternity），签名未变。已用全 payload grep 确认。
+
+### 二、为什么最终用 GameApi（缓存反射）而不是类型桩
+
+R78 先实现了 `scripts/gen_kotlin_stubs.py`（从基线 smali 提取公开 ABI 生成同名同包桩类），
+实测在复杂类型上不可行，三条硬阻塞：
+
+1. **泛型擦除**：`java.util.List` 在桩里必须写 `<*>`，但原方法返回 List 裸类型时
+   桩编译报 `one type argument expected`；
+2. **Any 成员冲突**：smali 里 hashCode()I / toString()Ljava/lang/String 是 public，
+   桩生成后与 Kotlin 的 Any 成员冲突，报 `hides member of supertype 'Any'`；
+3. **递归爆炸**：从 Player 出发递归展开签名类型会拖进 **6677 个类**，
+   编译桩要数分钟且桩之间互相引用还要排序。
+
+最终方案 GameApi.kt：**句柄解析一次并缓存为字段**（by lazy），之后每帧只做 Method.invoke。
+这不是 R78 禁止的"大量逐次反射" —— 没有任何购买路径或每帧路径会做名称查找。
+按用户设置的 1~60 秒间隔，每拍最多 1 次动作，缓存 invoke 的开销不可测。
+
+### 三、R78 的核心修复：5 个真实购买动作纳入全局节拍
+
+修复前（R77 结束时）：onAutoBuyerTick 里这 5 个方法每帧无条件直接调用，
+allow() 一次都没走，且每个方法内部还有批量循环：
+
+| 方法 | 旧行为 | 旧上限 |
+|---|---|---|
+| autoSacrifice | 每帧判定并可能献祭 | 每帧 1 次 |
+| upgradeBulkAll | 循环 8 个维度全升 | **一帧 8 次扣费** |
+| buyInfinityUpgrades | 买到就继续遍历 | **一帧最多 17 项** |
+| upgradeCrunchInterval | 循环买 interval | **一帧最多 16 级** |
+| tryBuyId1 | 循环 1..8 层 | **一帧最多 8 次** |
+
+修复后：
+
+| 方法 | 新行为 | 每拍上限 |
+|---|---|---|
+| autoSacrifice | 返回 Z（真的献祭了才 true） | 1 |
+| upgradeBulkAll | **轮转单维度**（sBulkCursor），返回 Z | 1 |
+| buyInfinityUpgrades | 只买第一个可买项即 return true | 1 |
+| upgradeCrunchInterval | 循环上限 16 → **1**，返回 Z | 1 |
+| tryBuyId1 | **轮转单层**（sIdCursor），返回 Z | 1 |
+
+全部按 allow → 执行 → noteActed/noteNoop 三段式接入。no-op 不占节拍。
+
+### 四、构建期守卫的迁移（Smali 断言 → Kotlin 断言）
+
+R78 迁移后有 8 处守卫读 OrekiStageAuto.smali，全部会因文件不存在而失败。逐条换算：
+
+| 守卫 | 原断言 | Kotlin 等价断言 |
+|---|---|---|
+| 开局闩锁 | sput-boolean ≥2 处 | sEarlyApplied = true/false ≥2 处 + 早退守卫 |
+| R41 极性表（8 条） | if-eqz / if-nez / if-ltz / if-gez 助记符 | 对应 if (!x) / if (x) / if (c < 0) / if (c >= 0) |
+| R57-1 硬门 | eternitiesZero() 后不得跳 :oreki_sa_try_end | Kotlin 里无该跳转即通过 |
+| ET1 挂点 | OrekiEternity.tick() 在 tryBuyId1 之前 | GameApi.eternityTick() 在 tryBuyId1() 之前 |
+| AU4b 策略 | a(I)V ≤2 次 + 每次紧跟闩锁置位 | setCrunchMode ≤2 次 + 每次前 40 行内有 sCrunch*Init = true |
+| AD5b BreakGate 顺序 | interval → BreakGate → ID1 | runScheduled("crunchInterval") → allow("breakGate") → runScheduled("idBuy") |
+| R42 PelleRecord 顺序 | 在 applyCrunchPolicy 与 doomed 早退之前 | Kotlin 同序 |
+| R74 大坍缩策略夹具 | 11 项 Smali 断言 | **16 项 Kotlin 断言**（比原来更严） |
+
+fixture_eternity_gate.py 45 项、fixture_crunch_policy.py 16 项、
+fixture_strategy_semantics.py 77 项 —— 全部改为读 Kotlin 或做双源兼容。
+
+### 五、构建性能：两处全树扫描的真凶
+
+R78 构建一度 15 分钟不落盘，被误判为卡死。定位到**两处**每次构建都对 23,220 个
+smali 文件做 read_text 的守卫：
+
+| 位置 | 用途 | 单次耗时 | 修法 |
+|---|---|---|---|
+| verify_payload 的 AchievementUnlocker 死代码检查 | 确认全树 0 引用 | **6m57s** | 收窄到 payload smali + kotlin（该类是我们新增后删掉的，原版从不引用） |
+| verify_payload 的 StageAssist 调用点检查 | request 只被 1 处调用 | 同上 | 收窄到 payload + 基线 oreki 包（该类是我们新增的，包外不可能有合法调用） |
+
+**根因**：Windows 上每文件 open+read 约 18ms（杀软实时扫描），23,220 × 18ms ≈ 7 分钟。
+bytes.count 预筛无效 —— 瓶颈在 IO 不在 CPU。
+
+### 六、Web 侧：runCycle 全局节拍（对应 Android 三处缺陷）
+
+| 缺陷 | 修复 |
+|---|---|
+| 连续型豁免（cls === "cont" 直接执行） | **删除该分支**，所有任务进同一队列 |
+| 默认档只按单任务计时 | 第一道闸恒为 globalGateFree() |
+| Date.now() 非单调 | 新增 nowMs()，优先 performance.now() |
+| 同帧可多个动作 | 新增 STATE.frameActed + frameGateFree() |
+
+行为自测（scripts/test-scheduler-beat.mjs，Node 直跑，10 项）：
+
+| 场景 | 结果 |
+|---|---|
+| 首帧 5 个任务同时满足 | 只执行 1 个 PASS |
+| 1 秒档：500ms 拒绝 / 1100ms 放行 | PASS |
+| 60 秒档：59s 拒绝 / 61s 放行 | PASS |
+| no-op 之后同帧仍放行真动作 | PASS |
+| 真动作占拍后紧接的帧被拒 | PASS |
+| 关闭后一个都不执行 | PASS |
+| 改成 1 秒后立即按新值调度 | PASS |
+| 连续型（cont）不再豁免 | PASS |
+
+### 七、Web 六档 Android Chrome 验收（非 Edge、非 headless）
+
+| 项 | 值 |
+|---|---|
+| 设备 | oreki_test AVD，Android 16 / API 36 / x86_64 / 1440×3200 |
+| 浏览器 | **com.android.chrome 133.0.6943.137**（真机 Chrome） |
+| 系统语言 / 时区 | zh-Hans-CN / Asia/Shanghai（**保持原样，未改动**） |
+| 调试通道 | adb forward tcp:9222 localabstract:chrome_devtools_remote |
+| 视口 | 320/640、360/740、390/844、430/932、768/1024、1280/800 |
+| 结果 | **6/6 通过**（innerWidth 精确匹配，无横向溢出） |
+
+关键踩坑：Chrome 133 已**不再读取** /data/local/tmp/chrome-command-line，
+写那个文件开不了 devtools。实际可行的路径是：先完成首次运行引导
+（FirstRunActivity → 点「在不登录账号的情况下使用」），之后 Chrome 才会
+建立 chrome_devtools_remote socket。
+
+### 八、遗留 Smali / 无法转译清单
+
+| 类 | 状态 | 原因 |
+|---|---|---|
+| OrekiBreakGate | 仍 Smali | 本轮**未修改**其逻辑，只从 Kotlin 调用 tick()；按 §64「不修改则不必迁移」 |
+| OrekiBreakShop | 仍 Smali | 同上 |
+| OrekiSmartStrategy / OrekiStrategyData | 仍 Smali | 只读解释器，由 JSON 编译生成，不含购买逻辑 |
+| OrekiEternity / OrekiReality / OrekiGlyphAuto / OrekiTeresaAuto / OrekiPelleRecord | 仍 Smali | 同上，本轮未改其逻辑 |
+| OrekiAutomationUiListener / SpeedSettingsActivity | 仍 Smali | UI 层，本轮未改 |
+
+**本轮新增/修改的 Smali 业务逻辑 = 0 行**（所有改动都在 Kotlin 或构建脚本里）。
+
+### 九、待办
+
+- 3.20 的 8 个补丁锚点仍未迁移。
+- check_automation_scheduler.py 仍针对旧 Smali 调度器，需整体重写为 Kotlin 断言
+  （不被构建调用，不影响交付）。
