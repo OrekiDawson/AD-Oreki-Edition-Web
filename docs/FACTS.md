@@ -7067,3 +7067,258 @@ r51.a(unlocked) != null # 取得到挑战对象
 - Web 六视口未实测；本轮无桌面 Chrome。
 - Android 大坍缩第三模式**未在界面上实测**（模拟器连续弹「反作弊 / 语言 / 成就辅助」对话框，
   自动化点击被挡住）。已改用「同源代码 + 真实 getter 执行」的回归测试代替，并明确标注不是界面实测。
+
+---
+
+## C.119　R73：Android 大坍缩「第三模式点不动」的真实根因是**UI 不重绘**（2026年11月4日）
+
+### 一、推翻了 R72 的「循环列表缺 TIME」假设
+
+R72 曾推测「模式循环列表里少了 TIME」。**这是错的。** 本轮逐条核对：
+
+`CrunchAutobuyerState.Q()V`（唯一的模式切换函数）：
+
+```
+iget v0, ...->mode:I
+add-int/lit8 v0, v0, 0x1
+rem-int/lit8 v0, v0, 0x3      # ← (mode + 1) % 3，三态循环完全正确
+iput v0, ...->mode:I
+```
+
+枚举值（与 Web `AUTO_CRUNCH_MODE` 一致）：`AMOUNT=0`、`TIME=1`、`X_HIGHEST=2`。
+`a(I)V` 是纯 setter（一行 `iput`），`I()I` 是纯 getter。**没有归一化、没有缺项、没有越界。**
+
+`Q()` 的调用者只有一个：`MainActivityOptionsKt$toggleCrunchMode$1`，
+也就是自动购买器卡片上那个模式按钮的点击回调。
+
+### 二、真正的根因：标题只在构造时设置，`b()` 从不重设
+
+- 模式按钮 `wn.e` 的标题文案，在 `AutobuyerSingleBoxView` **构造函数**里设置一次
+  （全文只有一处 `iget-object v2, v2, Lvn;->e:Lwn;`，在第 864 行）。
+- 刷新入口 `b(Lxn;Z)V` 只更新：数值、间隔、以及 `w` 按钮的「购买单个/最大」文案，
+  **从不碰模式按钮的标题**。
+
+于是行为是：**点击 → mode 真的变了 → 阈值文案跟着变（可观测）→ 但标题不动**。
+玩家看到「点了一下没反应」，切到别的页再回来才刷新 —— 这就是被报告为「点不动」的机制。
+
+### 三、AVD 实测证据（eternities=100 存档，选择器已解锁）
+
+连续点击模式按钮并读取界面：
+
+| 点击 | 模式标题 | 阈值 | 判读 |
+|---|---|---|---|
+| 起始 | 每 X 秒自动大坍缩 | 1.00 | mode=1 |
+| 1 | 最高无限点数的 X 倍 | 10.00 | mode→2，标题跟着变了 |
+| 2 | 大坍缩后获得 X 无限点数 | **7.260e5** | mode→0，但阈值还是上一个模式的量级 |
+| 3 | 大坍缩后获得 X 无限点数 | 10.00 | 标题**卡住不动** |
+| 4 | 大坍缩后获得 X 无限点数 | 10.00 | 仍然不动 |
+| 切页返回 | 最高无限点数的 X 倍 | 10.00 | **切页才刷新** |
+
+「标题不动但阈值在变」正是「UI 未重绘」的判别特征 —— 若 mode 真的没变，阈值不会变。
+
+存档侧确认 mode 值正常写入：`auto.bigCrunch.mode` 在 0/1/2 之间真实变化。
+
+### 四、修复
+
+在 `AutobuyerSingleBoxView.b()` 收尾处按当前 mode 重设模式按钮文本
+（`patch_crunch_mode_label_refresh()`，注入点在 `iput-boolean p2, ...->c:Z` 之前）：
+
+```
+vn.e != null && w != null
+  → mode == 0 → R.string.auto_crunch_mode_amount     (0x7f11030e)
+  → mode == 1 → R.string.auto_crunch_mode_time       (0x7f11030f)
+  → mode == 2 → R.string.auto_crunch_mode_x_highest  (0x7f110310)
+  → setText(...)
+```
+
+- 只对「带模式选择器」的卡片生效，其它自动器零影响；
+- 全段只读 mode + 一次 setText，**不写任何存档字段**，不替玩家切换模式；
+- 里程碑解锁规则原样保留（选择器不出现时不进入该分支）。
+
+### 五、守卫
+
+`scripts/fixture_crunch_mode_label.py`（20 项）：补丁函数存在且已接入主流程、
+注入块关键片段齐全（防拼接截断）、**注入块不得出现 `a(I)V`/`Q()V`**（红线）、
+锚点在源文件中唯一、原版 `Q()` 仍为 `% 3`、三个文案资源 id 与 `public.xml` 一致。
+已接入 `build_mod.py` 的 4b 断言，失败即中止，不必等 apktool。
+
+### 六、教训
+
+R72 把「模式值不变」和「模式标题不变」混为一谈，据此推断「列表缺项」，方向错了。
+**判别方法应是看阈值/触发条件是否跟着变** —— 那才是执行层的真实口径；
+标题只是显示。本轮靠这一点把范围从「枚举/循环」收敛到「UI 重绘」。
+
+### 七、R73 的实测结果（重要：**部分修复，TIME 仍未闭环**）
+
+修复后的包（`45e80333…`）在 AVD 上实测（eternities=100 存档，选择器已解锁）：
+
+**已修复**：模式标题**点击后立即刷新**，不再需要切页。连点记录：
+
+| 点击 | 标题（点击后立即读） | 判读 |
+|---|---|---|
+| 1 | 最高无限点数的 X 倍 | 标题即时更新 ✅ |
+| 2 | 大坍缩后获得 X 无限点数 | 即时更新 ✅ |
+| 3 | 最高无限点数的 X 倍 | 即时更新 ✅ |
+| 4 | 大坍缩后获得 X 无限点数 | 即时更新 ✅ |
+| 5/6 | 大坍缩后获得 X 无限点数 | 仍有偶发不更新 |
+
+重启游戏后读到的仍是「最高无限点数的 X 倍」+ 10.00 → **持久化通过**。
+
+**仍未修复**：循环只在 `AMOUNT(0)` ↔ `X_HIGHEST(2)` 之间跳，**TIME(1) 不出现**。
+6 次点击后存档 `auto.bigCrunch.mode = 2`；若真走 `Q()` 的 `(mode+1)%3`，
+从起始 1 经 6 次应回到 1。**证明卡片按钮不走 `Q()`。**
+
+已排除：`Q()` 函数体确实正确（`rem-int/lit8 v0, v0, 0x3`）、`a(I)V` 是纯 setter、
+`I()I` 是纯 getter、枚举值与 Web 一致（0/1/2）、无归一化、无越界。
+`sn.smali` 的 18 个 pswitch 分支里没有一条触达 `CrunchAutobuyerState`，
+说明卡片模式按钮用的是**另一个监听器**，本轮未定位到。
+
+**下一轮唯一入口**：从 AVD 抓一次真实点击的调用栈（`logcat` + `debug.*` 或
+在 `CrunchAutobuyerState.a(I)V` 里临时插一行日志打印调用方），
+一次确认「谁在把 mode 设成 0/2」，然后只改那一处。不要继续静态搜。
+
+---
+
+## C.120　R74：大坍缩「第三模式点不动」的真根因 —— **MOD 自己每帧覆盖玩家选择**（2026年11月4日）
+
+### 一、根因（运行时调用栈，非推断）
+
+用 frame-observer 新增的 Logcat 模块 + 临时插桩（`CrunchAutobuyerState.a(I)V` 里打
+`new Throwable().getStackTrace()`）抓到：
+
+```
+11-04 06:01:07.851 I OREKI_R74_DIAG: mode 0 -> 2
+  CrunchAutobuyerState.a(Unknown Source:2)
+  <- OrekiStageAuto.applyCrunchPolicy(Unknown Source:73)
+  <- OrekiStageAuto.onAutoBuyerTick(Unknown Source:6)
+  <- kajfosz.antimatterdimensions.a.b(Unknown Source:0)
+  <- kajfosz.antimatterdimensions.a.f(...:116)
+  <- MainActivityGameLoopKt$gameLoop$1.invokeSuspend(...:11)
+  <- rx0.run(...) <- ThreadPoolExecutor
+```
+
+**每一帧 gameLoop 都在把 mode 改成 2。** 玩家在卡片上选 AMOUNT(0) 后下一帧即被覆盖；
+TIME(1) 因为旧代码里 `if-eq v1, 1 → ret_p` 的特判被放过 —— 于是三选一实际只有两态可用。
+
+### 二、推翻了 R72/R73 的两个假设
+
+| 轮次 | 假设 | 结论 |
+|---|---|---|
+| R72 | 模式循环列表缺 TIME | **错**：`Q()` 是 `(mode+1)%3`，完整 |
+| R73 | UI 标题不重绘导致「看着点不动」 | **只是表层**：标题不刷新确实存在（已修），但 mode 被改回去才是主因 |
+
+R73 的观察「6 次点击后 mode=2」当时被解释为「不走 Q()」，实际是
+**每次点完都被 `applyCrunchPolicy` 立刻改回 2**，所以从存档只能看到 2。
+
+### 三、修法
+
+`OrekiStageAuto.applyCrunchPolicy()` 里两处写 mode 的代码都改成**一次性初始化**：
+
+| 位置 | 原行为 | 现行为 |
+|---|---|---|
+| 早盘（break 升级位图为空）→ TIME/1s | 每帧 `a(1)` + `O(1.0)` | `sCrunchTimeInit` 只写一次 mode；`O(1.0)` 仍每帧校准（那只是间隔参数） |
+| 常规 → X_HIGHEST | 每帧「不是 2 就改成 2」 | `sCrunchPolicyInit` 只做一次 xHighest 默认校准；**不再改 mode** |
+
+闩锁是进程级静态位，不写存档、不改存档结构。重启后若 mode 已是目标值，等值判断会跳过，
+不会覆盖玩家选择。
+
+### 四、守卫
+
+- `scripts/fixture_crunch_policy.py`（11 项）：`a(I)V` 次数 ≤2、每次都在 `sCrunch*Init`
+  置位之后、无旧的两态兜底、不碰私有字段、保留 `if-eq v1, v2, :ret_p`、有 `.catch` 兜底。
+- `build_mod.py` 的 `verify_au4b` 同步改为**精确版**：不再要求「必须有 a(I)V」，
+  而是要求「每次 a(I)V 都紧跟一次性闩锁」。
+- 已接入 4b 断言链。
+
+### 五、过程教训（两次构建都是自己造成的）
+
+1. **第一次诊断构建只花 16 秒**：Gradle 的 `fingerprintInputs` 只统计
+   `payload_smali / base_decoded / build_scripts ...`，**`work/mod` 是产物目录、不在指纹里**。
+   直接改 `work/mod` 后 Gradle 判定 `UP-TO-DATE` 整段跳过 ——
+   「构建成功但改动没进包」。必须改 `build_mod.py`（会改变 `build_scripts` 指纹）。
+2. **第一次正式构建 9m08s 失败**：我自己写的断言「本方法不得出现 a(I)V」与实现矛盾
+   （初始化分支必须写一次）。本地夹具因为判据更宽松没报错，两边口径不一致。
+   **教训：改完 build_mod 的断言，必须用同一份源码在本地预演一遍，再启动构建。**
+
+---
+
+## C.121　R75：R74 收口 + Kotlin 首个迁移单元（2026年11月4日）
+
+### 一、R74 三态验收（逐一，不只 TIME）
+
+在 AVD `oreki_test` 上逐模式验证（存档 `eternities=100`，选择器已解锁）：
+
+| 模式 | 枚举 | 保持 8~12 秒 | 切页返回 | 自动存盘 | 重启后 |
+|---|---|---|---|---|---|
+| AMOUNT（大坍缩后获得 X 无限点数） | 0 | ✅ 11s 不变 | ✅ | `mode=0` | ✅ 仍 AMOUNT |
+| TIME（每 X 秒自动大坍缩） | 1 | ✅ | ✅ | `mode=1` | ✅ 仍 TIME |
+| X_HIGHEST（最高无限点数的 X 倍） | 2 | ✅ 8s 不变 | ✅ | `mode=2` | ✅ |
+
+**关闭自动化**：点总开关后 `options.autobuyersOn` 从 `true` → `false`，`bigCrunch.mode` 保持 0 不再被改写。
+
+> 注意：自动购买器页的「自动购买器 / 已启用」是**总开关**（左侧，x≈245），
+> 中间那块「状态切换」（x≈720）是单个自动器的开关，点它不会关总开关 —— R75 一开始点错，已纠正。
+
+### 二、ID1 目标：当前代码已覆盖，无需新增
+
+现有 `OrekiStageAuto.tryBuyId1()` 已实现完整链路：
+
+```
+Player.m()（是否 Break） → 遍历 1..8
+  → InfinityDimensionState.k()（原版价格）
+  → thisEternity.maxAM >= k() ?   （反物质门槛）
+  → G() / M()（解锁判定）→ i()（买最大）→ h(true)（原版购买入口）
+  → 以「购买前后 y()（已购数）是否变化」判定成功，变了才打 OREKI_ID
+```
+
+**AVD 实测（R75）**：日志里 `OREKI_ID` 共 624 条，按维度分布：
+
+| ID | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|---|
+| 购买次数 | 222 | 130 | 105 | 78 | 33 | 18 | 11 | 7 |
+
+即 **ID1~ID8 全部在真实购买**，ID1 早已突破。当前存档：`AM=1.71e13574`、
+`IP=7.65e150`、`infinities=6.0e7`、`thisEternity.maxAM=1.78e31327`。
+**结论：R75 设想的「让智能购买器识别 ID1 目标」在现有实现里已经完成且正在运行，本轮无需新增代码。**
+
+### 三、frame-observer 收口
+
+| 项 | 结果 |
+|---|---|
+| 清空后缓冲归零 | ✅ 复测通过（**先暂停再清空**，否则新日志会立刻打破 0） |
+| 断连检测 | ✅ 杀掉 logcat 子进程后 `alive=false` |
+| 断连后恢复 | ❌→✅ 修复后通过：`start()` 原来只判 `running`，子进程死了也不重启；改为 `running && isAlive()` |
+| 截图 503 | 环境限制（重装后投影授权失效），非缺陷，未反复修 |
+
+### 四、Kotlin 首个迁移单元：`OrekiTrace`
+
+原 Smali：6 个纯静态日志方法，零依赖、无生命周期。迁移到
+`scripts/payload/kotlin/kajfosz/antimatterdimensions/OrekiTrace.kt`（`object` + `@JvmStatic`）。
+
+**ABI 核对（javap 实测）**：与 Smali 版逐一对齐，6 个 `public static final void xxx()`，
+类名、方法名、参数、返回值完全一致，调用点无需改动。
+
+**工具链**：`tools/kotlinc/`（Kotlin 2.1.0，随仓库携带）+ `tools/bt/android-14/d8.bat` + `android-34/android.jar`。
+新增 `scripts/build_kotlin.py`：编译 → ABI 断言 → D8，产物 `build/kt/classes.dex`。
+
+**接入方式**：`build_mod.py` 在 apktool 打包后把该 dex 作为 `classes2.dex` 注入 APK，
+并删除同名 `OrekiTrace.smali`（避免 duplicate class）。
+选这条路的理由：apktool 3.x 不能反编译裸 dex，仓库也没有独立 baksmali；
+Android 原生支持多 dex，改动面最小。
+
+### 五、JAVA_HOME 环境变量：**无权限，已如实记录**
+
+| 项 | 实测 |
+|---|---|
+| 系统级 `JAVA_HOME` | 空 |
+| `where java` / `javac` | 无输出 |
+| 可用 JDK | `tools/jdk/jdk-17.0.20.1+1`、`tools/jdk/jdk-21.0.13+9` |
+| 当前账户管理员 | **否** |
+| 写 Machine 变量 | **失败**：`不允许所请求的注册表访问权` |
+| `sudo.exe`（Win11 内置 v1.0.1.0） | 存在，但此非交互会话中执行后**无输出、无写入**，提权无效 |
+
+按要求「无权限就明确报告、不降级为临时设置」，**未写入任何用户级变量**。
+已把要求与实际结果写入 `README.md` §6.2，并保留 `scripts/set_java_home_admin.ps1`
+供有管理员权限时一键执行（只追加、不覆盖、不重复，并回读校验）。
+
+现有兜底不依赖全局 Java：`gradlew` 与 `build.gradle` 都按目录扫描 `tools/jdk/*`。
