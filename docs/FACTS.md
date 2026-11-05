@@ -48,6 +48,19 @@
 - `[实测]` R81 最终候选版本 3.20.0/30200000、包名 com.oreki.antimatterdimensions、v3签名有效，四个DEX；classes4.dex与Kotlin编译结果逐字节相同（2637800字节）。最终APK为81519879字节，SHA-256 `27634e17a20dc77d1b88a3af55ec9098ba8d1eff1d5b0e5807fa92230ad7ef99`；已通过模拟器启动、持续循环、普通挑战重进返回及重启读档，18:37写入release与双网盘文件夹，三副本哈希一致。无限维度解锁后购买、IP倍率本轮实际扣费、首次永恒代购和完整终局未覆盖，不能据此宣称三小时通关。
 - `[实测]` Web永恒商店修复源码f9747b6、Pages部署9107863均已推送，线上 https://oreki.net/ 对应模块返回200且与本地修复一致。Android Chrome 133默认视口已加载实际游戏，不是桌面模拟，也不代表最新版兼容性。
 
+## R82 首次永恒前 ID1 成长链（2026年11月5日）
+
+- `[读码]` ID1 解锁为**双条件**：`thisEternity.maxAM >= k()` 且（永恒未解锁时）`IP >= f`。`k()` 在 3.20 实测 1e1100，`f` = `BASE_COSTS[1]` = 1e8；`p()` = `(perk放行 || maxAM达标) && v()`。旧代码用 `Double.MAX_VALUE` 当 ID1 门槛是错的，那是 `Player.canCrunch` 的无限反物质目标。
+- `[读码]` `OrekiStageAuto.computeHoldCrunch()` 曾写成 `else if (eternitiesZero()) return false`，语义与设计相反：首次永恒前完全不保护，坍缩反复清零反物质，`maxAM` 永远到不了 1e1100。R82 已改为 `else if (!eternitiesZero())`，并加构建期极性断言。
+- `[读码]` 货币扣费三个方法必须区分（`bq0.smali`）：`i(BigDouble)Z` 1050-1074 只判余额不扣钱；`u(BigDouble)Lbq0;` 1206-1220 只 subtract+m 写回不判余额；`o(BigDouble)Z` 1122-1140 = `i`+`u`，等价 Web `Currency.purchase()`。R81 误把 `i()` 当购买入口，导致 IP 倍率涨级不扣费（伪造进度）；R82 已锁定 `o()` 并加构建期守卫。
+- `[实测]` R81 真机日志中 `sacrifice` 连续每拍 `act`、`idBuy` 全程无 `act`：固定顺序 + 每拍单动作必然饥饿。R82 改为仅 ID1 窗口内优先 `idBuy`，不放宽任何闸门。
+- `[读码]` Web `tryFirstId1AutoUnlock()` 原在 `gameLoop` 每帧直接 `buyMax()`，绕过统一节拍且只判 `DC.E8`。R82 移除该直购旁路，统一由 `OrekiEarlyAutomation.tick()` 在节拍内完成。
+- `[实测]` `work/3.20` 参考目录在本轮中途由含 `app/src/main/java` 的 90MB 树变为空目录（0 条目）；本轮未写入该目录，语义核对改用 `work/base_decoded_320` 的 smali。
+- `[实测]` R82 最终 APK：3.20.0/30200000、`com.oreki.antimatterdimensions`、81,519,879 字节、SHA-256 `e031a256c03ee8ec44d341b438704e44ecbc40ab558f8ac6007d565ab1656253`、v3 签名有效、4 个 DEX、`classes4.dex` 与 Kotlin 编译产物逐字节一致。已写入 release 与双网盘同名文件，三副本哈希一致。
+- `[实测]` AVD（oreki_test）本轮日志统计 `act sacrifice` 32 次、`act idBuy` 8 次、`act breakShop` 7 次，ID1/ID2/ID3 均有真实购买记录，反物质达 1.50e1129；无 `FATAL EXCEPTION`。自动购买器页面不再出现 R73 遗留注入导致的 `NoSuchFieldError: ->b:Lvn;`。
+- `[读码]` 4 处 3.19→3.20 类型漂移在本轮构建期被守卫抓出并修正：`bq0.g0` 的类型应为 `Lup0;`（非 `Lip0;`）；时间研究注册表 `l43`→`i63`（3.20 的 `l43` 已被 R8 复用为无关 lambda 类）；Kotlin 函数接口 `ui1`→`vl1`（两版身份互换）；R73 模式标题注入在 3.20 必须跳过（原版 `mainactivity/l0.D` 已自带）。
+- `[实测]` Web 定向测试 17/17（`test-r82-id1-growth.mjs`，第 1 组直接加载生产 getter）、IP 倍率 7/7、调度节拍 10/10。https://oreki.net/src/core/oreki-early-automation.js 与本地逐字节一致。
+
 ## B. 仓库与产物
 
 | 事实 | 值 | 等级 |

@@ -100,6 +100,7 @@
 | 68. | docs/ 文档命名规范（简体中文，2026-11-05 用户下达） | AGENTS.md §68 |
 | 69. | 新增代码必须配必要的简体中文注释 | AGENTS.md §69 |
 | 70. | Android 只生成 APK，禁止生成 XAPK | AGENTS.md §70 |
+| 72. | 构建与回归测试按改动范围执行，禁止机械全量回归 | AGENTS.md §72 |
 | 71. | APK 网盘覆盖偏好与文件夹交付口径（不回读云端） | AGENTS.md §71 |
 | 全局八 | 文件保护与 Git | GLOBAL-RULES.md §八 |
 | 全局六 | 共享资源与开发机性能 | GLOBAL-RULES.md §六 |
