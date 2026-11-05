@@ -1,11 +1,11 @@
 // 教程正文的构建期校验。
 //
-// 契约来源：docs/TUTORIAL_SCHEMA.md「校验规则（构建期必须全部通过）」8 条。
+// 契约来源：docs/教程数据结构说明.md「校验规则（构建期必须全部通过）」8 条。
 // 这个脚本就是那 8 条的机器实现，另外补了 2 条「防回归」检查（见 EXTRA_RULES）：
 //   E1. src/core/oreki-tutorial-data.gen.js 必须与 JSON 同步（改了 JSON 忘了生成 = 网页显示旧正文）
 //   E2. 空字段必须留痕（规则 8 的配套：为空的字段要在 note 里说明「为什么这里不需要」）
 //
-// 规则 8（译名黑名单）的权威来源是 docs/TUTORIAL_GLOSSARY.md 第四节。
+// 规则 8（译名黑名单）的权威来源是 docs/教程术语表.md 第四节。
 // 表里每一条「官方 0 次」的写法都在这里变成一条硬断言，命中即构建失败。
 // 这条规则的意义：译名错误是**不可见**错误——玩家看不出「时间定理」是错的，
 // 只有对着官方字符串表逐词统计才发现官方一次都没这么写过。所以它必须机器卡，
@@ -41,7 +41,7 @@ const FORBIDDEN_PHRASES = [
 
 /**
  * 规则 8：禁用译名黑名单 → 正确写法。
- * **不在本文件里维护词表**——词表唯一来源是 docs/TUTORIAL_GLOSSARY.md 第四节
+ * **不在本文件里维护词表**——词表唯一来源是 docs/教程术语表.md 第四节
  * 「禁用译名（官方 0 次，一律不许用）」那张表。Android 生成器
  * `android/.../scripts/oreki_tutorial_gen.py` 解析的是同一张表。
  *
@@ -52,7 +52,7 @@ const FORBIDDEN_PHRASES = [
  * 表格行格式：`| **时间定理** | **时间之理** | 说明 |`
  * 第一个单元格可写多个禁用写法，用 `/` 分隔（如 `艾法瑞格 / 艾法瑞`）。
  */
-const GLOSSARY_PATH = path.join(ROOT, "docs", "TUTORIAL_GLOSSARY.md");
+const GLOSSARY_PATH = path.join(ROOT, "docs", "教程术语表.md");
 
 function loadForbiddenTerms() {
   if (!fs.existsSync(GLOSSARY_PATH)) {
@@ -81,7 +81,7 @@ function loadForbiddenTerms() {
     for (const term of strip(cells[0]).split(/\s*\/\s*/u)) {
       // 单元格里常带括注说明（`灌注（特蕾莎）`），禁用词本体不含括注
       const bare = term.replace(/（[^）]*）/gu, "").trim();
-      if (bare.length > 0) terms.push({ term: bare, correct, why: "见 docs/TUTORIAL_GLOSSARY.md 第四节" });
+      if (bare.length > 0) terms.push({ term: bare, correct, why: "见 docs/教程术语表.md 第四节" });
     }
   }
   if (terms.length === 0) {
@@ -200,7 +200,7 @@ function collectTexts(chapter) {
 
 /* [R43] 旧 checkSourceRef()（校验 numbers[].src 路径可定位）已随规则 5 反转一并删除。
  * 原因：旧规则强迫教程正文写源码路径，而弹窗会把 src 直接渲染给玩家看。
- * 现在 numbers 只允许 {label, value}；溯源证据见 docs/R43_tutorial_source_refs.md。
+ * 现在 numbers 只允许 {label, value}；溯源证据见 docs/R43教程正文来源对照.md。
  */
 
 function main() {
@@ -273,7 +273,7 @@ function main() {
   // 教程正文里写源码路径，而 OrekiTutorialModal 会把它直接渲染给玩家看。
   // 用户 2026-10-31 明确要求「源码路径、行号：直接删除」，因此规则反转为：
   //   numbers 只允许 {label, value} 两个键；出现 src 或任何多余键即失败。
-  // 溯源证据不再进正文，改写进 `docs/R43_tutorial_source_refs.md`（人工可查）。
+  // 溯源证据不再进正文，改写进 `docs/R43教程正文来源对照.md`（人工可查）。
   for (const chapter of chapters) {
     if (!Array.isArray(chapter.numbers)) continue;
     for (const [i, num] of chapter.numbers.entries()) {
@@ -293,7 +293,7 @@ function main() {
         "5 numbers",
         extraKeys.length === 0,
         `${chapter.id}.numbers[${i}]「${num.label}」含禁用字段：${extraKeys.join("、")}`
-        + `（源码路径/行号不得出现在玩家教程，溯源改为 docs/R43_tutorial_source_refs.md）`
+        + `（源码路径/行号不得出现在玩家教程，溯源改为 docs/R43教程正文来源对照.md）`
       );
     }
   }
@@ -333,9 +333,9 @@ function main() {
     );
   }
 
-  // ── 规则 8：禁用译名黑名单（词表来自 docs/TUTORIAL_GLOSSARY.md 第四节）──
+  // ── 规则 8：禁用译名黑名单（词表来自 docs/教程术语表.md 第四节）──
   const forbiddenTerms = loadForbiddenTerms();
-  console.log(`译名黑名单: ${forbiddenTerms.length} 条禁用写法（解析自 docs/TUTORIAL_GLOSSARY.md）`);
+  console.log(`译名黑名单: ${forbiddenTerms.length} 条禁用写法（解析自 docs/教程术语表.md）`);
   for (const chapter of chapters) {
     const raw = collectTexts(chapter).join("\n");
     const blob = raw.replace(CORRECTION_SPAN, "");
