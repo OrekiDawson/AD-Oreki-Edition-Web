@@ -204,8 +204,10 @@ const VERBS = {
     policy: "delegated", label: "买膨胀升级",
     why: "OrekiDilationAutomation 独占（速子粒子播种与升级顺序耦合）"
   },
-  // 原版没有「买永恒升级」这个动作：EternityUpgrade 不存在，里程碑自动生效。
-  buyEternityUpgrade: { policy: "unsupported", label: "买永恒升级", why: "原版不存在永恒升级商店，里程碑自动生效" },
+  // R81：原版确有六项一次性永恒升级；复用永恒模块入口，不能把商店误当成自动里程碑。
+  buyEternityUpgrade: {
+    policy: "owned", source: "eternity", method: "buyEternityUpgrades", label: "买永恒升级"
+  },
   runChallengeIfRewardBlocks: {
     policy: "delegated", source: "eternity", label: "按需打挑战",
     why: "由 OrekiEternityAutomation.buyEcStudiesAndStart 与 oreki-instant-challenges.js 判定"
