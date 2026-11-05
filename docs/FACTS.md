@@ -38,6 +38,16 @@
 
 ---
 
+## R81 跨版本构建事实（2026年11月5日）
+
+- `[实测]` 3.20 原版 SHA-256 为 `085fc1278682d11136658f10fc875a9e6970737874b7e78650a1578ef3dc6400`；主 DEX 方法引用数为 65536。新增调用需分 DEX，不能用 const-string/jumbo 处理方法索引溢出。
+- `[实测]` 3.19 密度分包不可合入 3.20：`0x7f08022c` 已被新版 drawable/c83 使用。构建工具已切换同版 mdpi 分包并在写入前检查版本和资源 ID。
+- `[读码/实测]` 主题 TypeError 来自调用前 `PKG_DIR` 为 str；主题加载器 3.20 为 fs.x，偏好容器 cz0，记数法 l63/yh4，新档 player.h，子页标题 xn4。主题子步骤和守卫已定向通过。
+- `[读码/实测]` START 天赋旧 eg3.a:dg3 / rf3.k 对应新版 gi3.a:fi3 / th3.k；未映射会在 Application 初始化时触发 VerifyError。生命周期回调旧 pu.a 对应原版 3.20 fw.a。
+- `[读码]` Web 永恒升级真实存在于 eternity.js（六项一次性升级），旧执行器将其误标为 unsupported。R81 已接入原版购买函数，Android Kotlin 通过 x81.i 注册表及原版 qr3.D 调用，不直接改资源或奖励。
+- `[实测]` R81 最终候选版本 3.20.0/30200000、包名 com.oreki.antimatterdimensions、v3签名有效，四个DEX；classes4.dex与Kotlin编译结果逐字节相同（2637800字节）。最终APK为81519879字节，SHA-256 `27634e17a20dc77d1b88a3af55ec9098ba8d1eff1d5b0e5807fa92230ad7ef99`；已通过模拟器启动、持续循环、普通挑战重进返回及重启读档，18:37写入release与双网盘文件夹，三副本哈希一致。无限维度解锁后购买、IP倍率本轮实际扣费、首次永恒代购和完整终局未覆盖，不能据此宣称三小时通关。
+- `[实测]` Web永恒商店修复源码f9747b6、Pages部署9107863均已推送，线上 https://oreki.net/ 对应模块返回200且与本地修复一致。Android Chrome 133默认视口已加载实际游戏，不是桌面模拟，也不代表最新版兼容性。
+
 ## B. 仓库与产物
 
 | 事实 | 值 | 等级 |
@@ -2955,7 +2965,7 @@ if (!Player.m()) {
 | 7 篇附录入口 | 通过：`.c-oreki-tut__nav-btn--apx` 恰好 **7** 个，逐篇点开正文 **2640 字**以内均非空，副标题均含「附录」 | `items.appendices` |
 | 按 stage() 定位 | 通过 **10/10**：新档→ch01、有维度提升→ch02、有星系→ch03、未打破→ch04、已打破 IP=1e0→ch05、IP=1e12→ch06、永恒→ch07、现实→ch11、天神→ch13、佩勒→ch16 | `tut-stage-report.json` |
 | 长章不截断 | 通过：最长 **ch09（5731 字）**，内容区 `scrollHeight 5087` vs `clientHeight 338`，滚到底后末块 `bottom=642 < 视口 844`，`atBottom=true` | `items.longest` |
-| 字号三档 | **Web 无此功能**，按 `docs/TUTORIAL_SCHEMA.md`「双端渲染差异」表 Web 侧就是固定字号；实测 `.c-oreki-tut__text` 恒为 `12.5px`，页面内不存在任何字号控件，CSS 变量 `--oreki-tut-font-scale` 为空 | `items.font` |
+| 字号三档 | **Web 无此功能**，按 `docs/教程数据结构说明.md`「双端渲染差异」表 Web 侧就是固定字号；实测 `.c-oreki-tut__text` 恒为 `12.5px`，页面内不存在任何字号控件，CSS 变量 `--oreki-tut-font-scale` 为空 | `items.font` |
 
 ### 三、定位的方法学（否则会得出反向结论）
 
@@ -7996,3 +8006,74 @@ re.sub(rf"\bL{cls};", f"L{new};", text)   # ← 错
 - Web 侧经核对**已完整实现**所有 R79 关注的功能（全局节拍、等待态、速通纪录、
   挑战结算、早期自动化）；R79 曾新增「速跑记录子页」，发现 `PreviousSpeedrunTab`
   已存在后**已删除重复实现**。
+
+---
+
+## C.128　R80：3.20 补丁迁移 40/44 + Web IP 倍率缺陷修复（2026年11月5日，【实测】）
+
+### 一、版本核实（本轮动态查询，不沿用 R79 结论）
+
+| 项 | 值 | 来源 |
+|---|---|---|
+| 最新正式稳定版 | **3.20.0**（未变） | Google Play 商店页 `kajfosz.antimatterdimensions`，`Updated on Oct 29, 2026`，What's new 标注 `3.20.0` |
+| 版本代码 | 30200000 | 本地 APK `AndroidManifest.xml` 解析 |
+| 是否需升级迁移基础 | 否，R79 的 3.20 映射继续有效 | — |
+
+结论：**3.20.0 仍是当前最新正式稳定版**，本轮在既有迁移成果上继续，未重启大规模反混淆。
+
+### 二、独立干净工作目录（R80 新增机制）
+
+R79 收尾时 `work/mod` 有被后台探测中途写入的痕迹（`a.smali` mtime 落在探测窗口内），
+不可信。R80 新增 `OREKI_MOD` 环境变量（`scripts/build_mod.py:31`），
+从 **`work/base_decoded_320` 原版基线**完整复制出 `work/mod_r80`（17,446 文件，23.3 s，
+`shutil.copytree`；`cp -r` 与 `robocopy` 均因 Windows 下大目录中断而不可靠）。
+旧 `work/mod` 原样保留，未删除。
+
+### 三、补丁链进度：33/44（R75-C）→ 38/44（R79）→ **40/44（R80）**
+
+本轮新增修复（每条都有结构证据，均写入 `scripts/build_mod.py` 行内注释）：
+
+| # | 项 | 根因 | 修法 |
+|---|---|---|---|
+| 1 | `verify_kotlin_gameapi_aliases` | 守卫按整文件子串匹配 `cls("az1")`，命中说明性注释 | 先剔除 `//` 与 `*` 注释行再比对 |
+| 2 | `verify_payload`（py1.c） | 3.20 的 `py1` 被 R8 复用为纯数据类 | 新增 `py1→q12`（`a:List` + `a(I)/b()/c()/d()` 四方法逐字相同） |
+| 3 | `verify_payload`（货币现值） | `bn0.w()` 在 3.20 变 `rp0.K()`，且与 `bn0.s()→rp0.G()` **交叉交换** | 新增方法级别名，并让 `_ref_rewrite` 也处理方法级 |
+| 4 | `patch_auto_enter_eternity_challenge` | payload 已被 4.5 重写，断言仍按 3.19 名比对 | frag 断言接入 `_alias_frag`；新增 `ii0→xj0`（CoroutineContext） |
+| 5 | `patch_instant_challenge_rewards` | `_CURRENCY_BIT_FIELDS` 只含 3.19 名，别名把 `e` 换成 `g0` 后走错分支 | 集合补 `g0`/`R`；新增 `ju→aw` 与 `ju.o→aw.C`、`ju.u→aw.I` |
+| 6 | `patch_id_autobuyer_guard` | 3.20 的 IU15 三处阈值换了类名 | `lu→cw`、`c30→s40`、`vw1→qz1`（行号 7050/1884/1152 与 3.19 逐一对齐） |
+| 7 | `patch_ec12_restriction` | `p51` 在 3.20 无同名类 | 按四条件指纹（10 个 cmpg-double + 2.0/0.1/10.0 + ThisEternity×6 + invoke(Object)）命中 `k81`；寄存器由 `v2/v3` 平移为 `v6/v7` |
+
+### 四、剩余 4 项与优先级判定
+
+| 补丁 | 对前三小时通关的影响 | 处置 |
+|---|---|---|
+| `patch_v_unlock_thresholds` | **无**（V 是最后阶段，需 200 现实之后） | 按用户指令**明确暂缓** |
+| `patch_ec12_restriction` | 有（EC12 高倍率下限时必败） | 本轮已修（见上表 #7） |
+| `patch_instant_challenge_rewards` | 有（挑战不发 IP/EP） | 本轮已修（见上表 #5） |
+| `verify_payload` | 构建期守卫 | 本轮已修（见上表 #2/#3） |
+
+### 五、Web 生产代码缺陷（本轮实修，非文档）
+
+**缺陷：`InfinityUpgrade.ipMult` 在首次永恒前永远买不到**（`src/core/oreki-early-automation.js`）
+
+1. `InfinityIPMultUpgrade`（`src/core/infinity-upgrades.js:136`）继承的是
+   `GameMechanicState`，**不是** `SetPurchasableMechanicState` ——
+   它**没有** `isAvailableForPurchase` getter（返回 `undefined`）。
+   旧代码 `if (!upgrade.isAvailableForPurchase) continue;` 恒为真 →
+   ipMult 每一帧都被跳过。这是「IP 倍率从来不涨」的直接原因。
+2. `InfinityUpgrade.all` 按数据库声明序（`secret-formula/infinity/infinity-upgrades.js:334`），
+   ipMult 排在**第 18 位（最后）**；旧逻辑 `bought >= UPGRADES_PER_TICK` 一买到就 break，
+   17 条一次性升级未买完前 ipMult 一次都轮不到。
+
+修法：`isAvailableForPurchase === false` 才跳过（区分 undefined 与 false）；
+一次性升级与可重复升级分两轮、各自每拍 1 个名额。
+**未改任何数值 / 价格 / 存档字段。**
+
+行为自测：`node scripts/test-early-ipmult.mjs` → **PASS 7/7**。
+教程同步：附录 F 新增「十五、首次永恒前的无限升级购买（本版修正）」。
+
+### 六、诚实边界
+
+- 本 FACTS 条目的「40/44」来自 `scripts/r80_patch_run.py --keep-going` 的
+  定向补丁链运行日志（`build/_r80_patch4.log`），不是完整 44 项探测。
+- **Android 3.20 Release APK 尚未构建**（本条写入时补丁链仍在收尾）。

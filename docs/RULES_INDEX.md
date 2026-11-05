@@ -96,6 +96,11 @@
 | 45. | 每轮启动与结束的子 Agent 全量收回、轮次互斥 | AGENTS.md §45（原文自称 P0） |
 | 52. | 多 Agent 同仓库并发的 Git 纪律 | AGENTS.md §52 |
 | 54. | 环境安全与时间读取容错 | AGENTS.md §54 |
+| 67. | Kotlin 可读性命名规范（2026-11-05 用户下达） | AGENTS.md §67 |
+| 68. | docs/ 文档命名规范（简体中文，2026-11-05 用户下达） | AGENTS.md §68 |
+| 69. | 新增代码必须配必要的简体中文注释 | AGENTS.md §69 |
+| 70. | Android 只生成 APK，禁止生成 XAPK | AGENTS.md §70 |
+| 71. | APK 网盘覆盖偏好与文件夹交付口径（不回读云端） | AGENTS.md §71 |
 | 全局八 | 文件保护与 Git | GLOBAL-RULES.md §八 |
 | 全局六 | 共享资源与开发机性能 | GLOBAL-RULES.md §六 |
 | 全局七 | 模拟器生命周期 | GLOBAL-RULES.md §七 |
