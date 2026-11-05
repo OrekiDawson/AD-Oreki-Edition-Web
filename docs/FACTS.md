@@ -61,6 +61,17 @@
 - `[读码]` 4 处 3.19→3.20 类型漂移在本轮构建期被守卫抓出并修正：`bq0.g0` 的类型应为 `Lup0;`（非 `Lip0;`）；时间研究注册表 `l43`→`i63`（3.20 的 `l43` 已被 R8 复用为无关 lambda 类）；Kotlin 函数接口 `ui1`→`vl1`（两版身份互换）；R73 模式标题注入在 3.20 必须跳过（原版 `mainactivity/l0.D` 已自带）。
 - `[实测]` Web 定向测试 17/17（`test-r82-id1-growth.mjs`，第 1 组直接加载生产 getter）、IP 倍率 7/7、调度节拍 10/10。https://oreki.net/src/core/oreki-early-automation.js 与本地逐字节一致。
 
+## R83 IU15 冲刺与 Kotlin 迁移（2026年11月5日）
+
+- `[读码]` 莱特拉解锁**只**取决于 `ImaginaryUpgrade(15).isBought`（`celestials/laitela/laitela.js:37-39`），与薇/太阳神无关。IU15 原版双条件：`player.requirementChecks.reality.maxID1.eq(0)` 且反物质指数达门槛（本作缩放为 `OREKI_IU15_AM_EXP = 1e8`）。
+- `[读码]` `ImaginaryUpgradeState.hasPlayerLock` 直接读写 `player.reality.reqLock.imaginary`（`imaginary-upgrades.js:38-45`），**会进存档**。任何临时机制锁若不显式还原，异常退出后就是永久锁——R83 已把「关闭总开关立即释放」做成硬性路径。
+- `[读码]` Web `OrekiIu15Sprint.canArm` 原本要求 `VUnlocks.vAchievementUnlock.isUnlocked`；该解锁需 10000 次现实 + 1e320 膨胀时间（`secret-formula/celestials/v.js:17-27` 实测记录），在本作 180 分钟目标内结构性不可达 ⇒ 等于永久禁用冲刺。R83 已移除该门。
+- `[读码]` `oreki-eternity-automation.js` 两处读 `globalThis.OrekiIu15Sprint?.freezeResets`，但该模块从未定义此 getter，`undefined === true` 恒 false —— 冻结逻辑从未生效。R83 显式定义为 `false`（实测证明冻结会把反物质指数卡死，本就不该冻结）。
+- `[读码]` 旧 Android `OrekiAuto.idBuyBlocked()` 只有 IM 前置闸与「IU15 已买/需求位已亮」判定，**不检测自动购买器总开关**，且失败计数为进程内静态字段（重开即归零，不构成真正的失败回退）。R83 整类迁到 Kotlin，判定收敛到 `OrekiIu15Sprint`。
+- `[读码]` EC 启动唯一入口是 `challenge/eternity/b.D(Z, Continuation)`，内部写 `PlayerEternityChallenges.h(id)` 作为 current；其自身失败分支返回 `Boolean.FALSE`。R83 在该方法开头注入守卫，判定由 Kotlin `OrekiIu15Sprint.shouldBlockEcStart(ecId)` 提供。
+- `[读码]` IU15 真实购买入口是 `qr3.D(Z, Continuation)Boolean`：`a(Z)` 判可买 → `y().o(cost)` 真实扣虚幻机器 → `E(true)` 置已买位 → `C(ZZ)` 通知；`qw.B()Z` 读已买位。`qw.E(Z)` 只是 BitSet 写位，绕过扣费即伪造进度。
+- `[实测]` R83 Kotlin 编译产物含 `OrekiAuto`（6 方法）、`OrekiIu15Sprint`（12 方法）、`OrekiStageAuto`（14）、`OrekiAutomationScheduler`（21）、`OrekiTrace`（6），全部 javap ABI 校验通过；DEX 2.65 MB。
+
 ## B. 仓库与产物
 
 | 事实 | 值 | 等级 |
