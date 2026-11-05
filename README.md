@@ -219,7 +219,14 @@ oreki.automation.strictGlobal   // "1" / "0"，与 Android 端保持一致
 `index.html` 已带 `<meta name="viewport" content="width=device-width, initial-scale=1">`，
 窄屏下导航收成图标，维度行与按钮改为堆叠布局。
 
-**已验证范围**（宿主机 Edge 视口仿真，**不是真机**）：
+**验收口径（2026-11-05 修订，旧「每轮六档强制」已废止）**：
+
+- **日常验收**：Android 模拟器内 Chrome 的**默认视口**跑一次，检查页面显示、主要交互、明显布局溢出。
+- **专项加测**：只有当改动涉及响应式布局、侧栏、弹窗、尺寸适配或相关 CSS 时，
+  才针对**受影响的视口**增加定向测试；不要求跑满固定档位。
+- **不得**用 Headless Edge（或桌面 Edge 视口仿真）冒充 Android Chrome 验收。
+
+**历史已验证范围**（宿主机 Edge 视口仿真，**不是真机**；保留作历史证据，不再作为每轮门槛）：
 
 | 视口宽度 | 检查项 |
 | --- | --- |
@@ -290,7 +297,7 @@ node serve.mjs 8080     # 起服务，改完刷新浏览器
 cd ..                        # 工作区根：包含 AD-Oreki-Edition/ 与 _tools/
 bash _tools/run-all.sh       # 16 组套件，以退出码 0 判定通过
 
-# 手机视口矩阵（320 / 360 / 390 / 430 / 768 / 1280）
+# 手机视口矩阵（可选：仅在改动涉及响应式布局 / 侧栏 / 弹窗 / 尺寸适配时执行）
 node _tools/verify-viewport-matrix.mjs AD-Oreki-Edition 8300
 ```
 
