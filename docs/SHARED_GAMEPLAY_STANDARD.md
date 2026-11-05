@@ -362,13 +362,13 @@ Android 的有效改进与测试结论，Web 也必须评估是否值得吸收�
 - 现实时间字段：`records.realTimePlayed` / `*.realTime` / `realTimeDoomed`，全部由 `realDiff` 累加，**天生不受 F 影响**。
 - 记录归一化：`OrekiSpeed.unscale(D)`，用于 `bestInfinityTime`（×2）、`pastTenInfinities.time`、
   `pastTenEternities.time`、`pastTenRealities.time`；标记键 `records_norm`（存于 prefs，**不在存档内**）。
-- 字段登记与证据：`docs/TIME_SEMANTICS_FULL_AUDIT_2026-10-26.md`、`docs/SPEEDUP_ANALYSIS_2026-10-26.md`、
+- 字段登记与证据：`docs/时间语义全量审计_2026-10-26.md`、`docs/提速分析_2026-10-26.md`、
   `reports/time_fields_inventory_2026-10-26.csv`。
 - 自动化测试：`scripts/run-all.sh`（静态门禁 + `--device` 追加 AVD 实测），失败返回非零。
 - 已知未验证：离线结算是否应用 F、EC12 与 F 叠加顺序、Enslaved 8h 钳制、释放帧、Laitela 时效、黑洞/符文组合。
 - **`realDiff` 含义与 Web 不同**：Android 的 `realDiff` 是**纯墙钟**（F 只乘 `diff`），
   因此 §3 表中 `Σ realDiff / F` 的写法**只适用于 Web**；Android 侧为 `Σ realDiff`（k=1）。
-  该差异已登记于 `docs/CROSSPLATFORM_TIME_AUDIT_2026-10-26.md` §2.3 / D1。
+  该差异已登记于 `docs/跨端时间口径审计_2026-10-26.md` §2.3 / D1。
 - **无 `totalInGameTime` 字段**：Android 没有「归一化游戏内时间」累计器；
   最接近的是 `pastTen*.time`（写入时一次性归一化），语义不同，**不可互相替代**。
 - F 合法范围：`1e-6 ~ 1e9`（平台扩展）；与 Web 的公共可测区间为 `1 ~ 100000`。
