@@ -7787,3 +7787,212 @@ bytes.count 预筛无效 —— 瓶颈在 IO 不在 CPU。
 - 3.20 的 8 个补丁锚点仍未迁移。
 - check_automation_scheduler.py 仍针对旧 Smali 调度器，需整体重写为 Kotlin 断言
   （不被构建调用，不影响交付）。
+
+---
+
+## C.126　R79：REA 6.8.0 环境核实 + 3.20 增量映射（2026年11月5日，【REA实测】）
+
+### 一、REA 实际可用能力（不是文档推断）
+
+| 项 | 实测值 |
+|---|---|
+| REA 包 | `rea-agents@6.8.0`（`npx -y rea-agents@6.8.0`） |
+| MCP 协议版本 | `2025-11-25` |
+| `mcp doctor` | **healthy: true**，`adapter: production-stdio` |
+| 工具清单 | expected **229** / observed **229**，missing=[] unexpected=[] duplicates=[] |
+| Prompts | expected 6 / observed 6 |
+| Catalog digest | `fe938a7c6eba3763b22ae2022de76dc4a7812d35d86f1d4efd36b9962b04da0b`（期望=实际） |
+| JADX 桥 | `rea-jadx-bridge` **v7**，engine `jadx-headless-mcp` **0.7.1** |
+| JADX JAR SHA-256 | `6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75`（与官方要求值一致） |
+| JADX JAR 路径 | `tools/rea/jadx-headless-mcp-0.7.1-all.jar`（42,619,858 B） |
+| 运行 JDK | `tools/jdk/jdk-21.0.13+9`（`java_version: 21.0.13`，heap 4046 MiB，worker 1） |
+
+**重要区分**：`mcp.json` 里配置了 `rea` server **不等于**当前 WorkBuddy 会话已加载它的工具。
+R79 实测 `.workbuddy/mcp-tool-list.json` 的 11 个 server 条目里**没有 rea**，
+`ListMcpResources(server="rea")` 返回空。**实际可用的入口是 CLI**：
+`npx -y rea-agents@6.8.0 <command>`，功能完整（doctor 229 工具全通过）。
+
+### 二、REA 对 3.20 APK 的分析身份
+
+| 项 | 值 |
+|---|---|
+| APK | `work/apk320/kajfosz.antimatterdimensions.apk` |
+| SHA-256 | `085fc1278682d11136658f10fc875a9e6970737874b7e78650a1578ef3dc6400` |
+| 包名 | `kajfosz.antimatterdimensions` |
+| versionName / versionCode | **3.20.0 / 30200000** |
+| minSdk / targetSdk / compileSdk | 32 / 37 / 37 |
+| 类数量 | **13,862** |
+| 资源数 | 1,728 |
+| APK 加载耗时 | 6,206 ms（decompile_timeout 90,000 ms） |
+| `inspect_android_package` Evidence | `ev_9be41f0f5fa1917d972b2e9be556d11bfab48beeca12f4e29f82d91b5a719e95` |
+
+### 三、版本与签名核实（独立于 REA）
+
+| 项 | 结果 |
+|---|---|
+| 最新稳定版 | **3.20.0**（Google Play 2026-10-29 更新；APKPure/AppBrain/Uptodown 三源一致） |
+| XAPK SHA-256 | `2aac58e2e7a413a0d93cd951ce2d17203019501b361293758f0d3e6f5c1a2345`（与 APKPure 页面公布值一致） |
+| 内部 APK SHA-256 | `085fc127…`（与历史记录一致，文件未变） |
+| 3.20 签名证书 SHA-256 | `24c5158c0de5d472f018107476ca6e5fd8c1442b404c3fe49a26c2024dd1fd14` |
+| 3.19 签名证书 SHA-256 | `24c5158c0de5d472f018107476ca6e5fd8c1442b404c3fe49a26c2024dd1fd14` |
+| 结论 | **两版同一签名证书**（`CN=Android, O=Google Inc.`）→ 3.20 候选包可认定为官方签名包 |
+
+> **REA 的 limitations 明确写了**："APK signatures ... are not verified by this provider"。
+> 签名核验用的是独立 `apksigner verify --print-certs`，不是 REA 结论。
+
+### 四、R79 新增/修正的 3.20 映射（全部有结构证据）
+
+| 3.19 | 3.20 | 证据 |
+|---|---|---|
+| `kx0`（维度提升需求计算） | **`c01`** | 7 字段 `a:Z b:I c:D d:Z e:D f:Z g:D` 逐一同名同类型；2 方法 `<init>()V` + `a(D)Lb01;`；5.0/15.0/20.0 三常量齐备全库唯一。REA `inspect_android_method` 的 Java 体含 `Math.rint((15.0d - d3) * (dFloor - 5.0d))`。Evidence `ev_526a72e05c6f32f22109dfe5954dc691454c2a92ae50a203dd1bec73551e2547` |
+| `az1`（无限升级注册表） | **`b22`** | 4 方法 `<clinit>/a()BigDouble/b()BigDouble/c()V` + 20 字段 + `public static final s:Ljava/util/List;`，全库唯一 |
+| `e02.n0()`（IPMult 解锁判定） | **`os0.F()`** | 方法体逐指令同构（`sget v81.a:o81 → w()Z` + `pelle.c.q()Z` + if-eqz/if-nez 三段），全库唯一 |
+| `z51` / `s51`（自动器状态单例） | **`v81` / `o81`** | `o81` 与 3.19 `s51` 的 4 个方法名逐个相同（`k`/`s`/`v`/`w`），构造签名同型 |
+| `fp3`（无限升级基类） | **`qr3`** | 19 方法 2 字段，A(Z)Z/B()Z/C(ZZ)V/D(Z,x)Boolean/E(Z)V 四关键签名全中；super `ak1→an1` 同型 |
+| `uu1`（ipMult 升级实现） | **`px1`** | 15 方法 6 字段，**super 就是 qr3**；x()/y()/I()/J(J) 全中 |
+| `ja4`（NoSuchElement 抛出工具） | **`qw3`** | `public final synthetic`，`public static synthetic j(Ljava/lang/String;)V` 逐字相同 |
+
+**修正的旧映射错误**：`FIELD_ALIASES_320` 的 `ln0.e → bq0.g0` 经 25 字段位置逐一比对**确认正确**
+（位置 19），此前怀疑有误是误判。25 个字段位置 100% 对齐，`ln0.w→bq0.w`（IP）、
+`ln0.F→bq0.R`（EP）同样正确。
+
+### 五、R79 修复的 3.20 补丁（实际生效）
+
+| 补丁 | 原失败 | 修复方式 |
+|---|---|---|
+| `patch_dimboost_ad8_slope` | `kx0` 的 5.0 锚点不唯一 | 别名 `kx0→c01` + `mod_file()` 跨 dex |
+| `patch_ip_mult_autobuyer` | 找不到 `e02.n0()Z` | 类别名 `e02→os0` + **方法级别名** `n0→F` + 锚点 `z51/s51→v81/o81` |
+| `patch_ad_bonus` | B/C 段命中 0 | B 段锚点动态构造（`t5/r5`）；C 段新增 `_ad_t5_anchors_c()`（`ja4→qw3`） |
+| `verify_payload` | `z3` 路径打开错文件 | 新增 `_ref_path()`：**文件路径 basename 也套别名**，`smali/z3.smali → smali/s3.smali` 再由 `mod_file()` 跨 dex 回落 |
+
+**同时新增的守卫**：`verify_kotlin_gameapi_aliases()` —— 强制
+`GameApi.kt` 的 `ALIAS_320` 与 `build_mod.OBFUSCATION_ALIASES_320` **逐条一致**，
+并禁止 `cls("短名")` 裸写。这条守卫直接针对 R79 发现的最危险故障模式：
+R8 回收复用旧短名后，Kotlin 反射会**静默指向错误类**（不抛异常）。
+
+### 六、REA 明确排除的候选（避免误映射）
+
+`p51`（EC12 闭包）在 3.20 的候选曾考虑 `ux2`（2 方法 + 60 个 pswitch 与 3.19 完全同数），
+但 REA + 结构核对**否定了它**：
+- `ux2` 用的是 `Player$Records.l()`（ThisReality），而 3.19 `p51` 用的是 `j()`（ThisEternity）
+- `ux2` 只有 `10.0` 一个常量，3.19 `p51` 有 `2.0`/`0.1`/`10.0` 三个
+- `ux2` 的 `invoke()` 无参数，3.19 `p51` 的 `invoke(Object)` 有参数
+
+→ **`patch_ec12_restriction` 的 3.20 映射仍未确定**，保留未解决状态，不伪装成成功。
+
+### 七、证据边界（必须随结论一起引用）
+
+- REA 全部结论的 `confidence: observed`、`authority: shipped-artifact`。
+- REA 自带的 limitations：静态反编译**不建立运行时行为**；方法签名用 provider 显示类型；
+  类清单是代码生成前的解析元数据；**incoming reference 计数是 JADX using nodes，
+  不等于 invoke 指令总次数**，且不覆盖动态/反射调用；Manifest 分析**不验证签名**。
+- 因此本文件的所有映射都标注为「静态结构 + 方法体语义」证据，
+  **不等于**运行时验证；运行时验证见 AVD 章节。
+
+---
+
+## C.127　R79：3.20 增量迁移（38/44）+ 两处长期潜伏 bug 的定位（2026年11月5日）
+
+### 一、版本核实与签名（已完成）
+
+| 项 | 值 |
+|---|---|
+| 最新稳定版 | **3.20.0**（Google Play 2026-10-29；APKPure / AppBrain / Uptodown 三源一致） |
+| XAPK SHA-256 | `2aac58e2e7a413a0d93cd951ce2d17203019501b361293758f0d3e6f5c1a2345` |
+| 内部 APK SHA-256 | `085fc1278682d11136658f10fc875a9e6970737874b7e78650a1578ef3dc6400` |
+| 包名 / 版本 | `kajfosz.antimatterdimensions` / 3.20.0 / 30200000 |
+| minSdk / targetSdk | 32 / 37 |
+| **3.19 与 3.20 签名证书** | **完全相同** `24c5158c0de5d472f018107476ca6e5fd8c1442b404c3fe49a26c2024dd1fd14` |
+
+> 签名核验用独立 `apksigner verify --print-certs`，不是 REA 的 Manifest 分析
+> （REA limitations 明确写了「APK signatures ... are not verified by this provider」）。
+
+### 二、REA 实际能力（实测，不是文档推断）
+
+| 项 | 值 |
+|---|---|
+| REA | `rea-agents@6.8.0`，`mcp doctor` → **healthy: true** |
+| 工具清单 | expected **229** / observed **229**，missing=[] unexpected=[] |
+| Catalog digest | `fe938a7c6eba3763b22ae2022de76dc4a7812d35d86f1d4efd36b9962b04da0b`（期望=实际） |
+| JADX 桥 / 引擎 | `rea-jadx-bridge` v7 / `jadx-headless-mcp` **0.7.1** |
+| JADX JAR SHA-256 | `6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75`（与官方要求值一致） |
+| 运行 JDK | `tools/jdk/jdk-21.0.13+9`（java_version 21.0.13，heap 4046 MiB） |
+
+**重要区分**：`mcp.json` 里配置了 `rea` server **不等于**当前会话已加载其工具。
+R79 实测 `.workbuddy/mcp-tool-list.json` 的 11 个 server 条目里**没有 rea**，
+`ListMcpResources(server="rea")` 返回空。**实际可用入口是 CLI**：
+`npx -y rea-agents@6.8.0 <command>`。
+
+3.20 APK 的 REA 分析身份：类 **13,862**、资源 **1,728**、加载 **6,206 ms**，
+`inspect_android_package` Evidence `ev_9be41f0f5fa1917d972b2e9be556d11bfab48beeca12f4e29f82d91b5a719e95`。
+
+### 三、R79 定位到的两处**长期潜伏 bug**
+
+#### bug 1：类别名替换的 `\b` 词边界在参数类型位置失效
+
+```python
+re.sub(rf"\bL{cls};", f"L{new};", text)   # ← 错
+```
+
+`.method public D(ZLvh0;)Ljava/lang/Boolean;` 里 **`Z` 与 `L` 都是 word 字符**，
+两者之间没有词边界，`\b` 匹配失败 → 该类名从未被替换。
+
+- 为什么长期没被发现：绝大多数调用点写成 `, Lxxx;`（逗号后有边界），只有
+  **紧跟类型描述符**的位置（参数列表、数组维度）会漏。
+- R79 在 3.20 的 `fp3.D(Z, Continuation)` 上第一次踩到，症状是报
+  「缺少方法 `D(ZLkj0;)`」——`rest` 里的 `vh0` 换成了 `kj0`，但 `cls` 的
+  `Lfp3` 没换，自相矛盾。
+- 已批量修正 **11 处**（去掉 `\b`）。smali 类描述符必为 `Lpkg/Name;`，
+  且短名后紧跟分号，不存在误伤。
+
+#### bug 2：注释里写了映射，但**没真正加进别名表**
+
+`OBFUSCATION_ALIASES_320` 里 `fp3` / `uu1` / `az1` 只有大段注释说明「3.19 X → 3.20 Y」，
+**键值对本身缺失**。后果与 bug 1 同类：类名不换，方法/字段换了，报出自相矛盾的错误。
+
+已补齐 `fp3→qr3`、`uu1→px1`、`az1→b22`。别名表现在 **23 条**。
+
+### 四、R79 新增的 3.20 映射（全部有结构证据，已固化到 `docs/deobfuscation/mapping_319_to_320.json`）
+
+| 3.19 | 3.20 | 指纹依据 |
+|---|---|---|
+| `kx0` | `c01` | 7 字段 `a:Z b:I c:D d:Z e:D f:Z g:D` 同名同型 + 2 方法；5.0/15.0/20.0 三常量全库唯一；REA 方法体含 `Math.rint((15.0d-d3)*(dFloor-5.0d))`，Evidence `ev_526a72e0…` |
+| `az1` | `b22` | 4 方法 + 20 字段 + `s:Ljava/util/List;`，全库唯一 |
+| `e02` | `os0` | `n0()Z` ↔ `F()Z` 方法体逐指令同构（`v81.a:o81 → w()Z && !pelle.c.q()`） |
+| `z51` / `s51` | `v81` / `o81` | `o81` 与 `s51` 的 `k/s/v/w` 四方法逐个相同 |
+| `fp3` | `qr3` | 19 方法 2 字段；A/B/C/D/E 四关键签名全中；super `ak1→an1` |
+| `uu1` | `px1` | 15 方法 6 字段，**super 就是 qr3** |
+| `ja4` | `qw3` | `public static synthetic j(Ljava/lang/String;)V` 逐字相同 |
+| `vh0` | `kj0` | Kotlin Continuation 接口，2 方法 |
+| `av` | `qw` | `public abstract` + super=`qr3` + **5 方法连修饰符逐个相同**（同 super 的另两个候选是 9/4 方法） |
+| `u7` | `e7` | `public abstract` + **23 字段 + 1 方法** + `v:Ljava/util/List;` 全库唯一 |
+| `l7` | `v6` | `public abstract` + super=`an1` + **10 方法**（含 `w()Z` / `abstract z()D`）全库唯一 |
+| `c43` | `z53` | 唯一持有 `a(I)L.../challenge/antimatter/normal/a;` |
+| `c21` | `u41` | 唯一持有 `a(I)L.../eternity/studies/b;` |
+
+### 五、3.20 补丁探测进度
+
+**起点 33/44（R75-C）→ R79 达到 38/44（+5）**
+
+已修复：`patch_dimboost_ad8_slope`、`patch_ip_mult_autobuyer`、`patch_ad_bonus`、
+`verify_payload`（多轮链式修复）、`verify_eternity_chain`。
+
+仍失败 6 项：
+
+| 补丁 | 阻塞原因 |
+|---|---|
+| `verify_payload` | 链式符号检查，逐个暴露下一个缺失；`c43→z53`、`c21→u41` 已确认待入表验证 |
+| `patch_ec12_restriction` | `p51` 闭包在 3.20 **无同构者**。已用 REA 排除 `ux2`：① `Records.l()`(ThisReality) vs `j()`(ThisEternity)；② 常量集 `10.0` vs `10.0/2.0/0.1`；③ `invoke()` 无参 vs `invoke(Object)` |
+| `patch_auto_enter_eternity_challenge` | `c21` 的方法需换 `u41`（映射已确认，待应用） |
+| `patch_id_autobuyer_guard` | `c30` 里找不到 `1e8`（`0x4197d78400000000`）—— 门槛常量所在类待定位 |
+| `patch_instant_challenge_rewards` | `bq0.g0` 类型是 `Lup0;` 而非 `Lip0;`（3.20 对 Currency 状态类做了拆分）；已放宽为只校验字段名，待验证 |
+| `patch_v_unlock_thresholds` | 涉及 `u55/s55/t55/c15/lu` 五类交叉 + 倒序 pswitch 表；**V 是最后阶段内容，对 3h 通关无影响，明确暂缓** |
+
+### 六、R79 结论（诚实记录）
+
+- **3.20 未构建 APK**：核心链路仍有失败项，不满足「核心可玩」标准。
+- 唯一可用 APK 仍是 R78 的 **3.19** 版本（SHA `67a81867…`），**不是 3.20**。
+- 全新存档 3 小时通关实测**未开始**。
+- Web 侧经核对**已完整实现**所有 R79 关注的功能（全局节拍、等待态、速通纪录、
+  挑战结算、早期自动化）；R79 曾新增「速跑记录子页」，发现 `PreviousSpeedrunTab`
+  已存在后**已删除重复实现**。
