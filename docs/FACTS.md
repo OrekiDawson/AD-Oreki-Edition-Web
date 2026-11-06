@@ -8140,3 +8140,10 @@ R79 收尾时 `work/mod` 有被后台探测中途写入的痕迹（`a.smali` mti
 - 本 FACTS 条目的「40/44」来自 `scripts/r80_patch_run.py --keep-going` 的
   定向补丁链运行日志（`build/_r80_patch4.log`），不是完整 44 项探测。
 - **Android 3.20 Release APK 尚未构建**（本条写入时补丁链仍在收尾）。
+
+### R85：智能自动购买器默认调度间隔（2026-11-06）
+
+- 已核实生产入口：`src/core/oreki-smart-executor.js` 的新存档默认值为 10 秒，调度换算为 `intervalSec * 1000 = 10000` 毫秒；用户可调范围仍为 1～60 秒。
+- localStorage 中已有 1～60 秒合法值会保留；缺失、非整数、越界值回退 10 秒。`setIntervalSec` 仍即时更新内存状态并将用户输入钳制到 1/60 秒。
+- 关闭智能自动购买器后 `runCycle` 不执行任务，既有的 `releaseIfTakenOver` 会释放 IU15 接管；不会改变原版循环、原版自动购买器或手动操作。
+- Web 定向行为自测：`node scripts/test-scheduler-beat.mjs`，14 项检查通过；教程校验 2189/2189 通过。

@@ -98,13 +98,26 @@ function makeTask(log, id, acted = true) {
 }
 
 /** 重置调度器到已知状态。 */
-function reset(intervalSec = 1, strictGlobal = false) {
+function reset(intervalSec = 10, strictGlobal = false) {
   EXEC.setEnabled(true);
   EXEC.setIntervalSec(intervalSec);
   EXEC.setStrictGlobal(strictGlobal);
   // 清全部时间戳：通过 debugState 拿不到内部 STATE，改用「关闭再打开」+ 足够长时间
   monoNow += 10 * 60 * 1000;
 }
+
+// ------------------------------------------------------------------ R85：新存档默认值与用户可调边界
+
+check("R85 新存档默认间隔为 10 秒（10000ms）", EXEC.intervalSec === 10,
+      `实际为 ${EXEC.intervalSec} 秒`);
+check("R85 1 秒边界有效", EXEC.setIntervalSec(0).intervalSec === 1,
+      `实际为 ${EXEC.intervalSec} 秒`);
+check("R85 60 秒边界有效", EXEC.setIntervalSec(61).intervalSec === 60,
+      `实际为 ${EXEC.intervalSec} 秒`);
+EXEC.setIntervalSec(37);
+check("R85 合法用户设置写入后保持", localStorageShim.getItem("oreki.automation.intervalSec") === "37",
+      `存储值为 ${localStorageShim.getItem("oreki.automation.intervalSec")}`);
+EXEC.setIntervalSec(10);
 
 // ------------------------------------------------------------------ 场景 1：首帧不得连买
 
