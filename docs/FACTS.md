@@ -8165,4 +8165,13 @@ R79 收尾时 `work/mod` 有被后台探测中途写入的痕迹（`a.smali` mti
 - Web 定向验证：`node scripts/test-r87-break-id1-reserve.mjs` 13/13、`node scripts/test-early-ipmult.mjs` 7/7、`node scripts/test-r82-id1-growth.mjs` 17/17、`node scripts/validate_tutorial.mjs` 2189/2189 通过；未运行完整浏览器矩阵，未把定向夹具写成全流程通关证明。
 - Android R87：`OrekiBreakShop` 已从 Smali 整体迁移到 Kotlin，保留 `public static final int tick()` ABI；`GameApi.kt` 增加 Break 升级原版购买链的缓存反射与基线绑定；`build_kotlin.py` / `build_mod.py` 增加 ABI、Kotlin-owned 与 ID1 预留构建契约。`python scripts/build_kotlin.py --clean` 通过，`build/kt/classes.dex` 已生成且包含 `OrekiBreakShop`；`python -m py_compile scripts/build_mod.py scripts/build_kotlin.py` 通过。
 - Android 3.21 `bindings.json` 已生成，41 类全部 CONFIRMED（34 条来自全 DEX 派生 + 7 条来自真实字段/方法/调用链定向证据）；`baseline_bindings.py verify` 通过。实际三次构建分别暴露 `fl0` 方法名、Ad Bonus C 锚点、`iq0.g0` 字段类型问题，均已修复；交付截止前最后一次构建未完成并已停止，**未生成 R87 APK**，未上传 OneDrive / 小米云盘，不能宣称 3.21 Release 已交付。
-- Web 教程附录 F 新增「十九、打破无限后的升级不再抢走第一无限维度的点数」；Android 构建期由 `scripts/oreki_tutorial_
+- Web 教程附录 F 新增「十九、打破无限后的升级不再抢走第一无限维度的点数」；Android 构建期由 `scripts/oreki_tutorial_gen.py` 从同一份 Web JSON 生成 `oreki_tutorial.txt`，因此 3.21 构建时语义同步（本轮尚未生成 APK，不能宣称 Android 已装载该正文）。
+- Web Pages 最终：源提交 `7a7121f`，部署提交 `192e4a3`；Actions `42215594429` success；线上 `oreki-autobuy-break-infinity.js` 返回 200 且含 R87 判据。
+
+### R88：Android 3.21 Release 收敛与 Web 调度时钟修复（2026-11-06）
+
+- Android 使用真实 3.21 APK（SHA-256 `4e9970a808d10b6cc1a1068b078ec3c7d922051086a576c66d071c1216f527ac`）完成一次 R88 全量 JADX 导出到 `work/output_code_321_r88`；REA 定向确认 `nr5.u()Z` 是 3.21 IP 倍率自动购买器解锁判定，证据 `ev_27890e5ca98314b5dea551d8602aeae92ea13e0568e46ff29e1e76c568766fe7`。
+- Android 构建根因修复：教程入口校验支持真实启用的 launcher `activity-alias`；V 门槛补丁在 `u55` 不具备 `Ls55 + g:List` 结构时 fail-closed 暂缓，避免把 3.21 WeakHashMap 工具类当作旧 V 类；UI 层按真实 3.21 DEX 迁移到 `lz0/z63/wi4/player.h/uo4` 与 `Player$Options.E0`。
+- 最后一次 `assembleRelease --offline -PorekiBase=work/base_decoded_321` 已通过 Kotlin、D8、41 项绑定、补丁契约、教程、Manifest、三份 DEX smali 汇编和 UI 迁移，最终在 apktool `buildResources` 创建临时文件时因 Windows `Access denied` 失败。**未生成 3.21 Release APK**；按紧急停止指令未重试、未安装、未运行、未上传云盘。
+- Web 生产修复统一调度时钟为 `performance.now()`，executor 同样遵守 frame/global/task gate，且只有真实 `outcome.acted` 才消耗共享节拍；空转不再饿死阶段队列。R88 定向测试 4/4，相关既有夹具合计 55/55 通过；紧急指令后未重复测试或部署 Pages。
+- 独立基线升级说明书位于 `docs/ANDROID_BASELINE_UPGRADE_GUIDE.md`。
