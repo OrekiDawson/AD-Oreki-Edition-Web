@@ -8175,3 +8175,11 @@ R79 收尾时 `work/mod` 有被后台探测中途写入的痕迹（`a.smali` mti
 - 最后一次 `assembleRelease --offline -PorekiBase=work/base_decoded_321` 已通过 Kotlin、D8、41 项绑定、补丁契约、教程、Manifest、三份 DEX smali 汇编和 UI 迁移，最终在 apktool `buildResources` 创建临时文件时因 Windows `Access denied` 失败。**未生成 3.21 Release APK**；按紧急停止指令未重试、未安装、未运行、未上传云盘。
 - Web 生产修复统一调度时钟为 `performance.now()`，executor 同样遵守 frame/global/task gate，且只有真实 `outcome.acted` 才消耗共享节拍；空转不再饿死阶段队列。R88 定向测试 4/4，相关既有夹具合计 55/55 通过；紧急指令后未重复测试或部署 Pages。
 - 独立基线升级说明书位于 `docs/ANDROID_BASELINE_UPGRADE_GUIDE.md`。
+
+### R89：Windows apktool 临时文件修复与 Android 3.21 候选包（2026-11-06）
+
+- R88 的 `Access denied` 已定位到 apktool `ApkBuilder.buildResources` 的 `File.createTempFile("APKTOOL", null)`：失败发生在 Java 默认临时目录的**创建**阶段，不是资源解析、smali 汇编或正式 APK 覆盖。R88 进程的 `java.io.tmpdir/TEMP/TMP` 为 `C:\Users\Oreki\AppData\Local\Temp\`；当前同用户 Java 探针可正常创建、写入、删除 `APKTOOL*.tmp`，未发现 Defender、路径长度或 ACL 的持续证据，也未发现冲突句柄。
+- 最小修复：`scripts/build_mod.py` 为 apktool 子进程设置仓库内唯一临时目录 `build/apktool-tmp-<pid>`，同时设置 `TEMP`、`TMP`、`-Djava.io.tmpdir`；没有再关闭安全软件或修改系统权限。使用 R88 已准备的 `work/mod` 做定向构建成功。
+- Android 3.21 Release 候选包已生成：`build/gradle-stage/反物质维度.apk`，82,621,937 B，SHA-256 `95f3917544986a1608f6ff5deca616af2fe87a9ed5760ac4950b012dd0a77a96`；versionName `3.21.0`、versionCode `30210000`、包名 `com.oreki.antimatterdimensions`。APK 含 4 个 DEX；`classes4.dex` 2,660,136 B 且包含 `OrekiBreakShop`、`OrekiBaselineBindings`、`GameApi`；`assets/oreki_tutorial.txt` 191,496 B。签名 `apksigner verify --min-sdk-version 32` 通过 v3，证书 SHA-256 `95960bce0d8806124d72755d827fcd9216919cac29147635767a967360ed3197`；v1/v2 为 false（该包 minSdk 32，v3 可用）。
+- 候选包同时复制到 `release/反物质维度_3.21.0_R89候选.apk`、`C:\Users\Oreki\OneDrive\反物质维度_3.21.0_R89候选.apk`、`C:\Users\Oreki\小米云盘\反物质维度_3.21.0_R89候选.apk`，三处本地 SHA-256 一致；未覆盖旧 3.20 的 `反物质维度.apk`。安装、启动、挑战/存档/回归与真实墙钟验收**未执行**，不得称为正式稳定版。
+- Web R88 已提交 `e661dcc`，R88 定向时钟夹具 4/4；Pages 部署提交 `a357203`，线上核验见部署记录。
