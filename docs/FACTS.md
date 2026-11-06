@@ -96,6 +96,21 @@
 - `[读码]` IU15 真实购买入口是 `qr3.D(Z, Continuation)Boolean`：`a(Z)` 判可买 → `y().o(cost)` 真实扣虚幻机器 → `E(true)` 置已买位 → `C(ZZ)` 通知；`qw.B()Z` 读已买位。`qw.E(Z)` 只是 BitSet 写位，绕过扣费即伪造进度。
 - `[实测]` R83 Kotlin 编译产物含 `OrekiAuto`（6 方法）、`OrekiIu15Sprint`（12 方法）、`OrekiStageAuto`（14）、`OrekiAutomationScheduler`（21）、`OrekiTrace`（6），全部 javap ABI 校验通过；DEX 2.65 MB。
 
+## R84 原版基线 3.21 与基线管理机制（2026年11月6日）
+
+- `[实测]` 3.21.0 官方 APK：包名 `kajfosz.antimatterdimensions`、versionCode `30210000`、minSdk 32 / targetSdk 37、内层 APK 77,633,785 B、SHA-256 `4e9970a808d10b6cc1a1068b078ec3c7d922051086a576c66d071c1216f527ac`。来源为用户提供的 APKPure XAPK（XAPK 本身 SHA-256 `ad1b367ecf872bd71c12b714622424511599177f3a4b9c1a6bb4493bee0dc68a`）。
+- `[实测]` 3.21 与 3.20 的**签名证书完全一致**（`24c5158c0de5d472f018107476ca6e5fd8c1442b404c3fe49a26c2024dd1fd14`），可判定为同一官方签名的连续版本。
+- `[实测]` 3.20 → 3.21 游戏包类数 1242 → 1242：**新增 7 个（全部 UI/皮肤类，含 `OreoNewsWidgetView`），删除 0**。全量类文件 15354 → 15319，差额几乎全是 R8 顶层短名重排，判断升级内容时必须按 `kajfosz/` 包过滤。
+- `[读码]` 3.21 把 LAUNCHER intent-filter 全部搬到 **28 个 `activity-alias`** 且默认 `enabled=false`（原版新增「主屏幕图标」选择功能）；3.20 及更早是 `MainActivity` 直接带 LAUNCHER。任何按「activity + LAUNCHER」找启动组件的代码在 3.21 上会命中 0。
+- `[读码]` 3.21 的 IU15 锁对象类型由 `Lwz1;` 改为 `Lg02;`（同为 `.super .../imaginary_upgrades/a`、同样只覆写 `C(ZZ)V`）。
+- `[读码]` 3.21 的四个自动机状态字符串资源 ID 整体 −7：`automator_paused` `0x7f11037a`→`0x7f110373`、`automator_running` `…382`→`…37b`、`automator_cannot_run` `…34d`→`…346`、`automator_stopped` `…387`→`…380`。资源 ID 由 aapt 分配、R8 不改，但**会随资源表增删整体位移**，所以同样不能跨版本硬编码。
+- `[读码]` 3.21 的 EC12 限时判定闭包类由 `k81` 改为 `u81`（`cmpg-double v0, v6, v0` 锚点与寄存器不变）。
+- `[读码]` 3.21 中 Currency 抽象基类 `bq0` 改名为 `iq0`；其子类 `aw`（3.20 的 Currency 基类）**在 3.21 中已不存在**，属上游内联/合并。
+- `[实测]` 3.21 的 MOD 别名表只推导出 **5/23** 条可唯一确定（`bq0→iq0`、`fd0→ld0`、`fw→iw`、`iu→lu`、`k5→l5`）；其余 18 条（含 `gi3`/`fi3`/`th3`/`w50`/`aw`）在 3.21 存在多个结构同构候选，无法自动判定。**3.21 的 MOD 迁移未完成**，构建 fail-closed 停止，不产出 APK。
+- `[读码]` 官方 Web 源码仓 `IvarK/AntimatterDimensionsSourceCode` 最新提交仍是 `5409e320`（2026-07-17），**无 3.21 对应提交或标签**。因此 3.21 的 Web 侧基线无法建立，`web.commit` 留空并由 `baseline verify` 明确报出。
+- `[实测]` 基线管理工具（Rust，零第三方依赖）五命令 `update / verify / diff / status / rollback` 全部可用；3.20 与 3.21 的 inventory 各 15319~15354 类，可用于后续增量 diff 而无需重复反编译。
+- `[实测]` `scripts/build_mod.py` 原有的 **25 处** `_baseline_version().startswith("3.20")` 分支已全部收敛为 `baseline/version-config.json` 的声明式配置（现存 0 处）。配置化改造后 3.20 构建仍 EXIT=0、产出 77.7 MiB APK，未破坏现有可构建状态。
+
 ## B. 仓库与产物
 
 | 事实 | 值 | 等级 |
