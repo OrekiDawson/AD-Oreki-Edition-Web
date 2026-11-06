@@ -8158,3 +8158,11 @@ R79 收尾时 `work/mod` 有被后台探测中途写入的痕迹（`a.smali` mti
 - 本轮没有启动 Android Release 构建，没有生成或安装 3.21 MOD APK，也没有 OneDrive / 小米云盘上传。Kotlin、D8、最终 APK DEX 集成及实际设备游戏验收仍未执行，不能宣称 3.21 Release 已打通。
 - Web 使用真实 Android Chrome（Chrome 133，默认 CSS 视口 412×796）完成 7/7 定向检查：缺失/无效配置默认 10 秒、合法 37 秒保留、1/60 秒边界即时生效、关闭后不执行任务并清空队列、无横向溢出。未重复已通过且代码未变化的 scheduler 14/14 与教程 2189/2189。
 - GitHub Pages 已由 Web 源提交 `29e48cff7aa699c8122f3d1bc69fde12a7a6b487` 的干净 HEAD 快照部署；Pages 提交为 `1073aedd80c200f3839d7985c74cd15639e6c330`，Actions run `42203360325` 成功。线上 `oreki-smart-executor.js` 与部署提交字节一致，SHA-256 `76ceba7b4f90379ec30e35a3ffc7d8316a26be8f9d4f50b1360f79fe21922630`。
+
+### R87：首次无限→首次永恒的真实提速与 Android 3.21 迁移（2026-11-06）
+
+- Web 生产修复：`src/core/oreki-autobuy-break-infinity.js` 复用 `OrekiEarlyAutomation.shouldReserveIpForId1()` / `leavesId1Reserve(cost)`。首次永恒前、ID1 未解锁、IP 已达到原版 `ipRequirement` 时，跳过任何真实扣费后会跌破门槛的 Break Infinity 升级；其余仍按原版最便宜优先购买，购买走 `upgrade.purchase()`，不写位图、不伪造扣费或奖励。此前 R82 只覆盖无限升级路径，Break 商店可把 IP 压到 1e8 以下，使 `waitingForId1Peak` HOLD 解除、自动坍缩清零反物质。`[读码]` + Node 行为夹具。
+- Web 定向验证：`node scripts/test-r87-break-id1-reserve.mjs` 13/13、`node scripts/test-early-ipmult.mjs` 7/7、`node scripts/test-r82-id1-growth.mjs` 17/17、`node scripts/validate_tutorial.mjs` 2189/2189 通过；未运行完整浏览器矩阵，未把定向夹具写成全流程通关证明。
+- Android R87：`OrekiBreakShop` 已从 Smali 整体迁移到 Kotlin，保留 `public static final int tick()` ABI；`GameApi.kt` 增加 Break 升级原版购买链的缓存反射与基线绑定；`build_kotlin.py` / `build_mod.py` 增加 ABI、Kotlin-owned 与 ID1 预留构建契约。`python scripts/build_kotlin.py --clean` 通过，`build/kt/classes.dex` 已生成且包含 `OrekiBreakShop`；`python -m py_compile scripts/build_mod.py scripts/build_kotlin.py` 通过。
+- Android 3.21 `bindings.json` 仍未完成，保持 fail-closed；未启动 Release 构建，未生成 R87 APK，未上传 OneDrive / 小米云盘。R87 的 Android 生产 Kotlin 修改已进入源码，但最终 DEX/APK 集成和真机验收尚未完成，不能宣称 3.21 Release 已交付。
+- 双端教程附录 F 已同步：Web 新增「十九、打破无限后的升级不再抢走 ID1 的点数」；Android `oreki_tutorial.txt` 的 ID1 章节补充 Break 升级共用预留线。

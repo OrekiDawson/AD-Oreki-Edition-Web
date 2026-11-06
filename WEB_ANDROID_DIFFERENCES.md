@@ -347,7 +347,7 @@ Teresa 不浇；实测 `upgradeBits` 在现实后**仍为 0xFFFFF**（RU 是一�
 
 | # | 能力 | Android | Web | 证据 |
 |---|---|---|---|---|
-| 1 | Break Infinity 升级自动购买 | **已实现并实测**：`oreki/OrekiBreakShop.smali`，走原版 `fp3.D(Z,Continuation)Boolean`（与 Break 页按钮同一条路径）。存档 `breakInfinityUpgradeBits` 0 → **511**，`breakInfinityRebuyables` = `[8,6,10]` | **已重写并实测**：`src/core/oreki-autobuy-break-infinity.js`，同样「最便宜且 2×价格 ≤ IP」规则，一次一拍买一条 | Android：logcat `OREKI_BRKUP: 0..7` + 存档直读；Web：`_tools/r65-break-shop.mjs` A/B/C/C2 四段 |
+| 1 | Break Infinity 升级自动购买 | **已实现并实测**：R87 已从 `oreki/OrekiBreakShop.smali` 整体迁移为 `oreki/OrekiBreakShop.kt`，保留 `tick()I`，仍走原版 `D(Z,Continuation)Boolean`（与 Break 页按钮同一条路径）。存档 `breakInfinityUpgradeBits` 0 → **511**，`breakInfinityRebuyables` = `[8,6,10]`。R87 增加 ID1 资金预留：首次永恒前、ID1 未解锁、IP 已达原版门槛时，买后不得跌破门槛 | **已重写并实测**：`src/core/oreki-autobuy-break-infinity.js`，同样「最便宜且 2×价格 ≤ IP」规则，一次一拍买一条；R87 复用 `OrekiEarlyAutomation.shouldReserveIpForId1()` / `leavesId1Reserve(cost)`，同一 ID1 预留语义 | Android：R87 Kotlin→D8 DEX 已含 `OrekiBreakShop`，运行期/APK 验收待 3.21 门禁；Web：R87 `test-r87-break-id1-reserve.mjs` 13/13，旧 R65 A/B/C/C2 四段保留 |
 | 2 | 坍缩策略 | 实测沿用 R64 两段式：`auto.bigCrunch.mode=1`（TIME）、`time=1`；买过 Break 升级后走 X_HIGHEST/10 分支未在本轮重测 | 同 R64（`shouldHoldCrunch` + `OrekiSmartStrategy`） | 存档字段直读 |
 | 3 | ID1 解锁与购买 | **已解锁并购买**：logcat `OREKI_ID: 1/2/3`，说明原版 `M()`（解锁）+`h(true)`（买最大）链路可用 | `tryFirstId1AutoUnlock()` → `InfinityDimensions.buyMax()`（同「Max All」按钮） | Android logcat；Web 读码 |
 | 3b | ID1 的 IP 门槛 | **4e8**（原版 Android 值） | **1e8**（原版 Web 值） | 两端各自原版公式；教程第 6 章已注明差异，不做机械统一 |
