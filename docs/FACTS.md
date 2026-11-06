@@ -8183,3 +8183,12 @@ R79 收尾时 `work/mod` 有被后台探测中途写入的痕迹（`a.smali` mti
 - Android 3.21 Release 候选包已生成：`build/gradle-stage/反物质维度.apk`，82,621,937 B，SHA-256 `95f3917544986a1608f6ff5deca616af2fe87a9ed5760ac4950b012dd0a77a96`；versionName `3.21.0`、versionCode `30210000`、包名 `com.oreki.antimatterdimensions`。APK 含 4 个 DEX；`classes4.dex` 2,660,136 B 且包含 `OrekiBreakShop`、`OrekiBaselineBindings`、`GameApi`；`assets/oreki_tutorial.txt` 191,496 B。签名 `apksigner verify --min-sdk-version 32` 通过 v3，证书 SHA-256 `95960bce0d8806124d72755d827fcd9216919cac29147635767a967360ed3197`；v1/v2 为 false（该包 minSdk 32，v3 可用）。
 - 候选包同时复制到 `release/反物质维度_3.21.0_R89候选.apk`、`C:\Users\Oreki\OneDrive\反物质维度_3.21.0_R89候选.apk`、`C:\Users\Oreki\小米云盘\反物质维度_3.21.0_R89候选.apk`，三处本地 SHA-256 一致；未覆盖旧 3.20 的 `反物质维度.apk`。安装、启动、挑战/存档/回归与真实墙钟验收**未执行**，不得称为正式稳定版。
 - Web R88 已提交 `e661dcc`，R88 定向时钟夹具 4/4；Pages 部署提交 `a357203`，线上核验见部署记录。
+
+## R90 早期例程真实动作回执（2026年11月7日，Web）
+
+- `[读码]` `src/game.js` 的 `tryOrekiEarlyRoutine()` 自 2026-10-29 起无条件 `return true`（原第 338 行）。R78 把调度器改成「一次真动作 = 全局节拍 + 同帧唯一名额，no-op 才顺延」后，这条返回值让 `routine` 每拍都吃掉唯一名额。
+- `[读码]` `runCycle` 的固定顺序为 `breakUpgrades(5) → breakGate(6) → routine(10) → early(20)`；`OrekiSmartExecutor.tick()` 又受 `frameActed` 限制（R88）。因此 `early`（无限维度 / 无限升级）在 `routine` 有返回值时永远轮不到；首次无限之后 ID1 与首次永恒都没有推进入口。
+- `[实测]` 新增 `scripts/test-r90-early-routine-beat.mjs`（真实 `runCycle` + 原样抽取的 `tryOrekiEarlyRoutine`）：修复前第 1 项「空转返回 true」失败、第 2 项「5 拍内 early 执行 0 次」失败；修复后 7/7。
+- `[代码]` 修复：`tryOrekiEarlyRoutine()` 在动作前记录快照（反物质、`totalTickBought`、`dimBoosts`、`galaxies`、8 层维度数量），动作后仅当任一项变化才返回 true；购买顺序、成本与扣费路径不变。
+- `[实测]` 相关回归：R87 13/13、R82 17/17、R80 7/7、R88 4/4、调度 14/14、R83 12/12；教程校验 2189/2189。
+- `[未验证]` 未跑真实浏览器新档墙钟；收益为「early 模块重新获得节拍」的机制级修复。Android 侧未改；需在 Android `OrekiStageAuto`/调度器核对同类「空转也上报 act」的返回值语义。
