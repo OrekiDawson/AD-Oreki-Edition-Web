@@ -2,7 +2,11 @@
 
 ## 状态
 
-生产修复与定向测试完成；提交、Pages 部署按本任务收尾记录。未运行完整浏览器矩阵。
+生产修复、定向测试、提交与 GitHub Pages 部署完成。未运行完整浏览器矩阵。
+
+- Web 源提交：`8c63fc1`（生产修复）→ `7a7121f`（附录 F 术语修正），均已 push 到 `origin/main`。
+- Pages 部署提交：`da685bd`（首次）→ `192e4a3`（术语修正），Actions run `42214579092` / `42215594429` 均 success，Pages build `status=built`。
+- 线上 `https://oreki.net/src/core/oreki-autobuy-break-infinity.js` 实测 200，内容含 R87 预留判据。
 
 ## 根因
 
