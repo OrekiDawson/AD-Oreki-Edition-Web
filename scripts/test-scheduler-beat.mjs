@@ -276,6 +276,41 @@ EXEC.setIntervalSec(10);
         "界面文案仍在写默认 3 秒");
 }
 
+// ------------------------------------------------------------------ 场景 9：教程附录 F 必须与真实节拍/真实顺序一致
+//
+// R94 缺陷（本轮发现并修）：第 1、2 章的 `automation` 字段已按统一自动节拍
+// （默认 10 秒一次）与 R90/R92/R93 的真实出手顺序改写，但附录 F
+// （`apx_automation.body`）里仍写着「每帧固定顺序为：买计数频率 → 维度提升 → 星系 → 维度」，
+// 与同一份教程的第 1 章正文自相矛盾，也与 `src/game.js` 的真实顺序相反。
+// 附录正文是玩家会单独翻阅的速查表，所以这里让「附录 ≠ 章节 ≠ 代码」任意一方漂移都失败。
+{
+  const TUTORIAL_JSON = join(__dirname, "..", "src", "core", "oreki-tutorial-data.json");
+  const GAME_SRC = join(__dirname, "..", "src", "game.js");
+  const data = JSON.parse(readFileSync(TUTORIAL_JSON, "utf-8"));
+  const gameJs = readFileSync(GAME_SRC, "utf-8");
+  const appendix = (data.appendices ?? []).find(a => a.id === "apx_automation");
+  check("R94-4 教程存在附录 F（apx_automation）", Boolean(appendix), "找不到 apx_automation");
+  const body = appendix?.body ?? "";
+  const ch1 = body.slice(body.indexOf("### 第 1 章"), body.indexOf("### 第 2 章"));
+  const ch2 = body.slice(body.indexOf("### 第 2 章"), body.indexOf("### 第 3 章"));
+  check("R94-5 附录 F 第 1 章不再写「每帧固定顺序」（已改为统一自动节拍）",
+        ch1.length > 0 && !ch1.includes("每帧固定顺序") && !ch1.includes("每帧买一次"),
+        "附录 F 第 1 章仍在按「每帧」描述开局例程");
+  check("R94-6 附录 F 第 1 章的出手顺序与 game.js 真实顺序一致",
+        ch1.includes("能买就买维度提升 → 能买就买反物质星系 → 买计数频率"),
+        "附录 F 第 1 章的购买顺序与生产代码不一致");
+  check("R94-7 附录 F 第 2 章不再写「每帧处理」（与 10 秒节拍一致）",
+        ch2.length > 0 && !ch2.includes("每帧处理"),
+        "附录 F 第 2 章仍写「每帧处理」");
+  // 代码侧顺序证据（文档断言的来源）：提升 → 星系 → 计数频率 → 献祭 → 维度升序
+  const order = ["buyAffordableDimensionBoosts();", "buyAffordableGalaxies();",
+    "buyMaxTickSpeed();", "sacrificeReset();", "for (let tier = 1; tier <= 8; tier++)"]
+    .map(snippet => gameJs.indexOf(snippet));
+  check("R94-8 game.js 的真实出手顺序与附录 F 文案同源",
+        order.every(index => index > 0) && order.every((v, i) => i === 0 || order[i - 1] < v),
+        `实际位置：${order.join(",")}`);
+}
+
 // ------------------------------------------------------------------ 汇总
 
 console.log(`\nR78 Web 调度器行为自测：${checks} 项检查，失败 ${fails.length} 项`);
