@@ -8284,4 +8284,5 @@ R79 收尾时 `work/mod` 有被后台探测中途写入的痕迹（`a.smali` mti
 - `[R94 README 修正]` 删除「候选已复制双网盘」错误表述；`当前稳定发布` = 3.21.0 / 30210000 / `C7307BF2…`。- `[R94 Break 激活·PASS]` **21:28:38**（起点 +23m04s）自动化真实打破无限：`x0-before brake=0` → `x0-after brake=1` + `OREKI_BRK2`；`Player.m()`=`player.brake`、`Player.x0(Z)` 写该字段，由 Kotlin `tryBreakInfinity()` 在 `crunchMaxedInterval` 通过后调用原版 setter + `maxAllIntervalsForFree()`，未人工点击。
 - `[R94 新缺陷·P0级]` `OrekiBreakGate.tick()` DEX **VerifyError**：`rp0` vs `yp0` 类型不匹配（旧 Smali 业务类硬编码 3.20 类型），`breakGate` 任务每拍失败（`OREKI_API_MISS: missing invoke tick: VerifyError`），break 商店后续自动化失效；主链未阻塞（`breakUpgrades` Kotlin 路径完成 Break）。修法：按 CORE §5 整类迁 Kotlin，禁止直接补 Smali。
 - `[R94 进度·21:46]` 41 分钟：6.82e7 IP、0 永恒、反物质 1.87e80、act 179（sacrifice 73/bulk 72/infinityUpgrades 17/crunchInterval 15/breakUpgrades 1）；ID1 未解锁、首次永恒未达成。
-- `[R94 README 修正2]` 已知限制①由「未自动打破」更正为「`OrekiBreakGate` VerifyError（breakGate 失效，Break 已由 breakUpgrades 完成）」。
+- `[R94 README 修正2]` 已知限制①由「未自动打破」更正为「`OrekiBreakGate` VerifyError（breakGate 失效，Break 已由 breakUpgrades 完成）」。- `[R94 ID1 窗口]` 21:50:46（约 45 分钟）：IP **9.06e7**（逼近 1e8）、0 永恒、反物质 **6.55e281** 单调爬升（HOLD 生效）；距 ID1 的 1e1100 峰值门槛约 e819，按当前加速预计 10~30 分钟；act 累计 196+。
+- `[R94 下一轮预备]` 已写 `OrekiBreakGate` Kotlin 迁移设计（711 行/5 方法、ABI 保留、删除 smali、契约检查、单独一轮完成），以及 ID1 窗口观测点。
