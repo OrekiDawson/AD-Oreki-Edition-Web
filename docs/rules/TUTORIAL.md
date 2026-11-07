@@ -7,3 +7,24 @@
 - 注释解释业务意图、机制、兼容与异常边界，不制造逐行废话；中文文档命名与可读业务命名保持有效。
 - FACTS 只记核实事实；任务记录承载任务状态、执行者、证据与真实时间；README 随功能/命令/版本/交付变化按需更新，不能把计划写成已完成。
 - 教程精细数值、触控尺寸、README 十条标准与文档文体按 DETAIL_TUTORIAL.md 对应历史节读取；与上述归并重合处不再次立规。
+
+## 双端教程渲染兼容性门禁（2026-11-07 R94 中途补充，长期有效）
+
+教程内容只有一个源：`web/AD-Oreki-Edition/src/core/oreki-tutorial-data.json`。两端渲染能力不同：
+
+| 端 | 渲染器 | 能力 |
+|---|---|---|
+| Web | `src/components/tutorial/oreki-tutorial-markdown.js` | `##`/`###` 标题、表格（第二行 `---` 分隔）、`- `/`1. ` 列表、`---` 分隔线、`**粗体**`、`` `行内代码` ``、HTML 转义 |
+| Android | `scripts/oreki_tutorial_gen.py`（生成期转换） | 只有 16 个记录标签；表格转 `TBL`（表头一行、数据行「首列：其余」）、标题转 `SUB`、列表转 `STEP`、**不解析任何 Markdown** |
+
+硬性要求：
+
+1. 玩家不得看到原始 Markdown：`|---|`、`**`、反引号、行首 `#`、制表符，两端都不允许。
+2. Android 生成期必须把表格转换成手机可读结构，保留表头、行列关系与全部数值/条件/说明，不丢单元格。
+3. 不支持的语法要么明确转换、要么由校验器报错；**禁止静默产生不完整内容**。
+4. Web 渲染器必须继续正确渲染已支持的语法；新增语法前先扩展渲染器与测试。
+5. 每次改教程正文、生成器或渲染器，必须跑两端定向渲染测试：
+   - Web：`node scripts/test-tutorial-render.mjs`（表格/多列/长文本/特殊符号/制表符/空单元格/换行/转义）。
+   - Android：`python scripts/oreki_tutorial_gen.py`（`assert_render_clean` 写盘前门禁）+ `--selftest`（变异测试证明门禁会失败）。
+6. 真实显示验收：Web 部署后核验线上资源；Android 至少检查生成物无 Markdown 残留，并在下一次获准的 APK 构建后于真机确认。Android 不得为纯教程文本单独消耗紧急重建预算。
+7. 记数法/示例类数值必须与游戏真实格式化器一致（`modules/notations.js` + `src/core/new-game.js` 的 `exponentCommas` 阈值），并用测试固化，防止旧错误回归。
