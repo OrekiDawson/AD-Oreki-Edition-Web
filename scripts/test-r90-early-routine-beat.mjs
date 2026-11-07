@@ -21,7 +21,30 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
-import Decimal from "../modules/break_infinity.js";
+
+/**
+ * 最小 Decimal 垫片：只实现本夹具实际用到的构造与比较。
+ *
+ * 为什么不用 `import Decimal from "../modules/break_infinity.js"`：该文件是 ESM 语法
+ * 但扩展名是 `.js`，解析结果取决于最近的 package.json。工作区根 package.json 目前是
+ * `"type": "commonjs"`，直接 import 会抛 `Unexpected token 'export'` —— 与本轮被测
+ * 逻辑无关的环境问题。夹具自带垫片后，行为判据只依赖生产代码本身。
+ */
+class Decimal {
+  constructor(value) { this.value = Number(value); }
+  static max(a, b) {
+    const left = a instanceof Decimal ? a.value : Number(a);
+    const right = b instanceof Decimal ? b.value : Number(b);
+    return new Decimal(Math.max(left, right));
+  }
+  eq(other) { return this.value === (other instanceof Decimal ? other.value : Number(other)); }
+  gt(other) { return this.value > (other instanceof Decimal ? other.value : Number(other)); }
+  gte(other) { return this.value >= (other instanceof Decimal ? other.value : Number(other)); }
+  lt(other) { return this.value < (other instanceof Decimal ? other.value : Number(other)); }
+  minus(other) { return new Decimal(this.value - (other instanceof Decimal ? other.value : Number(other))); }
+  times(other) { return new Decimal(this.value * (other instanceof Decimal ? other.value : Number(other))); }
+  plus(other) { return new Decimal(this.value + (other instanceof Decimal ? other.value : Number(other))); }
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const WEB = join(__dirname, "..");
@@ -56,6 +79,17 @@ function extractFunction(relPath, signature) {
 }
 
 /**
+ * 抽取模块级 const 声明（单行）。
+ * [R92] 例程新增 `MAX_EARLY_RESET_BATCH`，vm 沙箱里必须能解析到它。
+ */
+function extractConst(relPath, name) {
+  const source = readFileSync(join(WEB, relPath), "utf-8");
+  const match = source.match(new RegExp(`^const ${name} = .*;$`, "m"));
+  assert.ok(match, `生产代码里找不到 const ${name}`);
+  return match[0];
+}
+
+/**
  * 构造一个最小但形状真实的早期世界。
  * @param {{action?: "none"|"tickspeed"|"dimension", resources?: object}} opt
  */
@@ -74,7 +108,7 @@ function createRoutineWorld(opt = {}) {
     },
     break: opt.break !== false,
     totalTickBought: 10,
-    dimBoosts: 0,
+    dimensionBoosts: 0,
     galaxies: 0,
     sacrificed: new Decimal(0),
   };
@@ -83,8 +117,15 @@ function createRoutineWorld(opt = {}) {
   sandbox.InfinityChallenge = { isRunning: false };
   sandbox.EternityChallenge = { isRunning: false };
   sandbox.Pelle = { isDoomed: false };
-  sandbox.DimBoost = { canBeBought: opt.withDimBoost === true };
-  sandbox.Galaxy = { canBeBought: opt.withGalaxy === true };
+  // [R92] 例程改成「一次调用买光买得起的次数」，因此这里的 canBeBought 必须是
+  // **要求驱动**的：买过 1 次之后要求不再满足（本夹具只模拟各买到 1 次）。
+  // 若写成恒真静态属性，循环会一直买到 MAX_EARLY_RESET_BATCH。
+  sandbox.DimBoost = {
+    get canBeBought() { return opt.withDimBoost === true && sandbox.player.dimensionBoosts === 0; },
+  };
+  sandbox.Galaxy = {
+    get canBeBought() { return opt.withGalaxy === true && sandbox.player.galaxies === 0; },
+  };
   sandbox.Sacrifice = { canSacrifice: opt.withSacrifice === true, nextBoost: new Decimal(2) };
   sandbox.Player = { canCrunch: opt.withCrunch === true };
   // 访问器必须与生产一致：同一 tier 永远返回同一个状态对象（DimensionState.createAccessor 会缓存）。
@@ -104,7 +145,7 @@ function createRoutineWorld(opt = {}) {
     calls.push("tickspeed");
     if (action === "tickspeed") sandbox.player.totalTickBought += 1;
   };
-  sandbox.requestDimensionBoost = () => { calls.push("dimboost"); sandbox.player.dimBoosts += 1; };
+  sandbox.requestDimensionBoost = () => { calls.push("dimboost"); sandbox.player.dimensionBoosts += 1; };
   sandbox.requestGalaxyReset = () => { calls.push("galaxy"); sandbox.player.galaxies += 1; return true; };
   sandbox.sacrificeReset = () => { calls.push("sacrifice"); return true; };
   sandbox.buyMaxDimension = tier => {
@@ -115,6 +156,12 @@ function createRoutineWorld(opt = {}) {
 
   vm.createContext(sandbox);
   const fnSource = [
+    // [R92] 例程现在把维度提升/星系的批量购买委托给两个辅助函数，
+    // 必须一并抽取，否则 vm 里 `buyAffordableDimensionBoosts is not defined`
+    // 会被 `tryOrekiEarlyRoutine` 的外层 catch 吞成「恒返回 false」的假失败。
+    extractConst("src/game.js", "MAX_EARLY_RESET_BATCH"),
+    extractFunction("src/game.js", "function buyAffordableDimensionBoosts()"),
+    extractFunction("src/game.js", "function buyAffordableGalaxies()"),
     extractFunction("src/game.js", "export function tryOrekiEarlyRoutine()"),
     extractFunction("src/game.js", "function earlyRoutineSnapshot()"),
     extractFunction("src/game.js", "function earlyRoutineChanged(before)"),
