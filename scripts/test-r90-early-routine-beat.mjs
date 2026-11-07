@@ -266,10 +266,13 @@ function createExecutorHarness() {
     action: "none", break: false, withDimBoost: true, withGalaxy: true, withSacrifice: true,
     withDimension: true, withCrunch: true,
   });
-  check("7. 动作顺序不变：计数频率 → 维度提升 → 星系 → 献祭 → 维度升序 → 首次坍缩", () => {
+  check("7. 动作顺序：维度提升 → 星系 → 计数频率 → 献祭 → 维度升序 → 首次坍缩", () => {
     routine();
+    // [R93] 计数频率从最前面移到重置之后：每次 softReset / galaxyReset 都会
+    // `resetTickspeed()`（player.totalTickBought = 0），先买会被同拍清零。
+    // 断言方向不变（仍是「重置类动作先于维度购买」这一 AD16 语义），只更新位置。
     assert.deepEqual(calls, [
-      "tickspeed", "dimboost", "galaxy", "sacrifice",
+      "dimboost", "galaxy", "tickspeed", "sacrifice",
       "dim1", "dim2", "dim3", "dim4", "dim5", "dim6", "dim7", "dim8",
       "crunch",
     ]);
