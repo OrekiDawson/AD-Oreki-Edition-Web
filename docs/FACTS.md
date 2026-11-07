@@ -8285,4 +8285,5 @@ R79 收尾时 `work/mod` 有被后台探测中途写入的痕迹（`a.smali` mti
 - `[R94 新缺陷·P0级]` `OrekiBreakGate.tick()` DEX **VerifyError**：`rp0` vs `yp0` 类型不匹配（旧 Smali 业务类硬编码 3.20 类型），`breakGate` 任务每拍失败（`OREKI_API_MISS: missing invoke tick: VerifyError`），break 商店后续自动化失效；主链未阻塞（`breakUpgrades` Kotlin 路径完成 Break）。修法：按 CORE §5 整类迁 Kotlin，禁止直接补 Smali。
 - `[R94 进度·21:46]` 41 分钟：6.82e7 IP、0 永恒、反物质 1.87e80、act 179（sacrifice 73/bulk 72/infinityUpgrades 17/crunchInterval 15/breakUpgrades 1）；ID1 未解锁、首次永恒未达成。
 - `[R94 README 修正2]` 已知限制①由「未自动打破」更正为「`OrekiBreakGate` VerifyError（breakGate 失效，Break 已由 breakUpgrades 完成）」。- `[R94 ID1 窗口]` 21:50:46（约 45 分钟）：IP **9.06e7**（逼近 1e8）、0 永恒、反物质 **6.55e281** 单调爬升（HOLD 生效）；距 ID1 的 1e1100 峰值门槛约 e819，按当前加速预计 10~30 分钟；act 累计 196+。
-- `[R94 下一轮预备]` 已写 `OrekiBreakGate` Kotlin 迁移设计（711 行/5 方法、ABI 保留、删除 smali、契约检查、单独一轮完成），以及 ID1 窗口观测点。
+- `[R94 下一轮预备]` 已写 `OrekiBreakGate` Kotlin 迁移设计（711 行/5 方法、ABI 保留、删除 smali、契约检查、单独一轮完成），以及 ID1 窗口观测点。- `[R94 API 缺口清单]` 长跑 50 分钟 logcat 去重：`missing invoke tick: VerifyError` **267 次**（OrekiBreakGate，break 商店自动化失效）；`missing method Currency.o(BigDouble)=purchase on iq0` 1 次（观察）。已验证正常：`idIpRequirement`（ID 类静态字段 `f`，ID1 IP 门槛 1e8）、`iq0.d/w`、`Player.m/x0`、`m01.h/n/i`、`Player.u/A` ⇒ ID1 IP 预留判据有效。
+- `[R94 状态·21:55]` IP 在 2.8e7~9.3e7 间随升级购买波动、反物质随坍缩在 e157~e281 重置、act 208；未跨 1e8 → HOLD 未触发 → ID1/首次永恒未达成；属正常爬升，无死锁证据。
