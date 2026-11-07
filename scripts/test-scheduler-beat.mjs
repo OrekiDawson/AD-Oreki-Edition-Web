@@ -257,6 +257,25 @@ EXEC.setIntervalSec(10);
         log.length === 1, `实际 ${log.length} 个: ${log.map(x => x.id).join(",")}`);
 }
 
+// ------------------------------------------------------------------ 场景 8：界面提示的默认间隔必须等于代码默认值
+//
+// R94 实测缺陷：设置页说明文字长期写着「默认 3 秒」，而 R85 起
+// `oreki-smart-executor.js` 的 `INTERVAL_DEFAULT_SEC` 已经是 10 秒。
+// 玩家会照提示以为「恢复默认」是 3 秒。这里让两个来源互相对齐，防止再次漂移：
+// 代码常量是唯一事实，界面文案必须写出同一个数字。
+{
+  const UI_SRC = join(__dirname, "..", "src", "components", "tabs", "options-gameplay", "OptionsGameplayTab.js");
+  const ui = readFileSync(UI_SRC, "utf-8");
+  const m = code.match(/const INTERVAL_DEFAULT_SEC = (\d+);/);
+  check("R94-1 执行层存在 INTERVAL_DEFAULT_SEC 常量", Boolean(m), "没匹配到常量");
+  const def = m ? Number(m[1]) : NaN;
+  check(`R94-2 设置页提示写的默认值等于代码默认值（${def} 秒）`,
+        Number.isFinite(def) && ui.includes(`默认 ${def} 秒`),
+        `界面文案里找不到「默认 ${def} 秒」`);
+  check("R94-3 设置页不再残留旧的「默认 3 秒」", !ui.includes("默认 3 秒"),
+        "界面文案仍在写默认 3 秒");
+}
+
 // ------------------------------------------------------------------ 汇总
 
 console.log(`\nR78 Web 调度器行为自测：${checks} 项检查，失败 ${fails.length} 项`);
