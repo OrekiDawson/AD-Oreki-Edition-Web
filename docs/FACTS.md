@@ -8369,3 +8369,15 @@ SHA256 e6f0169dc35763a038a555f9e37b86795d9edc4bb8adef8af06a68d09f0ae470
 （reparse tag 0x9000701a / 0x9000301a），ntfs3 驱动报 `unsupported reparse tag`，Linux 无法读写；
 本机也没有 rclone/onedrive 客户端。→ 需在 Windows 侧执行上传（或用户批准安装 Linux 同步客户端后再做）。
 本地有效产物已保留在 `release/` 与 `build/gradle-stage/`。
+
+### R96 交付与阻塞（21:42 更新）
+
+```text
+Android 稳定版  e6f0169dc35763a038a555f9e37b86795d9edc4bb8adef8af06a68d09f0ae470（82,548,209 B）
+本地位置        release/反物质维度.apk、build/gradle-stage/反物质维度.apk
+Windows 暂存    /mnt/windows/Users/Oreki/Desktop/Oreki-R96/反物质维度_R96_e6f0169d.apk（待 Windows 侧上传云盘）
+双云盘交付      阻塞：OneDrive / 小米云盘 在 Linux 侧是 Windows 重解析点（0x9000701a / 0x9000301a），ntfs3 不可读写
+Web 定向验证    check_crunch_modes 14/14、test-appendix-notation 14/14、check_stage_detect 全过、
+                check_eternity_gate 25/25、test-early-ipmult 7/7、test-eternity-upgrades 全过、test-r82-id1-growth 17/17
+Web 修复        package.json 显式 "type": "module"（Node 26 下 scripts/*.mjs import src/core/*.js 必需），提交 85a9594
+```
