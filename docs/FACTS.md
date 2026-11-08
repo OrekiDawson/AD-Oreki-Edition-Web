@@ -8890,7 +8890,7 @@ TT    2 → 3；时间研究 [11,22,32,33,21,31] 保持
 
 **第七版稳定包交付（2026-11-09 04:52，四渠道同一包）**：
 ```text
-APK      78f441fbd38df0790f100cd58fd0cb7042bda0d41431440df927243e93d504cf（82,552,305 B）
+APK      78f441fbd38df0790f100cd58fd0cb7042bda0d41431440df927243e93d504cf（82,556,401 B）
 门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 115/115 · 永恒夹具 50/50 · 发布规则 13/13
 渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-78f441fb
 ```
