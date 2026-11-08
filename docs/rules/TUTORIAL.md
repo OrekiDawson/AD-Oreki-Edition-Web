@@ -26,5 +26,5 @@
 5. 每次改教程正文、生成器或渲染器，必须跑两端定向渲染测试：
    - Web：`node scripts/test-tutorial-render.mjs`（表格/多列/长文本/特殊符号/制表符/空单元格/换行/转义）。
    - Android：`python scripts/oreki_tutorial_gen.py`（`assert_render_clean` 写盘前门禁）+ `--selftest`（变异测试证明门禁会失败）。
-6. 真实显示验收：Web 部署后核验线上资源；Android 至少检查生成物无 Markdown 残留，并在下一次获准的 APK 构建后于真机确认。Android 不得为纯教程文本单独消耗紧急重建预算。
+6. 真实显示验收：Web 部署后核验线上资源；Android 至少检查生成物无 Markdown 残留，并在下一次 APK 构建后于真机确认（R96 起构建持续授权）。
 7. 记数法/示例类数值必须与游戏真实格式化器一致（`modules/notations.js` + `src/core/new-game.js` 的 `exponentCommas` 阈值），并用测试固化，防止旧错误回归。
