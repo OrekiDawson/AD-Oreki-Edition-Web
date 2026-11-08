@@ -8777,3 +8777,36 @@ APK      b0077e5d4b572189ba51b2e8abf20ace1469ddad943b50b26865bdf39ee91dc4（82,5
 而膨胀解锁要求 `maxTheorem ≥ 12900`（原版 `DilationTimeStudy.totalTimeTheoremRequirement`），
 必须靠 ID 链把 AM/IP 指数继续推高后才会放量；这不是 bug，是原版节奏，但**是 3 小时目标的真实瓶颈点**，
 下一轮优先评估「ET 10× 门槛」与「TT 购买源节奏」是否需要阶段化放宽（双端一致）。
+
+### R96 第四轮：加速参数 A/B 实测与「首次永恒后第二次平台期」诊断
+
+`[实测·A/B]` 同一存档、同一 APK（b0077e5d），只改 mod 设置，各测 5 分钟
+`thisEternity.maxAM` 指数增量（真实墙钟，非游戏内时间）：
+
+| 速度 | 调度间隔 | maxAM 指数增量 | 折算 |
+|---|---|---|---|
+| 10000× | 10 s（出厂默认） | +1636 | 327/min |
+| 10000× | 1 s | +1636~+3775（两次采样） | 327–755/min |
+| 100000× | 10 s | +3775 | 755/min |
+| 100000× | 1 s | +1136 | 227/min |
+
+结论（实测，不推断）：**把调度间隔从 10 s 调到 1 s 只带来约 1–2 倍提升，把速度从
+10000× 提到 100000× 也只有约 2–3 倍**，远低于线性预期 ⇒ 当前瓶颈**不是 MOD 动作节拍**，
+而是游戏自身的成长墙。测量后已把 AVD 的 `speed_multiplier` 删除、调度间隔写回 10 s
+（恢复出厂默认，避免把实验参数混入后续计时）。
+
+`[实测·平台期]` 第 3 次永恒后（bigE=3，EP 2.16）整条链卡住：
+- `maxIP` 平台在 **1e593**，而本端 ET 的 10× 门槛要求 `maxIP ≈ 1e804`（`gainedEP ≥ 10×EP`，
+  与 Web `oreki-eternity-automation.js` 的 `gainedEternityPoints().lt(EP×10)` 同一条规则）；
+- 首个永恒升级 `cost = 5 EP`（原版 `eternity-upgrades.js:6`），当前 EP=2.16 ⇒ `buyEternityUpgrades` 只能 noop；
+- 自动化可买项已全部买完：`infinityUpgradeBits=131071`（17/17）、`breakInfinityUpgradeBits=511`（9/9）、
+  `ipMultUpgrades=593`、`galaxies=111`、`dimensionBoosts=1253`；
+- `thisEternity.maxAM=1e124044`、AM 当前 1e118156，`infinities` 已达 1e7.85；
+- 抽样 5 分钟内 `maxAM/maxIP/IP` 完全不变 ⇒ 生产乘数不再增长，卡在原版
+  「维度提升 / 星系」按 **维度数量** 递增的门槛上（`Galaxy.requirementAt` / `DimBoost` 同源）。
+
+`[结论·如实]` 3 小时新档目标**未达成**：t0 02:50:40 起的这次长跑在 +64 分钟处平台在
+第 3 次永恒之后，距离膨胀（12900 TT）仍很远；本轮不伪造达标结论。
+`[下一步·最高优先]` 用同一存档在 Web 端做 A/B：若 Web 自动化能在同等时间越过这个平台，
+说明 Android 侧仍缺「维度数量推进」动作；若同样卡住，则是 3.21 原版数值节奏本身，
+需要重新评估 3 小时目标的可达口径（速度/倍率设置）。
