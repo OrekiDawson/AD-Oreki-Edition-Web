@@ -8535,3 +8535,22 @@ local ✅ · OneDrive ✅ · Google Drive ✅ · GitHub ❌（`android-v3.21.0` 
 - 标签 `android-update-<版本>-<sha8>`；已存在时按附件 `.sha256` 内容判定幂等/冲突；历史 Release 永不覆盖。
 - 本地三渠道只原子覆盖 `latest/反物质维度.apk`，**不再创建版本归档**；云盘只 `rclone copyto`。
 - 规则自检脚本 `scripts/check_publish_rules.py`：13/13 通过；dry-run 显示新行为正确。
+
+### R96 首次按新规则交付（更新标签四渠道全部成功）
+
+用户 2026-11-09 令（独立更新标签）已在 Android 侧落地并完成首次真实交付：
+
+```text
+APK     82d922776f74a39c876e829d8383f7dbaeba4005cf3a3be0e4ff8776fa99cf4c（3.21.0/30210000，82,552,305 B）
+门禁    verify_release 14/14 · verify_patch_contract 17/17 · 契约 94/94 · R74 夹具 16/16
+local   /home/oreki/Releases/AD-Oreki-Edition/latest/反物质维度.apk（临时文件 + 原子覆盖，无版本归档）✅
+OneDrive / Google Drive 根目录 反物质维度.apk（rclone copyto 覆盖）✅
+GitHub  android-update-3.21.0-82d92277（新建，不覆盖历史 android-v3.21.0）✅
+        附件：AD-Oreki-Edition-3.21.0.apk + .sha256；正文含修改/修复/验证/文件名/SHA-256/构建验证时间
+```
+
+规则实现与自检：`scripts/publish_four_channels.py`（更新标签 + 已存在时按附件 `.sha256` 判幂等/冲突、三渠道只覆盖固定文件）、
+`scripts/check_publish_rules.py`（13/13 通过）；`docs/rules/RELEASE.md` / README 已同步。
+
+**实机状态（策略层修复后）**：`OREKI_GOAL stage=13 无限维度与永恒前置 goal=unlock-eternity unknownLeaf=0 degraded=0`；
+存档 maxAM 1e40702、IP 1e145、brake=true、EP=0、replicanti 未解锁 —— 首次永恒仍未触发，下一轮继续定位。
