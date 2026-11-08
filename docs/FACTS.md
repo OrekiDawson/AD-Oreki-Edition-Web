@@ -8319,3 +8319,53 @@ R79 收尾时 `work/mod` 有被后台探测中途写入的痕迹（`a.smali` mti
 - `[R94 run3]` 新长跑起点 **01:22:27**（install 01:22:08 + pm clear），日志 `init 已启用·间隔10秒`、`EARLY applied`、无 API_MISS/VerifyError；监视器已切换到 `timeline-run3.md`。待验收：Break 持久化、反物质突破 MAX_VALUE、hold 不抖动、ID1、教程 Kotlin UI 页面。- `[R94 run3 Break 持久化·关键成功]` 01:59:35 `OREKI_BRK2`（x0-before 0 → after 1），**存档 `player.json` 实测 `"brake": true`** —— R94 首次看到 Break 真正写入存档，直接验证 `Player.a` 实例缓存修复生效；crunchInterval 15 → breakUpgrades 1 → breakShop 3。当时 IP 8.9e7、无限 872、本永恒峰值 1e397.9。
 - `[R94 调度饥饿·真瓶颈]` 任务顺序 sacrifice→bulk→infinityUpgrades→crunchInterval→breakUpgrades→idBuy；×10000 下 bulk/sacrifice 几乎每拍成功 ⇒ 下游被 `deny frame-held` 饿死（前 19 分钟 crunchInterval=0，直到 infinityUpgrades 买满才拿到节拍）。下一轮修：高频任务让位/冷却配额 + 契约断言「下游任务 M 秒内至少 1 次节拍」。- `[R94 根因确认·eternities 字段]` 存档序列化器把 `Player.a.eternities` 写成 `"eternities"`，实测值 **11**，但 UI 永恒点数 0、bigEternities 0、eternityUpgradeBits 0、thisEternity 跨全程 ⇒ `Player.x()` 绑定无误但语义不可用。旧 `eternitiesZero()`（eternities==0）**恒为 false**，使 `resolveUrgentTask` 永不返回 idBuy、`computeHoldCrunch` 永不进入 ⇒ 峰值停 1e397.9、ID1 全链路卡死。已改判据为「永恒点数==0 且永恒升级为空（bigEternities 兜底）」，任一读取失败 fail-closed；契约 78 项。- `[R94 授权构建#5·交付 run4]` 用户授权后构建成功（12m8s）→ **`48c8b8ae5dd619a772e5e4b4552860a7a5ced5e0859094761a6359b67edef0de`**（82,630,129 B），14/14 + 17/17，已交付 release + OneDrive + 小米云盘（三处一致），旧版备份 `_3.21第3版_备份_bbc7a334.apk`。账本按用户授权登记 `user_authorizations` 后放行（used=3/1，非静默篡改）。
 - `[R94 run4]` 起点 **09:46:19**；**调度饥饿修复实测生效**：crunchInterval 11 分钟 6 次（run3 前 19 分钟 0 次），Break 预计 ~10:10。已知噪声：`missing eternity upgrade registry` 每帧刷屏（3.21 无该字段，判据不受影响，下版抑制）。- `[R94 Break 前 IP 经济根因]` run4 存档实测 `auto.bigCrunch` = AMOUNT 模式且 **amount=1** ⇒ 反物质刚到 1 就填塌，每次 IP 收益≈0 ⇒ 坍缩间隔升级买不动 ⇒ Break 永远到不了（run4 18 分钟 IP 仅 59，maxAM 已 1e358）。已修：`applyCrunchPolicy` 在未 Break 时强制 **TIME 模式 + 10 秒**收割 IP（只在本 MOD 接管期间，总开关关闭即让路），契约 81 项。
+
+
+## R96 Linux 主环境恢复与首个 Linux 稳定版（2026-11-08 21:00-21:45）
+
+### 环境事实（已验证）
+
+```text
+OS        Kubuntu 26.04 LTS（/home/oreki/Projects/AD-Oreki-Unified -> /home/oreki/AD-Oreki-Unified 软链）
+JDK       OpenJDK 25.0.4.1（PATH，JAVA_HOME 未设；scripts/jdk_env.py source=PATH）
+Kotlin    tools/kotlinc/bin/kotlinc（shell 启动器，JVM 需 JAVA_HOME/PATH）
+Gradle    ./gradlew 9.8.2（首次运行下载发行版；gradlew 已从 CRLF 修正为 LF）
+D8        ~/Android/Sdk/build-tools/37.0.0/d8（D8 9.2.4-dev）
+aapt2     编译首选 build-tools/34.0.0（37 的 aapt2 拒绝 `$avd_hide_password__0.xml` 这类条目）
+SDK       ~/Android/Sdk（platforms: android-34 已补装、android-37.2；build-tools: 34.0.0 / 37.0.0）
+adb       ~/Android/Sdk/platform-tools/adb（emulator-5554，AVD ad-game-api37）
+Node      v26.13.0；Python 3.14.4
+```
+
+### R96 构建链修复（提交 85067c9）
+
+| 文件 | 修复 |
+|---|---|
+| `gradlew` | CRLF → LF（Windows 迁移件在 Linux 上 `bad interpreter`） |
+| `build.gradle` | `python`→`python3`（POSIX）；`java.exe`→`bin/java`；`btDir` 指向 SDK build-tools；adb 解析 SDK/本地二选一 |
+| `gradle/release-budget.gradle` | 预算闸门同样改用平台感知解释器（R94 曾因 `'python'` 直接失败） |
+| `scripts/build_kotlin.py` | kotlinc/d8/JDK/javap 平台解析；`tools/jdk`（Windows 版）在 POSIX 上跳过；优先 android-34 的 android.jar |
+| `scripts/build_mod.py` | java/zipalign 平台解析；新增 `_aapt2_preferred_dir()`（apktool 3.x 从 PATH 找 aapt2，优先 34.0.0）；R74 守卫接受「Break 前一次性 mode 初始化」 |
+| `scripts/verify_release.py`、`verify_patch_contract.py` | 改用新模块 `scripts/oreki_tools.py` 解析 java/aapt2/adb |
+
+### 首个 Linux 稳定版（已验证）
+
+```text
+构建   ./gradlew assembleRelease --offline -PorekiBuildRound=R96   BUILD SUCCESSFUL（58s 增量）
+门禁   verify_release 14/14 · verify_patch_contract 17/17
+账本   round=R96 ALLOW → RECORDED final used=1/1
+签名   V3.0 Signer CN=AD Oreki Edition（apksigner verify 通过）
+APK    build/gradle-stage/反物质维度.apk  82,548,209 B
+SHA256 e6f0169dc35763a038a555f9e37b86795d9edc4bb8adef8af06a68d09f0ae470
+实机   adb install Success → 启动 → 点击开始游戏 → 维度 9 次提升 / 星系 2 / 无限进度 24%
+       OREKI_SCHED init（10 秒节拍）+ OREKI_EARLY applied；无 FATAL/VerifyError
+```
+
+产物已同步到 `release/反物质维度.apk`，并备份旧版为 `release/反物质维度_3.21第4版_备份_<时间>.apk`。
+
+### 阻塞（真实、未解决）
+
+**双云盘交付在 Linux 上不可执行**：`/mnt/windows/Users/Oreki/OneDrive` 与 `小米云盘` 是 Windows 重解析点
+（reparse tag 0x9000701a / 0x9000301a），ntfs3 驱动报 `unsupported reparse tag`，Linux 无法读写；
+本机也没有 rclone/onedrive 客户端。→ 需在 Windows 侧执行上传（或用户批准安装 Linux 同步客户端后再做）。
+本地有效产物已保留在 `release/` 与 `build/gradle-stage/`。
