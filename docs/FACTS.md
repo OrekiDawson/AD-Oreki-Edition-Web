@@ -8706,3 +8706,39 @@ APK      56d0e479e899c1cdc9114a23ecb2e96aa777d771d6b7b16c0f112076513e83e0（82,5
 ```
 `[未完成]` 3 小时新档目标仍在计时验证（第三轮长跑 02:29:37 起，里程碑由 run3h_watch 按墙钟记录）；
 本报告发布时尚在 pre-break 阶段（IP 1e7），完成或不完成都会在后续轮次给出每个里程碑真实墙钟。
+
+### R96 第三轮（续）：Break 兜底优先级修复 + 新档首次永恒 9.3 分钟打通
+
+`[实测·缺陷]` 第三版（56d0e479）下新档 16 分钟：坍缩间隔已买满（`interval=100`）、
+17 项一次性无限升级全买（`infinityUpgradeBits=131071`）、`ipMultUpgrades=7`、IP 1e7.65，
+但 `brake=false` 始终不触发。原因：Break 兜底块排在五个购买动作**之后**，每拍名额先被
+sacrifice/bulk/infinityUpgrades 用掉 ⇒ `allow("breakUpgrades")` 恒被 `deny frame-held`。
+
+`[修复]` 把「Break 兜底 + 自愈」整块**提前到购买动作之前**（仍是同一条 `allow()` 闸门、
+每拍最多一个真动作）。实机（安装 3ba30208 到上述存档后 1 秒内）：
+```text
+OREKI_BRKTRACE2: x0-before brake=0 → x0-after brake=1
+OREKI_SCHED: act breakUpgrades
+1 秒后 IP 1e7.65 → 1e155、ipMultUpgrades 7 → 156、maxAM 1e383 → 1e1130（真实 Break 后的原版公式）
+```
+契约自测新增「Break 兜底抢在购买动作之前」（共 112 项）。
+
+**新档 3 小时计时（第四轮，t0 = 02:50:40，APK 3ba30208，×10000）里程碑（真实墙钟）**：
+```text
+02:52:48  + 128s  首次无限（此前 196s 且当时监视器晚启动，此轮为精确值）
+02:59:48  + 548s  首次 Break Infinity（间隔卖满 + Break 真实激活）
+02:59:56  + 556s  首次永恒真实结算（OREKI_ET: launch via OrekiEternityLaunch）
+03:00:28  + 588s  里程碑检测到 bigEterties=1 / 时间维度 1 层
+03:00:57           第 2 次永恒结算（bigE=2 观测于 03:01 存档：EP 1 → TT 购买 ipBought=4/epBought=1、时间研究 [11,22,32]）
+```
+对比：同一目标在 23:36 起的旧档耗时约 2 小时（其中 ~50 分钟消耗在三处已修 P0 上）；
+本轮从新档到首次永恒 **9.3 分钟**，说明「新档 3 小时通关」在双端自动化修好后具备可行性，
+但仍需跑完整流程（膨胀/现实/终局）才能判定是否达标。
+
+**第四版稳定包交付（2026-11-09 03:01，四渠道同一包）**：
+```text
+APK      3ba30208c9f84f26702e8d85af25d4cbc825f72c9def3b9481b41e6efbe1d3e3（82,552,305 B）
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 112/112 · 永恒夹具 47/47 · 发布规则 13/13
+渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-3ba30208
+实机     安装成功；Break/永恒证据见 reports/r96/round3-break-priority-fix-evidence.log 与 player-round3-break-fixed.json
+```
