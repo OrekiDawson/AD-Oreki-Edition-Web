@@ -8742,3 +8742,38 @@ APK      3ba30208c9f84f26702e8d85af25d4cbc825f72c9def3b9481b41e6efbe1d3e3（82,5
 渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-3ba30208
 实机     安装成功；Break/永恒证据见 reports/r96/round3-break-priority-fix-evidence.log 与 player-round3-break-fixed.json
 ```
+
+### R96 第三轮（续 2）：防饥饿抢救的「noop 卡死」修正 + 第五版稳定包（新档 31 分钟进度）
+
+`[实测·缺陷]` 第三版抢救上线后（新档 t0 02:50:40）：`act infinityUpgrades`/`act crunchInterval`
+开始轮转、+548s 首次 Break、+556s 首次永恒，但随后 8 分钟里
+`act crunchInterval 3 次全部 noop`、`act idBuy 0 次`、8 个无限维度全未解锁。
+原因：抢救只按 `sinceLastActMs` 判断，而 noop 不更新 lastAct ⇒ 已买满的 `crunchInterval`
+永远被当成「最饥饿」反复选中，排在后面的 `idBuy` 永远轮不到。
+
+`[修复]` 增加**抢救冷却**（`RESCUE_COOLDOWN_MS = 20s`，`java.util.HashMap` 记录每个任务
+上次被抢救的时刻）：20 秒内不重复抢救同一任务，自然轮转到下一个饥饿任务。契约自测 113 项。
+实机（APK b0077e5d 覆盖安装到同一存档后 30 秒内）：`OREKI_SCHED: act idBuy` 出现，
+`OREKI_ID_UNLOCK: 1` 真实解锁，随后 ID2→ID5 依次解锁。
+
+**第五版稳定包交付（2026-11-09 03:21，四渠道同一包）**：
+```text
+APK      b0077e5d4b572189ba51b2e8abf20ace1469ddad943b50b26865bdf39ee91dc4（82,552,305 B）
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 113/113 · 永恒夹具 47/47 · 发布规则 13/13
+渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-b0077e5d
+```
+
+**新档计时（第四轮 t0 = 02:50:40，×10000）当前里程碑（真实墙钟，含一次覆盖安装 ~40s 中断）**：
+```text
++128s   首次无限
++548s   首次 Break Infinity
++556s   首次永恒真实结算
++1109s  ID1 解锁（此前 8 分钟被「抢救卡死」bug 拖延，已在第五版修掉）
++1689s  第 2 次永恒 + 首次 TT（TT=2）+ 时间维度 1 层
++1809s  maxAM 1e60000、ID1~ID5 已解锁、IP 1e303
+当前     IP 1e304、493 万次无限、TT 2、时间研究 [11,22,32,33]、第 2 次永恒后重建中
+```
+`[分析]` 时间定理的三大购买源（AM 1e20000 / IP 1e100 / EP ×2 递增）当前只等价于个位数 TT，
+而膨胀解锁要求 `maxTheorem ≥ 12900`（原版 `DilationTimeStudy.totalTimeTheoremRequirement`），
+必须靠 ID 链把 AM/IP 指数继续推高后才会放量；这不是 bug，是原版节奏，但**是 3 小时目标的真实瓶颈点**，
+下一轮优先评估「ET 10× 门槛」与「TT 购买源节奏」是否需要阶段化放宽（双端一致）。
