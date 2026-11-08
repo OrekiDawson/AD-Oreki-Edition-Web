@@ -8453,3 +8453,24 @@ OREKI_SCHED: act breakShop/sacrifice/infinityUpgrades/crunchInterval 正常，
 
 下一步（需一次构建或只读探针）：打印两个未知叶子的名字（`sUnknown` 计数处已有 hooks 位置），
 按 3.21 真实字段修复叶子求值，再验证 ID2~8 与首次永恒。
+
+### R96 发布规则接入：四渠道交付（Codex 64aa67b 规范）
+
+已确认 `64aa67b`（统一三处 APK 覆盖文件名）在本地 main（HEAD 祖先），并按新规范完成一次真实交付：
+
+```text
+规范     OneDrive / Google Drive 根目录 → 固定名 反物质维度.apk
+         Kubuntu SSH: ~/Releases/AD-Oreki-Edition/latest/反物质维度.apk（临时文件 + 原子替换）
+         GitHub: 只通过 Release（tag android-v<版本>），附件 APK + .sha256；历史 Release 不覆盖
+         小米云盘 不再是正式渠道
+入口     scripts/publish_four_channels.py（只交付，不构建）；manifest 由 installToRelease 生成
+APK      30ace330d5adca570bdd4008c88e1bde121c19d954d84b5306e987b54fe2d1ea（3.21.0 / 30210000）
+```
+
+实测（22:39）：`--check` 全 PASS；`--publish` 四渠道 success；local latest SHA-256 与 APK 一致；
+OneDrive/GDrive 根目录均出现 `反物质维度.apk`；GitHub Release `android-v3.21.0` 唯一。
+已知缺陷：gh CLI 改写中文附件名为 `default.apk` / `_3.21.0_…apk.sha256`；已修
+`publish_four_channels.py`（上传前转 ASCII 稳定名），已发布 Release 不改，下一版生效。
+
+Linux 兼容修复：`build.gradle` manifest 写入改 `setText`（Groovy 5 无 `writeText(String,String)`）；
+生成 verify 报告须传绝对 realpath（`installToRelease` 用 realpath 与报告比对，软链路径会不一致）。
