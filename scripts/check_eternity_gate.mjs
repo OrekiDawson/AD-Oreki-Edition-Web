@@ -9,7 +9,7 @@
 //     ② 资格不足 → 不发起
 //     ③ 现实升级 10 保护期内 → 不发起
 //     ④ EC 入口等待中 → 不发起
-//     ⑤ 收益不足 10 倍 → 不发起
+//     ⑤ 收益不足当前 EP（×1 门槛：EP 还没翻倍）→ 不发起
 //     ⑥ 全部通过 → 恰好发起一次，且实参必须是 (false, true)
 //     ⑦ IU15 冲刺保护 → 不发起
 //   外加 `holdForRealityUpgrade10()` 的四条停止条件与「最多 10 秒 + 一次性放弃」语义。
@@ -17,6 +17,7 @@
 // 用法：node scripts/check_eternity_gate.mjs      （退出码 0 = 全过）
 
 import path from "node:path";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -129,13 +130,16 @@ env.gained = 1e100;
 env.ep = 1;
 check("EC 入口等待中不发起", A.tickEternity() === false);
 
-// ---------------- ⑤ 收益不足 10 倍不发起 ----------------
+// ---------------- ⑤ 收益不足当前 EP（×1 门槛）不发起 ----------------
+// [R96 第五轮] 门槛从 ×10 改成 ×1：EP 是时间维度/永恒升级的唯一燃料，×10 会让中期
+// EP 卡死（平台期实测 gainedEP 只有 7，而 ×10 需要 23）。现在「gained ≥ 当前 EP」
+// （即这一次永恒至少让 EP 翻倍）就结算。
 reset();
 arm();
 env.canEternity = true;
 env.ep = 100;
-env.gained = 999;   // < 100*10
-check("收益不足 10 倍不发起", A.tickEternity() === false);
+env.gained = 99;    // < 100*1 → 没翻倍
+check("收益不足当前 EP（未翻倍）不发起", A.tickEternity() === false);
 check("收益不足时 eternity 调用 0 次", env.eternityCalls.length === 0);
 
 // ---------------- ⑥ 全部通过 → 恰好一次，实参 (false, true) ----------------
@@ -143,8 +147,8 @@ reset();
 arm();
 env.canEternity = true;
 env.ep = 100;
-env.gained = 1000;  // == 100*10，边界应放行
-check("收益刚好 10 倍时放行（边界）", A.tickEternity() === true);
+env.gained = 100;   // == 100*1，边界（刚好让 EP 翻倍）应放行
+check("收益刚好等于当前 EP（EP 翻倍）时放行（边界）", A.tickEternity() === true);
 check("恰好发起 1 次", env.eternityCalls.length === 1, `calls=${env.eternityCalls.length}`);
 check("实参必须是 (false, true)",
   env.eternityCalls.length === 1 && env.eternityCalls[0][0] === false && env.eternityCalls[0][1] === true,
@@ -225,6 +229,17 @@ try {
   check("RU10 已可买时不压", A.holdForRealityUpgrade10() === false);
 } finally {
   Date.now = realNow;
+}
+
+// ---------------- ⑨ 源码静态守卫：门槛常量必须是 ×1 ----------------
+{
+  const autoSrc = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
+  check("源码里永恒结算门槛是 eternityPoints.value.times(1)",
+    autoSrc.includes("eternityPoints.value.times(1)"));
+  check("源码里已无 eternityPoints.value.times(10)（旧 ×10 门槛）",
+    !autoSrc.includes("eternityPoints.value.times(10)"));
+  check("执行与诊断同链：tickEternity 与 noopReason 都走 ×1",
+    autoSrc.split("eternityPoints.value.times(1)").length - 1 >= 2);
 }
 
 // ---------------- 汇总 ----------------

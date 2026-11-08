@@ -219,11 +219,11 @@ export function runCrunchPolicyChecks(check) {
   // ============================================================ 一、静态：规则与数值口径
   const REASONS = [
     "challenge-running", "pre-infinity", "pre-break-ip", "eternity-ready",
-    "eternity-ip-jump", "eternity-grow", "id-peak-reached", "id-peak-wait",
+    "eternity-ip-jump", "eternity-cycle", "eternity-grow", "id-peak-reached", "id-peak-wait",
     "id-ip-farm", "ip-jump", "gain-wait",
   ];
   const missingReasons = REASONS.filter(r => !POLICY_SRC.includes(`"${r}"`));
-  check("静态：11 个决策 reason 全部存在（含 eternity-ip-jump / eternity-grow / ip-jump / gain-wait）",
+  check("静态：12 个决策 reason 全部存在（含 eternity-ip-jump / eternity-cycle / eternity-grow / ip-jump / gain-wait）",
     missingReasons.length === 0, `缺: ${missingReasons.join(",")}`);
 
   check("静态：等待上限常量与 Android 一致（15 分钟 900000 / 3 分钟 180000）",
@@ -250,9 +250,17 @@ export function runCrunchPolicyChecks(check) {
     !POLICY_SRC.includes('"post-eternity"') &&
     POLICY_SRC.includes('"eternity-ip-jump"') && POLICY_SRC.includes('"eternity-grow"'));
 
-  check("静态：永恒层等待上限与 Android 一致（10 分钟 = 600000 ms，走 waitWithin 墙钟）",
+  check("静态：保留 10 分钟 eternity-grow 兜底上限（600000 ms；30 秒周期会先放行，此处为判据误判的兜底）",
     /ETERNITY_GROW_WAIT_LIMIT_MS\s*=\s*600000/.test(POLICY_SRC) &&
     POLICY_SRC.includes('this.waitWithin("eternity-grow", ETERNITY_GROW_WAIT_LIMIT_MS)'));
+
+  check("静态：永恒层有 30 秒周期结算（ETERNITY_CYCLE_MS = 30000，reason eternity-cycle，排在 ip-jump 之后、grow 等待之前）",
+    /ETERNITY_CYCLE_MS\s*=\s*30000/.test(POLICY_SRC) &&
+    POLICY_SRC.includes('return { allow: true, reason: "eternity-cycle" }') &&
+    POLICY_SRC.indexOf('reason: "eternity-ip-jump"') <
+      POLICY_SRC.indexOf('reason: "eternity-cycle"') &&
+    POLICY_SRC.indexOf('reason: "eternity-cycle"') <
+      POLICY_SRC.indexOf('this.waitWithin("eternity-grow"'));
 
   check("静态：永恒层没有 canEternity 放行（全文件仅首次永恒前一处），eternity-ready 只属于首次永恒前",
     POLICY_SRC.split("if (Player.canEternity) return").length - 1 === 1 &&
@@ -340,21 +348,57 @@ export function runCrunchPolicyChecks(check) {
       decision.allow === false && decision.reason === "eternity-grow", d(decision));
   }
   {
-    // 10 分钟墙钟上限：599999 仍阻止、满 600000 放行一次（stall-eternity-grow），之后重新计时。
+    // [R96 第五轮] 30 秒周期结算：未满 30 秒不放行、满 30 秒放行 eternity-cycle、
+    // 放行后重新计时、下一个窗口再次放行。
     const h = makeHarness({ eternityPointsExponent: 1, gainedExponent: 5, ipExponent: 5 });
-    const first = h.decide();
-    h.clock.t = 599999;
-    const beforeLimit = h.decide();
-    h.clock.t = 600000;
-    const atLimit = h.decide();
-    const reenter = h.decide();
-    check("永恒层：等待 599999 ms 仍阻止（eternity-grow）",
-      first.reason === "eternity-grow" && beforeLimit.allow === false &&
-      beforeLimit.reason === "eternity-grow", d(beforeLimit));
-    check("永恒层：等待满 600000 ms（10 分钟）→ 放行 stall-eternity-grow",
-      atLimit.allow === true && atLimit.reason === "stall-eternity-grow", d(atLimit));
-    check("永恒层：放行一次后重新计时（不会连续放行）",
-      reenter.allow === false && reenter.reason === "eternity-grow", d(reenter));
+    const first = h.decide();          // t=0：初始化周期计时，未满 30s → eternity-grow
+    h.clock.t = 29999;
+    const beforeCycle = h.decide();
+    h.clock.t = 30000;
+    const atCycle = h.decide();
+    const afterCycle = h.decide();
+    h.clock.t = 59999;
+    const secondBefore = h.decide();
+    h.clock.t = 60000;
+    const secondAt = h.decide();
+    check("周期：永恒层未满 30 秒 → 不放行（eternity-grow）",
+      first.allow === false && first.reason === "eternity-grow" &&
+      beforeCycle.allow === false && beforeCycle.reason === "eternity-grow", d(beforeCycle));
+    check("周期：满 30000 ms → 放行 eternity-cycle",
+      atCycle.allow === true && atCycle.reason === "eternity-cycle", d(atCycle));
+    check("周期：放行后重新计时（不会连续放行）",
+      afterCycle.allow === false && afterCycle.reason === "eternity-grow", d(afterCycle));
+    check("周期：下一个 30 秒窗口再次放行（59999 阻止 / 60000 放行）",
+      secondBefore.allow === false && secondAt.allow === true &&
+      secondAt.reason === "eternity-cycle", `${d(secondBefore)} / ${d(secondAt)}`);
+  }
+  {
+    // ip-jump 优先于周期：即使正好到 30 秒窗口，收益 ≥10× 时也报 eternity-ip-jump。
+    const h = makeHarness({ eternityPointsExponent: 1, gainedExponent: 5, ipExponent: 5 });
+    h.decide();                        // t=0
+    h.clock.t = 30000;
+    h.cfg.gainedExponent = 6;          // 收益 10× → leap = 1
+    const decision = h.decide();
+    check("周期：ip-jump 优先于 eternity-cycle（30 秒到点时仍报 eternity-ip-jump）",
+      decision.allow === true && decision.reason === "eternity-ip-jump", d(decision));
+  }
+  {
+    // ip-jump 会重置周期计时（与 Android 同序）：20 s 处结算后，下一个周期从 20 s 起算。
+    const h = makeHarness({ eternityPointsExponent: 1, gainedExponent: 5, ipExponent: 5 });
+    h.decide();                        // t=0 周期起算
+    h.clock.t = 20000;
+    h.cfg.gainedExponent = 6;
+    const jump = h.decide();           // t=20000 ip-jump → 周期重置到 20000
+    h.cfg.gainedExponent = 5;
+    h.clock.t = 49999;
+    const before = h.decide();         // 距 20000 为 29999 < 30000 → 仍 eternity-grow
+    h.clock.t = 50000;
+    const at = h.decide();             // 距 20000 满 30 秒 → eternity-cycle
+    check("周期：ip-jump 会重置周期计时（20 s 处结算后重新等 30 s）",
+      jump.reason === "eternity-ip-jump" &&
+      before.allow === false && before.reason === "eternity-grow" &&
+      at.allow === true && at.reason === "eternity-cycle",
+      `${d(jump)} / ${d(before)} / ${d(at)}`);
   }
   {
     // 大永恒次数 > 0 / 已购永恒升级 > 0 也算永恒层（与 Android eternitiesZero() 三项口径一致）。
