@@ -8934,3 +8934,39 @@ APK      7c8b531569a50c886150932b33c3c5be4fe34e5520c9d70d8a41e170475f29bd（82,5
 「节流打印当前 IP」才能区分「后来仍然失败」还是「一直没抢到节拍」；这是下一轮第一件事。
 3 小时计时仍在跑（t0 05:31:17，keeper 4 小时、里程碑采样每 20 秒），但当前 IP 倍率链
 尚未真正起来，**不作为达标依据**，等诊断修好后再判定。
+
+### R96 第七轮：首次 Break 前「IP 倍率购买优先级」修复 —— 新档 Break 7.7 分钟、首次永恒 8.4 分钟
+
+`[实测·根因]` 上一轮把无限升级购买失败做了诊断，但真正的瓶颈是**优先级**而不是单次购买失败：
+第八版干净新档里调度 15 分钟只有 `act sacrifice/bulk`，`infinityUpgrades`（IP 倍率）
+每 60 秒才抢到一拍 ⇒ `ipMult` 十几分钟仍为 0 ⇒ IP 只按 1/坍缩累积 ⇒ 坍缩间隔升级
+（下一档 128 IP、全买满约 3.2 万 IP）买不起 ⇒ Break 无限期推迟。
+原版早期的最优解就是**每拍都买 IP 倍率升级**（成本 ×2、收益 ×2，指数增长）。
+
+`[修复]` `OrekiStageAuto.resolveUrgentTask()`：`!isBroken()` 分支的紧迫名额固定给
+`infinityUpgrades`（它 noop 时本拍自动回落到 crunchInterval/sacrifice/bulk，不空转）。
+同时把上一轮「每原因只打一次」的诊断升级为**每 12 秒一条时序日志**
+（`iup-diag <reason> ip=<值> [cost=<值>]`），并给原本静默的 ID1 预留等待分支补上 `id1-reserve-wait`。
+构建期 R41 极性守卫同步改为新结构（`if (ipVersusGate != null && ipVersusGate >= 0) {`）。
+
+`[实机·关键数据]` 第九版 APK 4e6fb5b2，干净新档 t0 = **05:48:55**（`/tmp/r96save/run9b_start.env`）：
+```text
++   1.8s  首次无限（继续沿用已验证的首段链路）
++ 461.9s  首次 Break Infinity（7.7 分钟；第八版同流程 15 分钟仍卡在 pre-break）
++ 501.9s  首次永恒真实结算（8.4 分钟）+ 时间维度 1 层
++ 12min  maxAM 5755、IP 1e29、bigE=1、星系 17
+资源侧  infinityUpgradeBits 0 → 511 → 131071（17/17 一次性升级）、ipMultUpgrades 0 → 235、
+        坍缩间隔 cost 64 → 32768（interval 买满）
+调度侧  4 分钟内 act infinityUpgrades 9 次（修复前 15 分钟 0-1 次）
+```
+`[双端口径]` Web 的 `OrekiEarlyAutomation` 本来就是「每帧最多买 1 个无限升级」，因此
+本轮 Android 的优先级修复是**向 Web 既有语义对齐**，不需要改 Web 代码。
+
+**第九版稳定包交付（2026-11-09 06:04，四渠道同一包）**：
+```text
+APK      4e6fb5b274bb5f4ecfa3c70ad8d23e5835792ae37988b8d1ace3b0a3466e1b4b（82,556,401 B）
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 115/115 · 永恒夹具 50/50 · 发布规则 13/13
+渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-4e6fb5b2
+```
+`[3 小时目标]` 计时基准改为本轮 t0 05:48:55 的干净新档（此前 04:55 / 05:31 两次均因
+pre-break 卡顿作废）；当前里程碑正常推进，后续按墙钟继续记录，未到终局前不宣称达标。
