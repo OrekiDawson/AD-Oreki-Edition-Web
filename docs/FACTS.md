@@ -8605,3 +8605,9 @@ Web 线上 https://oreki.net/src/core/oreki-crunch-policy.js 200 / 7769 B / SHA-
 ```
 
 说明：本次交付与上一次有效交付（01:39 之前一轮为 00:31 的四渠道交付）间隔约 68 分钟，满足双小时交付要求。
+
+### R96 首次永恒之后的现状与下一轮首要缺陷（2026-11-09 01:50 实测）
+
+- `[实测]` 首次永恒（01:34:16）后自动化继续工作：`stage=10 永恒与时间研究 goal=unlock-dilation`、`OREKI_ID_UNLOCK` 7 次（Eternity 重置后重新解锁 ID 链）、IP 再次涨到 1e348 量级、无 `OREKI_ET_EXC`。
+- `[实测·缺陷]` 新进程 `OREKI_API_MISS` 持续刷：`missing invoke B: IllegalArgumentException`（888 次/5.5 分钟）与 `missing invoke D: IllegalArgumentException`（444 次），另有 1 条 `method Currency.o(BigDouble)=purchase on iq0`。B/D 对应 `GameApi` 的 `Upgrade.B()=isBought` / `Upgrade.D(Z,Continuation)=buy`，即**永恒升级商店购买路径在 3.21 上反射失配**（`x81.a` 注册表元素类型与 `upgradeBaseCls()` 不一致）。表现：EP=1 后时间维度/时间研究长期未推进（`timestudy.theorem=0`、时间维度未解锁）。下一轮首要修复项（需按 3.21 baseline 重新绑定永恒升级注册表与购买入口，并补契约断言「OREKI_API_MISS 归零」）。
+- `[实测]` 世界时钟：本存档 23:36 建新档 → 01:34 首次永恒 = **1h58m**；其中约 50 分钟消耗在三处已修复缺陷（away 覆盖层未点、策略层 NoSuchMethodError、启动器 VerifyError）。**尚未**在干净环境做完整 3 小时墙钟计时，不宣称达标。
