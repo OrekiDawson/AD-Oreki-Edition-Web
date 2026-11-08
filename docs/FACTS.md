@@ -8474,3 +8474,24 @@ OneDrive/GDrive 根目录均出现 `反物质维度.apk`；GitHub Release `andro
 
 Linux 兼容修复：`build.gradle` manifest 写入改 `setText`（Groovy 5 无 `writeText(String,String)`）；
 生成 verify 报告须传绝对 realpath（`installToRelease` 用 realpath 与报告比对，软链路径会不一致）。
+
+### R96 策略叶子补实现（阶段一，已提交 d1252cc）
+
+**问题**：`OrekiSmartStrategy.leaf(I)D` 只接线 11 个叶子，而 `OrekiStrategyData.sLeafNames` 有 19 个
+（与 Web `oreki-smart-strategy.json` 的 conditionGrammar.leaves 一一对应）。未接线叶子返回 NaN ⇒
+解释器 fail-closed ⇒ 阶段识别 `stage=-1`、`degraded=1` ⇒ ID2~ID8 与首次永恒不被阶段驱动。
+
+**本轮实现（Kotlin-only）**：
+- 新增 `scripts/payload/kotlin/.../oreki/OrekiStrategyLeaves.kt`：`@JvmStatic evaluate(name): Double`，
+  已实现 `progress.dilationUnlocked`（= `Player.dilation.studies` 含 DS1，证据：Web
+  `PlayerProgress.dilationUnlocked()` + 仓库内 `oreki-celestial-automation.js:470` 注释）；
+  其余叶子返回 NaN 并对每个名字**打一次** `OREKI_LEAF: unwired leaf: <name>`。
+- smali 只保留**一处**接线：`leaf()` 在 unknown 计数之前调用 Kotlin，非 NaN 直接返回。
+- 契约新增 5 条（共 86 项）。
+- **smali 装配验证**：把改后的 smali 放进 `work/mod` 用 apktool b 成功汇编（81,587,858 B，
+  产物在 /tmp，不参与交付）。
+
+**下一步**：用带该打点的构建跑一次存档，从 `OREKI_LEAF: unwired leaf:` 直接读出剩余叶子名，
+按 Web 同源定义补齐（Web 映射：teresa=Achievement(147)、v=Achievement(151)、
+effarig=TeresaUnlocks.effarig、enslaved=EffarigUnlock.eternity、ra=VUnlocks.raUnlock、
+laitela=Laitela.isUnlocked、pelle=Pelle.isUnlocked、automator=Player.automatorUnlocked）。
