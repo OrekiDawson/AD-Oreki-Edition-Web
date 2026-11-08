@@ -8896,3 +8896,41 @@ APK      78f441fbd38df0790f100cd58fd0cb7042bda0d41431440df927243e93d504cf（82,5
 ```
 `[未完成]` 3 小时新档目标仍未验证：本轮修复后需要**从新档重新计时**（旧存档已跑过 2 小时且含多次实验）。
 膨胀（12900 TT）仍未到达；下一轮用第七版做一次干净的新档长跑并记录每个里程碑墙钟。
+
+### R96 第六轮：新档首次 Break 前「无限升级迟迟不执行」定位工具 + 第八版稳定包
+
+`[实测·现象]` 第七版（78f441fb）从全新存档起跑，+15 分钟仍 `brake=false`：
+`infinityUpgradeBits=0 / ipMultUpgrades=0 / IP≈68`，调度日志 15 分钟里
+`act sacrifice 41 / act bulk 49 / act infinityUpgrades 0`（第 4 轮同版本同流程 +9 分钟就 Break）。
+即：无限升级（IP 倍率 + 一次性升级）长期一次都不执行 ⇒ IP 只按 1/坍缩累积
+⇒ 坍缩间隔升级（下一档 cost 128 起、全部买满需 ~3.2 万 IP）永远买不起 ⇒ Break 无限期推迟。
+
+`[修复·可诊断化]` 无法从外部日志区分「没抢到节拍 / 抢到但买不起 / 绑定拿不到对象」，
+因此在 `buyInfinityUpgrades()` 的每个失败返回点加**一次性诊断**（每类原因只打一条，
+`OREKI_IPM_LV: iup-diag <reason> ip=<值>`）：`reserve-active / upgrade-list-null /
+all-one-time-bought / one-time-buy-failed / ipmult-obj-null / ipmult-cost-null /
+ipmult-currency-null / currency-buy-failed`。不改任何购买逻辑与阈值。
+
+`[实测·效果]` 诊断版（7c8b5315）覆盖安装到同一卡住的存档后：
+```text
+05:17:01 OREKI_SCHED: act infinityUpgrades  taskGap=140194ms（此前 15 分钟 0 次）
+存档     infinityUpgradeBits 0 → 1；坍缩间隔 cost 64 → 256（interval 6998 → 2519）
+```
+即购买链恢复，且诊断日志未打任何 `iup-diag`（说明不再是失败分支，而是真的买成了）。
+
+**第八版稳定包交付（2026-11-09 05:38，四渠道同一包）**：
+```text
+APK      7c8b531569a50c886150932b33c3c5be4fe34e5520c9d70d8a41e170475f29bd（82,556,401 B）
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 115/115 · 永恒夹具 50/50 · 发布规则 13/13
+渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-7c8b5315
+```
+`[未完成]` 3 小时新档计时：04:55 起跑的那次在 Break 前卡了 20 分钟（已定位到上面的
+无限升级执行问题），不作为 3 小时计时依据；本轮结束前用第八版重新起跑并把每个里程碑墙钟记下来。
+
+`[第六轮补充·诊断读数]` 第八版干净新档（t0 05:31:17）在 +9 分钟时仍 `brake=false`：
+`infUpBits=1、ipMultUpgrades=0、IP≈38`；logcat 里两条一次性诊断给出**失败分支**：
+`iup-diag one-time-buy-failed ip=0.0e0` 与 `iup-diag currency-buy-failed ip=0.0e0`
+（都发生在 IP=0 的首帧，符合预期），但 ipMult 到 +9 分钟仍未买到 ⇒ 需要把诊断改成
+「节流打印当前 IP」才能区分「后来仍然失败」还是「一直没抢到节拍」；这是下一轮第一件事。
+3 小时计时仍在跑（t0 05:31:17，keeper 4 小时、里程碑采样每 20 秒），但当前 IP 倍率链
+尚未真正起来，**不作为达标依据**，等诊断修好后再判定。
