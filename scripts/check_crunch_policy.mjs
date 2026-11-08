@@ -71,6 +71,7 @@ function exponentOf(value) {
  * cfg 字段（都可在测试中直接改，因为沙箱里全是 getter）：
  *   normalChallenge / infinityChallenge 挑战是否运行中
  *   broken            player.break
+ *   infinityUnlocked  PlayerProgress.infinityUnlocked()（true = 已做过首次无限）
  *   eternityUnlocked  PlayerProgress.eternityUnlocked()
  *   canEternity       Player.canEternity
  *   lockedFrom        从第几层开始「未解锁」（1..8；9 = 8 层全解锁 → pending === null）
@@ -86,6 +87,7 @@ function makeHarness(over = {}) {
     normalChallenge: false,
     infinityChallenge: false,
     broken: true,
+    infinityUnlocked: true,
     eternityUnlocked: false,
     canEternity: false,
     lockedFrom: 1,
@@ -128,6 +130,8 @@ function makeHarness(over = {}) {
       },
     },
     PlayerProgress: {
+      // 原版 hasInfinity 口径：首次无限是否已完成（与 Android `!GameApi.hasInfinity()` 等价）。
+      infinityUnlocked() { throwIf("infinityUnlocked"); return cfg.infinityUnlocked; },
       eternityUnlocked() { throwIf("eternityUnlocked"); return cfg.eternityUnlocked; },
     },
     Player: {
@@ -199,11 +203,11 @@ export function runCrunchPolicyChecks(check) {
 
   // ============================================================ 一、静态：规则与数值口径
   const REASONS = [
-    "challenge-running", "pre-break-ip", "post-eternity", "eternity-ready",
+    "challenge-running", "pre-infinity", "pre-break-ip", "post-eternity", "eternity-ready",
     "id-peak-reached", "id-peak-wait", "id-ip-farm", "ip-jump", "gain-wait",
   ];
   const missingReasons = REASONS.filter(r => !POLICY_SRC.includes(`"${r}"`));
-  check("静态：9 个决策 reason 全部存在（含 eternity-ready / ip-jump / gain-wait）",
+  check("静态：10 个决策 reason 全部存在（含 pre-infinity / eternity-ready / ip-jump / gain-wait）",
     missingReasons.length === 0, `缺: ${missingReasons.join(",")}`);
 
   check("静态：等待上限常量与 Android 一致（15 分钟 900000 / 3 分钟 180000）",
@@ -219,11 +223,19 @@ export function runCrunchPolicyChecks(check) {
   check("静态：等待计时用单调时钟（performance.now 优先 / Date.now 兜底）",
     POLICY_SRC.includes("performance.now") && POLICY_SRC.includes("Date.now"));
 
-  check("静态：优先级顺序——挑战 > Break > 永恒层 > canEternity > 未解锁维度",
-    POLICY_SRC.indexOf("NormalChallenge.isRunning") < POLICY_SRC.indexOf("player.break") &&
+  check("静态：优先级顺序——挑战 > 首次无限 > Break > 永恒层 > canEternity",
+    POLICY_SRC.indexOf("NormalChallenge.isRunning") <
+      POLICY_SRC.indexOf("PlayerProgress.infinityUnlocked()") &&
+    POLICY_SRC.indexOf("PlayerProgress.infinityUnlocked()") < POLICY_SRC.indexOf("player.break") &&
     POLICY_SRC.indexOf("player.break") < POLICY_SRC.indexOf("PlayerProgress.eternityUnlocked()") &&
-    POLICY_SRC.indexOf("PlayerProgress.eternityUnlocked()") < POLICY_SRC.indexOf("Player.canEternity") &&
-    POLICY_SRC.indexOf("Player.canEternity") < POLICY_SRC.indexOf("this.nextLockedDimension()"));
+    POLICY_SRC.indexOf("PlayerProgress.eternityUnlocked()") < POLICY_SRC.indexOf("Player.canEternity"));
+
+  // 与 Android 逐条同序的核心：ip-jump 必须在「等 ID 峰值」之前，否则峰值窗口会掐死 IP 增长。
+  check("静态：ip-jump 判定排在 nextLockedDimension（等 ID 峰值）之前",
+    POLICY_SRC.indexOf('this.gainVersusIp()') > 0 &&
+    POLICY_SRC.indexOf('this.gainVersusIp()') < POLICY_SRC.indexOf("this.nextLockedDimension()") &&
+    POLICY_SRC.indexOf('return { allow: true, reason: "ip-jump" }') <
+      POLICY_SRC.indexOf("this.nextLockedDimension()"));
 
   check("静态：等待都有上限（id-peak-wait 走 15 分钟、gain-wait 走 3 分钟）",
     POLICY_SRC.includes('this.waitWithin("id-peak-wait", PEAK_WAIT_LIMIT_MS)') &&
@@ -243,9 +255,15 @@ export function runCrunchPolicyChecks(check) {
       decision.allow === true && decision.reason === "challenge-running", d(decision));
   }
   {
+    const h = makeHarness({ infinityUnlocked: false, broken: false, canEternity: true, lockedFrom: 1 });
+    const decision = h.decide();
+    check("分支：尚未完成首次无限 → 放行 pre-infinity（且优先于 Break/canEternity）",
+      decision.allow === true && decision.reason === "pre-infinity", d(decision));
+  }
+  {
     const h = makeHarness({ broken: false, canEternity: true, lockedFrom: 1 });
     const decision = h.decide();
-    check("分支：未 Break → 放行 pre-break-ip（且优先于 canEternity）",
+    check("分支：已无限但未 Break → 放行 pre-break-ip（且优先于 canEternity）",
       decision.allow === true && decision.reason === "pre-break-ip", d(decision));
   }
   {
@@ -280,6 +298,29 @@ export function runCrunchPolicyChecks(check) {
     const ipBelow = makeHarness({ lockedFrom: 1, maxAMExponent: 1099, ipExponent: 7 }).decide();
     check("分支：IP 低于门槛 → 放行 id-ip-farm（继续攒 IP）",
       ipBelow.allow === true && ipBelow.reason === "id-ip-farm", d(ipBelow));
+  }
+
+  {
+    // [R96 顺序对齐] 有未解锁 ID、峰值未到、IP 也已够时，仍然「收益 ≥ 10 倍」优先放行：
+    // 否则 ID6→ID7 的峰值窗口（实测 1.7 小时）会把 IP 增长完全掐死。
+    const jumpFirst = makeHarness({
+      lockedFrom: 1, maxAMExponent: 1099, ipExponent: 8, gainedExponent: 9,
+    }).decide();
+    check("顺序：pending≠null 且收益恰好 10 倍 → 放行 ip-jump（优先于 id-peak-wait）",
+      jumpFirst.allow === true && jumpFirst.reason === "ip-jump", d(jumpFirst));
+
+    const notEnough = makeHarness({
+      lockedFrom: 1, maxAMExponent: 1099, ipExponent: 8, gainedExponent: Math.log10(9.9e8),
+    }).decide();
+    check("顺序：pending≠null 且收益 9.9 倍 → 仍按 id-peak-wait 阻止（不误放行）",
+      notEnough.allow === false && notEnough.reason === "id-peak-wait", d(notEnough));
+
+    // IP 还没到 ipRequirement（否则会走 id-ip-farm）时，10 倍收益同样优先放行。
+    const jumpBeforeFarm = makeHarness({
+      lockedFrom: 1, maxAMExponent: 1099, ipExponent: 7, gainedExponent: 8.5,
+    }).decide();
+    check("顺序：pending≠null、IP 未达门槛、收益 10+ 倍 → 放行 ip-jump（优先于 id-ip-farm）",
+      jumpBeforeFarm.allow === true && jumpBeforeFarm.reason === "ip-jump", d(jumpBeforeFarm));
   }
 
   // ============================================================ 三、等待上限（真实墙钟）
@@ -372,6 +413,7 @@ export function runCrunchPolicyChecks(check) {
 
   // ============================================================ 六、异常 fail-closed
   for (const [label, over] of [
+    ["PlayerProgress.infinityUnlocked() 抛错", { throwOn: "infinityUnlocked" }],
     ["PlayerProgress.eternityUnlocked() 抛错", { throwOn: "eternityUnlocked" }],
     ["Player.canEternity 抛错", { throwOn: "canEternity" }],
     ["thisEternity.maxAM 抛错", { throwOn: "maxAM", maxAMExponent: 1099, ipExponent: 9 }],
@@ -450,7 +492,7 @@ export async function runCrunchPolicyModuleLoadCheck(check) {
     player: { break: true, records: { thisEternity: { maxAM: { gte: () => false } } } },
     NormalChallenge: { isRunning: false },
     InfinityChallenge: { isRunning: false },
-    PlayerProgress: { eternityUnlocked: () => false },
+    PlayerProgress: { infinityUnlocked: () => true, eternityUnlocked: () => false },
     Player: { canEternity: true },
     Currency: { infinityPoints: { value: { gte: () => false } } },
     InfinityDimension: () => ({ isUnlocked: false, amRequirement: {}, ipRequirement: 1e8 }),

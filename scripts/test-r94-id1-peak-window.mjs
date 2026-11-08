@@ -10,7 +10,8 @@
  *
  * 本夹具分四组，回答四个问题（全部直接读生产源码/真实 getter，不复刻逻辑）：
  *   组 1：窗口的进入/释放条件是否与 ID1 的真实门槛同源（阈值漂移就失败）。
- *   组 2：`willInfinity` 在窗口内是否真的拦住坍缩，达到门槛/解锁后是否真的恢复。
+ *   组 2：`willInfinity` 在窗口内是否真的拦住坍缩（收益不足时），达到门槛/解锁后是否
+ *         真的恢复；R96 起策略的 ip-jump 优先于峰值等待，收益 ≥10× 时窗口内也会放行（4b）。
  *   组 3：窗口是否**可终止且无旁路**——峰值指标是否连续更新、是否有别的 MOD 路径
  *         在窗口内强制坍缩（新增旁路会让测试失败）。
  *   组 4：量化窗口的墙钟上界——窗口内的反物质峰值爬升由原版自动购买器承担，
@@ -141,7 +142,7 @@ function makeBigCrunchAutobuyer(opt = {}) {
       records: { thisEternity: { maxAM: Big.fromExp(opt.maxAMExp ?? 500) } },
     },
     Player: { isInAntimatterChallenge: false },
-    PlayerProgress: { eternityUnlocked: () => false },
+    PlayerProgress: { infinityUnlocked: () => true, eternityUnlocked: () => false },
     InfinityDimension: tier => ({
       isUnlocked: opt.id1Unlocked === true,
       // 与 src/core/dimensions/infinity-dimension.js 的 UNLOCK_REQUIREMENTS 同形。
@@ -243,10 +244,19 @@ check("3. 预留额度恰好覆盖「解锁后买下第一层 ID1」：门槛 = 
 });
 
 // ================================================================ 组 2：拦得住、也放得开
-check("4. 窗口内 `willInfinity` 必须为 false（不是只看 waitingForId1Peak）", () => {
-  const { bc } = makeBigCrunchAutobuyer({ ipExp: 13, maxAMExp: 500 });
+// [R96 顺序对齐] willInfinity 现在先问 OrekiCrunchPolicy：策略把「单次收益 ≥ 10 倍 IP」
+// （ip-jump）排在「等 ID 峰值」之前，因此窗口内**收益不足**才会暂停；收益足够时允许
+// 结算一次（否则 ID6→ID7 那种长达 1.7 小时的峰值窗口会把 IP 增长完全掐死）。
+check("4. 窗口内收益不足时 `willInfinity` 必须为 false（不是只看 waitingForId1Peak）", () => {
+  const { bc } = makeBigCrunchAutobuyer({ ipExp: 13, maxAMExp: 500, gainedIpExp: 13 });
   assert.equal(bc.waitingForId1Peak, true, "前置：窗口应成立");
-  assert.equal(bc.willInfinity, false, "窗口内自动坍缩必须暂停，否则反物质峰值被清零");
+  assert.equal(bc.willInfinity, false, "收益不足（<10 倍）时窗口内必须暂停，否则反物质峰值被清零");
+});
+
+check("4b. 窗口内单次收益 ≥10 倍 IP → 策略按 ip-jump 放行（与 Android 同序，避免峰值窗口掐死 IP 增长）", () => {
+  const { bc } = makeBigCrunchAutobuyer({ ipExp: 13, maxAMExp: 500, gainedIpExp: 14 });
+  assert.equal(bc.waitingForId1Peak, true, "前置：R94 峰值窗口本身仍成立");
+  assert.equal(bc.willInfinity, true, "收益 ≥10 倍时策略应优先放行，不能等 1.7 小时的峰值窗口");
 });
 
 check("5. 峰值未到 1e1100 时保持 HOLD；恰好到 1e1100 立即释放（边界正确）", () => {
