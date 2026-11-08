@@ -9039,3 +9039,45 @@ APK      e9809b247b70fdcd3b1e897eacd844e59f84887391218b7d833556a79a97d8d6（82,5
 +18min   maxAM 1e7762、maxIP 1e40、一次性无限升级 17/17、ipMult 40（第 2 次永恒重建中）
 ```
 下一轮重点观察：第 2/4/5/8 次永恒是否按预期到来、`keepInfinityUpgrades` 生效后重建是否明显变快。
+
+### R96 第十轮：永恒层「坍缩间隔逐帧翻转」真缺陷修复（maxIP 冻结的根因）
+
+`[实测·根因]` 干净新档（t0 06:59:45）首次永恒后 19 分钟：`maxAM 1e7762、maxIP 仅 1e40`，
+重建速度 ~190 指数/分钟。存档显示 `auto.bigCrunch.time = 3600`、`mode = TIME`，
+logcat 里策略在 25 毫秒内完成一次翻转：
+```text
+07:18:38.042  policy -> resume (eternity-cycle)      ← allow 一帧：间隔设 5 秒
+07:18:38.067  policy -> pause  (eternity-grow)       ← 下一帧 deny：间隔又设回 3600 秒
+```
+即 allow/deny 逐帧交替 ⇒ **坍缩间隔实际恒为 1 小时** ⇒ 坍缩几乎不发生 ⇒ maxIP 冻在 1e40
+（第 2 次永恒要求 1.797e308）⇒ EP/TT 全部停滞。这是本轮找到的「重建慢」的直接原因。
+
+`[修复]` `OrekiStageAuto.applyCrunchPolicy()`：`eternity-grow` 等待分支改用
+`ETERNITY_GROW_CRUNCH_SECONDS = 30.0`（即周期结算本身的节奏），其余等待仍用 3600 秒硬暂停；
+契约自测 115 → **117** 项（新增「永恒层等待必须是 30 秒」「硬暂停常量仍在」）。
+实机（覆盖安装到该存档，45 秒内）：
+```text
+policy -> pause (eternity-grow) interval=30.0
+bcTime 3600 → 30.0；maxAM 1e7762 → 1e27073；maxIP 1e41 → 1e128；infinities 持续增长
+```
+
+**第十二版稳定包交付（2026-11-09 07:39，四渠道同一包）**：
+```text
+APK      56a57ba5a1416caade229542a019ad3bd13847d985ff77c4294cbe2b03e770bd（82,556,401 B）
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 117/117 · 永恒夹具 50/50 · 发布规则 13/13
+渠道     本地 latest（SHA 校验）· OneDrive（MD5 508b7897…bb 与本地一致）·
+         Google Drive（MD5 同上一致）· GitHub Release android-update-3.21.0-56a57ba5（新建，APK + .sha256）
+```
+> 发布脚本因 OneDrive 上传超时（900s 上限）未能自动走完，按「已成功渠道保留 + 手工补齐剩余渠道」处理：
+> 本地/OneDrive/GDrive 均以 MD5 与本地 APK 核对一致，GitHub Release 手工创建并附两个附件。
+
+`[新计时长跑]` t0 = **07:22:02**（`pm clear` 彻底清数据）：
+```text
++ 158.7s  首次无限
++ 498.9s  首次 Break Infinity
++ 518.9s  首次永恒真实结算（8.6 分钟）+ 时间维度 1 层
++1159.2s  ID1 解锁
++20min    maxAM 1e27073、maxIP 1e128、无限次数 6.8e5（坍缩 30 秒一次，持续产出）
+```
+下一轮重点：第 2 次永恒（maxIP 1e308）与 2/4 次里程碑（keepAutobuyers / keepInfinityUpgrades）
+是否按预期到来 —— 这决定「×1 + 里程碑加速」路线是否成立。
