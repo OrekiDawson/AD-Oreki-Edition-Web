@@ -68,6 +68,8 @@ class Big {
   lte(other) { return this.exp <= Big.toExp(other); }
   eq(other) { return this.exp === Big.toExp(other); }
   times(other) { return Big.fromExp(this.exp + Big.toExp(other)); }
+  /** 原版 Decimal#log10() 口径：返回数量级（本替身按指数建模，直接返回 exp）。 */
+  log10() { return this.exp; }
   minus(other) {
     const otherExp = Big.toExp(other);
     if (this.exp - otherExp > 15) return Big.fromExp(this.exp);
@@ -117,8 +119,15 @@ const ENDGAME_SRC = readSrc("src/core/oreki-endgame-automation.js");
 const holdGetter = extractGetter(AUTO_SRC, "  get waitingForId1Peak() {");
 const willInfinityGetter = extractGetter(AUTO_SRC, "  get willInfinity() {");
 
+// [R96] `willInfinity` 现在会先问 `OrekiCrunchPolicy.decide()`。夹具必须装入**真实策略
+// 源码**（只剥掉 `export` 外壳），否则 getter 会因为缺依赖抛错，测不到真实的放行/拦截行为。
+const POLICY_SCRIPT = `${readSrc("src/core/oreki-crunch-policy.js").replace(/^export\s+/gm, "")}
+globalThis.OrekiCrunchPolicy = OrekiCrunchPolicy;
+`;
+
 /**
- * 用**生产 getter 原文**构造一个最小自动器实例。
+ * 用**生产 getter 原文**构造一个最小自动器实例；`OrekiCrunchPolicy` 也装入真实源码。
+ * 因此「窗口内是否拦截」同时覆盖了 R96 目标驱动策略与 R94 峰值窗口两条判据。
  * @param {{break?:boolean, id1Unlocked?:boolean, ipExp?:number, maxAMExp?:number,
  *          challenge?:boolean, doomed?:boolean, gainedIpExp?:number}} opt
  */
@@ -133,7 +142,12 @@ function makeBigCrunchAutobuyer(opt = {}) {
     },
     Player: { isInAntimatterChallenge: false },
     PlayerProgress: { eternityUnlocked: () => false },
-    InfinityDimension: () => ({ isUnlocked: opt.id1Unlocked === true }),
+    InfinityDimension: tier => ({
+      isUnlocked: opt.id1Unlocked === true,
+      // 与 src/core/dimensions/infinity-dimension.js 的 UNLOCK_REQUIREMENTS 同形。
+      amRequirement: Big.fromExp(1100 + (tier - 1) * 300),
+      ipRequirement: 1e8,
+    }),
     NormalChallenge: { isRunning: opt.challenge === true },
     InfinityChallenge: { isRunning: false },
     Pelle: { isDoomed: opt.doomed === true },
@@ -144,6 +158,7 @@ function makeBigCrunchAutobuyer(opt = {}) {
   };
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
+  vm.runInContext(POLICY_SCRIPT, sandbox, { filename: "oreki-crunch-policy.js" });
   vm.runInContext(`
     class BigCrunchAutobuyerState {
 ${holdGetter}
