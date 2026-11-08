@@ -10,6 +10,7 @@
 | 构建/签名/发布 | [RELEASE](rules/RELEASE.md) | 按需 |
 | Git/index/硬链接/编号 | [GIT](rules/GIT.md) | 按需 |
 | 安装/环境/资源 | [TOOLCHAIN](rules/TOOLCHAIN.md) | 按需 |
+| Linux 优先 / Windows 兼容（R95） | [TOOLCHAIN](rules/TOOLCHAIN.md) | 按需 |
 | 教程/UI/文档 | [TUTORIAL](rules/TUTORIAL.md) | 按需 |
 | 规则维护 | [GOVERNANCE](rules/GOVERNANCE.md) | 按需 |
 

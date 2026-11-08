@@ -59,6 +59,28 @@
 | AVD 名称读取 | `getprop ro.boot.qemu.avd_name`（`ro.kernel.qemu.avd_name` 是空的） | `[实测]` |
 | 状态栏「No internet connection」 | 模拟器连不上 Google 连通性检查，**不代表真没网**；`ping oreki.net` 通就正常 | `[实测]` |
 
+### A.1 R95 Linux 开发环境实测（2026-11-08）
+
+以下事实来自本轮直接命令输出，不沿用旧 Windows 安装报告；版本可能随系统更新变化，变更时应覆盖本节而不是追加猜测。
+
+| 项目 | 当前实测值 | 等级 |
+|---|---|---|
+| 发行版 / 桌面 | Ubuntu 26.04.1 LTS（`VERSION_ID=26.04`），KDE Plasma 6.6.6；**未核实为 Kubuntu 发行版** | `[实测]` |
+| 内核 / 架构 | Linux 7.0.0-43-generic，x86_64 | `[实测]` |
+| CPU / GPU | AMD Ryzen 5 5600G（6C/12T）；NVIDIA GeForce RTX 2060 12GB | `[实测]` |
+| 根分区 / 文件系统 | `/dev/nvme0n1p6`，515.5G，ext4，挂载 `/` | `[实测]` |
+| Windows 分区 | `/dev/nvme0n1p3`，438.2G，NTFS；本轮未挂载，未假设挂载路径 | `[实测]` |
+| Java / JAVA_HOME | OpenJDK 25.0.4.1，`/usr/lib/jvm/java-25-openjdk-amd64`；`JAVA_HOME` 已设置为该路径 | `[实测]` |
+| Gradle / Kotlin | 系统 Gradle 9.9.0，`/opt/gradle/bin/gradle`；Kotlin CLI 2.4.21，`/opt/kotlinc/bin/kotlinc` | `[实测]` |
+| Android SDK | `ANDROID_HOME`/`ANDROID_SDK_ROOT=/opt/android-sdk`；`/home/oreki/Android/Sdk` 为同一实际 SDK 路径；Platform 37.2、Build-Tools 37.0.0 | `[实测]` |
+| Android 工具 | ADB 37.0.1、Emulator 37.2.13、D8 9.3.16、JADX 1.5.6、Apktool 3.0.3；aapt2/apksigner/zipalign 位于 Build-Tools 37.0.0 | `[实测]` |
+| Emulator / KVM | AVD `ad-game-api37`；`/dev/kvm` 存在，用户在 `kvm` 与 `libvirt` 组，`libvirtd` active | `[实测]` |
+| Node / 包管理 | Node.js 26.13.0、npm 11.20.0、pnpm 12.18.0、TypeScript 7.0.2；Yarn 未安装 | `[实测]` |
+| Rust | rustc/cargo 1.99.1，rustup、rustfmt、cargo-clippy 均在 `/opt/cargo/bin` | `[实测]` |
+| Python / Git | Python 3.14.4、Git 2.53.0、GitHub CLI 2.46.0 | `[实测]` |
+| 辅助工具 | Codex CLI 0.167.0-alpha.3.2；DeepSeek Harness 工作区 `/home/oreki/Documents/deepseek-harness`；Edge 157.0.4341.42；VS Code 1.145.2；RustDesk 1.5.1 | `[实测]` |
+| 文件编码 / 挂载 | Linux 新文件按 UTF-8 无 BOM、LF；本轮无 NTFS 挂载可用于日常开发 | `[规则]+[实测]` |
+
 
 ---
 

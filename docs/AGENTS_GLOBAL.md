@@ -1,6 +1,6 @@
 # 全局规则导航
 
-本文件只保留历史编号；先读 [CORE](rules/CORE.md) 与 [索引](RULES_INDEX.md)。[完整旧正文](rules/archive/GLOBAL_ORIGINAL.md) 仅为历史，不生效。
+本文件只保留历史编号；先读 [CORE](rules/CORE.md) 与 [索引](RULES_INDEX.md)。R95 的 Linux/Windows 双平台规则见 [TOOLCHAIN](rules/TOOLCHAIN.md)。[完整旧正文](rules/archive/GLOBAL_ORIGINAL.md) 仅为历史，不生效。
 
 ## 1. 历史编号导航
 
