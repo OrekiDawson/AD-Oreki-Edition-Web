@@ -8512,3 +8512,26 @@ Pages 部署 `3416480`，线上模块 SHA-256 与本地一致（4d5f8aa2ccb8）�
 
 本轮 APK **5e92a7e2dd1f656c22b39338488d0a00467c4cd88bde1bcb09829370e8fb0ad1**（14/14 + 17/17、V2+V3、实机启动）：
 local ✅ · OneDrive ✅ · Google Drive ✅ · GitHub ❌（`android-v3.21.0` 已存在，按不可变规则不覆盖，已如实报告冲突，未重建 APK）。
+
+### R96 策略层恢复（ART VerifyError 修复 + 永恒叶子判据统一）
+
+**两个真实缺陷（均已实测修复）**：
+
+1. **ART VerifyError 让整个策略类失效**：R96 首个「Kotlin 叶子兜底」接线写在 `leaf()` 的 equals 链尾，
+   ART 校验器把该路径上的 `v2` 判成 Double/Integer 混合 → `OrekiSmartStrategy` 整个类被拒 →
+   `GameApi.strategyDrives()` 抛 VerifyError（实测 logcat 每秒数十条 `OREKI_API_MISS: missing invoke drives: VerifyError`），
+   策略层完全停摆。修复：接线移到 equals 链**之前**，Kotlin 结果放专用 `v6/v7`、`cmpl-double` 目标用 `v8`（不与宽结果重叠）。
+   实测：`VERIFY=0`，`OREKI_GOAL ... unknownLeaf=0 degraded=0`。
+
+2. **`progress.eternityUnlocked` 判据分裂**：策略叶子走 smali 的 `Player.x()>0`，而 3.21 全新存档 `Player.x()`
+   读作 **11** ⇒ 策略把新档判成「已进永恒」，实测 `stage=10 永恒与时间研究`（错）。
+   修复：Kotlin 覆盖该叶子 = `!OrekiStageAuto.eternitiesZero()`（与阶段层同一套 EP/BigEternities/位图判据）。
+   实测：`stage=13 无限维度与永恒前置 goal=unlock-eternity unknownLeaf=0 degraded=0`。
+
+**验证**：`verify_release 14/14`、`verify_patch_contract 17/17`、调度器契约 94/94、R74 夹具 16/16；
+模拟器实测（APK `82d92277…cf4c`）：无 VerifyError、无失真 `unwired leaf` 日志、阶段识别正确。
+
+### R96 GitHub Release 更新标签规则（用户 2026-11-09 令）已接入
+- 标签 `android-update-<版本>-<sha8>`；已存在时按附件 `.sha256` 内容判定幂等/冲突；历史 Release 永不覆盖。
+- 本地三渠道只原子覆盖 `latest/反物质维度.apk`，**不再创建版本归档**；云盘只 `rclone copyto`。
+- 规则自检脚本 `scripts/check_publish_rules.py`：13/13 通过；dry-run 显示新行为正确。
