@@ -8434,3 +8434,22 @@ SHA-256 前缀 `aaaefd20a3f90891` 与本地源码一致（已核验）。
 Windows 桌面暂存 `Oreki-R96/反物质维度_R96b_30ace330.apk`（双云盘仍受重解析点阻塞）。
 
 **仍待验证**：复制器解锁与首次 Eternity（EP 仍为 0；`replicanti.unl=false`）。
+
+### R96 新发现：策略层 degraded（stage=-1, unknownLeaf=2）是 ID2~8 / 首次永恒的真实阻碍
+
+实测日志（R96 构建 30ace330，已 Break、ID1 已购、IP 1e143、maxAM 1e13607、EP=0）：
+
+```text
+OREKI_GOAL: stage=-1 - goal=- unknownLeaf=2 degraded=1 s0=0     （每 30 秒一次）
+OREKI_SCHED: act breakShop/sacrifice/infinityUpgrades/crunchInterval 正常，
+             eternity 任务持续 noop，idBuy 仅 1 次（ID1）
+存档：replicanti.unl=false、eternityPoints=0、thisEternity.realTime 跨全程
+```
+
+推断（待验证）：`OrekiSmartStrategy` 的 19 阶段叶子有 2 个在 3.21 上求值失败（未接线叶子），
+导致 `stage=-1`、策略层 fail-closed 降级 ⇒ 阶段驱动的 ID2~8 购买与永恒触发不被驱动。
+这与 R94 遗留的「OREKI_GOAL degraded」一致，但此前未证实它直接卡住通关；本轮证据表明它卡在
+「已 Break 且 ID1 已购、maxAM 远超永恒门槛却 EP 恒 0」这一段。
+
+下一步（需一次构建或只读探针）：打印两个未知叶子的名字（`sUnknown` 计数处已有 hooks 位置），
+按 3.21 真实字段修复叶子求值，再验证 ID2~8 与首次永恒。
