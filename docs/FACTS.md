@@ -8495,3 +8495,20 @@ Linux 兼容修复：`build.gradle` manifest 写入改 `setText`（Groovy 5 无 
 按 Web 同源定义补齐（Web 映射：teresa=Achievement(147)、v=Achievement(151)、
 effarig=TeresaUnlocks.effarig、enslaved=EffarigUnlock.eternity、ra=VUnlocks.raUnlock、
 laitela=Laitela.isUnlocked、pelle=Pelle.isUnlocked、automator=Player.automatorUnlocked）。
+
+### R96 智能大坍缩重构（双端）与构建授权放宽
+
+判据（全部来自原版真实状态）：挑战运行 > 未 Break > 已有永恒 > 永恒前保护下一个未解锁 ID 的峰值窗口 > 其余放行。
+
+Android（Kotlin `OrekiCrunchPolicy.kt`）：`decide()` 返回 allow/reason；`applyCrunchPolicy` 在 !allow 时把间隔压到
+`CRUNCH_PAUSE_SECONDS=3600`（可恢复、不改玩家 amount/mode 语义），原因变化才写一次 mode，放行后恢复本阶段节奏；
+判据异常 fail-closed；日志 `OREKI_CRUNCH_DEC allow=… reason=…` 仅状态翻转打印。契约 93 项。
+
+Web（`src/core/oreki-crunch-policy.js`）：语义等价，`BigCrunchAutobuyerState.willInfinity` 接入；`check_crunch_modes.mjs` 21 项全过；
+Pages 部署 `3416480`，线上模块 SHA-256 与本地一致（4d5f8aa2ccb8）。
+
+构建授权放宽（用户 2026-11-08 令）：已同步修订 RELEASE/AGENT_WORKFLOW/GOVERNANCE/TUTORIAL 规则，并放开
+`scripts/release_budget.py` 阻断（改提示），保留「不做无意义重复构建 + 必要验证 + 四渠道同包交付」。
+
+本轮 APK **5e92a7e2dd1f656c22b39338488d0a00467c4cd88bde1bcb09829370e8fb0ad1**（14/14 + 17/17、V2+V3、实机启动）：
+local ✅ · OneDrive ✅ · Google Drive ✅ · GitHub ❌（`android-v3.21.0` 已存在，按不可变规则不覆盖，已如实报告冲突，未重建 APK）。
