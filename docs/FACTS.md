@@ -8381,3 +8381,20 @@ Web 定向验证    check_crunch_modes 14/14、test-appendix-notation 14/14、ch
                 check_eternity_gate 25/25、test-early-ipmult 7/7、test-eternity-upgrades 全过、test-r82-id1-growth 17/17
 Web 修复        package.json 显式 "type": "module"（Node 26 下 scripts/*.mjs import src/core/*.js 必需），提交 85a9594
 ```
+
+### R96 实机验证：R96 稳定版真实运行（21:44 起，全新存档）
+
+```text
+21:43:50 OREKI_SCHED init（10 秒节拍）· 21:43:53 OREKI_EARLY applied
+21:45:28 OREKI_GATE brake=false g=true c=false b=false mult=10000.0（持续 5 秒一次）
+21:48 起 OREKI_SCHED act 恢复：bulk 16 / crunchInterval 5 / sacrifice 6（共 27 次）
+存档（21:50）：infinities 18 · IP 5 · 维度提升 17 · 星系 1 · 本永恒 maxAM 1e319 · brake=false
+auto.bigCrunch = {mode: 1 (TIME), time: 10.0}  ← R94「Break 前 TIME/10s 收割 IP」策略在 R96 构建中生效
+```
+
+**结论（已验证）**：R96 构建在 Linux 上编译出的 APK 能正常安装、启动、进游戏；自动化调度真实执行
+（首次无限后 act 正常；首无限前按设计只解锁原版自动购买器）；`antimatterValue()` 不再为 null（调度
+不再卡在 am=null）；`auto.bigCrunch` 已被 MOD 改为 TIME/10s，说明 R94 的 IP 收割修复进入本版。
+
+Web：Pages 已部署 `fca3628..6c7d9cd`（41 项内容更新），线上 `oreki.net/src/core/oreki-smart-strategy.gen.js`
+SHA-256 前缀 `aaaefd20a3f90891` 与本地源码一致（已核验）。
