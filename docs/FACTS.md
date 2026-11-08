@@ -8611,3 +8611,31 @@ Web 线上 https://oreki.net/src/core/oreki-crunch-policy.js 200 / 7769 B / SHA-
 - `[实测]` 首次永恒（01:34:16）后自动化继续工作：`stage=10 永恒与时间研究 goal=unlock-dilation`、`OREKI_ID_UNLOCK` 7 次（Eternity 重置后重新解锁 ID 链）、IP 再次涨到 1e348 量级、无 `OREKI_ET_EXC`。
 - `[实测·缺陷]` 新进程 `OREKI_API_MISS` 持续刷：`missing invoke B: IllegalArgumentException`（888 次/5.5 分钟）与 `missing invoke D: IllegalArgumentException`（444 次），另有 1 条 `method Currency.o(BigDouble)=purchase on iq0`。B/D 对应 `GameApi` 的 `Upgrade.B()=isBought` / `Upgrade.D(Z,Continuation)=buy`，即**永恒升级商店购买路径在 3.21 上反射失配**（`x81.a` 注册表元素类型与 `upgradeBaseCls()` 不一致）。表现：EP=1 后时间维度/时间研究长期未推进（`timestudy.theorem=0`、时间维度未解锁）。下一轮首要修复项（需按 3.21 baseline 重新绑定永恒升级注册表与购买入口，并补契约断言「OREKI_API_MISS 归零」）。
 - `[实测]` 世界时钟：本存档 23:36 建新档 → 01:34 首次永恒 = **1h58m**；其中约 50 分钟消耗在三处已修复缺陷（away 覆盖层未点、策略层 NoSuchMethodError、启动器 VerifyError）。**尚未**在干净环境做完整 3 小时墙钟计时，不宣称达标。
+
+### R96 第二轮：首次永恒之后成长链的真实缺陷（混淆名跨版本漂移）已修复并实机验证
+
+上一轮打通「首次永恒」后，实测卡在 stage=10（`EP=1`、`TT=0`、时间维度只买了 1 层、`OREKI_API_MISS` 每 5.5 分钟 2268 条）。本轮定位到同一类根因：**3.20 的混淆名在 3.21 里仍然存在，但已经是无关类/无关方法**，调用在运行期抛 `NoSuchMethodError` / `IllegalArgumentException`，被 `catch (Throwable)` 吞掉后只表现为「数值不动」。
+
+1. `[实测·缺陷]` `OREKI_API_MISS: missing invoke B/D: IllegalArgumentException`（888+444 次/5.5 分钟）：
+   `GameApi.eternityUpgrades()` 读 `x81.a`，但 3.21 的 `x81` 已是**永恒挑战**注册表（`a` 是 12 个 `challenge/eternity/b`），元素不是升级基类 ⇒ 每次 `upgradeBought/upgradeBuy` 都抛异常，永恒升级永远买不到。
+   修复：注册表按 `h91.i`（3.21，6 项一次性升级，元素 `g91 extends tw extends is3`，B/D 可用）→ `h91.h` → `x81.i` → `x81.a`（3.20 兼容）顺序探测；全部失败才记一次 miss。
+2. `[实测·缺陷]` `Currency.o(BigDouble)=purchase` 在 3.21 不存在：3.21 把「判够+扣减」改名为 `p(BigDouble)Z`（`l`=判够、`v`=扣减、`p`=组合，逐指令核对 `iq0.smali`）。旧绑定导致所有「先判余额再真扣费」的路径失效。修复：`p` 优先、`o` 兜底，探测式解析。
+3. `[实测·缺陷·P0]` 时间定理入口 `Lix4;->a(Z)J`：3.21 的 `ix4` 是**接口**（只有 `a(Lsz2;)Ltr;`、`k(Lps0;Z)V`），不再是 `TimeTheorems.buyMax`。旧绑定 ⇒ TT 恒 0 ⇒ 时间研究/膨胀链全断。
+   修复：新增 Kotlin 版本桥 `GameApi.timeTheoremBuyMax(Z)J`（**@JvmStatic**）：3.21 `zu4.a(Z)J` → 3.20 `ix4.a(Z)J`，按方法真实存在性挑选；smali 只保留一处 `invoke-static` 调用。
+   踩坑记录：第一版桥漏了 `@JvmStatic`，装配期无异常、运行期 `NoSuchMethodError` 被 smali 的 catch 吞掉（TT 仍为 0）；已加构建期断言「`@JvmStatic` + `fun timeTheoremBuyMax` 相邻」。
+4. 构建期守卫（`verify_eternity_chain`）扩容：TT 必须走 `GameApi.timeTheoremBuyMax(Z)J` 且禁止残留 `Lix4;->a(Z)J`；注册表必须含 `h91`；货币购买必须探测 `p`；桥必须有 `@JvmStatic`。
+5. 新增**诊断脚本** `scripts/diagnose_smali_link.py`：把 payload smali 的 invoke/字段引用与已解码基线比对（含 super/interface 链、static/实例语义），用于人工定位「同名不同类」的跨版本漂移。**不接构建门禁**（未复刻构建期 3.19→3.20→3.21 的完整改写，已知会误报 91 条）。
+
+### R96 第二轮实机验证（APK f9536ff6…，同一存档原地升级）
+
+```text
+安装前   EP=1、TT=0、timeDims bought=[1,0,0,0]、OREKI_API_MISS 2268 条/5.5 分钟
+安装后   01:51:43 OREKI_ET: launch via OrekiEternityLaunch（第 2 次永恒真实结算，bigE=2）
+         TT=2（amBought=5 / ipBought=5 / epBought=2 全部经原版真实购买入口）
+         时间研究已购买 [11, 22, 32, 21, 33]；时间维度 bought=[2,0,0,0]
+         OREKI_API_MISS = 0 条（新进程 55 秒窗口 + 后续观察）
+         stage=10 永恒与时间研究（含第一次永恒） goal=unlock-dilation unknownLeaf=0 degraded=0
+```
+
+门禁：verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 105/105 · 永恒夹具 47/47 · 发布规则 13/13。
+APK：`f9536ff6db4e45fe68333c71ec905ae968b3ddf72b0117f4e786216eb6292ab6`（82,552,305 B，见交付记录）。
