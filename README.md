@@ -278,11 +278,12 @@ node scripts/verify-android-chrome.mjs   # Android 模拟器 Chrome 六档视口
 
 > 克隆本仓库后**无法独立完成部署** —— 同步脚本与清单都在工作区层，不在仓库内。贡献代码只需提交 PR，部署由维护者执行。
 
-### 当前线上版本（R91，2026-11-07）
+### 当前线上版本（R96，2026-11-09）
 
-- 源码提交 `0dda298`：R91 早期自动化调度修复，5 个源文件 + 1 个新增定向测试（`scripts/test-r91-early-beat-share.mjs`）。
-- Pages 部署提交 `945fed2` 已推送；线上 `https://oreki.net/src/core/oreki-early-automation.js` 返回 200，包含 `shouldRequestBeat`，SHA-256 `43D9C12062CB6C033A300D53915C43E1B4B4DD10AEFB4FDDE7716B4D3E24EBB4`。
-- 测试记录（R91 执行记录）：定向夹具 13/13、相关回归 74 项、教程校验 2189/2189 通过；本次 README 同步未重新运行浏览器/墙钟测试。
+- 源码提交 `cae9a53`（智能大坍缩目标驱动重写 + 新定向回归）、`282f298`（R94 ID1 峰值窗口夹具修复）、`c592ea4`（同步 Android 侧首次永恒两个 P0 修复的 FACTS 记录）。
+- 本次策略与 Android `OrekiCrunchPolicy.kt` **语义等价**：挑战 → 未 Break → 永恒层 → `canEternity` → 一次坍缩收益 ≥10×IP（`ip-jump`，优先于等 ID 峰值）→ 未解锁 ID 峰值窗口（15 分钟上限）→ 收益等待（3 分钟上限），异常 fail-closed。同时修掉旧实现读 `id.requirement`（原版无此 getter，`gte(undefined)` 恒真）导致峰值分支恒放行的不等价缺陷。
+- Pages 部署提交 `069b7f7` 已推送，Actions run `42503894740` 成功；线上 `https://oreki.net/src/core/oreki-crunch-policy.js` 返回 200、7769 B，SHA-256 `b0b6765e273ec382f4b63e425c06d78985d98a14917ed9f02410cae4634a724a`，与本地源码字节一致。
+- 测试记录（本轮实际运行）：`check_crunch_policy` 42/42、`check_crunch_modes` 63/63、`test-r94-id1-peak-window` 20/20、`test-r82-id1-growth` 17/17、`test-r87-break-id1-reserve` 13/13；6 次变异全部被测试捕获。**未做**浏览器实测与真实墙钟长跑，不冒充。
 
 ## 通关目标与当前证据
 

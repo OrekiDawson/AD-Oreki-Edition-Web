@@ -8589,3 +8589,19 @@ APK   5f7afd78001bfe12103a00926f17d3e6c55647d9f84d3aaed024f406b397322f（3.21.0/
 - 99.72% 回落问题：本轮未复现、未定位，旧结论不沿用。
 - 3 小时新档全流程：本存档 23:36 建新档 → 01:34 首次永恒（1h58m，其中约 50 分钟消耗在 away 覆盖层 + 策略崩溃 + 启动器 VerifyError 三处已修复缺陷上）；**尚未**在干净环境做一次完整 3 小时墙钟计时，不得宣称已达标。
 - `eternities` 字段在新档读作 11（EP=0、bigEternities=0）的语义仍未知；当前所有「首次永恒前」判据已改读 EP/永恒升级位图/bigEternities，不再依赖该字段。
+
+### R96 稳定版交付记录（2026-11-09 01:39，四渠道同一包）
+
+```text
+APK      5f7afd78001bfe12103a00926f17d3e6c55647d9f84d3aaed024f406b397322f（82,552,305 B）
+本地     release/反物质维度.apk + SSH ~/Releases/AD-Oreki-Edition/latest/反物质维度.apk（原子覆盖，SHA 复核一致）✅
+OneDrive onedrive:Apps/AD-Oreki-Edition/反物质维度.apk（rclone copyto）✅
+GDrive   gdrive:AD-Oreki-Edition/反物质维度.apk（rclone copyto）✅
+GitHub   Release android-update-3.21.0-5f7afd78（新建；附件 AD-Oreki-Edition-3.21.0.apk 82,552,305 B + .sha256，状态 uploaded）✅
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 105/105 · 永恒夹具 47/47 · 发布规则 13/13
+Git      android 17920d6（已 push origin/main）；web cae9a53→282f298→c592ea4（已 push）；Pages 部署 069b7f7 + Actions 42503894740 success
+实机     APK 安装成功、启动进入游戏、策略生效、01:34:16 首次永恒真实结算（bigEternities=1、stage=10）
+Web 线上 https://oreki.net/src/core/oreki-crunch-policy.js 200 / 7769 B / SHA-256 b0b6765e…a724a（与本地字节一致）
+```
+
+说明：本次交付与上一次有效交付（01:39 之前一轮为 00:31 的四渠道交付）间隔约 68 分钟，满足双小时交付要求。
