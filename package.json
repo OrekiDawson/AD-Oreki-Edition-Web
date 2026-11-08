@@ -1,0 +1,6 @@
+{
+  "name": "ad-oreki-edition-web",
+  "private": true,
+  "type": "module",
+  "description": "R96: Node 26 下 src/core/*.js 需显式 ESM，否则 scripts/*.mjs 无法 import"
+}
