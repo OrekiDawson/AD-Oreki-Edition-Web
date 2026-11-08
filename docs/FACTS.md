@@ -8854,3 +8854,45 @@ APK      74730ed14c92be87bb34df1d8f1a3f90edafca7fd8f6ace2729a13688de78bc3（82,5
 门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 115/115 · 永恒夹具 47/47 · 发布规则 13/13
 渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-74730ed1
 ```
+
+### R96 第五轮：中期成长引擎修复（永恒结算门槛、永恒层周期结算）——7 次真实永恒落地
+
+`[实测·缺陷]` 上一轮把永恒层坍缩改成「纯收益驱动 + 10 分钟等待」后，平台期未解：
+`bigE=3、EP=2.16、maxIP 1e593、maxAM 1e124044、时间维度只有 TD1、永恒升级 0 个、TT 13`。
+根因链：**EP 是中期唯一引擎燃料**（`TimeDimensionState.isAffordable = EP >= cost`：
+TD1=1 EP、TD2=5 EP、TD3=100 EP；永恒升级首档 5 EP），而本端 ET 门槛是
+`gainedEP ≥ 10×EP` ⇒ 要求 maxIP 1e804（gainedEP=23），当时只有 7 ⇒ **EP 永不增长**
+⇒ 时间维度/永恒升级永远买不起 ⇒ 乘数停滞。
+
+`[修复]`
+1. **永恒结算门槛 ×10 → ×1**（`OrekiEternity.smali` `tryEternity()` 的 `multiply` 乘数
+   `0xa` → `0x1`）：收益让 EP 至少翻倍就结算；收益公式完全不动。
+2. **永恒层坍缩 30 秒墙钟周期结算**（`OrekiCrunchPolicy` 新增 `eternity-cycle`，
+   `eternity-ip-jump` 优先并重置周期；保留 10 分钟 `eternity-grow` 兜底）：
+   A/B 实测纯等待 maxAM 指数 ~87/min（IP 不产出 ⇒ 无限维度购买链断）vs 周期结算 327–755/min。
+3. 夹具同步：`fixture_eternity_gate.py` 47→**50** 项（新增「门槛乘数 = 0x1」「不得回到 0xa」）；
+   调度器契约 115 项（新增 `eternity-cycle` / 30 秒常量断言）。
+4. **Web 同步（teammate web-crunch，已回收）**：`oreki-eternity-automation.js` 门槛 `times(10)`→`times(1)`
+   （含 noopReason 文案）、`oreki-crunch-policy.js` 新增 `eternity-cycle`；源码 `0917026` →
+   Pages `599a1aa`（Actions run 42521248953 success）→ 线上两文件均 200 且与本地字节一致：
+   policy 14262 B / `82eea7f5…e2d7`、eternity-automation 47096 B / `ff782a39…95aa`。
+   Web 测试 67/67、88/88、28/28、R94 21/21、R82 17/17、R87 13/13，4 处变异全部被捕获。
+
+`[实机验证·关键]` APK 78f441fb 覆盖安装到平台期存档，**16 分钟内**：
+```text
+bigE  3 → 10（7 次真实永恒结算，OREKI_ET: launch 7 条）
+EP    2.16 → 6.3
+永恒升级 0 → 1（eupBits=1，首档 5 EP 真实购买）
+时间维度 [1,0,0,0] → [3,1,0,0]（TD1 3 次、TD2 1 次，均按 EP 真实扣费）
+TT    2 → 3；时间研究 [11,22,32,33,21,31] 保持
+```
+即「永恒 → EP → 时间维度/永恒升级 → 更快成长」的滚雪球**真正转起来了**（此前 30 分钟零进展）。
+
+**第七版稳定包交付（2026-11-09 04:52，四渠道同一包）**：
+```text
+APK      78f441fbd38df0790f100cd58fd0cb7042bda0d41431440df927243e93d504cf（82,552,305 B）
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 115/115 · 永恒夹具 50/50 · 发布规则 13/13
+渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-78f441fb
+```
+`[未完成]` 3 小时新档目标仍未验证：本轮修复后需要**从新档重新计时**（旧存档已跑过 2 小时且含多次实验）。
+膨胀（12900 TT）仍未到达；下一轮用第七版做一次干净的新档长跑并记录每个里程碑墙钟。
