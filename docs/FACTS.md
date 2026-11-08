@@ -8639,3 +8639,17 @@ Web 线上 https://oreki.net/src/core/oreki-crunch-policy.js 200 / 7769 B / SHA-
 
 门禁：verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 105/105 · 永恒夹具 47/47 · 发布规则 13/13。
 APK：`f9536ff6db4e45fe68333c71ec905ae968b3ddf72b0117f4e786216eb6292ab6`（82,552,305 B，见交付记录）。
+
+### R96 第二版稳定版交付记录（2026-11-09 01:57，四渠道同一包）
+
+```text
+APK      f9536ff6db4e45fe68333c71ec905ae968b3ddf72b0117f4e786216eb6292ab6（82,552,305 B）
+本地     release/反物质维度.apk + SSH ~/Releases/AD-Oreki-Edition/latest/反物质维度.apk（原子覆盖，SHA 复核一致）✅
+OneDrive onedrive:Apps/AD-Oreki-Edition/反物质维度.apk（rclone copyto）✅
+GDrive   gdrive:AD-Oreki-Edition/反物质维度.apk（rclone copyto）✅
+GitHub   Release android-update-3.21.0-f9536ff6（新建；附件 AD-Oreki-Edition-3.21.0.apk 82,552,305 B + .sha256，均 uploaded）✅
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 105/105 · 永恒夹具 47/47 · 发布规则 13/13
+Git      android 11163f0；web e0681c8（FACTS 硬链接同步）；均已 push origin/main
+实机     安装成功、进程内 OREKI_API_MISS=0、第 2 次永恒结算、TT 真实购买、时间研究已购 5 条
+与上次有效交付间隔：01:39 → 01:57 = 18 分钟（满足双小时要求）
+```
