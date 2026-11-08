@@ -8665,3 +8665,44 @@ Git      android 11163f0；web e0681c8（FACTS 硬链接同步）；均已 push 
    - +196s 首次无限（inf 已 6 次，IP 4）——注意监视器 02:07:38 才启动，早期里程碑时间偏保守；
    - 6.6 分钟：25 次无限、IP 18、maxAM 1e321、`brake=false`（Break 需把坍缩间隔买满，IP 每坍缩 +1，累计需 ~31 IP）
 5. `[口径]` 3 小时新档目标**尚未达成也未证伪**，本轮长跑继续；完成时会给出每个里程碑的墙钟时间。
+
+### R96 第三轮：新档「经济任务被饿死」P0 已修复并实机验证（第三版稳定包）
+
+`[实测·缺陷根因]` 新档长跑（02:05:31 起，×10000）在 13 分钟的调度统计：
+`act bulk 39 · act sacrifice 24 · act crunchInterval 7 · deny frame-held task=infinityUpgrades 39`，
+而 `ipMultUpgrades=0 / infinityUpgradeBits=0 / IP=12`。
+即：`bulk`（维度批量购买）与 `sacrifice` 每拍成功，把「一帧最多一个真动作」的全局节拍吃满，
+`infinityUpgrades` 一次都没执行 ⇒ IP 倍率恒 1 ⇒ 每次坍缩只 +1 IP ⇒ 坍缩间隔升级（cost 128 起）
+永远买不起 ⇒ Break 卡死、3 小时目标不可能达成。
+
+**第二层缺陷（同一轮内发现）**：即使把名额抢救给 `infinityUpgrades`，`runUrgentTask()` 的
+`when` 只有 `crunchInterval` 与 `else -> tryBuyId1()` 两个分支 ⇒ 抢救到的 infinityUpgrades
+实际执行的是 idBuy（pre-break 恒 false）⇒ 仍然零执行。
+
+**修复（Kotlin-only，`OrekiStageAuto.kt`）**：
+1. 新增**经济任务防饥饿**：`ECONOMIC_STARVATION_MS = 25s`；`resolveUrgentTask()` 末尾做
+   `starvationRescue(base)`，按 `infinityUpgrades → crunchInterval → idBuy → breakShop` 顺序，
+   把「超过 25 秒没执行」的任务提到紧迫名额；只改先后，任务 noop 时 noteNoop 不占节拍，
+   「每 10 秒最多一个真动作」的节流机制不变。
+2. `runUrgentTask()` 改为**按 id 分发**：`crunchInterval → upgradeCrunchInterval()`、
+   `infinityUpgrades → buyInfinityUpgrades()`、`breakShop → GameApi.breakShopTick() != 0`、
+   其余 → `tryBuyId1()`。
+3. 契约自测新增 5 项（共 111 项），构建期无新增 smali 注入。
+
+`[实测·修复效果]` 同一新档（02:29:37 第三次起跑，APK 56d0e479）：
+```text
+调度     act infinityUpgrades 3 次、act crunchInterval 2 次（与 bulk/sacrifice 轮转，不再饿死）
+存档     infinityUpgradeBits=3（一次性无限升级已真实购买）、crunch 间隔 150000→54000
+经济     IP 12 → 1e7.19（13.4 分钟）、无限次数 224、maxAM 1e345
+```
+对比修复前同期：IP=12、`infinityUpgrades` 执行 0 次。
+
+**第三版稳定包交付（2026-11-09 02:44，四渠道同一包）**：
+```text
+APK      56d0e479e899c1cdc9114a23ecb2e96aa777d771d6b7b16c0f112076513e83e0（82,552,305 B）
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 111/111 · 永恒夹具 47/47 · 发布规则 13/13
+渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-56d0e479
+实机     安装成功、新档运行中；调度日志见 reports/r96/round3-starvation-fix-evidence.log
+```
+`[未完成]` 3 小时新档目标仍在计时验证（第三轮长跑 02:29:37 起，里程碑由 run3h_watch 按墙钟记录）；
+本报告发布时尚在 pre-break 阶段（IP 1e7），完成或不完成都会在后续轮次给出每个里程碑真实墙钟。
