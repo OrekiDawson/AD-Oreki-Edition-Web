@@ -54,6 +54,7 @@ function dec(exponent) {
     __exp: exponent,
     log10() { return exponent; },
     gte(other) { return exponent >= exponentOf(other); },
+    gt(other) { return exponent > exponentOf(other); },
     times(other) { return dec(exponent + exponentOf(other)); },
   };
 }
@@ -72,7 +73,10 @@ function exponentOf(value) {
  *   normalChallenge / infinityChallenge 挑战是否运行中
  *   broken            player.break
  *   infinityUnlocked  PlayerProgress.infinityUnlocked()（true = 已做过首次无限）
- *   eternityUnlocked  PlayerProgress.eternityUnlocked()
+ *   eternityUnlocked  PlayerProgress.eternityUnlocked()（策略已不用它判永恒层，仅保留桩）
+ *   eternitiesExponent    大永恒次数（10 的指数；-Infinity = 0）
+ *   eternityPointsExponent 当前 EP（10 的指数；-Infinity = 0）
+ *   eternityUpgradesBought 已购永恒升级数量（>0 也算已进入永恒层）
  *   canEternity       Player.canEternity
  *   lockedFrom        从第几层开始「未解锁」（1..8；9 = 8 层全解锁 → pending === null）
  *   maxAMExponent     player.records.thisEternity.maxAM（10 的指数）
@@ -89,6 +93,10 @@ function makeHarness(over = {}) {
     broken: true,
     infinityUnlocked: true,
     eternityUnlocked: false,
+    // 永恒层判定用（与 Android eternitiesZero() 三项同口径；-Infinity 表示数值 0）
+    eternitiesExponent: -Infinity,
+    eternityPointsExponent: -Infinity,
+    eternityUpgradesBought: 0,
     canEternity: false,
     lockedFrom: 1,
     maxAMExponent: 0,
@@ -123,6 +131,13 @@ function makeHarness(over = {}) {
     InfinityChallenge: { get isRunning() { return cfg.infinityChallenge; } },
     player: {
       get break() { return cfg.broken; },
+      // 与 Android `OrekiStageAuto.eternitiesZero()` 三项同口径（见策略 isInEternityLayer）。
+      get eternities() { throwIf("eternities"); return dec(cfg.eternitiesExponent); },
+      get eternityPoints() { throwIf("eternityPoints"); return dec(cfg.eternityPointsExponent); },
+      get eternityUpgrades() {
+        throwIf("eternityUpgrades");
+        return { size: cfg.eternityUpgradesBought };
+      },
       records: {
         thisEternity: {
           get maxAM() { throwIf("maxAM"); return dec(cfg.maxAMExponent); },
@@ -203,11 +218,12 @@ export function runCrunchPolicyChecks(check) {
 
   // ============================================================ 一、静态：规则与数值口径
   const REASONS = [
-    "challenge-running", "pre-infinity", "pre-break-ip", "post-eternity", "eternity-ready",
-    "id-peak-reached", "id-peak-wait", "id-ip-farm", "ip-jump", "gain-wait",
+    "challenge-running", "pre-infinity", "pre-break-ip", "eternity-ready",
+    "eternity-ip-jump", "eternity-grow", "id-peak-reached", "id-peak-wait",
+    "id-ip-farm", "ip-jump", "gain-wait",
   ];
   const missingReasons = REASONS.filter(r => !POLICY_SRC.includes(`"${r}"`));
-  check("静态：10 个决策 reason 全部存在（含 pre-infinity / eternity-ready / ip-jump / gain-wait）",
+  check("静态：11 个决策 reason 全部存在（含 eternity-ip-jump / eternity-grow / ip-jump / gain-wait）",
     missingReasons.length === 0, `缺: ${missingReasons.join(",")}`);
 
   check("静态：等待上限常量与 Android 一致（15 分钟 900000 / 3 分钟 180000）",
@@ -227,8 +243,22 @@ export function runCrunchPolicyChecks(check) {
     POLICY_SRC.indexOf("NormalChallenge.isRunning") <
       POLICY_SRC.indexOf("PlayerProgress.infinityUnlocked()") &&
     POLICY_SRC.indexOf("PlayerProgress.infinityUnlocked()") < POLICY_SRC.indexOf("player.break") &&
-    POLICY_SRC.indexOf("player.break") < POLICY_SRC.indexOf("PlayerProgress.eternityUnlocked()") &&
-    POLICY_SRC.indexOf("PlayerProgress.eternityUnlocked()") < POLICY_SRC.indexOf("Player.canEternity"));
+    POLICY_SRC.indexOf("player.break") < POLICY_SRC.indexOf("this.isInEternityLayer()") &&
+    POLICY_SRC.indexOf("this.isInEternityLayer()") < POLICY_SRC.indexOf("Player.canEternity"));
+
+  check("静态：永恒层不再无条件放行（post-eternity 移除，改为 eternity-ip-jump / eternity-grow）",
+    !POLICY_SRC.includes('"post-eternity"') &&
+    POLICY_SRC.includes('"eternity-ip-jump"') && POLICY_SRC.includes('"eternity-grow"'));
+
+  check("静态：永恒层等待上限与 Android 一致（10 分钟 = 600000 ms，走 waitWithin 墙钟）",
+    /ETERNITY_GROW_WAIT_LIMIT_MS\s*=\s*600000/.test(POLICY_SRC) &&
+    POLICY_SRC.includes('this.waitWithin("eternity-grow", ETERNITY_GROW_WAIT_LIMIT_MS)'));
+
+  check("静态：永恒层判定用 EP/永恒次数/已购永恒升级三项（不用 reality 后恒真的 eternityUnlocked）",
+    !POLICY_SRC.includes("if (PlayerProgress.eternityUnlocked())") &&
+    POLICY_SRC.includes("player.eternities.gt(0)") &&
+    POLICY_SRC.includes("player.eternityPoints.gt(0)") &&
+    POLICY_SRC.includes("player.eternityUpgrades.size > 0"));
 
   // 与 Android 逐条同序的核心：ip-jump 必须在「等 ID 峰值」之前，否则峰值窗口会掐死 IP 增长。
   check("静态：ip-jump 判定排在 nextLockedDimension（等 ID 峰值）之前",
@@ -266,16 +296,82 @@ export function runCrunchPolicyChecks(check) {
     check("分支：已无限但未 Break → 放行 pre-break-ip（且优先于 canEternity）",
       decision.allow === true && decision.reason === "pre-break-ip", d(decision));
   }
+  // ---- [R96 第四轮] 永恒层（首次永恒后、膨胀前）：收益驱动，不再无条件放行 ----
   {
-    const h = makeHarness({ eternityUnlocked: true, canEternity: true, lockedFrom: 1 });
+    // 进入永恒层：EP > 0（大永恒次数 / 已购永恒升级同义，见下方三条）
+    const h = makeHarness({ eternityPointsExponent: 1, canEternity: true, gainedExponent: 0, ipExponent: 5 });
     const decision = h.decide();
-    check("分支：已进入永恒层 → 放行 post-eternity（且优先于 canEternity）",
-      decision.allow === true && decision.reason === "post-eternity", d(decision));
+    check("永恒层：canEternity → 放行 eternity-ready（优先于收益判定）",
+      decision.allow === true && decision.reason === "eternity-ready", d(decision));
+  }
+  {
+    // 一次坍缩恰好让 IP 涨 10 倍（log10 差 = 1，边界相等）→ 放行 eternity-ip-jump。
+    const h = makeHarness({ eternityPointsExponent: 1, gainedExponent: 6, ipExponent: 5 });
+    const decision = h.decide();
+    check("永恒层：一次坍缩恰好 ≥10 倍 IP → 放行 eternity-ip-jump",
+      decision.allow === true && decision.reason === "eternity-ip-jump", d(decision));
+  }
+  {
+    // 9.9 倍（log10 差 ≈ 0.9956 < 1）→ 不放行，按 eternity-grow 等待。
+    const h = makeHarness({
+      eternityPointsExponent: 1, gainedExponent: Math.log10(9.9e5), ipExponent: 5,
+    });
+    const decision = h.decide();
+    check("永恒层：9.9 倍（log10 差 < 1）→ 阻止 eternity-grow",
+      decision.allow === false && decision.reason === "eternity-grow", d(decision));
+  }
+  {
+    // 收益不足时不再无条件放行：即使有未解锁 ID 且峰值已达标，也必须先按住让维度成长。
+    const h = makeHarness({
+      eternityPointsExponent: 1, gainedExponent: 5, ipExponent: 5,
+      lockedFrom: 1, maxAMExponent: 1100,
+    });
+    const decision = h.decide();
+    check("永恒层：收益不足 → 阻止 eternity-grow（不再走 id-peak-reached 无条件放行）",
+      decision.allow === false && decision.reason === "eternity-grow", d(decision));
+  }
+  {
+    // 10 分钟墙钟上限：599999 仍阻止、满 600000 放行一次（stall-eternity-grow），之后重新计时。
+    const h = makeHarness({ eternityPointsExponent: 1, gainedExponent: 5, ipExponent: 5 });
+    const first = h.decide();
+    h.clock.t = 599999;
+    const beforeLimit = h.decide();
+    h.clock.t = 600000;
+    const atLimit = h.decide();
+    const reenter = h.decide();
+    check("永恒层：等待 599999 ms 仍阻止（eternity-grow）",
+      first.reason === "eternity-grow" && beforeLimit.allow === false &&
+      beforeLimit.reason === "eternity-grow", d(beforeLimit));
+    check("永恒层：等待满 600000 ms（10 分钟）→ 放行 stall-eternity-grow",
+      atLimit.allow === true && atLimit.reason === "stall-eternity-grow", d(atLimit));
+    check("永恒层：放行一次后重新计时（不会连续放行）",
+      reenter.allow === false && reenter.reason === "eternity-grow", d(reenter));
+  }
+  {
+    // 大永恒次数 > 0 / 已购永恒升级 > 0 也算永恒层（与 Android eternitiesZero() 三项口径一致）。
+    const byEternities = makeHarness({
+      eternitiesExponent: 1, gainedExponent: 5, ipExponent: 5,
+    }).decide();
+    check("永恒层：大永恒次数 > 0 也判为永恒层",
+      byEternities.allow === false && byEternities.reason === "eternity-grow", d(byEternities));
+    const byUpgrades = makeHarness({
+      eternityUpgradesBought: 1, gainedExponent: 5, ipExponent: 5,
+    }).decide();
+    check("永恒层：已购永恒升级 > 0 也判为永恒层",
+      byUpgrades.allow === false && byUpgrades.reason === "eternity-grow", d(byUpgrades));
+  }
+  {
+    // 现实重置后：realities>0（eternityUnlocked 恒真）但 EP / 永恒次数 / 升级已清零
+    // → 必须回到「首次永恒前」分支，不能误入永恒层（Android `eternitiesZero()` 同口径）。
+    const h = makeHarness({ eternityUnlocked: true, canEternity: true, gainedExponent: 0, ipExponent: 5 });
+    const decision = h.decide();
+    check("永恒层：现实重置后（eternityUnlocked=true 但 EP/永恒次数/升级清零）→ 走首次永恒前分支",
+      decision.allow === true && decision.reason === "eternity-ready", d(decision));
   }
   {
     const h = makeHarness({ canEternity: true, lockedFrom: 1, maxAMExponent: 0, ipExponent: 0 });
     const decision = h.decide();
-    check("分支：本永恒 maxIP 已达永恒门槛 → 放行 eternity-ready",
+    check("首次永恒前：本永恒 maxIP 已达永恒门槛 → 放行 eternity-ready",
       decision.allow === true && decision.reason === "eternity-ready", d(decision));
   }
   {
@@ -405,7 +501,7 @@ export function runCrunchPolicyChecks(check) {
     check("日志：同一决策重复调用只打印一次（throttleLog 状态翻转才打印）",
       h.logs.length === 1, `logs=${h.logs.length}`);
     h.cfg.broken = true;
-    h.cfg.eternityUnlocked = true;
+    h.cfg.eternityPointsExponent = 1;   // 决策从 pre-break-ip 翻转为 eternity-grow
     h.decide();
     check("日志：决策状态翻转时重新打印",
       h.logs.length === 2, `logs=${h.logs.length}`);
@@ -414,7 +510,9 @@ export function runCrunchPolicyChecks(check) {
   // ============================================================ 六、异常 fail-closed
   for (const [label, over] of [
     ["PlayerProgress.infinityUnlocked() 抛错", { throwOn: "infinityUnlocked" }],
-    ["PlayerProgress.eternityUnlocked() 抛错", { throwOn: "eternityUnlocked" }],
+    ["player.eternities 抛错", { throwOn: "eternities" }],
+    ["player.eternityPoints 抛错", { throwOn: "eternityPoints" }],
+    ["player.eternityUpgrades 抛错", { throwOn: "eternityUpgrades" }],
     ["Player.canEternity 抛错", { throwOn: "canEternity" }],
     ["thisEternity.maxAM 抛错", { throwOn: "maxAM", maxAMExponent: 1099, ipExponent: 9 }],
     ["InfinityDimension 抛错", { throwOn: "infinityDimension" }],
@@ -489,7 +587,13 @@ export function runCrunchPolicyChecks(check) {
  */
 export async function runCrunchPolicyModuleLoadCheck(check) {
   const stubs = {
-    player: { break: true, records: { thisEternity: { maxAM: { gte: () => false } } } },
+    player: {
+      break: true,
+      records: { thisEternity: { maxAM: { gte: () => false } } },
+      eternities: { gt: () => false },
+      eternityPoints: { gt: () => false },
+      eternityUpgrades: { size: 0 },
+    },
     NormalChallenge: { isRunning: false },
     InfinityChallenge: { isRunning: false },
     PlayerProgress: { infinityUnlocked: () => true, eternityUnlocked: () => false },

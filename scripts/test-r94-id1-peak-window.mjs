@@ -140,6 +140,11 @@ function makeBigCrunchAutobuyer(opt = {}) {
     player: {
       break: opt.break !== false,
       records: { thisEternity: { maxAM: Big.fromExp(opt.maxAMExp ?? 500) } },
+      // [R96 第四轮] 策略用「EP / 大永恒次数 / 已购永恒升级」三项判永恒层；
+      // R94 夹具是「首次永恒前」的 ID1 峰值窗口，三项必须全零（-Infinity 即数值 0）。
+      eternities: Big.fromExp(-Infinity),
+      eternityPoints: Big.fromExp(-Infinity),
+      eternityUpgrades: { size: 0 },
     },
     Player: { isInAntimatterChallenge: false },
     PlayerProgress: { infinityUnlocked: () => true, eternityUnlocked: () => false },
