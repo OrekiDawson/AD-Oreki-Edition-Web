@@ -254,6 +254,14 @@ export function runCrunchPolicyChecks(check) {
     /ETERNITY_GROW_WAIT_LIMIT_MS\s*=\s*600000/.test(POLICY_SRC) &&
     POLICY_SRC.includes('this.waitWithin("eternity-grow", ETERNITY_GROW_WAIT_LIMIT_MS)'));
 
+  check("静态：永恒层没有 canEternity 放行（全文件仅首次永恒前一处），eternity-ready 只属于首次永恒前",
+    POLICY_SRC.split("if (Player.canEternity) return").length - 1 === 1 &&
+    POLICY_SRC.indexOf("if (Player.canEternity) return") >
+      POLICY_SRC.indexOf("this.isInEternityLayer()") &&
+    POLICY_SRC.split('reason: "eternity-ready"').length - 1 === 1 &&
+    POLICY_SRC.indexOf('reason: "eternity-ready"') >
+      POLICY_SRC.indexOf("this.isInEternityLayer()"));
+
   check("静态：永恒层判定用 EP/永恒次数/已购永恒升级三项（不用 reality 后恒真的 eternityUnlocked）",
     !POLICY_SRC.includes("if (PlayerProgress.eternityUnlocked())") &&
     POLICY_SRC.includes("player.eternities.gt(0)") &&
@@ -298,11 +306,12 @@ export function runCrunchPolicyChecks(check) {
   }
   // ---- [R96 第四轮] 永恒层（首次永恒后、膨胀前）：收益驱动，不再无条件放行 ----
   {
-    // 进入永恒层：EP > 0（大永恒次数 / 已购永恒升级同义，见下方三条）
+    // [R96 第四轮·反向断言] 永恒层里 canEternity 长期为真（maxIP 早已 ≥ 1.797e308），
+    // 用它放行等于回到无条件坍缩。因此即使 canEternity 为真、收益不足，也必须阻止。
     const h = makeHarness({ eternityPointsExponent: 1, canEternity: true, gainedExponent: 0, ipExponent: 5 });
     const decision = h.decide();
-    check("永恒层：canEternity → 放行 eternity-ready（优先于收益判定）",
-      decision.allow === true && decision.reason === "eternity-ready", d(decision));
+    check("永恒层：canEternity 为真但收益不足 → 必须阻止 eternity-grow（不得放行）",
+      decision.allow === false && decision.reason === "eternity-grow", d(decision));
   }
   {
     // 一次坍缩恰好让 IP 涨 10 倍（log10 差 = 1，边界相等）→ 放行 eternity-ip-jump。
