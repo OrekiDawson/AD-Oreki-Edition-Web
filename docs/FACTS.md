@@ -8810,3 +8810,47 @@ APK      b0077e5d4b572189ba51b2e8abf20ace1469ddad943b50b26865bdf39ee91dc4（82,5
 `[下一步·最高优先]` 用同一存档在 Web 端做 A/B：若 Web 自动化能在同等时间越过这个平台，
 说明 Android 侧仍缺「维度数量推进」动作；若同样卡住，则是 3.21 原版数值节奏本身，
 需要重新评估 3 小时目标的可达口径（速度/倍率设置）。
+
+### R96 第四轮（续）：永恒层坍缩策略修复（双端一致）与第六版稳定包
+
+`[实测·缺陷]` 永恒层（首次永恒后、膨胀前）的坍缩策略是**无条件 allow**（Android
+`Decision(true, "post-eternity")` / Web `allow("post-eternity")`）⇒ 坍缩按 TIME/5s
+持续重置维度，高倍速下几乎每帧一次（实测 `infinities` 达 1e7.85）⇒ 第八维度**数量**
+长不起来 ⇒ 星系/维度提升这些「按维度数量递增」的门槛达不到 ⇒ 生产乘数停滞：
+bigE=3、EP=2.16 时 maxIP 平台 **1e593**（10× ET 门槛要 1e804）、maxAM 平台 1e124044、
+星系 111、维度提升 1253 十分钟零增长、首个永恒升级（5 EP）买不起。
+
+`[修复·双端一致]`
+- Android `OrekiCrunchPolicy.evaluate()`：永恒层改为收益驱动 ——
+  `log10(gainedIP) − log10(IP) ≥ 1` → allow `eternity-ip-jump`；否则
+  `waitWithin("eternity-grow", 600s)`（10 分钟墙钟上限，到点放行一次）。
+  **刻意不用 `canEternity` 放行**：永恒层里它长期为真（maxIP 早已过 1.797e308），
+  用它放行等价于无条件坍缩（实测安装后第一帧就是 `allow=true reason=eternity-ready`）。
+- Web `src/core/oreki-crunch-policy.js`：同一规则（teammate web-crunch 完成），
+  首次永恒前的 `eternity-ready` 与既有顺序、10×/15min/3min 阈值均未动。
+  永恒层判定口径按 Android `eternitiesZero()` 三项（`eternities / eternityPoints /
+  eternityUpgrades`），不用现实重置后恒真的 `eternityUnlocked()`。
+- 契约：Android `check_automation_scheduler` 113→**115**；Web `check_crunch_policy` 63 项、
+  `check_crunch_modes` 84 项，4+3 处变异全部被捕获。
+
+`[实机验证]` APK 74730ed1 覆盖安装到平台期存档后：
+```text
+04:00:16 OREKI_CRUNCH_DEC: allow=false reason=eternity-grow
+04:00:16 OREKI_AU4C: policy -> pause (eternity-grow)
+10 分钟后 maxAM 1e124500 → 1e125373（+872，此前同窗口 0）、维度提升 4 → 1427 重建、星系 114
+```
+即「停止每帧坍缩」生效，但**AM 指数增速仍只有 ~87/min**，离膨胀所需的
+`maxIP 1e804`（≈+211 指数）仍差 2 小时以上 ⇒ 3 小时目标本轮**仍未达成**，
+且平台期的真正乘数缺口尚未定位（候选：时间维度/时间研究只有 13 TT、星系/维度提升门槛、
+某类原版升级未购买）。本轮不伪造达标。
+
+`[Web 交付]` 源码 `8ac4960` → Pages `1612df3`（Actions run 42518001834 success）→
+线上 `https://oreki.net/src/core/oreki-crunch-policy.js` HTTP 200、12511 B、
+SHA-256 `e8273ca860e8be8a67fde3ce17a4f3bd294d06a1002334b6b080942e6a14c93f`，与本地字节一致。
+
+**第六版稳定包交付（2026-11-09 04:22，四渠道同一包）**：
+```text
+APK      74730ed14c92be87bb34df1d8f1a3f90edafca7fd8f6ace2729a13688de78bc3（82,552,305 B）
+门禁     verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 115/115 · 永恒夹具 47/47 · 发布规则 13/13
+渠道     本地 release + SSH latest（SHA 复核一致）· OneDrive · Google Drive · GitHub Release android-update-3.21.0-74730ed1
+```
