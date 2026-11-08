@@ -35,6 +35,8 @@
 [Android](rules/DETAIL_ANDROID.md) · [Web](rules/DETAIL_WEB.md) · [Release](rules/DETAIL_RELEASE.md) · [Toolchain](rules/DETAIL_TOOLCHAIN.md) · [Tutorial](rules/DETAIL_TUTORIAL.md)。
 入口概述为摘要，具体数值/命令/操作只按对应细则读取；与归并契约冲突的旧协作、授权、停止、环境事实条款不恢复效力。无需通读整份低频细则。
 
+当前 Android APK 四渠道交付、rclone、GitHub Release 和 SSH/SFTP 规则见 `docs/rules/RELEASE.md` 的 R96 节。
+
 ## 隔离交付
 
 本版在独立 worktree 审查分支交付，未修改运行中工作区的共享 inode。

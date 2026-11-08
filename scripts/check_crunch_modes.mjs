@@ -147,6 +147,19 @@ for (const [name, mode] of [
   check("归一化不改 increaseWithMult", save.increaseWithMult === false);
 }
 
+
+// ---------------------------------------------------------------- [R96] 智能大坍缩决策
+import { readFileSync } from "node:fs";
+const policySrc = readFileSync(new URL("../src/core/oreki-crunch-policy.js", import.meta.url), "utf8");
+const autobuyerSrc = readFileSync(new URL("../src/core/autobuyers/big-crunch-autobuyer.js", import.meta.url), "utf8");
+check("智能坍缩决策模块存在", policySrc.includes("export class OrekiCrunchPolicy"));
+check("挑战最优先", policySrc.indexOf("NormalChallenge.isRunning") < policySrc.indexOf("player.break"));
+check("未 Break 放行", policySrc.includes('"pre-break-ip"'));
+check("永恒前保护 ID 峰值", policySrc.includes('"id-peak-wait"'));
+check("判据异常 fail-closed", policySrc.includes("allow: false") && policySrc.includes("exception:"));
+check("原版自动器接入决策", autobuyerSrc.includes("OrekiCrunchPolicy.decide()"));
+check("决策接入点在 willInfinity 内", autobuyerSrc.indexOf("OrekiCrunchPolicy.decide()") > autobuyerSrc.indexOf("willInfinity"));
+
 // ---------------- 汇总 ----------------
 console.log(`\n大坍缩三种触发模式回归：${checks} 项检查，失败 ${failures.length} 项`);
 if (failures.length) {
