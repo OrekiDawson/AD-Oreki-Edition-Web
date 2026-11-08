@@ -8554,3 +8554,38 @@ GitHub  android-update-3.21.0-82d92277（新建，不覆盖历史 android-v3.21.
 
 **实机状态（策略层修复后）**：`OREKI_GOAL stage=13 无限维度与永恒前置 goal=unlock-eternity unknownLeaf=0 degraded=0`；
 存档 maxAM 1e40702、IP 1e145、brake=true、EP=0、replicanti 未解锁 —— 首次永恒仍未触发，下一轮继续定位。
+
+### R96 首次永恒真实打通：两个确证 P0（策略层 NoSuchMethodError + 3.21 启动器绑定漂移）
+
+本轮以「真实存档 + 真实购买 + 真实结算」把「首次永恒永远不触发」拆成两个独立根因，均已修复并在模拟器实测通过。
+
+**根因 1：策略层崩溃被静默吞掉（IP 冻结 46 分钟）**
+- `[实测]` 旧 APK（82d92277）logcat：`01:10 前 OREKI_AU4C: policy -> pause (exception:NoSuchMethodError)`；此后 46 分钟 `thisInfinity.realTime` 线性增长、IP 恒 1e145、无任何坍缩。
+- `[读码+实测]` `OrekiCrunchPolicy.nextLockedDimension()` 返回 `kotlin.Triple`。3.21 APK 的 stdlib 经 R8 裁剪，运行时不存在 `kotlin/Triple.<init>(Object,Object,Object)` ⇒ 每帧 NoSuchMethodError ⇒ `decide()` fail-closed 永久暂停坍缩。改为私有 `LockedDimension` 数据载体；新增契约「payload Kotlin 不依赖可能被裁剪的 kotlin.Triple/Pair」。
+- `[修复]` 同时补 `applyCrunchPolicy` 一次性异常堆栈日志（此前静默 `catch (_: Throwable) {}` 让「策略不生效」完全不可观测）。
+
+**根因 2：首次永恒启动器仍是 3.20 绑定（ART 拒绝整类 → EP 恒 0）**
+- `[实测]` 新 APK 下 maxIP 已达 1e313（远超 `eternityGoal = 1.797e308`），但 EP 恒 0、`bigEternities=0`；logcat 每帧：
+  `OREKI_ET_EXC: Verifier rejected class .../prestige/OrekiEternityLaunch: [0x8] register v0 has type Reference: Eternity$confirmEternity$4 but expected Reference: vi1`
+- `[读码+取证]` 3.20 的原版协程启动器是 `g.p(Lvi1;Z)`；3.21 baseline 里 `Lvi1` 是 **enum when-map**（与启动无关），真正的 `MainActivity.Companion.launchOnGameScope` 是 `g.s(Lgm1;Z)`（`work/base_decoded_321` 逐指令核对；`Eternity$confirmEternity$4` 声明 `.implements Lgm1;`）。
+- `[修复]` `OrekiEternityLaunch.smali` 改为 `check-cast v0, Lgm1;` + `invoke-static {v0,v1}, g;->s(Lgm1;Z)V`；`build_mod` ET1 守卫与 `fixture_eternity_gate.py`（47 项）同步改为**拒绝**残留 `g.p(Lvi1;Z)`。
+
+**智能大坍缩策略本轮二次迭代（目标驱动，双端同源）**
+- 优先级：挑战 → 未 Break → 已永恒 → `canEternity`（原版 `prestige.c.f()`）→ 一次坍缩收益 ≥ 10×IP（`ip-jump`，读原版 `prestige.e.d()` 的 `gainedInfinityPoints()` + `BigDouble.log10()`）→ 未解锁 ID 峰值窗口（15 分钟上限）→ 收益等待（3 分钟上限）。任何判据异常 fail-closed。
+- `[实测]` 「等 ID 峰值」必须让位于 `ip-jump`：ID6→ID7 峰值需 +8141 指数（当时 AM 增长 ~1.3 指数/秒 ≈ 1.7 小时），而 IP 跳变循环每 4~10 分钟涨一个量级。
+- `[实测]` 原版 TIME 模式间隔单位是**真实秒**；存档残留上一次暂停写入的 `auto.bigCrunch.time=3600`（=1 小时）会让「策略放行」也不坍缩（01:20 放行后 3 分钟 IP 未跳变）。修复：Break 后放行间隔 5 秒 + 每进程一次校准残留间隔。
+- 实测进展（同一存档，安装 `fa3892c9` 后）：
+  `01:25 IP 1e179.8 → 01:28 IP 1e234 → 01:28:30 1e303.3（8 个 ID 全解锁）→ 01:29:30 maxIP 1e309 → 01:31 maxIP 1e313`
+- 安装 `5f7afd78`（启动器修复）后 **01:34:16 `OREKI_ET: launch via OrekiEternityLaunch (original no-confirm path)`**；01:35 存档：`bigEternities=1`、`thisEternity.realTime` 重置为 59.6 s、`stage=10 永恒与时间研究（含第一次永恒） goal=unlock-dilation`、无 `OREKI_ET_EXC`。**首次永恒由真实 maxIP 门槛触发、EP 真实结算，未改任何存档字段。**
+
+**R96 稳定版 APK（本轮四渠道交付）**
+```text
+APK   5f7afd78001bfe12103a00926f17d3e6c55647d9f84d3aaed024f406b397322f（3.21.0/30210000，82,552,305 B）
+门禁  verify_release 14/14 · verify_patch_contract 17/17 · 调度器契约 105/105 · 永恒夹具 47/47 · 发布规则 13/13
+实机  安装成功、启动进入游戏、策略生效（OREKI_CRUNCH_DEC ip-jump / id-peak-wait 正常翻转）、首次永恒结算
+```
+
+**仍待核实（不得当作已完成）**
+- 99.72% 回落问题：本轮未复现、未定位，旧结论不沿用。
+- 3 小时新档全流程：本存档 23:36 建新档 → 01:34 首次永恒（1h58m，其中约 50 分钟消耗在 away 覆盖层 + 策略崩溃 + 启动器 VerifyError 三处已修复缺陷上）；**尚未**在干净环境做一次完整 3 小时墙钟计时，不得宣称已达标。
+- `eternities` 字段在新档读作 11（EP=0、bigEternities=0）的语义仍未知；当前所有「首次永恒前」判据已改读 EP/永恒升级位图/bigEternities，不再依赖该字段。
