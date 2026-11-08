@@ -8653,3 +8653,15 @@ Git      android 11163f0；web e0681c8（FACTS 硬链接同步）；均已 push 
 实机     安装成功、进程内 OREKI_API_MISS=0、第 2 次永恒结算、TT 真实购买、时间研究已购 5 条
 与上次有效交付间隔：01:39 → 01:57 = 18 分钟（满足双小时要求）
 ```
+
+### R96 第三轮：双端大坍缩规则顺序对齐（Web 已部署）+ 新档 3 小时长跑启动
+
+1. `[双端一致性修复]` 上一轮 Android 把 `ip-jump` 提到「等 ID 峰值」之前（实测 ID6→ID7 峰值窗口需 1.7 小时，会掐死 IP 增长），但 Web 仍是旧顺序 ⇒ 两端核心行为分叉。本轮 Web 侧重排为与 Android **逐条同序**（challenge-running → pre-infinity → pre-break-ip → post-eternity → eternity-ready → **ip-jump** → id-peak-reached / id-peak-wait(15min) / id-ip-farm → gain-wait(3min)，异常 fail-closed），阈值语义未改。
+   - 源码 `e946a82`（web/AD-Oreki-Edition）已 push；测试：check_crunch_policy **48/48**、check_crunch_modes **69/69**、test-r94-id1-peak-window **21/21**、test-r82 17/17、test-r87 13/13；3 处变异全部被测试捕获。
+   - Pages 部署提交 `8a7f6f2`（Actions run 42508464106 success）；线上 `https://oreki.net/src/core/oreki-crunch-policy.js` HTTP 200、8747 B、SHA-256 `30990fe1027f768ddcd0db87cef6e05351e0d2e011b3c193dd4f716b469619f9` 与本地字节一致。
+2. `[实测·环境缺陷]` 长跑会被「在你离开的 X 秒里」离线覆盖层卡住：游戏在无人点击时进入 away 状态、主循环停摆（实测 02:01:35 起 8 分钟无 `OREKI_GATE`）。本轮已在 AVD 设置 `svc power stayon true` + `screen_off_timeout=2147483647`，并加会话保持器（仅检测到「开始游戏」按钮时点击恢复，不改任何游戏状态）。
+3. `[实测·速度]` 新档实测游戏内时间推进 = **×20000 / 真实秒**（30s 墙钟 → `records.totalTimePlayed` +600,340,000 ms），即倍率注入真实生效；瓶颈不在游戏时间，而在**购买动作吞吐**（原版 autobuyer 各 100ms + MOD 调度器 1 动作/10s）。
+4. `[新档 3 小时长跑]` 02:05:31 起全新存档（删除 player*.json 由游戏重建；旧档已备份 `reports/r96/round3-save-backup/`），速度 ×10000（`OREKI_GATE mult=10000.0` 实测），里程碑由 `/tmp/r96save/run3h_watch.py` 按墙钟记录：
+   - +196s 首次无限（inf 已 6 次，IP 4）——注意监视器 02:07:38 才启动，早期里程碑时间偏保守；
+   - 6.6 分钟：25 次无限、IP 18、maxAM 1e321、`brake=false`（Break 需把坍缩间隔买满，IP 每坍缩 +1，累计需 ~31 IP）
+5. `[口径]` 3 小时新档目标**尚未达成也未证伪**，本轮长跑继续；完成时会给出每个里程碑的墙钟时间。
