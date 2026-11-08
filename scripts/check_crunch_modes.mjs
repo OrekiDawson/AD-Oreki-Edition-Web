@@ -150,6 +150,7 @@ for (const [name, mode] of [
 
 // ---------------------------------------------------------------- [R96] 智能大坍缩决策
 import { readFileSync } from "node:fs";
+import { runCrunchPolicyChecks, runCrunchPolicyModuleLoadCheck } from "./check_crunch_policy.mjs";
 const policySrc = readFileSync(new URL("../src/core/oreki-crunch-policy.js", import.meta.url), "utf8");
 const autobuyerSrc = readFileSync(new URL("../src/core/autobuyers/big-crunch-autobuyer.js", import.meta.url), "utf8");
 check("智能坍缩决策模块存在", policySrc.includes("export class OrekiCrunchPolicy"));
@@ -159,6 +160,11 @@ check("永恒前保护 ID 峰值", policySrc.includes('"id-peak-wait"'));
 check("判据异常 fail-closed", policySrc.includes("allow: false") && policySrc.includes("exception:"));
 check("原版自动器接入决策", autobuyerSrc.includes("OrekiCrunchPolicy.decide()"));
 check("决策接入点在 willInfinity 内", autobuyerSrc.indexOf("OrekiCrunchPolicy.decide()") > autobuyerSrc.indexOf("willInfinity"));
+
+// [R96] 目标驱动决策的逐分支回归（执行真实策略源码 + 真实 willInfinity getter 体），
+// 见 scripts/check_crunch_policy.mjs。放在同一入口汇总，避免两处命令漂移。
+runCrunchPolicyChecks(check);
+await runCrunchPolicyModuleLoadCheck(check);
 
 // ---------------- 汇总 ----------------
 console.log(`\n大坍缩三种触发模式回归：${checks} 项检查，失败 ${failures.length} 项`);
