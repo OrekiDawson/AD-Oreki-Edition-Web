@@ -9146,3 +9146,49 @@ false（`noteNoop` 不占节拍），因此不会白占名额。契约 118 项�
 `[暂停点·已知跨端差异]` **Android 永恒结算门槛为 ×10（`0xa`），Web 仍为 ×1（`times(1)`）** ——
 Web 侧最后一次同步停在第九轮的 ×1；本轮 Android 第十一轮恢复 ×10 时**未同步 Web**
 （当时判断需先验证 ×10 是否有效）。恢复开发第一件事就是两端统一（并重新评估 ×1/×10）。
+
+### R96 第十三轮（P1/P2/P3）：EP 预留真实生效（eupBits 0→3）、门槛双端统一 ×1、TT 瓶颈定性
+
+`[P1·实测·已通过]` 新增 `OrekiEternityEconomy`（Kotlin-only 策略层）+ 调度器紧迫名额 + 时间维度入口闸门。
+预留量 = **未购买永恒升级里最便宜那一项的真实成本**（读原版 `x()`，不是写死的 5），买完自动抬到下一档。
+实机（APK a5f7d476，覆盖安装后 3.5 分钟）：
+```text
+09:36:02  OREKI_EARLY: 永恒升级：原版商店购买成功      ← 首个永恒升级真实购买
+09:36:09  OREKI_EP_RESERVE: hold-td reserve=1.0e1 ep=2.2113227994012e0   ← TD 被拦，EP 保住
+          eupBits 0 → 3（5 EP、10 EP 两档已买）
+09:44:57  OREKI_EP_RESERVE: skip-unreachable cheapestLog=4.698970 epLog=0.883（5e4 档，正确跳过）
+          → bigE 16、EP 1.29、maxAM 1e142591、maxIP 1e691.8、星系 119、8 个 ID 全解锁
+```
+三档阈值依据（写进注释）：10 倍会漏掉首档（EP 0.483 vs 5 EP 差 1.015 个数量级），
+1e6 倍会在 EP≈20 时为 5e4 档预留而锁死 TD，**取 100 倍（log 2.0）两者兼得**。
+
+`[P2·已统一]` 永恒结算门槛两端统一为 **×1**（Android `OrekiEternity.smali` 乘数 `0x1`，Web `times(1)` 两处）；
+夹具 50 项断言「必须是 0x1 且不得回到 0xa」。历史实测对照（同一台 AVD、干净新档）：
+| 门槛 | 周期 | 结果 |
+|---|---|---|
+| ×10（间隔修复后） | 单周期 >19 分钟 | maxIP 冻 1e40，EP 2.1，eupBits 0 |
+| ×1（间隔修复 + 无 EP 预留） | ~2 分钟 | 34 分钟 8 次永恒，但 EP 恒 0（被 TD1 吃干） |
+| **×1 + EP 预留** | ~2 分钟 | 30 分钟 bigE 16、EP 1.29、**eupBits 3** |
+⇒ ×1 本身不是问题，缺的是 EP 预留；两者结合才成立。
+
+`[P3·实测定性：无逻辑错误，瓶颈是结构性的]` 从 `src/core/time-theorems.js` 逐行取证：
+`cost = costBase × costIncrement^amount`；AM 源 `1e20000`/档、IP 源 `1e100`/档、EP 源 `×2`/档，
+**每次购买只 +1 TT**；`buyMax()` 一次调用已买齐三源（`ttAM+ttIP+ttEP`），不存在漏买。
+实机三源计数与公式完全吻合：amBought 7 = floor(maxAM指数 142591/20000)、
+ipBought 7 ≈ floor(maxIP指数 691.8/100)、epBought 5 = EP 1.29 能买的 2^n 档数。
+实测速率 **0.33 TT/分钟**（09:58 计 18 → 10:01 计 19）；膨胀门槛 12900 TT =
+`Currency.timeTheorems.max`（= `player.timestudy.maxTheorem`，**累计**而非余额），
+按此速率需 ≈39,000 分钟。**结论：180 分钟通关在当前原版参数下算术不可达，
+不是调度/映射/饥饿缺陷。** 可选参数杠杆（需用户裁决）：
+(a) TT 每次购买收益倍率（仍真实扣费）；(b) 降低 AM/IP 成本增量；(c) 提高倍速/产出。
+
+`[Web 交付]` 源码 `3cce557` → Pages `12cb21f`（只提交真实改动，CRLF 噪声已过滤）→
+线上 `https://oreki.net/src/core/oreki-eternity-automation.js` HTTP 200、49,792 B、
+SHA-256 `109963ea…18b7` 与本地一致、`isEternityPointsBeyondReserve` 命中 2 处。
+
+`[Android 交付]` 第十六版 `a5f7d476a4cc949226ac439e45928fe10253560e973eeb2d662c9e8ebc3fd8b7`（82,556,401 B）
+四渠道：本地 latest ✓、OneDrive rc=0、Google Drive rc=0 且 MD5 `3253fc88…67e4` 与本地一致（补齐上一轮陈旧）、
+GitHub Release `android-update-3.21.0-a5f7d476` ✓。门禁 14/14 · 17/17 · 125/125 · 50/50 · 13/13。
+
+`[待办]` ①TT 参数需用户裁决后才能改；②仍需一次干净新档 ≤180 分钟整段墙钟验证（当前未做）；
+③`player.json` 不含 `maxTheorem`，累计 TT 暂用「三源购买计数之和」代替；④99.72% 回落根因仍未复现。
