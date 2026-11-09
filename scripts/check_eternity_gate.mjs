@@ -242,6 +242,60 @@ try {
     autoSrc.split("eternityPoints.value.times(1)").length - 1 >= 2);
 }
 
+// ---------------- ⑩ R96 第十三轮：EP 预留（与 Android 同语义） ----------------
+{
+  const autoSrc = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
+  check("存在 EP 预留方法 eternityUpgradeReserve", autoSrc.includes("eternityUpgradeReserve()"));
+  check("预留量取自原版真实成本 EternityUpgrade.cost（不是写死数字）",
+    autoSrc.includes("upgrade.cost") && autoSrc.includes("EternityUpgrade.all"));
+  check("预留量随已买进度自动抬高（跳过 isBought，取最便宜）",
+    autoSrc.includes("if (upgrade.isBought) continue;") && autoSrc.includes("cost.lt(cheapest)"));
+  check("死锁保护：遥不可及不为它预留",
+    autoSrc.includes("RESERVE_REACHABLE_LOG10") && autoSrc.includes("return null;"));
+  check("TD 购买入口被 EP 预留闸门拦截",
+    autoSrc.includes("if (!this.isEternityPointsBeyondReserve()) return false;"));
+  check("预留只读不扣费（不出现直接扣 EP 的写法）",
+    !autoSrc.includes("eternityPoints.value.sub(") && !autoSrc.includes("eternityUpgrades.add("));
+
+  // 行为验证：用最小假对象跑真实方法体（不加载游戏；A 已在文件顶部 import）
+  const mkCost = v => ({ v, lt(o) { return this.v < o.v; }, log10() { return Math.log10(this.v); } });
+  const mkEP = v => ({
+    v, lte: () => false, log10: () => Math.log10(v), gte: o => v >= o.v,
+  });
+  const savedAll = globalThis.EternityUpgrade;
+  const savedEter = globalThis.Currency.eternities;
+  const savedEP = globalThis.Currency.eternityPoints;
+  try {
+    const all = [
+      { isBought: false, cost: mkCost(5) },
+      { isBought: false, cost: mkCost(10) },
+      { isBought: false, cost: mkCost(5e4) },
+    ];
+    globalThis.EternityUpgrade = { all };
+    globalThis.Currency.eternities = { value: { lt: () => false } };
+    globalThis.Currency.eternityPoints = { value: mkEP(0.483) };
+    check("EP 0.483 时预留 5 EP（旧 10 倍判定会漏掉）", A.eternityUpgradeReserve() === all[0].cost);
+    check("EP 0.483 < 预留 → 不买时间维度", A.isEternityPointsBeyondReserve() === false);
+
+    globalThis.Currency.eternityPoints = { value: mkEP(5.2) };
+    check("EP 5.2 ≥ 预留 → 放行（先买 TD1 解锁商店）", A.isEternityPointsBeyondReserve() === true);
+
+    all[0].isBought = true; // 买到首档后，最便宜变成 10
+    check("首档买完后预留自动抬到 10 EP", A.eternityUpgradeReserve() === all[1].cost);
+
+    all[1].isBought = true; // 只剩 5e4，EP 5.2 差 4 个数量级 → 遥不可及
+    check("第三档 5e4 遥不可及 → 不预留（不锁死 TD）", A.eternityUpgradeReserve() === null);
+    check("无需预留时 TD 放行", A.isEternityPointsBeyondReserve() === true);
+
+    all.forEach(u => { u.isBought = true; });
+    check("全部买完 → 不预留", A.eternityUpgradeReserve() === null);
+  } finally {
+    globalThis.EternityUpgrade = savedAll;
+    globalThis.Currency.eternities = savedEter;
+    globalThis.Currency.eternityPoints = savedEP;
+  }
+}
+
 // ---------------- 汇总 ----------------
 console.log(`\n网页版自动永恒闸门回归：${checks} 项检查，失败 ${failures.length} 项`);
 if (failures.length) {
