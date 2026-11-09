@@ -9116,3 +9116,33 @@ APK      e0453df1294fb99bfae6bfa224c58c919de6ba69889a943be8f522768087e818（82,5
 ```
 `[3 小时目标]` 仍未达成；但本轮把「EP 出口被 TD1 吃光」这条链修开，下一轮用干净新档
 重新计时，重点记录「首次永恒 → 第 N 次 → EP≥5 买永恒升级 → TD2/TD3 → TT 增速」的真实墙钟。
+
+### R96 第十二轮（收尾）：永恒层 ID 链修复（第十四/十五版）与暂停点状态
+
+`[实测·缺陷]` 第十二版把坍缩间隔修好后（30 秒），又暴露下一层问题：
+- 第十四版（t0 08:13:41）：首次永恒后 20 分钟 `maxAM` 卡在 1e7762、`maxIP` 1e41，
+  调度日志 **`act idBuy` 一次都没有** —— 永恒层分支原先直接 `null`，ID 解锁只能靠末尾
+  `runScheduled("idBuy")`，每拍先被 `bulk`（48 次）/`sacrifice`（36 次）抢走。
+- 只判「ID1 未解锁」不够：ID1 在 +518s 解锁后名额立刻交回固定顺序，之后 10 分钟
+  `act idBuy` 仅 1 次 ⇒ ID2~ID8 全锁 ⇒ maxAM 只在 1e3~1e5 徘徊。
+
+`[修复]` `OrekiStageAuto.resolveUrgentTask()` 永恒层分支改为
+`if (!allInfinityDimensionsUnlocked()) return "idBuy"`；`tryBuyId1()` 无可买项时返回
+false（`noteNoop` 不占节拍），因此不会白占名额。契约 118 项（新增该断言）。
+构建期 ABI 守卫拦下过一次 `@JvmStatic` 错位（helper 插到注解与 `eternitiesZero()` 之间），已修。
+
+`[实机]` 第十五版 APK `83cafd91`：
+```text
+覆盖安装到卡住存档 → ID6 解锁、连续 act idBuy、maxAM 1e65776、maxIP 1e299、星系 84
+干净新档 t0 08:39:57 → +158.5s 首无限 / +498.7s 首 Break / +518.7s ID1+首永恒 /
+                      +1479s maxAM 1e60000 / +1519s 首个 TT / +1539s 8 个 ID 全解锁 /
+                      +1639s 星系 100；maxAM 1e95703、IP 1e453
+```
+
+**第十四/十五版交付**：`8d84e40d`（08:39 本地+OneDrive+GitHub）、
+`83cafd91`（09:06 本地+OneDrive+GitHub；GDrive 本轮未重传，见下）；门禁均 14/14、17/17、
+118/118、50/50、13/13。
+
+`[暂停点·已知跨端差异]` **Android 永恒结算门槛为 ×10（`0xa`），Web 仍为 ×1（`times(1)`）** ——
+Web 侧最后一次同步停在第九轮的 ×1；本轮 Android 第十一轮恢复 ×10 时**未同步 Web**
+（当时判断需先验证 ×10 是否有效）。恢复开发第一件事就是两端统一（并重新评估 ×1/×10）。
