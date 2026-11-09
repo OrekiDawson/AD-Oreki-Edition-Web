@@ -17,3 +17,10 @@
 - Web 工具链使用 Node.js、npm、pnpm、TypeScript，必要时才使用 Yarn；依赖版本以 `package.json` 和 lockfile 为准。Rust 工具链使用 rustup、rustc、Cargo、rustfmt、Clippy、rust-analyzer。
 - Git、GitHub CLI、Python、ripgrep、RustDesk、VS Code、Codex CLI、DeepSeek Harness 属辅助工具；实际版本和路径写入 FACTS，不把本机路径硬编码进通用脚本。
 - Linux 仓库和缓存优先位于 ext4。不得假设 Windows 分区固定挂载点；迁移前不得删除原始文件。涉及权限、符号链接、硬链接和大小写时，先检查实际状态。
+
+## R97 快速迭代构建规则（2026-11-09，当前有效）
+
+- 当前 Linux 开发环境的 Android APK 构建通常约 1 分钟，已足以支持高频反馈；不得再以“构建成本很高”为理由拖延必要的候选构建。该耗时只是当前环境实测事实，不是强制 SLA，也不代表 AVD 验收或完整通关测试同样只需 1 分钟。
+- 发现关键生产缺陷时，优先采用：最小修复 → 候选构建 → 针对性测试 → AVD 验收 → 继续迭代。开发瓶颈优先看真实游戏进度和运行验收，不机械扩大无关回归范围。
+- 候选 APK 可按需要多次构建，不受正式 Release 次数限制，无须逐次请求授权；可适当使用增量编译和缓存，但必须确认实际 Kotlin → D8 → DEX → APK 链路正确，不得把缓存命中、静态分析或独立 DEX 冒充 APK 构建证据。
+- 本规则不改变 Kotlin-only、离线优先、针对性验证、RG02-10 输入指纹或正式 Release 门禁；正式稳定版仍须冻结输入、完成必要验证、签名并按两小时稳定版节奏和四渠道规则交付。

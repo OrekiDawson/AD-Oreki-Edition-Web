@@ -9745,3 +9745,6 @@ TT 早已达标；真实阻断是 **EC 全 0**：`unlocked=0 / current=0 / compl
   可能长期得不到执行（任务饥饿）；给该处加 `goto :chk_main` 后 `tick()` 抛 `InvocationTargetException`（疑 VerifyError，
   `catch Ljava/lang/Exception;` 挡不住 Error），已整体还原待查；`:ca_official` 调 `b;->S()` 后 `return-void` 亦可能饿死后续关。
 
+### R97 构建耗时事实（2026-11-09）
+- `[实测]` Linux Android 构建日志记录：`reports/r96/gradle-r96u.log` 1m16s、`gradle-r96v.log` 1m17s、`gradle-r96w.log` 1m28s、`gradle-r96x.log` 1m25s、`gradle-r96y.log` 1m16s、`gradle-r96z.log` 1m14s；最新候选安装链 `reports/r96/install-release-r96.log` 为 1m08s。当前环境通常约 1 分钟，仅是构建事实，不代表 AVD 验收或完整通关测试耗时。
+

@@ -8,6 +8,7 @@
 | Android 业务/基线/REA | [ANDROID](rules/ANDROID.md) | 按需 |
 | Web 逻辑/移动端 | [WEB](rules/WEB.md) | 按需 |
 | 构建/签名/发布 | [RELEASE](rules/RELEASE.md) | 按需 |
+| R97 快速迭代构建 | [TOOLCHAIN](rules/TOOLCHAIN.md) + [RELEASE](rules/RELEASE.md) | 按需 |
 | Git/index/硬链接/编号 | [GIT](rules/GIT.md) | 按需 |
 | 安装/环境/资源 | [TOOLCHAIN](rules/TOOLCHAIN.md) | 按需 |
 | Linux 优先 / Windows 兼容（R95） | [TOOLCHAIN](rules/TOOLCHAIN.md) | 按需 |
