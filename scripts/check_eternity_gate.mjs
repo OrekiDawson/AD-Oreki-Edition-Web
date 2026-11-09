@@ -252,8 +252,8 @@ try {
     autoSrc.includes("if (upgrade.isBought) continue;") && autoSrc.includes("cost.lt(cheapest)"));
   check("死锁保护：遥不可及不为它预留",
     autoSrc.includes("RESERVE_REACHABLE_LOG10") && autoSrc.includes("return null;"));
-  check("TD 购买入口被 EP 预留闸门拦截",
-    autoSrc.includes("if (!this.isEternityPointsBeyondReserve()) return false;"));
+  check("TD 购买入口被 EP 预留闸门拦截（TD1 播种例外）",
+    autoSrc.includes("if (!needsFirstSeed && !this.isEternityPointsBeyondReserve()) return false;"));
   check("预留只读不扣费（不出现直接扣 EP 的写法）",
     !autoSrc.includes("eternityPoints.value.sub(") && !autoSrc.includes("eternityUpgrades.add("));
 
@@ -300,6 +300,22 @@ try {
 {
   const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
   check("倍率常量 = 500", src.includes("const TT_REWARD_MULTIPLIER = 500;"));
+  check("totalPurchased 结果按真实类型处理（number 不再调 toNumber）",
+    src.includes('typeof raw === "number" ? raw : raw.toNumber()'));
+  check("禁止把 totalPurchased() 直接当 Decimal 调 toNumber",
+    !src.includes("totalPurchased().toNumber()") && !src.includes("const totalNum = total.toNumber();"));
+  check("基线在购买之前建立（tick 先对账再买）",
+    src.indexOf("this.settleTimeTheoremReward();") < src.indexOf("const dims = this.buyTimeDimensions();"));
+  {
+    const tickBody = src.split("tick() {")[1]?.split("this._frame++;")[0] || "";
+    check("关闭自动化时仍结算（对账在 tick 的 active 早退之前）",
+      tickBody.indexOf("this.settleTimeTheoremReward();") >= 0
+      && tickBody.indexOf("this.settleTimeTheoremReward();") < tickBody.indexOf("if (!this.active) return"));
+  }
+  check("切档保护：单帧增量超上限只重设基线",
+    src.includes("TT_REWARD_MAX_DELTA_PER_TICK") && src.includes("delta > TT_REWARD_MAX_DELTA_PER_TICK"));
+  check("补发失败不推进基线（下一帧重试）",
+    !/catch \(e\) \{[\s\S]{0,400}this\._ttSettled = /.test(src.split("settleTimeTheoremReward() {")[1]?.slice(0, 2000) || ""));
   check("发奖走累计购买次数对账（覆盖手动/自动/单次/批量）",
     src.includes("settleTimeTheoremReward()") && src.includes("TimeTheorems.totalPurchased()"));
   check("补发走原版货币 API Currency.timeTheorems.add",
@@ -309,7 +325,7 @@ try {
     && src.includes("if (totalNum < this._ttSettled)"));
   check("补发异常不静默（走 _err）",
     src.includes('this._err("settleTimeTheoremReward", e)'));
-  check("每帧接入 tick", src.includes("const ttReward = this.settleTimeTheoremReward();"));
+  check("每帧接入 tick", src.split("tick() {")[1]?.includes("this.settleTimeTheoremReward();") === true);
 
   // 行为验证：用假 TimeTheorems/Currency 跑真实方法体
   const A2 = A;
@@ -319,7 +335,7 @@ try {
   try {
     let total = 3;
     let added = 0;
-    globalThis.TimeTheorems = { totalPurchased: () => ({ toNumber: () => total }) };
+    globalThis.TimeTheorems = { totalPurchased: () => total }; // 真实实现返回原生 number
     globalThis.Currency = { timeTheorems: { add: (d) => { added += d.v; } } };
     globalThis.Decimal = class { constructor(v) { this.v = v; } };
 
@@ -340,6 +356,25 @@ try {
     globalThis.Currency = savedCur;
     globalThis.Decimal = savedDecimal;
     A2._ttSettled = null;
+  }
+}
+
+// ---------------- ⑫ R96：EP 预留时序与真实布尔（审查 P1） ----------------
+{
+  const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
+  check("TD1 未买时只播种 TD1（不做 8 层轮转）",
+    src.includes("const needsFirstSeed = !firstTd.bought;")
+    && src.includes("bought = buyMaxTimeDimension(1, 0.5) === true;"));
+  check("TD1 已买后必须先过预留闸门",
+    src.includes("if (!needsFirstSeed && !this.isEternityPointsBeyondReserve()) return false;"));
+  check("不再无条件置 bought=true（只认真实返回值）",
+    !src.includes("buyMaxTimeDimension(tier, 0.5);\n        bought = true;")
+    && src.includes("if (buyMaxTimeDimension(tier, 0.5) === true) bought = true;"));
+  {
+    const tickBody = src.split("tick() {")[1]?.split("this._frame++;")[0] || "";
+    check("tick 顺序：先买永恒升级，再买时间维度",
+      tickBody.indexOf("this.buyEternityUpgrades()") >= 0
+      && tickBody.indexOf("this.buyEternityUpgrades()") < tickBody.indexOf("this.buyTimeDimensions()"));
   }
 }
 
