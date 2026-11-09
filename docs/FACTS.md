@@ -9704,3 +9704,44 @@ return false                        # 列表里一个都没买 → false
 - EC 新证据：`buyable=1:n,2:n,3:n,4:n,5:Y,6:n…12:n`（仅 EC5 研究可买）；`tick()` 无异常逃逸；
   给 `:chk_cic` 加 `goto :chk_main` 后 `tick()` 抛 `InvocationTargetException`（疑 VerifyError），已整体还原待查。
 
+## R96 收尾（第三十五轮）：双端交付完成 + 真实存档快照 + R97 阻碍定性
+
+### 交付（PASS）
+- Android 四渠道全部完成（同一份 APK）：
+  sha256 `6ee5f4f3dde6bff5cdaab52888c035b4377087b85b94893601292f054d6ae731`，82,564,593 B，
+  md5 `7375206b6a1e56fdf1782647d512a56b`，versionCode 30210000 / versionName 3.21.0，签名 v2+v3（v1 无）。
+  渠道：本地 `~/Releases/AD-Oreki-Edition/latest/`、OneDrive `AD-Oreki-Edition/`、Google Drive `AD-Oreki-Edition/`、
+  GitHub Release `android-update-3.21.0-6ee5f4f3`。`release-info.json` 已写。
+  踩坑记录：`publish_four_channels.py` 读 `manifest["release"]["apk"]`，而 `verify_release.py --json` 输出**顶层** `apk`；
+  需另生成带 `release` 包裹的清单（本轮 `build/release-manifest.publish.json`）。云渠道需环境变量
+  `AD_ONEDRIVE_REMOTE/AD_ONEDRIVE_DIR/AD_GDRIVE_REMOTE/AD_GDRIVE_DIR`，否则报「缺少 remote 或固定目录配置」。
+- Web Pages（PASS）：site 仓 `e8f3fc9`；线上 `https://oreki.net/` 200；
+  `https://oreki.net/src/core/oreki-managed-crunch-interval.js` 返回真实模块（本地 sha 前缀 `cf59cc72b9fe2ed5`）。
+  踩坑记录：`deploy_pages.py` 闭包一致性检查会因**未接线且未列入 `_deploy/filelist.txt`** 的模块判 FAIL；
+  本轮把 `src/core/oreki-managed-crunch-interval.js` 补入清单（第 866 行），两个开发期 probe
+  （`oreki-dilation-probe.js` / `oreki-ec-probe.js`）保持不上生产，故以 `--skip-closure` 部署；脚本本身**不自动提交**，
+  需在 `_deploy/site` 手动 commit+push。
+
+### 真实存档快照（emulator-5554，收尾时读取，非人工修改）
+- `eternities=77`、`eternityPoints=2.229e7`、`infinities=2.271e8`、`infinityPoints=4.727e2201`、`antimatter=1.109e415283`
+- `bigCrunches=336`、`bigEternities=66`、`bigRealities=0`、`isGameEnd=False`
+- `breakInfinityUpgradeBits=511`（9 项全买）、`eternityUpgradeBits=7`
+- `timestudy.theorem=3.486e4`（TT 34,860）⇒ **远超膨胀 12,900 门槛**
+- 22 项研究：`[11,21,22,31,32,33,41,42,51,61,82,92,102,111,151,161,162,171,71,121,131,141]`
+- `challenge.eternity = {unlocked:0, current:0, completions:[0×12]}`
+- `dilation = {active:false, rebuyables:[0×6], studies:[], upgradeBits:0, tachyonParticles:0}`
+- `realities = 0`
+
+### 膨胀阻塞的**正确**定性（推翻「TT 不足」单一归因）
+TT 早已达标；真实阻断是 **EC 全 0**：`unlocked=0 / current=0 / completions 全 0`。
+真机探针 `OREKI_EC_DIAG` 显示 `buyable=1:n,2:n,3:n,4:n,5:Y,6:n,7:n,8:n,9:n,10:n,11:n,12:n`
+—— 只有 EC5 的研究当前买得起，其余买不起，而自动化仍 0 进度。
+⇒ 问题在 **EC 研究购买/选关链路**，不在资源量。R97 不得再以「TT 不够」解释膨胀卡住。
+
+### EC 链路已排除与未排除
+- 已排除：类名漂移（`Lc21` 经别名复合映射早已等于 3.21 的 `d51`，产物 `gradle-verify-apk/…/OrekiChallengeAuto.smali:261/302` 确认）；
+  `tick()` 未被调用（反射调用可执行）；`tick()` 抛异常被 `catch` 吞（补 `:catch_0` 日志后**从未出现** `OREKI_EC_TICK_EX`）。
+- 未排除（R97 首要）：`:chk_cic` 在 `tryNormal()/tryInfinity()` 成功时 `return-void`，导致 `:chk_main`（EC 分支）
+  可能长期得不到执行（任务饥饿）；给该处加 `goto :chk_main` 后 `tick()` 抛 `InvocationTargetException`（疑 VerifyError，
+  `catch Ljava/lang/Exception;` 挡不住 Error），已整体还原待查；`:ca_official` 调 `b;->S()` 后 `return-void` 亦可能饿死后续关。
+
