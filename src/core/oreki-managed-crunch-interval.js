@@ -156,12 +156,16 @@ export class OrekiManagedCrunchInterval {
    *   不允许坍缩 → 永恒层等待用 30 秒、其余用 1 小时硬暂停；
    *   允许坍缩   → Break 前 60 秒收割、Break 后 5 秒下限。
    */
-  static applyFromPolicy() {
-    let decision;
-    try {
-      decision = OrekiCrunchPolicy.decide();
-    } catch (e) {
-      return false;
+  static applyFromPolicy(decision = null) {
+    // [R97] 允许调用方传入本帧**唯一**一次 `OrekiCrunchPolicy.decide()` 的结果：
+    // `decide()` 内部会推进坍缩等待计时（`waitStartedAt` / `lastEternityCycleAt`），
+    // 同一帧重复调用可能得出不同结论，造成 R96 已记录的 resume/pause 互相覆盖。
+    if (!decision) {
+      try {
+        decision = OrekiCrunchPolicy.decide();
+      } catch (e) {
+        return false;
+      }
     }
     if (!decision) return false;
     if (!decision.allow) {

@@ -5,6 +5,8 @@ import { ElectronRuntime, SteamRuntime } from "./steam/index.js";
 import { DC } from "./core/constants.js";
 import { tryInstantCompleteChallenges } from "./core/oreki-instant-challenges.js";
 import { OrekiManagedCrunchInterval } from "./core/oreki-managed-crunch-interval.js";
+import { OrekiCrunchPolicy } from "./core/oreki-crunch-policy.js";
+import * as OrekiManagedAutobuyerState from "./core/oreki-managed-autobuyer-state.js";
 import { tryBuyBreakInfinityUpgrades } from "./core/oreki-autobuy-break-infinity.js";
 import { OrekiBreakInfinityGate } from "./core/oreki-break-infinity-gate.js";
 import { OrekiEarlyAutomation } from "./core/oreki-early-automation.js";
@@ -1084,10 +1086,30 @@ export function gameLoop(passDiff, options = {}) {
   // 归属 §80.2 / §81：这是目标驱动型智能自动购买器的受管参数，必须独立于
   // MOD 全局 1～60 秒行动节拍；原版 `Autobuyers.tick()` 仍按自身间隔自行购买/坍缩。
   // 每帧调用一次即可：内部读实际值、相等不写、玩家手改则让路并在下一策略 tick 恢复。
+  //
+  // ── [R97] 受托管原版自动器「启用状态」统一管理（同样**不**进 runCycle）───────────
+  // 与受管间隔同属目标驱动型智能自动购买器的配置优化路径：每帧读真实 isActive，
+  // 玩家刚关只登记、下一策略 tick 恢复一次；两个总开关任一关闭即整体不接管。
+  // `OrekiCrunchPolicy.decide()` 内部会推进等待计时，**本帧只算一次**并同时喂给
+  // 受管间隔与受管启用状态，避免 R96 已记录的 same-tick resume/pause 互相覆盖。
+  let orekiCrunchDecision = null;
   try {
-    OrekiManagedCrunchInterval.applyFromPolicy();
+    orekiCrunchDecision = OrekiCrunchPolicy.decide();
+  } catch (e) {
+    orekiCrunchDecision = null;
+  }
+  try {
+    OrekiManagedCrunchInterval.applyFromPolicy(orekiCrunchDecision);
   } catch (e) {
     // 不能让配置优化异常打断主循环
+  }
+  try {
+    OrekiManagedAutobuyerState.applyAll({
+      wantCrunch: orekiCrunchDecision ? orekiCrunchDecision.allow === true : false,
+      autobuyers: Autobuyer,
+    });
+  } catch (e) {
+    // 同上：自动器启用状态维护失败时保持原状，不影响主循环
   }
 
   OrekiSmartExecutor.setPriorityHint(shouldPrioritizeEarlyForId1() ? "early" : "");
