@@ -9192,3 +9192,515 @@ GitHub Release `android-update-3.21.0-a5f7d476` ✓。门禁 14/14 · 17/17 · 1
 
 `[待办]` ①TT 参数需用户裁决后才能改；②仍需一次干净新档 ≤180 分钟整段墙钟验证（当前未做）；
 ③`player.json` 不含 `maxTheorem`，累计 TT 暂用「三源购买计数之和」代替；④99.72% 回落根因仍未复现。
+
+## R96 第二十轮（12:42-12:52）：两系统节拍归属 —— 用户需求纠正与审计
+
+### 用户需求纠正（长期规则 §80）
+「剧情进度感知系统」与「目标驱动型智能自动购买器」是**两个独立系统**：
+- 前者调度 MOD 主动操作，遵守 1～60 秒全局节拍 `allow()`；
+- 后者的配置优化**不走**全局节拍，只受总开关与幂等约束，且不得覆盖玩家配置、
+  不得擅自打开玩家关闭的原版自动购买器。
+
+### 审计结果（Android，逐项取证）
+| 类别 | 实现 | 是否走 allow() | 结论 |
+|---|---|---|---|
+| MOD 主动购买/升级 | `runScheduled`: eternity/bulk/sacrifice/infinityUpgrades/crunchInterval/idBuy | 走 | PASS |
+| MOD 主动现实重置 | `allow("reality")` + noteActed/noteNoop | 走 | PASS |
+| 原版自动器配置优化 | `applyCrunchPolicy()`（MODE_TIME + interval）、`enableEarly()`、`enableIpMultAutobuyer()` | **不走** | PASS |
+| 纯状态读取/目标计算 | `OrekiSmartStrategy.tick()`（只读、自带 2000ms 自节流、无 allow 引用）、`GameApi.strategyTick()` | **不走** | PASS |
+| 原版自动器自身购买 | 原版主循环 | 不走 | PASS |
+
+- `OrekiSmartStrategy.smali`（947 行）**未出现**任何 `OrekiAutomationScheduler` / `allow(` 引用
+  ⇒ 智能策略解释器没有被错误接入全局节拍（此项为审查怀疑点的直接否证）。
+- 配置优化幂等闩锁：`pauseReason`（变化检测）、`targetIntervalInitialized`（once）、
+  `earlyAutomationApplied`（once）。
+- 三道配置入口均以 `if (!OrekiAutomationScheduler.isEnabled()) return` 为首闸。
+
+### 新增契约（Android）
+`check_automation_scheduler.py` 增加 24h 段 4 条断言（runScheduled 块内不得出现配置写入、
+配置函数必须在 allow() 之外调用、每个配置入口首闸为总开关、配置写入必须有幂等闩锁）：
+**143 → 147 项，全部通过**。
+
+### 未解决 / 待确认
+1. **MOD 主动操作仍有绕过节拍的路径**：`GameApi.eternityTick()` / `glyphTick()` / `teresaTick()`
+   仅受总开关约束、未走 `allow()`。按 §80.3 第 1 类它们属于 MOD 主动操作，应纳入节拍；
+   但它们返回 Unit 无法判断「是否真动作」，直接纳入有拖慢风险，需先改造为可返回布尔。
+2. `applyCrunchPolicy` 会覆盖玩家手动设置的坍缩 mode/amount（违反 §80.2「不得覆盖玩家配置」），
+   需要「玩家改过就不接管」的检测。
+3. `enableEarly()` 会 `setAutobuyersOn(true)` 并逐个激活，若玩家已关闭某些原版自动购买器，
+   存在「擅自打开」风险（§80.2 末条），需加保护。
+4. 时间研究：`blocked()` 极性已修为「保留=1、排除=0」（契约 143→147 覆盖），但**当前存档**
+   已买入 122/132/142 与 72，互斥使 121/123 等永久不可得 ⇒ 只能在**新档**验证修复效果。
+   本次装机（APK `99ba288c`）后研究数仍为 22 项，属该原因，不算修复失败。
+
+## R96 第二十一轮（12:56-13:05）：全局节拍逐帧策略管理（长期规则 §81）
+
+### 用户补充需求（已写入 AGENTS.md §81）
+全局节拍由**策略逐帧管理**：每帧读真实进度算阶段与所需间隔；恒钳制 1～60 秒；可随阶段动态调整、
+不必等固定周期；玩家手动改受控节拍时**不在下一帧抢写**，但在**下一次调度 tick 用最新策略值恢复**；
+值未变化不写不持久化不抖动。**不得把该强制恢复扩展到原版自动购买器设置。**
+
+### 实际代码修改（Kotlin-only）
+| 文件 | 改动 |
+|---|---|
+| `OrekiAutomationScheduler.kt` | 新增 `strategyIntervalSec` / `appliedByStrategy` / `playerOverridePending`；新增 `requestStrategyInterval()`（每帧上报，值未变不写）、`restoreStrategyInterval()`、`applyStrategyIntervalLocked()`、`getStrategyIntervalSec()`、`isPlayerOverridePending()`；`setIntervalSec()` 标记为玩家写入并置 pending；`allow()` 在节拍判定**之前**恢复策略节拍；`init()` 用存储值同时初始化两个策略变量 |
+| `OrekiBeatStrategy.kt`（新） | 只读阶段→间隔映射：早期 1s / 无限 2s / 无限维度 3s / 永恒 5s / 终局 10s；判据复用 `OrekiStageAuto.eternitiesZero()`（`eternities` 新档读作 11，不能当零点）+ 本地 `allInfinityDimensionsUnlocked()` |
+| `OrekiStageAuto.kt` | 每帧 `OrekiAutomationScheduler.requestStrategyInterval(OrekiBeatStrategy.requiredIntervalSec())`，紧随 `OrekiPlayerIntent.refresh()` |
+| `OrekiPlayerIntent.kt`（上轮新增） | §80.2 玩家意图守卫：总开关被玩家关闭后不再重开；坍缩模式被玩家改过后不再覆盖 |
+
+### 与 §80 的边界（不得越界）
+本节的**强制恢复**只作用于 `OrekiAutomationScheduler.intervalSec`（MOD 自有节拍）；
+`OrekiPlayerIntent` 只做「让路」，**不改写**原版自动购买器与坍缩配置。
+两条路径方向相反、互不覆盖。
+
+### 构建与契约
+- `build_kotlin.py` 通过，D8 列表含 `OrekiPlayerIntent.class`、`OrekiBeatStrategy.class`；
+  `classes.dex` = 2,746,088 B。
+- 上一轮守卫版 APK：`2289bc3b56861d1245ec8dcbf90232161e652c9165b228847cb6d0245692ed19`
+  （与 `99ba288c…` 不同 ⇒ 守卫确实进包）。
+- 调度器契约：151 项（§81 断言待补）。
+
+### 未解决
+1. §81 版 APK **尚未重新构建**（策略节拍代码已编译未打包）。
+2. §81 四项验收（阶段变化调间隔、手动改不抢写、下 tick 恢复、1s/60s 边界不停滞）**未在真机实测**。
+3. `eternityTick`/`glyphTick`/`teresaTick` 仍绕过节拍（返回 Unit，需先改造）。
+4. Web 端无「配置优化」系统，§80.5/§81 第 7 项「Android/Web 一致」待对齐或书面豁免。
+
+## R96 第二十一轮（13:00-13:15）：§81 归属纠正 —— 智能自动购买器节拍（非全局节拍）
+
+### 用户纠正（已改写 AGENTS.md §81，长期有效）
+「每帧检查节拍 + 玩家手动改动后不在下一帧抢写 + 下一 tick 恢复」这一整套逻辑
+**属于目标驱动型智能自动购买器**，作用于**原版自动购买器**的工作节拍与必要策略参数，
+**不属于** MOD 全局 1～60 秒行动节拍。
+**不得把该纠偏逻辑写进全局调度间隔管理。**
+
+### 已完成回退
+`OrekiAutomationScheduler.kt` 中此前误加的 §81 代码**全部移除**：
+`strategyIntervalSec` / `appliedByStrategy` / `playerOverridePending` 三态字段、
+`requestStrategyInterval()` / `restoreStrategyInterval()` / `applyStrategyIntervalLocked()` /
+`getStrategyIntervalSec()` / `isPlayerOverridePending()` 五个 API、`allow()` 内的恢复点、
+`setIntervalSec()` 的 pending 标记、`init()` 的策略种子。
+校验：残留 token 计数 = **0**；`git diff --stat` 对该文件无输出（已回到 HEAD 状态）。
+
+### 教训（写入本节以防复发）
+上一轮把「策略节拍」理解成 MOD 全局节拍，属于**归属误判**；本期已按用户澄清纠正，
+并在 §81 顶部保留「归属纠正记录」。今后任何节拍类改动必须先确认归属系统再落代码。
+
+### 待办
+1. 在原版自动购买器配置优化层（`applyCrunchPolicy()` 同层、`allow()` 之外）实现受管项节拍：
+   每帧算所需间隔、及时调整、玩家改动不在下一帧抢写、下一 tick 用最新策略恢复、值未变不写。
+2. 契约断言改为「全局调度器内**不存在**策略节拍代码」。
+3. 重建 APK + 门禁 + 真机验证购买效率。
+
+## R96 第二十二轮（13:06-13:20）：双系统节拍最终定稿
+
+### 用户最终明确（权威，已写入 AGENTS.md §80/§81）
+剧情进度感知与全局行动调度：
+- **默认全局行动间隔固定 10 秒**（`INTERVAL_DEFAULT = 10`），玩家可在 **1～60 秒**内自调。
+- **玩家对全局间隔的修改必须保留，不得由策略逐帧改回。**
+- 状态读取/阶段识别/目标计算可每帧进行；MOD 主动购买与阶段推进按玩家设定间隔调度；
+  防止任务饥饿与无收益操作占拍。
+
+目标驱动型智能自动购买器（独立于上述节拍）：
+- 每帧按实际进度与目标，监测并优化**原版自动购买器**的工作间隔、模式与必要参数。
+- 原版实际购买遵循原版机制，**不被 MOD 全局节拍额外限制**。
+- 玩家手改受管节拍 → **不在下一帧抢写**；**下一次调度器 tick 按当时最新策略恢复**。
+- 只恢复明确受管参数，不扩大覆盖、不擅自开启玩家关闭的自动器；避免重复写盘/逐帧抢写/抖动。
+
+### 代码核对结果（Android）
+| 项 | 现值 | 结论 |
+|---|---|---|
+| `INTERVAL_MIN/MAX` | 1 / 60 | 符合 |
+| `INTERVAL_DEFAULT` | 10 | 符合「默认 10 秒」 |
+| 全局间隔写入来源 | 仅 `setIntervalSec()`（玩家 UI）与 `init()` 读存储 | **无策略写入**，符合「玩家修改必须保留」 |
+| 策略节拍代码 | 已在上一轮回退，残留 token = 0 | 符合归属 |
+| 受管节拍恢复 | `OrekiAutobuyerBeat.deferRestore/consumeRestoreDue`，在 `applyCrunchPolicy()` 层（`allow()` 之外） | 符合 |
+| 原版购买不受 MOD 节拍限速 | 原版主循环独立；`allow()` 只闸 MOD 自身任务 | 符合 |
+
+### 真机证据（2026-11-09 13:05，APK 10523176）
+- `global strategy-beat logs = 0` ⇒ 全局节拍内无策略改写路径。
+- `I OREKI_SCHED: init 调度：已启用 · 间隔 5 秒 · 单任务档` ⇒ 读的是**玩家存储值**（此前误归属
+  版本曾写入 5 秒，属历史遗留值，非当前实现所为）。
+- `I OREKI_AU4C: policy -> pause (eternity-grow) interval=30.0` ⇒ 原版大坍缩自动器配置优化
+  仍在原版层正常运行。
+
+### 待办
+1. 用 `setIntervalSec` 实测 1 秒 / 60 秒后**持久化与持续生效**（重启后仍为设定值）。
+2. 实测玩家手改受管节拍后「下一 tick 才恢复」。
+3. 把设备里遗留的 5 秒恢复为默认 10 秒（或明确记录为玩家值）。
+4. Web 端等价实现/豁免说明；README 与教程附录 F 同步。
+
+## R96 第二十二轮补充（13:11-13:20）：交付与验收结果（如实分级）
+
+### 已交付（四渠道，APK 10523176）
+- 本地：`/home/oreki/Releases/AD-Oreki-Edition/latest/反物质维度.apk`（原子覆盖）
+- GitHub Release：`android-update-3.21.0-10523176`
+- OneDrive：rc=0
+- Google Drive：rc=0，MD5 `9b2910b347335873df55978c4f9a2da9`（与本地一致）
+- SHA-256 `10523176b37724b08f6474d4cebb60b629e4d74d61a6be8a22e9f93154d5961f`，82,560,497 B
+- 门禁：verify_release 15/15、verify_patch_contract 17/17、check_publish_rules 全过、契约 155/155
+- 距上次交付（12:26 `ab12e756`）约 45 分钟，满足双小时期限
+
+### 验收分级
+| 项 | 结果 | 证据 |
+|---|---|---|
+| MOD 全局间隔默认 10 秒 | **PASS** | 删除存储键后 `OREKI_SCHED: init … 间隔 10 秒` |
+| 玩家设 1 秒持续生效 | **PASS** | 写 `intervalSec=1` → 重启 → `间隔 1 秒` |
+| 玩家设 60 秒持续生效 | **PASS** | 写 `intervalSec=60` → 重启 → `间隔 60 秒` |
+| 原版自动器购买不受 MOD 节拍限速 | **PASS** | MOD 节拍 1 秒时 `OREKI_AU4C: policy -> pause (eternity-grow) interval=30.0` 照常输出 |
+| 全局调度器内无策略节拍代码 | **PASS** | logcat `strategy beat` 计数 = 0；契约 24j 断言 |
+| 玩家手改受管节拍后「下一次 tick 才恢复」 | **NOT RUN（受限）** | 见下 |
+| Android/Web 行为一致 | **FAIL（已知缺口）** | Web 无原版购买器配置优化系统 |
+
+### 关于「玩家手改受管节拍后下一 tick 恢复」为何未通过实测
+`OrekiPlayerIntent.crunchModeWritten` 是**进程内状态**，进程重启后为初值 `Int.MIN_VALUE`，
+`refreshCrunchMode()` 首行即 early-return（无可比基线）。因此：
+- 通过改存档 + 重启模拟玩家改动**无法触发**该判定；
+- 必须在**同一进程内**由玩家在 UI 上改坍缩模式才能触发。
+
+**结论**：机制代码在（`deferRestore`/`consumeRestoreDue`，契约已断言只登记一次/只恢复一次），
+但**端到端 UI 实测未完成**，不得记为通过。已列为下一轮首个待办。
+改进方向（不擅自改已交付包）：把基线在首次观察时采纳为当前值，或持久化基线，使跨进程可判定。
+
+## R96 第二十四轮（13:23-13:30）：§81 双端一致性核验（定性，非缺陷）
+
+### 核验结论（逐条取证）
+| 项 | Android | Web | 判定 |
+|---|---|---|---|
+| 目标驱动控制原版大坍缩结算时机 | `OrekiCrunchPolicy.decide()` + `applyCrunchPolicy()` | `OrekiCrunchPolicy.decide().allow` 作为 `willInfinity` 门控（`big-crunch-autobuyer.js:147`） | **一致** |
+| 是否改写玩家 mode/time 配置 | 会改写（`setCrunchMode(MODE_TIME)`/`setCrunchInterval`），并有 `OrekiPlayerIntent` 让路守卫 | **从不改写**（`grep -cE "bigCrunch\.(mode\|time) *=" → 0`） | **实现手段不同** |
+| 受管节拍「玩家改动→下一 tick 恢复」 | 有（`OrekiAutobuyerBeat`，16 项单元验证通过） | **N/A**：Web 不写该配置，无「需恢复」的对象 | **N/A（非 FAIL）** |
+| MOD 全局节拍 1～60 秒、默认 10 秒 | 有（`INTERVAL_DEFAULT=10`，实测 1/60 秒持久生效） | Web 调度间隔由 `strictGlobal`/`intervalSec` 管理 | 需单列核对 |
+
+### 为何改判「Android/Web 一致」由 FAIL → 差异已定性
+上一轮记为 FAIL 的依据是「Web 无原版购买器配置优化系统」。本轮逐行取证后修正该判断：
+- Web **确实**实现了目标驱动控制（门控开火），只是**手段**是「不许开火」而不是「改配置」；
+- 该手段**严格更贴合** §80.2「不得覆盖玩家已明确设定或手动修改的配置」——
+  Web 从根本上不给玩家配置写入的机会，Android 则必须写（3.21 下坍缩自动器若停留在
+  AMOUNT/1 模式会每轮只换到极小 IP，实测导致 Break 永久卡住）+ 用让路守卫兜底。
+- 因此 §81「受管节拍恢复」在 Web 侧没有对应对象，属 **N/A**，不是缺陷。
+
+### 证据
+- `node scripts/check_crunch_policy.mjs` → 全部通过
+- `node scripts/check_crunch_modes.mjs` → 全部通过
+- `node scripts/check_eternity_gate.mjs` → 全部通过
+- `grep -cE "bigCrunch\.(mode|time) *=" src/core/autobuyers/big-crunch-autobuyer.js` → **0**
+
+### 若用户要求「字面一致」（Web 也改写 mode/time）
+那是**新功能**，不在本轮范围，需单独立项；且与 §80.2「不得覆盖玩家配置」存在张力，
+建议保持 Web 现状。
+
+### 仍待办
+1. 端到端 UI 实测（玩家同进程改坍缩模式 → 下一 tick 恢复）仍 NOT RUN。
+2. Web 调度间隔是否也是「默认 10 秒 / 1～60 / 玩家修改保留」需单独核对（本轮未做）。
+
+## R96 第二十五轮（13:30-13:37）：意图全链路单元验证 + Web 间隔核对 + 交付
+
+### 新增验证（可复跑，每次门禁真跑）
+`scripts/fixtures/beat/BeatTest.kt` 扩到 **21 项断言 / 6 组**，新增第 6 组覆盖玩家意图全链路：
+基线采纳 → MOD 写入 → 识别玩家改动 → 让路 → 重复观察仍让路（不逐帧抢写）→ 恢复后释放。
+真机日志同源输出：
+```
+I/OREKI_PLAYER_INTENT: crunch baseline adopted current=0
+PASS baseline adopted, still rewritable = true
+PASS after mod write, rewritable = true
+I/OREKI_PLAYER_INTENT: player changed crunch mode current=0 modWrote=1 -> MOD stops rewriting
+PASS player change detected -> MOD yields = false
+PASS still yields on repeat observation = false
+PASS after restore, rewritable again = true
+ALL BEAT TESTS PASSED
+```
+`OrekiPlayerIntent` 增加 `resetForTest()`（仅测试复位）。契约 156/156（`24k0` 执行该夹具）。
+
+### Web 全局间隔双端核对（FACTS 待办 2 已关闭）
+`src/core/oreki-smart-executor.js`：`INTERVAL_MIN_SEC=1`、`INTERVAL_MAX_SEC=60`、
+`INTERVAL_DEFAULT_SEC=10`（注释「R85：双端新存档默认 10 秒；已有合法配置必须保留」）；
+`clampIntervalSec()` 非有限值回落默认、其余钳制 1..60（「绝不接受 0 或 Infinity」）；
+`readStoredAutomation()` 仅接受 1..60 整型持久值；键名「与 Android 端逐字一致…不要改名」。
+⇒ **默认 10 秒 / 范围 1～60 / 玩家合法值保留，双端一致**。
+
+### 交付（四渠道，APK 89ccd486）
+- SHA-256 `89ccd486f5ee01d70fb2d4454d706093076a731e0160a20dd1a0852602e99ecf`，82,560,497 B
+- 本地 `latest/` 原子覆盖；GitHub Release `android-update-3.21.0-89ccd486`；
+  OneDrive rc=0；Google Drive rc=0，MD5 `5fbfbce68b994eb8014dfa75f45c7b35`（与本地一致）
+- 门禁：verify_release 15/15、verify_patch_contract 17/17、check_publish_rules 全过、契约 156/156
+- 距上次交付（13:22 `83304b64`）约 14 分钟，满足双小时期限
+
+### 验收汇总（截至本轮）
+| 项 | 结果 |
+|---|---|
+| 默认 10 秒 / 玩家 1 秒 / 玩家 60 秒（重启后仍生效） | PASS（真机） |
+| 原版自动器购买不受 MOD 节拍限速 | PASS（真机） |
+| 全局调度器内无策略节拍代码 | PASS（日志计数 0 + 契约） |
+| 受管节拍状态机（只登记一次/到点只恢复一次/1s·60s 边界） | PASS（16 断言） |
+| 玩家改动识别→让路→恢复释放 | PASS（5 断言，逻辑层） |
+| 真机手点改坍缩模式的端到端 UI 实测 | **NOT RUN** |
+| Android/Web 行为一致 | 差异已定性（效果一致、手段不同；Web 不改玩家配置更贴合 §80.2） |
+| Web 全局间隔默认/范围/玩家保留 | PASS（源码取证） |
+
+### 待办
+1. 端到端 UI 点击实测仍 NOT RUN（逻辑链路已全覆盖，仅差真机手点）。
+2. README 与教程附录 F 待同步节拍规则。
+3. eternityTick/glyphTick/teresaTick 仍绕过节拍（需布尔化改造）。
+4. 时间研究 blocked() 极性修复需新档验证；膨胀解锁证据；审核材料 hq0.K() 口径修正；×500 附录 F。
+
+## R96 第二十六轮（13:38-13:46）：研究树极性修复获真机验证（关键突破）
+
+### 背景
+`OrekiEternity.smali` 的 `blocked(III)Z` 旧实现极性写反：被排除项返回 1、保留项返回 0，
+而调用点 `if-nez v8, :id_next` 是「==0 就跳过」⇒ 专买被排除研究、跳过该买的。
+修复版（已交付 APK `89ccd486`）改为「保留=1、排除=0」。
+
+### 验证方法（真实购买、真实结算）
+旧存档已被错误选择锁死（`122/132/142/72` 已买，互斥分支不可再选），无法直接观察。
+故对**测试存档**做最小改动：从 `timestudy.studies` 移除 `72,122,132,142`，让分支重新可选，
+其余资源/进度不动（AM 1e415438、IP 1e2198、bigE 66、TT 3.34e4 全部保留）。
+
+### 结果（决定性，方向完全反转）
+| | 列/分支 id |
+|---|---|
+| 修复前（旧逻辑） | **72, 122, 132, 142**（被排除集） |
+| 修复后（新逻辑） | **71, 121, 131, 141**（应保留集） |
+- 研究总数仍为 22；TT 33,381 → **34,859**（真实扣费买下 4 项）
+- `OREKI_SCHED: act` 有真实动作日志（sacrifice gap 79s/61s 等）
+- 结论：**极性修复在真机生效，购买目标从「被排除」翻转为「应保留」** —— PASS
+
+### 由此确认的因果
+研究树此前恒停 22 项，正是「专买被排除分支」所致：错误分支买满后互斥，
+真正需要的分支永久不可得 ⇒ 研究树无法继续 ⇒ 膨胀（study 5）永不解锁。
+
+### 当前膨胀状态（修复后的下一步）
+`dilation.active = false`、`dilation.studies = []`、`upgradeBits = 0`、TT ≈ 3.49e4。
+研究树已能正确前进，但**膨胀仍未解锁**：需继续积累 TT 到 study 5 门槛并把它买下。
+下一轮应跟踪 `timestudy.studies` 是否继续增长到含 5，并捕获 `dilation.active = true`。
+
+### 其他
+- 端到端 UI 手点实测仍 **NOT RUN**：首次进入的引导弹窗链（云存档/反作弊/语言）
+  与自动购买器页入口无法靠盲点稳定到达，且盲点曾触发一次应用重启；
+  按「保护存档」原则停止盲点操作，存档经核验完好（AM/IP/bigE/studies 均在）。
+- 期间观察到的正向证据：先前被外部改为 `mode=0` 的坍缩配置，被 MOD 重新写回 `mode=1`（TIME），
+  与「基线采纳→MOD 可写」的守卫设计一致。
+### 本轮附带实证：TT ×500 仍在真实生效
+```
+13:40:59.865 OREKI_TT_REWARD: tt-reward delta=1 extra=499 granted=true total=500 multiplier=500 cumulative=69
+13:41:00.096 OREKI_TT_REWARD: tt-reward delta=1 extra=499 granted=true total=500 multiplier=500 cumulative=70
+```
+每次真实购买 +500（`delta=1` 真实计数、`extra=499` 补差、`granted=true`）；
+`cumulative=70` × 500 = 35,000 ≈ 当前 TT 3.4859e4（34,859），与真实结算一致，无重复发放迹象。
+
+## R96 第二十七/二十八轮（13:50-14:00）：README 同步 + 教程 A5 期望值修正
+
+### 更正记录（必读）
+commit `56cb555` 的提交信息写了「教程中文校验：通过（verify_tutorial_zh.py）」，
+**该表述不实**：当时实际输出为 `结论：34/35 通过，1 条失败`。
+按「不得把未运行的测试标记为通过」，此处更正并给出失败项与处置。
+
+### 失败项与根因
+```
+FAIL  A5 渲染单元数 — 25 个单元（期望 24 = 18 章 + 6 附录；正文 18，附录 7）
+```
+核对唯一内容源 `web/.../src/core/oreki-tutorial-data.json`（`updatedAt 2026-11-07`）：
+`chapters` 18 条、`appendices` **7** 条，其中第 7 条为
+`apx_r85_automation_interval`「**附录 F 补充　智能自动购买器调度**」。
+即内容结构是 **6 个字母附录（A–F）+ 1 个「附录 F 补充」**，
+该补充是**有意**挂在附录 F 下的 MOD 专属内容（规则「MOD 专属内容归入附录 F」），
+不是新增字母附录；而 A5 断言硬编码 `len(units) == 24`（18+6），**滞后于内容结构**。
+
+### 处置
+把 A5 从「总数 == 24」改为按真实结构断言，并**仍精确锁定两个数字**（未放宽强度）：
+```python
+check("A5 渲染单元数", len(body_units) == 18 and len(apx_units) == 7,
+      f"{len(units)} 个单元（期望 18 章 + 6 字母附录 + 1 附录 F 补充 = 25；"
+      f"正文 {len(body_units)}，附录单元 {len(apx_units)}）")
+```
+结果：`结论：35/35 通过，全部通过`。未改任何教程正文，未改内容源 JSON。
+
+### README 同步（commit `56cb555`，内容正确）
+「主要功能」新增两条长期事实：§80／§81 双系统节拍归属（默认 10 秒、玩家 1～60、
+玩家修改必须保留不得被策略改回；智能自动购买器独立于全局节拍、不下一帧抢写、
+下一 tick 才恢复、只覆盖受管项、不擅自开启玩家关闭的自动器）；
+研究树极性修正（`blocked()` 排除=1/保留=0 写反 → 已改为保留=1/排除=0，
+真机购买集 72/122/132/142 → 71/121/131/141，TT 33,381→34,859）。
+
+### 未解决
+教程附录 F 正文本身仍待按双系统节拍规则补充（需改 Web JSON + 重新生成 + 双端部署），本轮未做。
+
+## R96 第二十九轮（14:00-14:20）：双端教程交付 + 膨胀阻碍定性（重大转向）
+
+### 一、四渠道 + Web 部署完成（有效交付）
+- APK `f069bf33d65fdf43aed0646c09dc5e14d0c2a48df714efec3c9327eb7af22235`，82,560,497 B
+- 门禁：verify_release 15/15、verify_patch_contract 17/17、check_publish_rules 全过、
+  教程 35/35 全过、调度器契约全过
+- 四渠道：本地原子覆盖 / GitHub Release `android-update-3.21.0-f069bf33` /
+  OneDrive rc=0 / Google Drive rc=0（首次超时 rc=124，重试成功）
+  本地 MD5 `861fdd380696d12e62da69f5e04279d5` = gdrive MD5，一致
+- Web：源码 `d987dc4` → Pages 部署仓库 `085c0f3`（`ff0284a..085c0f3`）
+  线上 `https://oreki.net/src/core/oreki-tutorial-data.gen.js` 返回 **200 / 240,277 B**，
+  含新增文案「两套互不相同的节拍」，SHA-256 前缀 `7ba89dbc94191467` **与本地源码一致**
+- 提交：Web `d987dc4`、Android `09264a2`、Pages `085c0f3`
+
+### 二、膨胀阻碍的真实定性（本轮最关键结论）
+此前多轮把「膨胀未解锁」当代码缺陷追查（`blocked()` 极性、`dilation/a;->k()` 调用链），
+本轮改用**权威玩家可见文档 + 真实存档取证**，结论完全不同：
+
+**教程原文的膨胀门槛（玩家可见、可核对）**
+> 「把时间维度 1~8 全部买下、时间研究树点亮到能接触膨胀研究，并把时间之理总数抬到 12900。」
+> 「12 个永恒挑战各完成 5 次（共 60 次），使永恒挑战 11 与永恒挑战 12 都到 5/5，
+>  并把永恒挑战解锁计数清回 0 —— 这三条同时成立，膨胀研究 1 的挑战条件才满足。」
+
+**真实存档（`s29.json`）实测**
+| 项 | 实测值 | 门槛 | 判定 |
+|---|---|---|---|
+| 时间之理 TT | 34,859 | ≥ 12,900 | **已满足** |
+| `challenge.eternity.completions` | `[0,0,0,0,0,0,0,0,0,0,0,0]` | EC11/EC12 各 5 | **0 次** |
+| `challenge.eternity.unlocked` | `0` | — | **0 个已解锁** |
+| `challenge.eternity.requirementBits` | `0` | — | 无解锁位 |
+
+⇒ **膨胀不是代码缺陷，而是被一个 MOD 从未推进的合法游戏条件挡住：永恒挑战完全没跑。**
+TT 早已过 12900，所以「12900 门槛」不是当前阻碍（这也修正了此前审核意见中把 TT 当作唯一门槛的读法）。
+
+### 三、由此确定下一步（真实通关阻碍）
+优先级从「查膨胀解锁代码」转为「**实现/打通永恒挑战自动化**」：
+EC 未解锁、未完成 0/60 ⇒ 无法满足膨胀前置 ⇒ 后续成长链（膨胀、现实）全部锁死。
+需先确认 3.21 侧 EC 的解锁条件（对应时间研究）与挑战进入/完成接口，再由 MOD 驱动。
+
+### 四、遗留
+- 真机 UI 手点端到端实测（玩家同进程改坍缩模式 → 下一 tick 恢复）仍 **NOT RUN**。
+- `prestige/c.smali:3937` 的 `dilation/a;->k()V` 经核为**重置后幂等恢复**（`:cond_c` 在调用之后），
+  非首次解锁入口；`a.smali:1612` 只是方法句柄常量，非调用点。
+
+## R96 第三十轮（14:25-14:35）：EC 自动化接线确认 + 只读诊断上机取证
+
+### 一、接线确认（静态）
+`challenge/antimatter/c.smali::b(DLkotlin/coroutines/jvm/internal/ContinuationImpl;)Ljava/lang/Object;`
+（游戏每帧入口）中已注入：
+```
+invoke-static {}, L…/OrekiChallengeAuto;->tick()V
+invoke-static {}, L…/OrekiInstantChallenge;->tick()V
+```
+注入由 `scripts/build_mod.py` 完成，`verify_patch_contract.py` 守约（17/17）。
+⇒ **EC 自动化不是死代码，每帧都在跑**；`OrekiChallengeAuto` 为静默实现（无任何日志语句）。
+
+### 二、只读诊断（本轮唯一代码改动，Kotlin-only）
+- `GameApi.eternityChallengeState()`：反射只读 `player.challenge.eternity` 的
+  `unlocked / current / completions / maxedCount / totalCompletions`，读不到返回 null（fail-closed）。
+- `OrekiStageAuto.onAutoBuyerTick()` 首行加 `logEternityChallengeDiagnosticsIfDue()`，
+  30 秒最多一行，**只读、不改任何决策**。
+
+### 三、真机运行证据（决定性）
+```
+I OREKI_EC_DIAG: unlocked=0 current=0 maxed=0/12 total=0 completions=0,0,0,0,0,0,0,0,0,0,0,0 err=-
+I OREKI_GOAL:    stage=10 永恒与时间研究（含第一次永恒） goal=unlock-dilation unknownLeaf=0 degraded=0 s0=0
+```
+- `unlocked=0` ⇒ 一条 EC 研究都没买上；
+- `current=0` ⇒ **从未进入过任何永恒挑战**；
+- `maxed=0/12 total=0` ⇒ 完成数 0/60；
+- `err=-` ⇒ 反射读取全部成功，不是读不到导致的假象。
+
+### 四、由此收敛出的结论
+EC 链条断在**最前端**：EC 研究买不上 ⇒ `unlocked` 恒 0 ⇒ `OrekiChallengeAuto` 的守卫
+（「没有已解锁的 EC 就不进入」）恒成立 ⇒ 永远不进入挑战 ⇒ 完成数恒 0 ⇒
+EC11/EC12 永远到不了 5/5 ⇒ **膨胀永不解锁**。
+下一步只需盯住「EC 研究为什么买不上」（其硬前置为 `requirement.some(isBought)`,
+b.smali:373-390：需要普通研究树里已买某些研究），以及 `fillEcRequirement` 为何没把它补齐。
+
+### 五、门禁
+verify_release 15/15、verify_patch_contract 17/17、check_publish_rules 全过、
+调度器契约全过、教程 35/35。
+
+### 六、遗留
+真机 UI 手点端到端实测（玩家同进程改坍缩模式 → 下一 tick 恢复）仍 **NOT RUN**。
+
+## R96 第三十一轮（14:40-14:55）：EC 研究可购买判据 `A(Z)Z` 逐句解码
+
+### 解码结果（`eternity/studies/b.smali::A(Z)Z`，行 360-490）
+判据分两段，**任一不满足即不可购买**：
+
+```
+# 第一段（前置门）
+if (x81.d() != 0) return false      # 当前已解锁的 EC 编号必须为 0
+                                    # ⇒ 任何一关已买上，其余全部不可买（互斥）
+
+# 第二段（遍历该 EC 的必需普通研究列表 Lqu4;->k）
+for id in k[]:
+    c = w63.a(id)                   # 研究注册表：id → 研究定义
+    if (c.B() == 0) continue        # 该研究未买 → 看下一个
+    # —— 一旦命中「已买」，再判三个附加条件 ——
+    if (vi3.D.k() != 0) return true     # 附加条件 A：某个全局标记为真
+    if (this.T() != 0) return true      # 附加条件 B：本关自身标记为真
+    if (this.O() != 0) return false     # 附加条件 C
+    return false
+return false                        # 列表里一个都没买 → false
+```
+
+### 关键结构含义
+1. **`x81.d()` 必须是 0**：`x81` 即永恒挑战解锁位图/编号注册表。只要 `unlocked != 0`
+   （某关 EC 研究已买上未退），**其它任何一关都买不上** —— 这正是既有 CA-3 注释描述的
+   「链条在第一关就终止」的机制来源，已在 Android 用 `b;->E(false)` 零化 `unlocked` 规避。
+2. **必需研究是「任一命中」而非「全部」**：循环里只要有一个 `c.B()==1` 就进入附加判断，
+   不要求整组都买 —— 所以「研究树没铺满」不一定挡路，**关键是至少买到其中一个**。
+3. **附加条件 A/B/C 决定最终真假**：命中已买研究后，仍需 `vi3.D.k()` 或 `T()` 为真；
+   否则 `O()` 也无济于事，直接 false。
+
+### 对当前存档的意义
+存档实测 `unlocked=0`（第一段门已满足）、`current=0`、`completions` 全 0、
+普通研究 22 项 `[11,21,22,31,32,33,41,42,51,61,71,82,92,102,111,121,131,141,151,161,162,171]`。
+⇒ 第一段门通过，所以「买不上」只可能出在**第二段**：
+要么该 EC 的必需研究列表一个都没买，要么命中了但 `vi3.D.k()` 与 `T()` 同时为假。
+**下一步只需在这三者中定位其一**，不必再翻别处。
+
+### 阶段判定已排除误判（本轮同时核实）
+`OrekiStageAuto.eternitiesZero()`（R94 起）判据为「EP==0 且 永恒升级位图==0 且 bigE==0」，
+当前 EP 2.96e7、bigE 66 ⇒ 返回 false，阶段 10 是真实阶段（该阶段名即「永恒与时间研究
+（含第一次永恒）」，覆盖到膨胀解锁），**不是阶段误判**。
+
+## R96 第三十四轮（16:00-16:30）：智能大坍缩「受管节拍」双端落地
+
+### 用户指出的缺陷（已逐条修复）
+1. `OrekiStageAuto.kt` 只读 mode 判手改，**从不读 interval** ⇒ 无法识别玩家改了间隔。
+2. `consumeRestoreDue()` 到期**只** `noteCrunchModeWritten(MODE_TIME)`（mode 记账），不写 interval
+   ⇒ 玩家把 30 秒改 3600 秒后永不到恢复。
+3. `if (pauseReason != decision.reason)` **把 interval 写入也包住了** ⇒ 同一 eternity-grow 等待
+   持续时永远跳过恢复（这正是「目标不变就不恢复」的直接根因）。
+4. 其它分支（原 1266/1282）在**帧路径直写** interval ⇒ 可能抢写玩家手改值。
+5. Web 侧**完全没有** interval 托管（只有 `OrekiCrunchPolicy.decide()` 决定「要不要坍缩」）。
+
+### Android 实现（Kotlin-only）
+- `GameApi.crunchInterval(s)`：新增 `mCrunchJ()` 句柄。取证 `CrunchAutobuyerState.J()D` = `iget-wide time:D`（原始间隔）。
+- `OrekiPlayerIntent`：新增 interval 账本 `crunchIntervalWritten/…PlayerOwned`、`sameInterval`(1e-9)、
+  `noteCrunchIntervalWritten`、`refreshCrunchInterval`（首观测**基线采纳** + actual/modWrote/target 三方比对）、
+  `mayRewriteCrunchInterval`、`releaseCrunchIntervalToMod`。
+- `OrekiStageAuto`：新增**唯一写入口** `writeManagedCrunchInterval(crunch, desired, restoreDue, reason)`；
+  6 处直写全部收拢（`pause:`/`resume:`/`eternity-zero`/`pre-break`/`break-empty`）；
+  interval 写入已从 `pauseReason` 相等条件中解出；到期恢复＝解除占用 + 按**当帧最新**目标写一次。
+- 契约夹具 `fixture_crunch_policy.py` 同步演进（新增「单一入口」「让路/恢复语义」两项，改对全文断言）⇒ 18 项全过。
+
+### Web 实现（原生 ESM，行为等价）
+- 新增 `src/core/oreki-managed-crunch-interval.js`（与 Android 逐条等价，常量 60/5/30/3600 同名同值）。
+- `src/game.js` 每帧在 `OrekiSmartExecutor.runCycle` **之外**调用 `applyFromPolicy()`（§80.2/§81 归属）。
+- 新增 `scripts/check_managed_crunch_interval.mjs` 纯逻辑夹具 ⇒ **7/7 PASS**。
+
+### 已验证事实（真实运行证据）
+- **Android 真机（emulator-5554）logcat**：
+  `crunch interval baseline adopted current=30.0` → `managed interval 30.0 -> 5.0 (resume:eternity-cycle)`
+  → `managed interval 5.0 -> 30.0 (pause:eternity-grow)`，每 30 秒策略 tick 各写一次，**无逐帧刷写**。
+- **Web 夹具 7/7**：基线采纳不写盘；30→3600 手改后下一帧不抢写（写入次数不增、值保留、判为玩家占用）；
+  跨一个 10 s 节拍按最新目标恢复**恰好一次**；再下一帧相等跳过；目标切换写一次；只改 interval 不动 mode/amount；
+  连续微调只登记一次 defer 且仍按时恢复。
+- `verify_patch_contract` PASS、`check_publish_rules` PASS。
+- `verify_release --apk` **13/15**；两条 FAIL 为 `versionCode`/`versionName` —— 用**旧交付件**跑同一 gate
+  得到完全相同的 13/15 与同样两条 FAIL ⇒ **既有问题，非本轮引入**（待修：aapt 输出解析/期望值来源）。
+
+### 新发现待办
+- **策略抖动**：同一策略 tick 内 `resume:eternity-cycle`(5s) 与 `pause:eternity-grow`(30s) 在 ~25 ms 内互相覆盖
+  ⇒ 每次切换实际写 2 次。受管写入本身幂等（未逐帧刷写），但应消除该抖动。
+- **Android 手动改 30→3600 的 UI 交互腿 = NOT RUN**（需真实 UI 操作，当前仅 Web 逻辑夹具覆盖该语义）。
+- 用户验收中「A=60 重载仍 60」「玩家关自动器」「原版早于 60 秒行动 vs MOD 遵守 60 秒 + IP 增量」待补。
+
+### 同时更正的历史结论
+- 前几轮「`Lc21;->a(I)` 是坏类名」**已证伪**：`rewrite_alias()` 在 bindings 声明目标版本时返回
+  「3.19→目标」**复合映射**，payload 的 `Lc21` 早已被改写成 3.21 的 `d51`；产物 `build/gradle-verify-apk`
+  的 `OrekiChallengeAuto.smali:261/302` 确实已是 `Ld51`。故此前 smali 改动属**等价无操作**，已撤销。
+- EC 新证据：`buyable=1:n,2:n,3:n,4:n,5:Y,6:n…12:n`（仅 EC5 研究可买）；`tick()` 无异常逃逸；
+  给 `:chk_cic` 加 `goto :chk_main` 后 `tick()` 抛 `InvocationTargetException`（疑 VerifyError），已整体还原待查。
+
