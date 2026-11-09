@@ -53,6 +53,19 @@ const STUDY_TICK_INTERVAL = 30;
 const RESERVE_REACHABLE_LOG10 = 2.0;
 
 /**
+ * [R96] MOD 平衡参数「TT 购买收益 ×500」（用户 2026-11-09 正式裁决）。
+ *
+ * 原版每次成功购买给 1 TT；这里按 500 发放，但**成本曲线、购买资格、资源扣费
+ * 与真实购买结算全部沿用原版**。实现方式是对账：
+ *   · 每帧读 `TimeTheorems.totalPurchased()`（= amBought + ipBought + epBought 之和）；
+ *   · 与上一次基线比较，增量 Δ 就是「本帧真实发生的购买次数」；
+ *   · 补发 Δ×(500−1) TT 走原版 `Currency.timeTheorems.add`，随后立刻推进基线。
+ * 这样手动点击、原版自动购买、MOD 自动购买、单次/批量购买**全部覆盖**，
+ * 且同一笔购买不可能被发两次（基线在发奖后立即前进）。
+ */
+const TT_REWARD_MULTIPLIER = 500;
+
+/**
  * 普通时间研究 id 列表：直接从数据库取，不再手写区间。
  *
  * [Oreki R25] 原来手写的是「11~73 + 每组 x01~x03」，漏掉了所有 x04：214 / 224 / 234
@@ -232,6 +245,44 @@ export const OrekiEternityAutomation = {
     } catch (e) {
       this._err("buyTimeTheorems", e);
       return false;
+    }
+  },
+
+  /**
+   * [R96] TT 购买收益 ×500 的唯一发奖点（每帧调用，幂等）。
+   *
+   * 边界：
+   *   · 首次调用只建立基线（`_ttSettled === null`），不为历史购买补发；
+   *   · Δ = 0（余额不足 / 购买失败 / 恰好不够）→ 不发奖；
+   *   · Δ < 0（读档回退、永恒重置清空计数）→ 只重置基线；
+   *   · 补发抛错 → 记录错误并推进基线，避免每帧重试风暴（不静默：走 `_err`）。
+   */
+  settleTimeTheoremReward() {
+    try {
+      const total = TimeTheorems.totalPurchased();
+      const totalNum = total.toNumber();
+      if (this._ttSettled === null || this._ttSettled === undefined) {
+        this._ttSettled = totalNum;
+        return 0;
+      }
+      if (totalNum < this._ttSettled) {
+        this._ttSettled = totalNum;
+        return 0;
+      }
+      const delta = totalNum - this._ttSettled;
+      if (delta <= 0) return 0;
+      const extra = delta * (TT_REWARD_MULTIPLIER - 1);
+      Currency.timeTheorems.add(new Decimal(extra));
+      this._ttSettled = totalNum;
+      return extra;
+    } catch (e) {
+      this._err("settleTimeTheoremReward", e);
+      try {
+        this._ttSettled = TimeTheorems.totalPurchased().toNumber();
+      } catch (_) {
+        // 连基线都读不到时保持原值，下一帧再试
+      }
+      return 0;
     }
   },
 
@@ -921,6 +972,8 @@ export const OrekiEternityAutomation = {
     // 先播种时间维度，再买一次性增益，最后将剩余资源交给时间之理。
     const upgrades = this.buyEternityUpgrades();
     const tt = this.buyTimeTheorems();
+    // [R96] TT ×500 对账（覆盖手动/自动/单次/批量全部购买路径）
+    const ttReward = this.settleTimeTheoremReward();
     this._frame++;
     let studies = 0;
     let dilation = 0;

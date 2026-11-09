@@ -296,6 +296,53 @@ try {
   }
 }
 
+// ---------------- ⑪ R96：TT 购买收益 ×500（与 Android 同语义） ----------------
+{
+  const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
+  check("倍率常量 = 500", src.includes("const TT_REWARD_MULTIPLIER = 500;"));
+  check("发奖走累计购买次数对账（覆盖手动/自动/单次/批量）",
+    src.includes("settleTimeTheoremReward()") && src.includes("TimeTheorems.totalPurchased()"));
+  check("补发走原版货币 API Currency.timeTheorems.add",
+    src.includes("Currency.timeTheorems.add(new Decimal(extra))"));
+  check("对账边界：首帧只建基线、Δ<=0 不发奖、回退只重置",
+    src.includes("this._ttSettled === null") && src.includes("if (delta <= 0) return 0;")
+    && src.includes("if (totalNum < this._ttSettled)"));
+  check("补发异常不静默（走 _err）",
+    src.includes('this._err("settleTimeTheoremReward", e)'));
+  check("每帧接入 tick", src.includes("const ttReward = this.settleTimeTheoremReward();"));
+
+  // 行为验证：用假 TimeTheorems/Currency 跑真实方法体
+  const A2 = A;
+  const savedTT = globalThis.TimeTheorems;
+  const savedCur = globalThis.Currency;
+  const savedDecimal = globalThis.Decimal;
+  try {
+    let total = 3;
+    let added = 0;
+    globalThis.TimeTheorems = { totalPurchased: () => ({ toNumber: () => total }) };
+    globalThis.Currency = { timeTheorems: { add: (d) => { added += d.v; } } };
+    globalThis.Decimal = class { constructor(v) { this.v = v; } };
+
+    A2._ttSettled = null;
+    check("首帧只建基线，不补发", A2.settleTimeTheoremReward() === 0 && added === 0);
+    total = 3;
+    check("无新购买时不发奖", A2.settleTimeTheoremReward() === 0 && added === 0);
+    total = 4;
+    check("新增 1 次购买 → 补发 499 TT", A2.settleTimeTheoremReward() === 499 && added === 499);
+    total = 4;
+    check("同一笔购买不会被重复补发", A2.settleTimeTheoremReward() === 0 && added === 499);
+    total = 6;
+    check("批量新增 2 次 → 补发 998 TT", A2.settleTimeTheoremReward() === 998 && added === 1497);
+    total = 0;
+    check("计数回退只重置基线、不发奖", A2.settleTimeTheoremReward() === 0 && added === 1497);
+  } finally {
+    globalThis.TimeTheorems = savedTT;
+    globalThis.Currency = savedCur;
+    globalThis.Decimal = savedDecimal;
+    A2._ttSettled = null;
+  }
+}
+
 // ---------------- 汇总 ----------------
 console.log(`\n网页版自动永恒闸门回归：${checks} 项检查，失败 ${failures.length} 项`);
 if (failures.length) {
