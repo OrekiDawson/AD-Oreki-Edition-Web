@@ -253,7 +253,11 @@ export function applyAll({ wantCrunch = false, autobuyers = null, nowMs = monoto
   let skipped = 0;
 
   /** 单项：取不到 / 未解锁 → 跳过，且不碰登记（fail-closed）。 */
-  const each = (key, item, wantOn) => {
+  /**
+   * 单项对账。`group` 非空时，启用状态读写的**唯一真值**是组级开关（反物质维度
+   * 8 个自动器共用 `Autobuyer.antimatterDimension.isActive` 一个 checkbox）。
+   */
+  const each = (key, item, wantOn, group = null) => {
     checked += 1;
     try {
       if (!item) {
@@ -265,9 +269,10 @@ export function applyAll({ wantCrunch = false, autobuyers = null, nowMs = monoto
         skipped += 1;
         return;
       }
-      const active = item.isActive === true;
+      const active = group ? group.read() : item.isActive === true;
       const didWrite = reconcile(key, active, wantOn, value => {
-        item.isActive = value;
+        if (group) group.write(value);
+        else item.isActive = value;
       }, nowMs);
       if (didWrite) wrote += 1;
     } catch (e) {
@@ -277,8 +282,32 @@ export function applyAll({ wantCrunch = false, autobuyers = null, nowMs = monoto
     }
   };
 
-  // 反物质维度 ×8（各自独立 isActive，逐项比对）。
+  // 反物质维度 ×8。
+  //
+  // [R97 修复·真语义缺口] Web 原版给 8 个反物质维度自动器**没有各自可见的开关**：
+  // UI 的组复选框与 `AutobuyerState.canTick` 的组闸门读的都是
+  // `Autobuyer.antimatterDimension.isActive`（accessor 静态口 →
+  // `player.auto.antimatterDims.isActive`），而每一层的 `data.isActive` 只是内部字段。
+  // 玩家点「反物质维度」那一个 checkbox 时，8 个 `data.isActive` 完全不变；
+  // 若按每层 isActive 判断，模块会误判「还开着」→ 永远不登记、不恢复，
+  // 正好复现本模块要消灭的「玩家关掉后再也回不来」。
+  // 所以 8 个 dim 键共用**组级**读写口，键数仍是 14（便于与 Android 逐项核对）。
   const dims = root.antimatterDimension;
+  const dimsGroup = (() => {
+    try {
+      // 只有真实 accessor（defineProperties 定义的布尔 getter）才走组级口；
+      // 测试替身/旧结构没有该属性时退回每层，行为与旧版一致。
+      if (dims && typeof dims.isActive === "boolean") {
+        return {
+          read: () => dims.isActive === true,
+          write: value => { dims.isActive = value; },
+        };
+      }
+    } catch (e) {
+      // 读不到就退回每层（fail-open 到旧行为，不会写坏存档）
+    }
+    return null;
+  })();
   for (let tier = 1; tier <= 8; tier += 1) {
     let dim = null;
     try {
@@ -286,7 +315,7 @@ export function applyAll({ wantCrunch = false, autobuyers = null, nowMs = monoto
     } catch (e) {
       dim = null;
     }
-    each(`dim${tier}`, dim, true);
+    each(`dim${tier}`, dim, true, dimsGroup);
   }
 
   each("tickspeed", root.tickspeed, true);

@@ -185,7 +185,7 @@ export function gainedInfinityPoints() {
     // 做法：把顶抬到 DC.E1E6（与仓库内 `Effarig.eternityCap ?? DC.E1E6` 同一口径，等价于不设顶），
     // 让 `maxAM` 的真实换算结果（实测 1e1101657 反物质 → 约 1e36721 IP）直接入场。
     // 边界：只在**鹿颈长阶段 2**生效；不改 IP 公式、不改 `Player.eternityGoal`、
-    // 不写任何阶段标志，Eternity 仍必须真实达成并由 `eternity.js:58` 真实解锁。
+    // 不写任何阶段标志，永恒仍必须真实达成并由 `eternity.js:58` 真实解锁。
     ip = ip.min(DC.E1E6);
   }
   ip = ip.times(GameCache.totalIPMult.value);
@@ -587,9 +587,9 @@ export function gainedEternityPoints() {
   // 原版：EP = 5^(maxIP.log10()/308 - 0.7) × totalEPMult。
   // Reality 的第 7 时间研究需要 1e4000 EP，反解需要 maxIP ≈ 1e1.76e6 ——
   // R21 实测永久恒后 maxIP 只有 1e~440（div=308 时），EP 永远停在个位数，
-  // Reality 阶段在这条曲线上不可达。
-  // 做法：Reality 解锁之前把换算尺度从 308 收到 30（与 AD8 的 IP 尺度一致），
-  // Reality 之后恢复原版 308。同样是数值平衡改动，不伪造解锁标志。
+  // 现实阶段在这条曲线上不可达。
+  // 做法：现实解锁之前把换算尺度从 308 收到 30（与 AD8 的 IP 尺度一致），
+  // 现实之后恢复原版 308。同样是数值平衡改动，不伪造解锁标志。
   const epDivisor = isOrekiBootstrapRun() ? OREKI_PRE_REALITY_EP_DIVISOR : 308;
   let ep = DC.D5.pow(player.records.thisEternity.maxIP.plus(
     gainedInfinityPoints()).log10() / (epDivisor - PelleRifts.recursion.effectValue.toNumber()) - 0.7).times(totalEPMult());
@@ -1115,7 +1115,7 @@ export function gameLoop(passDiff, options = {}) {
   OrekiSmartExecutor.setPriorityHint(shouldPrioritizeEarlyForId1() ? "early" : "");
   // ── [R97 P0] 永恒层阶段门禁（与 Android `OrekiStageAuto.onAutoBuyerTick()` 逐条等价）──
   //
-  // 真机根因（Android 4bf947f）：首次无限后、Break Infinity 未完成时就被驱动了
+  // 真机根因（Android 4bf947f）：首次无限后、打破无限未完成时就被驱动了
   // 「买永恒升级 + 原版 `Eternity.tick()` + EC 推进」，导致提前点亮时间研究并卡死。
   // 这里用**原版真实 Break 状态**（`player.break`，不是自造标志）做同一道闸门：
   //   · 未首次无限（`PlayerProgress.infinityUnlocked()` 为假）→ 不动作；
