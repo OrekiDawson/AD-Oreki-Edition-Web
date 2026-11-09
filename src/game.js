@@ -1113,6 +1113,23 @@ export function gameLoop(passDiff, options = {}) {
   }
 
   OrekiSmartExecutor.setPriorityHint(shouldPrioritizeEarlyForId1() ? "early" : "");
+  // ── [R97 P0] 永恒层阶段门禁（与 Android `OrekiStageAuto.onAutoBuyerTick()` 逐条等价）──
+  //
+  // 真机根因（Android 4bf947f）：首次无限后、Break Infinity 未完成时就被驱动了
+  // 「买永恒升级 + 原版 `Eternity.tick()` + EC 推进」，导致提前点亮时间研究并卡死。
+  // 这里用**原版真实 Break 状态**（`player.break`，不是自造标志）做同一道闸门：
+  //   · 未首次无限（`PlayerProgress.infinityUnlocked()` 为假）→ 不动作；
+  //   · 已首次无限但 Break=false → 不买永恒升级、不跑永恒 tick、不推进 EC；
+  //   · Break=true → 原路径照常，**不反向阻断首次永恒**（首次永恒本就以 Break 为前提）。
+  // 判据只有一份实现：`OrekiSmartExecutor.eternityStageAllowed()`；执行层兜底路径
+  // （`invoke()` 里的 eternity verbs）用同一个函数，不会从别处绕回来越阶段。
+  // 注意：这只是「何时允许驱动」，不放宽任何节拍、不写任何存档字段。
+  const orekiEternityTick = () => (OrekiSmartExecutor.eternityStageAllowed()
+    ? OrekiEternityAutomation.tick()
+    : false);
+  const orekiEternityResetTick = () => (OrekiSmartExecutor.eternityStageAllowed()
+    ? OrekiEternityAutomation.tickEternity()
+    : false);
   const orekiCycle = OrekiSmartExecutor.runCycle([    // id            priority  action                                  类别
     // 顺序即优先级（数字越小越先）。
     // `"cont"` = 连续购买路径（原版自动购买器等价物）：默认档不受节拍约束（否则首无限前停摆，
@@ -1122,8 +1139,8 @@ export function gameLoop(passDiff, options = {}) {
     // 离散决策：守节拍（两种模式都受限）
     ["breakUpgrades", 5, () => tryBuyBreakInfinityUpgrades()],
     ["breakGate", 6, () => tryOpenBreakInfinityGate()],
-    ["eternity", 30, () => OrekiEternityAutomation.tick(), "cont"],
-    ["eternityReset", 31, () => OrekiEternityAutomation.tickEternity(), "cont"],
+    ["eternity", 30, orekiEternityTick, "cont"],
+    ["eternityReset", 31, orekiEternityResetTick, "cont"],
     ["reality", 40, () => OrekiRealityAutomation.tick()],
     ["celestial", 50, () => OrekiCelestialAutomation.tick()],
     ["perk", 60, () => OrekiPerkAutomation.tick()],
