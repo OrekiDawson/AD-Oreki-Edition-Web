@@ -43,6 +43,7 @@ const env = {
   ru10Available: false,
   ru10Bought: false,
   eternityCalls: [],
+  infinities: 0,
 };
 
 globalThis.player = {
@@ -50,6 +51,7 @@ globalThis.player = {
   options: {},
   requirementChecks: { reality: { noEternities: true } },
   records: {},
+  break: true,
 };
 globalThis.Player = { get canEternity() { return env.canEternity; } };
 globalThis.NormalChallenge = { isRunning: false };
@@ -60,6 +62,7 @@ globalThis.Currency = {
   eternityPoints: { value: { times: (n) => env.ep * n } },
   eternities: { gt: () => env.eternitiesGtZero },
   infinityPoints: { value: { exponent: 0 } },
+  infinities: { value: { toNumber: () => env.infinities } },
 };
 globalThis.RealityUpgrade = (id) => (id === 10 ? {
   isAvailableForPurchase: env.ru10Available,
