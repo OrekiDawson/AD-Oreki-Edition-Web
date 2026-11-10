@@ -188,7 +188,7 @@ python scripts/verify_tutorial_zh.py --apk build/<产物>.apk --json reports/_r5
 | 项 | 说明 |
 | --- | --- |
 | ~~`payload/assets/oreki_tutorial.txt` 未提交~~ | **已解决**：主 Agent 提交 `dd2716c` |
-| ~~`tasks/R50-TUT-01.md` 在 Android 仓库显示 `M`~~ | **已解决**：已随构建批次提交 |
+| ~~`tasks/R50-教程-01.md` 在 Android 仓库显示 `M`~~ | **已解决**：已随构建批次提交 |
 | 装机项 G（8 条） | 等 AVD 空闲 + 构建完成后按 §十三 执行 |
 
 ## 十三、G 组可执行清单（构建装机后照抄，2026年11月1日 12:23 定稿）

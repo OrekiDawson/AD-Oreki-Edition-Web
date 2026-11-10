@@ -1,0 +1,11 @@
+import fs from "node:fs";
+const d = JSON.parse(fs.readFileSync("src/core/oreki-tutorial-data.json","utf-8"));
+console.log("schemaVersion:", d.schemaVersion);
+console.log("updatedAt:", JSON.stringify(d.updatedAt));
+console.log("note:", JSON.stringify(d.note));
+console.log("progressHints type:", typeof d.progressHints, Array.isArray(d.progressHints));
+console.log("ch1 automation len:", d.chapters[1].automation.length);
+console.log("ch2 automation len:", d.chapters[2].automation.length);
+console.log("apx5 len:", d.appendices[5].body.length, "apx6 len:", d.appendices[6].body.length);
+console.log("apx5 tail:", JSON.stringify(d.appendices[5].body.slice(-120)));
+console.log("apx6 keys:", Object.keys(d.appendices[6]).join(","));

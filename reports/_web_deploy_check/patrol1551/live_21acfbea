@@ -1,0 +1,17 @@
+// [Oreki R40-S2] 智能自动购买器 —— 执行层（唯一允许动手的地方）
+//
+// ── 三条铁律（team-lead 2026-10-31 定，改动前先读这里）────────────────────
+// 1. 只读 `.gen.js`：策略数据的唯一来源是 `oreki-smart-strategy.json`，由
+//    `scripts/gen_spec_module.mjs` 机械转成 `oreki-smart-strategy.gen.js`。
+//    本文件**不写回 JSON、不 import JSON、不新增任何阶段/目标/动作名**；
+//    所有 id 都从决策对象里取。
+// 2. 只走原版购买入口：本文件**不出现任何 `player.xxx = ...` 赋值**。
+//    动手方式只有两种：调用原版 API（经由各阶段模块已有的方法），
+//    或者调用 `game.js` 注册进来的、同样只调原版 API 的例程。
+//    特别是 `player.break`：FACTS C.31 已定案——直接置真是**死锁不是修法**，
+//    正确路径是「先买 keepAutobuyers 与间隔、再末日一次」由 `reality.js:750` 置真。
+// 3. 不碰教程侧：不 import `oreki-tutorial*`、不改 `scripts/validate_tutorial.mjs`。
+//
+// ── 购买权边界（三选一，本文件选 B，理由写在下面）────────────────────────
+//  A. 各阶段模块让权给执行层（模块不再自己买）
+//  B. 执行层只在「

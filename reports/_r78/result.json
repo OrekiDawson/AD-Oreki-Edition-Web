@@ -1,0 +1,99 @@
+{
+  "verifiedAt": "2026-11-04T17:14:15.014Z",
+  "device": {
+    "sdk": "36",
+    "abi": "x86_64",
+    "size": "1440x3200"
+  },
+  "chrome": "133.0.6943.137",
+  "url": "http://127.0.0.1:8080/",
+  "browser": "Android System Chrome (emulator, NOT Edge/headless)",
+  "viewports": [
+    {
+      "w": 320,
+      "h": 640,
+      "label": "320",
+      "ok": true,
+      "notes": [],
+      "innerWidth": 320,
+      "scrollWidth": 320,
+      "hasHorizontalScroll": false,
+      "hasAutomationToggle": false,
+      "hasIntervalInput": false,
+      "title": "127.0.0.1",
+      "screenshot": "reports\\_r78\\shots\\320x640.png"
+    },
+    {
+      "w": 360,
+      "h": 740,
+      "label": "360",
+      "ok": true,
+      "notes": [],
+      "innerWidth": 360,
+      "scrollWidth": 360,
+      "hasHorizontalScroll": false,
+      "hasAutomationToggle": false,
+      "hasIntervalInput": false,
+      "title": "127.0.0.1",
+      "screenshot": "reports\\_r78\\shots\\360x740.png"
+    },
+    {
+      "w": 390,
+      "h": 844,
+      "label": "390",
+      "ok": true,
+      "notes": [],
+      "innerWidth": 390,
+      "scrollWidth": 390,
+      "hasHorizontalScroll": false,
+      "hasAutomationToggle": false,
+      "hasIntervalInput": false,
+      "title": "127.0.0.1",
+      "screenshot": "reports\\_r78\\shots\\390x844.png"
+    },
+    {
+      "w": 430,
+      "h": 932,
+      "label": "430",
+      "ok": true,
+      "notes": [],
+      "innerWidth": 430,
+      "scrollWidth": 430,
+      "hasHorizontalScroll": false,
+      "hasAutomationToggle": false,
+      "hasIntervalInput": false,
+      "title": "127.0.0.1",
+      "screenshot": "reports\\_r78\\shots\\430x932.png"
+    },
+    {
+      "w": 768,
+      "h": 1024,
+      "label": "768",
+      "ok": true,
+      "notes": [],
+      "innerWidth": 768,
+      "scrollWidth": 768,
+      "hasHorizontalScroll": false,
+      "hasAutomationToggle": false,
+      "hasIntervalInput": false,
+      "title": "127.0.0.1",
+      "screenshot": "reports\\_r78\\shots\\768x1024.png"
+    },
+    {
+      "w": 1280,
+      "h": 800,
+      "label": "1280",
+      "ok": true,
+      "notes": [],
+      "innerWidth": 1280,
+      "scrollWidth": 1280,
+      "hasHorizontalScroll": false,
+      "hasAutomationToggle": false,
+      "hasIntervalInput": false,
+      "title": "127.0.0.1",
+      "screenshot": "reports\\_r78\\shots\\1280x800.png"
+    }
+  ],
+  "passed": 6,
+  "total": 6
+}

@@ -1,0 +1,48 @@
+R94：修正设置页默认间隔错标 3 秒，并让开局教程与真实节拍一致
+
+玩家可见缺陷（有源码证据，只改已证实项）：
+- 设置页「智能自动操作」说明写着「默认 3 秒」，而 oreki-smart-executor.js 的
+  INTERVAL_DEFAULT_SEC 自 R85 起就是 10 秒（第 107 行）；新存档实际默认、README
+  与教程其它章节都写 10 秒。本作玩家会因此误以为「恢复默认」是 3 秒。
+  现改为「默认 10 秒」，并加静态夹具锁住界面文案与代码常量的一致性。
+- 教程第 1 章 automation 仍写「每帧固定顺序：买计数频率 → 维度提升 → 星系 → 维度」，
+  与 R93 之后的生产顺序相反（game.js 的 tryOrekiEarlyRoutine：维度提升 → 星系 →
+  计数频率 → 献祭 → 维度升序），也仍把出手节奏写成「每帧」。按真实顺序与
+  「统一自动节拍（默认 10 秒）」改写；第 1、2 章补齐双开关门控（原版自动购买器
+  总开关 + 本作「智能自动操作」总开关，任一关闭即停）。
+
+教程附录 F（双端共用的唯一正文源；JSON 与 .gen.js 同步生成）：
+- 附录 F 新增第二十一节「维度提升与反物质星系保留反物质」：原版这条是成就 111
+  的奖励，首次永恒前拿不到，本作提前为常驻规则；保留的只有反物质余额，维度 /
+  已买计数频率 / 献祭效果仍清零（现实 Perk「反物质不重置」ANR 之后才一起保留），
+  且它是结算规则，关掉自动化总开关照样生效。
+- 附录 F 补充真实出手顺序、批量购买的真实边界（重置会清零维度，通常一拍一次，
+  不是一拍连买很多次）与双开关门控。
+
+本轮未改任何游戏逻辑与数值。Q1~Q3 经源码逐行核对，确认当前实现无缺陷：
+- 首次无限前无「无效占拍」：earlyRoutineChanged 只在反物质 / 计数频率 / 提升 /
+  星系 / 8 层维度数量真变化时返回真（game.js:454-476）；唯一出手名额由 runCycle
+  按全局节拍放行（oreki-smart-executor.js:872-968）。
+- 1.797e308 附近不会被低收益重置拖慢：thisInfinity.maxAM 超过 infinityGoal 后
+  DimBoost.canBeBought（dimboost.js:80-85）与 Galaxy.canBeBought（galaxy.js:81-87）
+  同时锁死重置，AD4 保留反物质也不降低峰值；首次坍缩在同一拍末尾执行
+  （game.js:386）。
+- 关闭智能调度立即停：runCycle 第 876 行与 tickUnsafe 第 998 行两个入口先判
+  STATE.enabled；setEnabled(false) 清空冷却 / 优先提示并释放 IU15 接管
+  （oreki-smart-executor.js:1144-1170）。mod 模块内无 setTimeout/setInterval，
+  批量循环是同一拍内的同步有界循环（game.js:406、412-445），不存在跨拍残留。
+- 首次无限 → 首次永恒的下一个真实瓶颈：无限点数达到 1e8 后
+  BigCrunchAutobuyer.waitingForId1Peak 暂停全部坍缩（big-crunch-autobuyer.js:170-186；
+  willInfinity 第 144 行返回 false），直到 thisEternity.maxAM 到 1e1100
+  （第一无限维度门槛，infinity-dimension.js:87-102）；暂停期间无限点数不增长。
+
+测试：
+- scripts/test-scheduler-beat.mjs 新增场景 8（3 项）：界面默认值必须等于
+  INTERVAL_DEFAULT_SEC，且不得残留「默认 3 秒」。反向验证：把文案改回 3 秒时
+  实测 2 项失败，证明夹具能抓到这个缺陷。
+- test-scheduler-beat 17/17、R90 7/7、R92 16/16、R93 5/5、R88 4/4、R82 17/17、
+  R80 7/7、永恒升级、大坍缩模式 14/14、validate_number_currency 全部 exit 0；
+  validate_tutorial.mjs 全项通过（含 E1 产物同步）。
+- 未运行：桌面 / Android Chrome 长跑墙钟。R87 / R91 两个旧夹具在本机 Node 26 下
+  因 modules/break_infinity.js 的 .js 扩展名被按 CJS 解析而加载失败，属环境问题
+  （RG02-06 口径），本轮不以它们作为证据。

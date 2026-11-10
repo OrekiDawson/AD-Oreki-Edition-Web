@@ -1,0 +1,10 @@
+import fs from "node:fs";
+const j = JSON.parse(fs.readFileSync("src/core/oreki-tutorial-data.json","utf-8"));
+const a = j.appendices[5];
+console.log("=== APPENDIX F title:", a.title, "len:", a.body.length);
+console.log(a.body.slice(0, 3000));
+console.log("...... TAIL ......");
+console.log(a.body.slice(-3000));
+const b = j.appendices[6];
+console.log("\n=== APPENDIX F+\n", b.title, "len:", b.body.length);
+console.log(b.body);

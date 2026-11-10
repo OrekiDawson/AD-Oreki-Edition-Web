@@ -1,453 +1,234 @@
-# 全局规则导航
+# 统一工作区规则入口
 
-本文件只保留历史编号；先读 [CORE](rules/CORE.md) 与 [索引](RULES_INDEX.md)。R95 的 Linux/Windows 双平台规则见 [TOOLCHAIN](rules/TOOLCHAIN.md)。[完整旧正文](rules/archive/GLOBAL_ORIGINAL.md) 仅为历史，不生效。
+本文件只保留当前生效的总规则。历史规则、被取代的正文和旧编号不在本文件中加载，统一放在各仓库的 `docs/rules/archive/`，仅用于追溯。
 
-## 1. 历史编号导航
+## 1. 适用范围与优先级
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 1.1 适用范围
 
-## 2. 历史编号导航
+本规则适用于统一工作区、Android 仓库、Web 仓库、部署副本、frame-observer 和协作会话。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 1.2 执行优先级
 
-## 3. 历史编号导航
+用户当前明确要求优先；安全、真实性、存档保护和工作区保护不得被效率要求覆盖；随后按本文件、`RULES_INDEX.md` 和对应专项规则执行。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 1.3 当前状态判断
 
-## 4. 历史编号导航
+源码、构建产物、运行日志、截图和存档是当前状态的依据。历史报告、旧哈希、旧设备路径和旧版本结论不能自动作为当前事实。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+## 2. 常驻开发规则
 
-## 5. 历史编号导航
+### 2.1 工作区保护
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+保留用户已有修改；禁止强制推送、破坏性历史重写、无授权删除存档、`git reset --hard`、`git clean` 或覆盖其他任务成果。共享资源和同一文件写入必须串行协调。
 
-## 6. 历史编号导航
+### 2.2 Android 与 Web 边界
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+Android 和 Web 保持玩法语义与玩家可见行为一致，但各自维护上游基线、构建链、存档和验证证据；不得用一端的结果冒充另一端已验证。
 
-## 6.1. 历史编号导航
+### 2.3 Android 业务实现
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+Android 新增或修改业务逻辑必须走 Kotlin → kotlinc → D8 → DEX → APK。Smali/Java 仅可作为已核实的原版兼容层，不得新增业务实现。构建、基线和 ABI 规则见 Android 仓库的 `docs/rules/ANDROID.md`。
 
-## 6.2. 历史编号导航
+### 2.4 文档与术语
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+新增或维护的普通文档、报告、注释和玩家可见术语使用简体中文和项目官方术语。`AGENTS.md`、`README.md`、`FACTS.md` 等兼容性入口保留固定文件名。文档改动必须同步修复链接、路径和命令。
 
-## 6.3. 历史编号导航
+### 2.5 README 约束
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+四个仓库的 README 只描述当前有效的用途、使用方式、目录边界、运行/构建入口和交付要求。README 不是开发流水账、变更日志或任务交接文档，禁止出现 R 开头的任务/轮次编号、归档、已废止、失效、旧版本、历史规则或被取代内容，也不得复制规则正文、一次性环境事实或未验证结论。规则以规则入口为准，事实以 `FACTS.md` 或验证记录为准；README 只链接到这些入口。
 
-## 6.4. 历史编号导航
+### 2.6 GitHub 项目 README 基本结构
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+README 在不改变中文要求的前提下，按项目实际需要覆盖：项目定位与一句话简介、主要功能、目标读者、快速开始、环境前提、常用用法、目录边界、进一步阅读、贡献方式、许可证、安全/隐私说明和问题反馈入口。没有对应内容时不虚构章节；四个仓库可以按职责采用不同结构。
 
-## 6.5. 历史编号导航
+### 2.7 README 可执行性与可维护性
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+快速开始必须包含可复制执行的命令、前置条件和预期结果；命令、路径、端口、线上地址、包名、依赖和许可证必须与当前仓库实际状态一致。代码、配置和界面术语保持项目官方写法，说明文字、标题、表格和示例说明使用中文。链接必须可访问，内部链接优先使用仓库内相对路径；失去依据的内容直接删除，不用模糊措辞掩盖。
 
-## 6.6. 历史编号导航
+### 2.8 README 的 GitHub 读者体验
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+首屏先回答“这是什么、适合谁、如何开始”；长文档使用清晰的中文标题和目录层级，命令使用代码块，配置使用最小完整示例，危险操作明确警告。不得用大段内部实现、无意义徽章、重复目录或营销语句挤占快速开始；图片、截图和外部资源必须有用途、可访问且不泄露隐私。
 
-## 6.7. 历史编号导航
+### 2.9 README 的协作与安全信息
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+贡献说明只写当前可执行的分支、测试、提交和合并要求，并链接专门规则，不复制内部流程。许可证名称、版权归属、第三方声明和安全联系方式必须与仓库实际文件一致；不得在 README 写入密钥、个人绝对路径、内部地址、设备标识、存档内容或未经授权的联系方式。
 
-## 7. 历史编号导航
+## 3. 自动化与调度边界
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 3.1 MOD 全局行动调度
 
-## 8. 历史编号导航
+MOD 主动购买、升级、挑战和阶段推进遵守玩家设置的全局行动间隔；默认值、范围、节拍占用和 no-op 规则以 Android/Web 对应调度实现及 `docs/长期规则_验证与证据.md` 为准。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 3.2 智能自动购买器
 
-## 9. 历史编号导航
+智能策略配置原版自动购买器的模式、阈值、优先级和受管间隔，但不把配置优化或原版自身购买塞进 MOD 全局行动节拍。玩家手动改动受管配置后，不在下一帧抢写，在下一次策略 tick 恢复最新建议值；不强制打开玩家关闭的自动购买器。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 3.3 GUI 同步
 
-## 10. 历史编号导航
+状态变更后必须在 Android 主线程或 Web 当前渲染循环中刷新原版缓存、顶部资源、当前页面、按钮、页签和可见性。日志或内部字段变化不能替代真实 GUI 截图/UI dump 验收。GUI 阶段门控见 `docs/长期规则_验证与证据.md`。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+## 4. 阶段与 GUI 规则
 
-## 11. 历史编号导航
+### 4.1 无限阶段
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+未完成真实永恒前，不显示永恒点数、永恒统计、“本次永恒”、时间研究、时间维度、时间膨胀及其他永恒层内容。只有达到项目规定门槛时，才保留原版永恒入口按钮；入口存在不代表已进入永恒。
 
-## 12. 历史编号导航
+### 4.2 永恒阶段
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+只有真实永恒结算后才进入永恒阶段；此时必须显示永恒点数、永恒次数和合法的永恒 GUI。不得单独用兼容字段 `Player.eternities` 判定首次永恒。
 
-## 13. 历史编号导航
+### 4.3 现实阶段
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+只有真实现实结算后才显示现实统计和“本次现实”。现实入口、按钮或预初始化数据不能单独证明已进入现实阶段。
 
-## 14. 历史编号导航
+### 4.4 验收要求
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+阶段相关修改至少使用无限、永恒、现实三类状态做正反向真实 GUI 验证，并记录存档状态、设备、APK/版本身份、截图和关键日志。
 
-## 15. 历史编号导航
+## 5. 构建、测试与交付
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 5.1 验证范围
 
-## 16. 历史编号导航
+按改动影响面选择定向检查、构建、运行和回归；失败、挂起、未执行必须分开记录。不得把候选包、静态检查或历史结果称为稳定版。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 5.2 共享资源
 
-## 17. 历史编号导航
+同一 AVD、正式构建目录、签名密钥和发布产物必须串行使用。测试前记录设备与存档策略，测试后说明是否恢复存档、保留截图或停止后台任务。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 5.3 发布门禁
 
-## 18. 历史编号导航
+正式 APK 必须绑定同一份源码输入、签名、SHA-256 和必要运行证据；候选只用于本地验证。具体发布渠道和命令按 `RULES_INDEX.md` 路由到对应 Release 规则。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+## 6. 规则维护与归档
 
-## 19. 历史编号导航
+### 6.1 生效规则的编号
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+当前规则使用连续层级编号：一级为 `1.`、`2.`，二级为 `1.1`、`1.2`，三级为 `1.1.1`。新增内容放入现有职责章节，不另起平行正文。
 
-## 20. 历史编号导航
+### 6.2 历史归档位置
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+历史规则、废止规则、旧版总规则和旧索引统一放入所属仓库的 `docs/rules/archive/`。归档文件不得被 `RULES_INDEX.md` 作为当前权威入口，不得在活动规则中保留已失效正文。
 
-## 21. 历史编号导航
+### 6.3 规则清理
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+规则被取代时，从活动规则删除旧正文；如仍有追溯价值，移动到归档目录并在当前索引中只保留一句替代说明。不得在活动文件中同时保留互相冲突的“旧规则 + 新规则”。
 
-## 22. 历史编号导航
+### 6.4 规则同步
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+Android 与 Web 的同名规则必须保持内容一致或明确记录差异。规则维护后检查 Markdown 链接、索引路由、镜像文件和规则编号；规则修改不触发无关 APK 构建。
 
-## 23. 历史编号导航
+### 6.5 README 同步
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+README 修改后必须检查四个仓库的 README 是否仍只包含当前信息、是否符合 GitHub 项目基本结构、是否存在流水账、R 开头编号、失效路径或未经验证的版本描述、是否与规则入口和实际目录一致。历史内容需要保留时放入规则归档或事实记录，不得回写 README。
 
-## 24. 历史编号导航
+## 7. 权威入口
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 7.1 工作区索引
 
-## 25. 历史编号导航
+按需规则从 [RULES_INDEX.md](RULES_INDEX.md) 加载，不要求每个 Agent 通读全部历史资料。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 7.2 Android 规则
 
-## 26. 历史编号导航
+Android 规则位于 `android/AD_Oreki_Edition_Android/docs/rules/`，入口为 `CORE.md` 和 `RULES_INDEX.md`。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 7.3 Web 规则
 
-## 27. 历史编号导航
+Web 规则位于 `web/AD-Oreki-Edition/docs/rules/`，入口为 `CORE.md` 和 `RULES_INDEX.md`。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+## 8. 工程与交付长期规则（A–J）
 
-## 28. 历史编号导航
+> 来源：ChatGPT 2026-11-11 下达，按原规则字母登记。本节只新增 8.x 层级，不改动既有 1–7 的任何编号与正文。适用于 Android、Web、frame-observer 与部署副本；与既有条款冲突时，以用户当前明确指令为准。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.1（规则 A）性能问题必须先归因，再优化
 
-## 29. 历史编号导航
+性能 FAIL 时，必须区分游戏逻辑、应用主线程、GPU、Android 系统合成器和模拟器宿主机的瓶颈。优先使用 Perfetto、原版对照和单变量实验建立证据链。禁止在缺乏热点证据时盲目增加缓存、反射优化或降低 UI 更新频率。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.2（规则 B）原版与 MOD 必须具有可比性
 
-## 30. 历史编号导航
+涉及性能、兼容性或游戏机制的争议，优先使用相同环境下的原版对照。必须记录设备、系统版本、图形后端、刷新率、测试场景和统计口径。不同环境的数据不得直接用于宣称优化成功。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.3（规则 C）构建链持续简化
 
-## 31. 历史编号导航
+长期以 Kotlin、Gradle Kotlin DSL、Rust 和 Google 官方 Android 构建工具为核心。禁止新增 Python 工程依赖；优先迁移高频 Python 构建路径，逐步淘汰 Apktool 和 Smali 文本补丁。迁移必须保持功能等价、可复现、可回退，不得以工具链重构阻塞当前最高优先级的游戏修复。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.4（规则 D）正式 Android 交付采用 Universal APK
 
-## 32. 历史编号导航
+正式交付必须保留官方基线实际支持的全部 ABI 及其原生库。不得将单架构 APK 改名冒充 Universal APK，也不得声称支持未验证的架构。各 ABI 的实际测试状态独立记录。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.5（规则 E）验证按风险分层
 
-## 33. 历史编号导航
+日常修改仅执行与改动直接相关的测试。涉及存档格式、核心结算、游戏循环、阶段门禁、构建链或跨端兼容性时，扩大到对应风险范围。静态检查、模拟测试、AVD GUI 和真机验收必须分别记录，不得互相替代。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.6（规则 F）稳定版必须具备可追溯证据
 
-## 34. 历史编号导航
+稳定版至少应具有可复现的构建记录、真实功能验收、适用的性能门禁、签名验证及 SHA-256。每两小时至少交付一次合格稳定版为硬性节奏目标；未满足门禁时必须如实记录超期，不得降级门禁或伪造发布。禁止将候选版、调试版或未通过验收的 APK 标记为稳定版。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.7（规则 G）Agent 并行以资源隔离为前提
 
-## 35. 历史编号导航
+并行 Agent 必须明确任务范围、文件所有权和共享资源使用权。AVD、最终 Release 构建、发布操作必须独占；代码审查、资料整理、Web 开发等可并行。禁止重复构建、相互覆盖工作区、抢占模拟器或无意义等待。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.8（规则 H）失败实验必须及时止损
 
-## 36. 历史编号导航
+同一优化假设连续失败，或已获得明确反证时，停止重复尝试。保留必要的失败证据，回退无收益修改，转向新的可验证假设。禁止为了制造进展而反复运行相同实验。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.9（规则 I）优先改善真实玩家体验
 
-## 37. 历史编号导航
+以新档真实墙钟 ≤180 分钟通关、流畅操作、正确存档和有趣的手动玩法为核心目标。不允许为了提高测试分数而牺牲正常 UI 实时性、游戏机制或资源结算真实性。模拟器特有问题应与玩家实际可感知的问题分开报告。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 8.10（规则 J）规则、代码和验收事实必须同步
 
-## 38. 历史编号导航
+新增长期规则应同步 AGENTS.md、RULES_INDEX 和 FACTS。生产代码变化应更新对应 tasks、验收记录、README 和必要教程。报告必须明确区分 PASS、FAIL、BLOCKED、NOT RUN；不得把计划、推断或历史证据写成新完成事项。所有变更使用中文提交，安全推送 main，不强推、不丢弃历史成果。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+## 9. Python 强制退出工程体系（去 Python 化）
 
-## 39. 历史编号导航
+> 来源：ChatGPT 2026-11-11 下达（强化版），替代同名旧条款；编号仍为 9，不改动 1–8。适用于 Android、Web、frame-observer、Pages 及所有项目工具。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 9.1 先迁移，后开发
 
-## 40. 历史编号导航
+任何开发任务遇到需要修改、扩展或执行的 Python 代码，必须优先评估并将该执行路径迁移至非 Python 实现，再继续原任务。禁止以「现有代码就是 Python」「临时脚本更方便」「只运行一次」为理由继续使用 Python。禁止新增 `.py` 文件、Python 包、虚拟环境或运行时依赖。禁止用 Shell、Gradle 或其他语言包装 Python 命令来伪装迁移。迁移时优先采用目标语言的成熟 API，不得把低效算法原样翻译。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+### 9.2 强制技术路线
 
-## 41. 历史编号导航
+| 领域 | 技术 |
+|---|---|
+| Android 业务逻辑 | Kotlin |
+| Android 构建编排 | Gradle（长期 Kotlin DSL） |
+| APK 资源处理 | Google 官方 Android 工具（aapt2 / zipalign / apksigner） |
+| DEX 结构化处理 | Kotlin/JVM 兼容库或 Rust |
+| 跨平台 CLI 与高性能文件处理 | Rust |
+| Web 业务逻辑 | 沿用项目实际 JavaScript/TypeScript 栈 |
+| 简单系统操作 | Shell |
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+禁止为去 Python 而引入新的 Java/Smali 业务逻辑。
 
-## 42. 历史编号导航
+### 9.3 执行要求
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+每次开发前识别本次任务涉及的 Python 执行路径；发现后先完成非 Python 替代实现，再继续原任务。迁移后必须验证功能等价、实际运行结果、错误处理与性能；新实现通过验证后删除或停用旧 Python 入口，清理依赖与调用链。禁止只改扩展名、增加包装层或保留隐式 Python 调用。不得为追求迁移数量破坏存档、构建产物或既有功能。
 
-## 43. 历史编号导航
+### 9.4 例外与阻塞
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+原则上不批准新增 Python。若迁移会导致已确认 P0 无法及时修复、破坏现有构建或存在不可控数据风险，必须记录具体阻碍与替代方案，保留已验证可用路径，将迁移标记为 BLOCKED 并继续其他非 Python 工作；不得未经批准扩大 Python 使用范围。
 
-## 44. 历史编号导航
+### 9.5 验收标准
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+本次修改涉及的 Python 执行路径已迁移；无新增 Python 文件或运行时依赖；无通过其他脚本间接调用 Python；Kotlin/Gradle/Rust 替代实现通过实际验证；记录迁移前后执行时间、内存与功能差异；同步 AGENTS、RULES_INDEX、FACTS；中文提交并安全推送 main。
 
-## 45. 历史编号导航
+### 9.6 现状基线（2026-11-11）
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+项目自有 Python（排除 `tools/` vendored、`work/`、`build/`、`node_modules/`）：**97 文件 / 27,778 行**；已完成 `scripts/avd_smoke.py`（75 行，Gradle `smokeOrekiTest` 调用）迁移为 build.gradle 原生实现并删除，现存 **95 个脚本文件**（`scripts/` 目录口径）。高频入口仍为 `scripts/build_mod.py`，其完整迁移属高风险，R101 内不展开。
 
-## 46. 历史编号导航
+### 9.7 优先级约束
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+R101 性能 FAIL 始终是 P0；语言迁移不得造成无期限停工，不得挤占性能修复、Universal APK 验证与稳定版验收资源。
 
-## 47. 历史编号导航
+### 9.8 删除已迁移的 Python（2026-11-11 追加）
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
+被其他语言实现替代的 Python 代码可以直接删除，不必保留「兼容期」副本：
 
-## 48. 历史编号导航
+- 删除前必须完成等价验证（同输入同输出、错误路径一致），并在删除提交中记录验证方式。
+- 删除同时清理全部 import / 调用链 / 文档与注释中的旧路径，不得留下悬空引用。
+- 仍需使用该能力的历史脚本，改为调用新实现（例如 Rust CLI），不得保留 Python 副本。
+- 删除后更新 Python 文件数基线。
 
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 49. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 50. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 51. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 52. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 53. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 54. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 55. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 56. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 57. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 58. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 59. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 60. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 61. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 62. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 63. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 64. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 65. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 66. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 67. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 72. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 71. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 70. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 69. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 68. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 73. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 74. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 75. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 76. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 77. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 78. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 79. 历史编号导航
-
-已归并；当前权威位置见 [索引](RULES_INDEX.md)，原编号及原文见 [归档](rules/archive/GLOBAL_ORIGINAL.md)。
-
-## 80. 两套独立系统的节拍归属（R96 用户需求纠正，长期有效）
-
-> 本节是「剧情进度感知系统」与「目标驱动型智能自动购买器」边界归属的**唯一权威**。
-> 历史上曾把二者混为一谈，导致目标驱动型智能自动购买器被错误纳入 MOD 全局节拍。
-> 二者是**两个独立系统**，必须分别实现、分别验收，不得合并。
-
-### 80.1 剧情进度感知系统（MOD 全局行动调度）
-
-- **默认全局行动间隔固定为 10 秒**（`INTERVAL_DEFAULT = 10`，唯一真值来源）。
-- **允许玩家在 1～60 秒范围内自行调整**（越界钳制到 1/60）。
-- **玩家对该全局间隔的修改必须保留，不得由策略逐帧改回**；
-  任何「策略节拍」都不得写入或恢复该值（这是 §81 归属纠正的直接结论）。
-- 游戏状态读取、阶段识别与目标计算**可每帧进行**，不属于受节拍限制的游戏操作。
-- 负责调度**大部分 MOD 主动游戏操作**：主动购买、升级、挑战、阶段推进，
-  一律依照**玩家设置的全局间隔**（`OrekiAutomationScheduler.allow()`）。
-- 同一节拍内多个任务必须正确排序、**防止饥饿与无收益操作占用节拍**
-  （`frameActedTask` / `actedThisFrame` 顺序依赖，no-op 不占拍）。
-
-### 80.2 目标驱动型智能自动购买器（原版自动购买器优化）
-
-- 按当前目标动态调整**原版自动购买器**的模式、阈值、购买优先级与适用参数。
-- **配置调整不经过 MOD 全局节拍**（严禁包进 `runScheduled()` / `allow()`）。
-- 原版自动购买器**实际执行购买也不被 MOD 全局节拍额外限速**，只遵守其自身执行条件、
-  内部间隔与真实购买规则。
-- 配置调整必须**及时且幂等**，不得逐帧反复改写（需 once / 变化检测闩锁）。
-- **不得覆盖玩家已明确设定或手动修改的配置。**
-- **不得擅自打开玩家已关闭的原版自动购买器。**
-- 仍受 MOD 总开关约束：总开关关闭后停止接管与优化，但**不阻止玩家自主开启的原版购买行为**。
-
-### 80.3 五类行为的归属（逐项判定，不得含混）
-
-| # | 行为 | 是否走 MOD 全局节拍 |
-|---|---|---|
-| 1 | MOD 主动游戏操作（主动购买/升级/挑战/阶段推进） | **走** `allow()` |
-| 2 | 原版自动购买器配置优化（模式/阈值/优先级/参数） | **不走** |
-| 3 | 原版自动购买器自身购买 | **不走**，按原版机制 |
-| 4 | 纯状态读取与目标计算 | **不走** |
-| 5 | 玩家手动操作 | **不受 MOD 节拍限制** |
-
-### 80.4 修复纪律
-
-- **不得**为修复接线问题而简单取消全部节流。
-- **不得**把全部行为重新塞进统一调度器。
-- 优先修正错误接线，不做无关重构。
-
-### 80.5 验收（必须真实运行证据，不能只看调用次数）
-
-1. MOD 全局间隔设为 **60 秒**时，原版自动购买器仍按自身机制正常购买，不被限速到每分钟一次。
-2. MOD 主动阶段推进操作仍遵守 60 秒全局节拍。
-3. 智能自动购买器能及时按游戏目标优化原版策略。
-4. 调整全局间隔不会错误改变原版自动购买器自身设置。
-5. 玩家手动配置得到尊重。
-6. MOD 总开关关闭后停止 MOD 主动接管与配置优化，但不阻止玩家自主开启的原版购买行为。
-7. Android / Web 功能边界一致。
-
-以**实际购买次数、资源增长率、里程碑时间**证明效果。
-
-## 81. 目标驱动型智能自动购买器的节拍管理（R96 用户纠正后，长期有效）
-
-> **归属纠正记录（必须保留）**：本节内容最初被错误实现进「剧情进度感知系统的全局节拍」，
-> 即 `OrekiAutomationScheduler` 的 1～60 秒调度间隔。用户明确纠正：逐帧检查节拍、
-> 玩家手动改动后「不在下一帧抢写、在下一次调度 tick 恢复」这一整套逻辑**属于目标驱动型
-> 智能自动购买器**，作用于**原版自动购买器**的工作节拍与必要策略参数，**不属于** MOD 全局行动节拍。
-> 错误实现已从全局调度器回退，本节为唯一权威。
-
-### 81.1 目标驱动型智能自动购买器（本节主体）
-
-1. **每帧**根据真实游戏阶段、当前成长目标与**购买效率**，检查原版自动购买器需要使用的工作节拍。
-2. 策略目标发生变化时，**及时调整**对应原版自动购买器的间隔及必要策略参数。
-3. 上述配置优化**独立于 MOD 全局 1～60 秒行动节拍**，不得包进 `allow()` / `runScheduled()`。
-4. 玩家手动修改了**明确受智能策略管理**的自动购买器节拍时，**记录该变化**，
-   **不在下一帧立即抢写**。
-5. 在**调度器下一次 tick** 恢复为**当时最新策略计算**的节拍。
-6. **「下一 tick 是恢复配置的时机」不代表原版自动购买器的正常购买必须等待 MOD 全局节拍**——
-   原版自动购买器始终按自身机制与自身间隔运行。
-7. 避免**逐帧重复写入、配置抖动、重复持久化与错误重置**（值未变化时不写、不持久化）。
-8. **不将节拍恢复机制扩大到所有原版自动购买器设置**——只覆盖明确受智能策略管理的那几项。
-9. **不强制开启玩家主动关闭的原版自动购买器。**
-
-### 81.2 剧情进度感知与全局行动调度系统（职责不变）
-
-保持既有职责：阶段识别、目标调度、**大部分 MOD 主动购买与阶段推进操作按玩家设置的全局节拍执行**
-（**默认 10 秒**，玩家可在 1～60 秒内调整，**其修改必须保留、不得被策略改回**）。
-**不得把本次新增的自动购买器节拍纠偏逻辑写进全局调度间隔管理。**
-两系统边界仍以 §80.3 五类归属表为准。
-
-### 81.3 实现落点与边界（Android）
-
-- 策略节拍计算（原版购买器侧）与「受管项节拍恢复」必须在**原版自动购买器配置优化路径**上，
-  与 `applyCrunchPolicy()` 同一层（`allow()` 之外）。
-- `OrekiAutomationScheduler` **只**管 MOD 全局 1～60 秒节拍；**不得**新增策略节拍字段或恢复逻辑。
-- `OrekiPlayerIntent` 负责「让路」：玩家关闭的原版自动器不重开、玩家改过的配置不覆盖。
-- 契约自测必须断言：全局调度器内**不存在**策略节拍恢复代码；受管项恢复与 `allow()` 解耦。
-
-### 81.4 验收（必须真实运行证据）
-
-1. 阶段变化时，智能自动购买器**及时更新**原版自动购买器节拍。
-2. 玩家手动修改受管节拍后，**不发生下一帧立即覆盖**。
-3. **下一个调度 tick 按最新策略恢复**。
-4. **原版自动购买器的正常购买不被 MOD 全局节拍限速。**
-5. **不覆盖无关手动配置、不强制启用已关闭的自动器。**
-6. **Android / Web 行为一致**，并以**实测购买效率与成长速度**证明。
-
-不得只报调用次数；须提交真实 diff、节拍变化日志与运行证据。
-
+已执行：`scripts/savecodec.py`（原存档编解码）→ `tools/savecodec-rs`，删除后 Python 脚本 95 → 94。

@@ -64,6 +64,10 @@ Android：`docs/FACTS.md`；Web：`docs/FACTS.md`。
 
 [长期规则 §17](../../../docs/长期规则_验证与证据.md#17-规则文档与-facts-编号格式)
 
+### 3.6 R99 Web 无切页推进研究与实施入口
+
+[研究报告](R99-Web-无切页推进机制研究.md) · [DeepSeek 实施 Prompt](R99-DeepSeek实施Prompt.md)
+
 ## 4. 编号与归档规则
 
 ### 4.1 生效规则编号

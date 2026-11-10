@@ -87,7 +87,7 @@ Android 端目前**没有统一调度器**：所有 Oreki 智能动作都挤在 
 
 | 时间 | 执行者 | 事件 | 证据 |
 | --- | --- | --- | --- |
-| 2026-11-01 12:35 | main | 建单 | `tasks/R50-AND-04.md` 元信息「建单时间」字段 |
+| 2026-11-01 12:35 | main | 建单 | `tasks/R50-Android-04.md` 元信息「建单时间」字段 |
 | 2026-11-01 12:23 | android-scheduler-agent | 新增 `oreki/OrekiAutomationUiListener.smali`（设置页唯一回调，实现 OnClickListener + OnCheckedChangeListener） | 文件 mtime `12:23` |
 | 2026-11-01 12:24 | android-scheduler-agent | 改 `oreki/SpeedSettingsActivity.smali`：onCreate 加 1 行调用 + 新增 `addAutomationSection(LinearLayout)` | 文件 mtime `12:24` |
 | 2026-11-01 12:41 | android-scheduler-agent | 新增 `scripts/check_smali_wide_regs.py`（wide 寄存器对闸门） | 文件 mtime `12:41` |

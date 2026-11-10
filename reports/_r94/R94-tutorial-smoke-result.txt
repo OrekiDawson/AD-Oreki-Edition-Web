@@ -1,0 +1,12 @@
+R94 教程渲染烟测结果（本地 reports/_r94/probe-modal2.mjs，2026-11-07 20:52 +08）
+- 环境：本机 Edge headless（临时 profile）+ node serve.mjs 本地静态服务；未触碰用户浏览器 profile。
+- 就绪条件：GameUI.initialized === true（早于它时调用弹窗会被 modal.js:115 直接 return，这正是第一版烟测假失败的原因，不是缺陷）。
+- 步骤：点击右下角常驻「教程」悬浮按钮 → 逐项点附录/章节导航 → 读渲染后的 innerText。
+结果：
+  GameUI.initialized ready = true
+  after click: {"clicked":"clicked","tut":true,"nav":25,"md":0}
+  附录 F 点击 ok，正文 8090 字；含新章节「二十一、维度提升与反物质星系保留反物质」= true；含表格行「保留当前反物质余额」= true
+  附录 F 补充点击 ok；含「维度献祭（倍数达到玩家阈值才做）」= true；含「不是「一拍之内连买很多次」」= true
+  第 1 章点击 ok；含「能买就买维度提升 → 能买就买反物质星系 → 买计数频率」= true；含「默认 10 秒一次」= true
+- 导航按钮 25 个 = 18 章 + 7 附录，符合数据源。
+- 唯一控制台错误是 Kaspersky 注入 CSP 拦 googletagmanager（本机环境既有噪声，与本轮改动无关）。

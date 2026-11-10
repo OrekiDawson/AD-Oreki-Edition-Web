@@ -1,0 +1,25 @@
+{
+  "startedAt": "2026-11-06T00:43:40.519Z",
+  "wallSec": 9.11,
+  "reachedEnd": false,
+  "firstEnd": null,
+  "last": {
+    "t": 9.11,
+    "gameEnd": false,
+    "endState": 0,
+    "amE": 257,
+    "totAM": 1.20147134014961e+275,
+    "realities": 0,
+    "eternities": 0,
+    "infinities": 0,
+    "bcUnl": false,
+    "doom": false,
+    "lai": false,
+    "iu15": false,
+    "iu25": false,
+    "spdDyn": null,
+    "doomPhase": "idle",
+    "doomShards": null
+  },
+  "maxSec": 90
+}

@@ -1,0 +1,13 @@
+const list = await (await fetch("http://127.0.0.1:9224/json/list")).json();
+const page = list.find(t => t.type === "page" && t.url.includes("8124"));
+const ws = new WebSocket(page.webSocketDebuggerUrl);
+await new Promise(r => ws.addEventListener("open", r, {once:true}));
+let id=0; const pend=new Map();
+ws.addEventListener("message", ev => { const m=JSON.parse(ev.data); if (m.id&&pend.has(m.id)){pend.get(m.id)(m.result); pend.delete(m.id);} });
+const send=(method,params={})=>new Promise(res=>{const i=++id; pend.set(i,res); ws.send(JSON.stringify({id:i,method,params}));});
+const ev1 = await send("Runtime.evaluate",{expression:"({d:Date.now(), p:performance.now(), t0:globalThis.__r94T0 ?? null, hf:document.hidden, vis:document.visibilityState, speed: (globalThis.GameSpeed? GameSpeed.current:null)})",returnByValue:true});
+console.log("node:", Date.now(), "page:", JSON.stringify(ev1.result.value));
+await new Promise(r=>setTimeout(r,2000));
+const ev2 = await send("Runtime.evaluate",{expression:"({d:Date.now(), p:performance.now()})",returnByValue:true});
+console.log("node+2s:", Date.now(), "page:", JSON.stringify(ev2.result.value));
+ws.close();

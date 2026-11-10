@@ -1,0 +1,14 @@
+const list = await (await fetch("http://127.0.0.1:9224/json/list")).json();
+const page = list.find(t => t.type === "page" && t.webSocketDebuggerUrl);
+console.log("target:", page.url);
+const ws = new WebSocket(page.webSocketDebuggerUrl);
+await new Promise(r => ws.addEventListener("open", r, {once:true}));
+let id=0; const pend=new Map();
+ws.addEventListener("message", ev => { const m=JSON.parse(ev.data); if (m.id&&pend.has(m.id)){pend.get(m.id)(m.result); pend.delete(m.id);} });
+const send=(method,params={})=>new Promise(res=>{const i=++id; pend.set(i,res); ws.send(JSON.stringify({id:i,method,params}));});
+const ev1 = await send("Runtime.evaluate",{expression:"({d:Date.now(), p:performance.now(), t:Date.now()})",returnByValue:true});
+console.log("node:", Date.now(), "page:", JSON.stringify(ev1.result.value));
+await new Promise(r=>setTimeout(r,1000));
+const ev2 = await send("Runtime.evaluate",{expression:"({d:Date.now(), p:performance.now()})",returnByValue:true});
+console.log("after 1s node:", Date.now(), "page:", JSON.stringify(ev2.result.value));
+ws.close();
