@@ -9765,3 +9765,33 @@ TT 早已达标；真实阻断是 **EC 全 0**：`unlocked=0 / current=0 / compl
 - `[规则]` 正常前台模式禁止以固定 1～60 秒间隔作为 UI 刷新周期；自动化节拍不得限制 UI 刷新。
   规则正文见共享根 `docs/长期规则_验证与证据.md` §11。
 - `[未验证]` 正常模式/省电模式双态 UI 刷新时序的 AVD 实测尚未执行（NOT RUN）。
+
+### R99 §12 双调度器 Tick 强制 GUI 同步 —— 实现与实测事实（2026-11-10）
+- `[实现]` Android 全局行动调度器：`OrekiAutomationScheduler.globalGuiTickDue()`，
+  按玩家设定的 1～60 秒（实测 10 秒）到点返回一次；**不推进 `lastBeatAt`、不占帧名额**，
+  不会让自动化多买一次或改变节拍。
+- `[实现]` 智能自动购买器调度器：`OrekiAutobuyerBeat.consumeGuiSyncDue(intervalSec)`，
+  即使策略未修改配置也到点返回一次，用于强制原版自动购买器 GUI 一致性检查。
+- `[实现]` 统一强制入口 `GameApi.forceGuiTickSync(reason)`：
+  原版缓存失效 → `OrekiGuiStage.refresh()` → `applyStageGateSafe()` →
+  `requestAutobuyerUiRefresh(force = true)`（绕过 `!dirty && !phaseChanged` 早退）。
+  两个 tick 在 `OrekiStageAuto.onAutoBuyerTick()` 中位于 `beginFrame()` 之后、
+  所有早退分支之前，因此「无动作 tick」也不会跳过刷新路径。
+- `[实现]` View 只在主线程：Handler 提升为单例（`uiHandler()`），不再每次刷新新建。
+  Activity 不可用时登记 `guiSyncPending` 并记 `GUI_REFRESH_DEFERRED`，
+  恢复前台由 `retryPendingGuiSync()` 补一次；异常记 `GUI_TICK_SYNC_FAILED`，不静默丢弃。
+- `[实测]` APK `d7f11b5ecb88421820958142901f6aed599f51574ff1228f30d6cf68376b25eb`
+  （84,551,153 字节，versionName 3.21.0，versionCode 30210000，AVD emulator-5554）。
+  日志实测：`OREKI_SCHED: gui-tick #2..#6 gapMs=10000` 与
+  `OREKI_AUTO_BEAT: gui-tick #2..#6 gapMs=10000` 同帧成对出现，对应
+  `OREKI_GUI: GUI_REFRESH_APPLIED target=autobuyers+statistics force=true`
+  且执行线程为 UI 主线程（pid 8181），帧线程为 8215 ⇒ 主线程约束成立。
+- `[实测]` 双 tick 同帧合并：同一次到点只产生一条 `GUI_REFRESH_APPLIED`，
+  说明去重不重复绘制，同时两个调度器各自的 `gui-tick` 均记账，未丢失任一方。
+- `[实测]` 正常模式实时刷新（tick 之间）：间隔 3 秒连续截图三张（均落在 10 秒 tick 之间）
+  像素哈希互不相同（`772fba16…` / `7d40e631…` / `8e78a937…`），
+  采样点变化 1170 / 910（共 370286）⇒ UI 未等待调度器 tick。
+  证据：`android/reports/R99/01-tick-ui-a.png`、`02-tick-ui-b.png`、`03-tick-ui-c.png`。
+- `[未验证]` 智能自动购买器「有配置变化 tick」与「无配置变化 tick」的屏幕级分别取证、
+  双 tick 同帧下的状态不丢失人工核对、Activity 重建/后台恢复补同步、
+  Android 省电模式（1 Hz）与退出恢复、Web 真实浏览器 8 项 —— 均 **NOT RUN**。
