@@ -16,6 +16,7 @@
 | 规则维护 | [GOVERNANCE](rules/GOVERNANCE.md) | 按需 |
 | 两套系统的节拍归属（R96 §80） | [AGENTS.md §80](AGENTS.md) | 按需 |
 | 智能自动购买器节拍管理（R96 §81，归属=原版购买器） | [AGENTS.md §81](AGENTS.md) | 按需 |
+| 双端 UI 实时刷新 / 省电模式（R99 §11） | [docs/长期规则_验证与证据.md §11](docs/长期规则_验证与证据.md) | 按需 |
 
 ## 迁移对照
 

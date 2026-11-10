@@ -5570,7 +5570,7 @@ case AUTO_CRUNCH_MODE.X_HIGHEST: return gainedInfinityPoints().gte(this.highestP
 
 **【待办】** 给可重复购买加「前后值比较」的防假成功闸：值没变即视为失败并进冷却，不再每 tick 重试。
 
-**【同源前例】** `resetBoost` 在 A27 也是每 tick「买到」一次（1007 次 / 25 s），见 `tasks/R51-AND-01.md` §五。
+**【同源前例】** `resetBoost` 在 A27 也是每 tick「买到」一次（1007 次 / 25 s），见 `tasks/R51-Android-01.md` §五。
 
 ## C.99　C.98 的根因与修复：`uu1.E(Z)` 是空实现，`D()` 对可重复升级只扣钱不涨级（2026年11月1日）
 
@@ -5716,7 +5716,7 @@ A30 实测 `OREKI_SCHED init` 正常、`act` 一条没有。根因不是接线�
 - [ ] 用原版对照 APK 在 1.79e308 之前实测显示行为
 - [ ] 修正 R51 相关日志标签与报告，避免把内部值误称「显示次数」
 
-**本轮已发生的误用（记录在案）**：`tasks/R51-AND-01.md` §七/§八 的表格里把
+**本轮已发生的误用（记录在案）**：`tasks/R51-Android-01.md` §七/§八 的表格里把
 `dimensionBoosts` 直接标成「db」，并在正文把它当作「维度提升次数」讨论 —— 属口径混用，
 按本条改为「档位字段 `dimensionBoosts`」，不再与界面显示次数混为一谈。
 
@@ -9748,3 +9748,20 @@ TT 早已达标；真实阻断是 **EC 全 0**：`unlocked=0 / current=0 / compl
 ### R97 构建耗时事实（2026-11-09）
 - `[实测]` Linux Android 构建日志记录：`reports/r96/gradle-r96u.log` 1m16s、`gradle-r96v.log` 1m17s、`gradle-r96w.log` 1m28s、`gradle-r96x.log` 1m25s、`gradle-r96y.log` 1m16s、`gradle-r96z.log` 1m14s；最新候选安装链 `reports/r96/install-release-r96.log` 为 1m08s。当前环境通常约 1 分钟，仅是构建事实，不代表 AVD 验收或完整通关测试耗时。
 
+
+### R99 UI 实时刷新与 Android 省电模式事实（2026-11-10）
+- `[静态+实证]` **Android 省电模式 = 原版 `batterySaver` 选项**：启用后 UI 更新降为每秒一次，
+  游戏逻辑仍按 25 毫秒推进。资源字符串：`battery_saver_confirmation`
+  「启用省电模式将使游戏界面的更新速度变为每秒一次，但游戏运行的速度不变。」
+  以及提示「这将使UI更新速度减慢至每秒一次，而游戏更新速率将保持不变，始终为 25 毫秒。」
+- `[静态]` 实现链（`work/base_decoded_321`）：持久化键 `"batterySaver"`
+  （`player/b.smali` 构造 `Kotlin/Pair`）→ 进程级静态布尔 `Llz0;->g0:Z`
+  （写入 `oh2.smali` 设置装载、`mainactivity/l0.smali` 的 `batterySaverButton` 切换）
+  → UI 刷新跳过点 `ti2.smali`：`sget-boolean v2, Llz0;->g0:Z` / `if-eqz v2, :cond_3d` / `goto :goto_1d`。
+  其余读取点：`MainActivity.smali`、`mainactivity/w.smali`、`mainactivity/f0.smali`、
+  `mainactivity/l0.smali`、`xj2.smali`。
+- `[静态]` 系统级电源状态另有 `Landroid/os/PowerManager;->isPowerSaveMode()Z`
+  （`yd.smali`、`zh.smali`）；**不得**用设备电量/亮度等不可靠信号替代明确省电状态来源。
+- `[规则]` 正常前台模式禁止以固定 1～60 秒间隔作为 UI 刷新周期；自动化节拍不得限制 UI 刷新。
+  规则正文见共享根 `docs/长期规则_验证与证据.md` §11。
+- `[未验证]` 正常模式/省电模式双态 UI 刷新时序的 AVD 实测尚未执行（NOT RUN）。

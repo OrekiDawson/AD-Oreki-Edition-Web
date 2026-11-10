@@ -20,12 +20,13 @@
 //   也不会按目标恢复，表现为「间隔一旦被动过就长期偏离策略意图」。
 // ---------------------------------------------------------------------------
 
-import { OrekiCrunchPolicy } from "./oreki-crunch-policy.js";
+import { OrekiCrunchPolicy, eternityWaitMs } from "./oreki-crunch-policy.js";
 
 /** 与 Android 常量同名同值（PRE_BREAK / POST_BREAK / ETERNITY_GROW / PAUSE）。 */
 export const CRUNCH_PRE_BREAK_SECONDS = 60;
 export const CRUNCH_POST_BREAK_SECONDS = 5;
-export const CRUNCH_ETERNITY_GROW_SECONDS = 30;
+/** [R99] 永恒层成长窗口起点（秒）；实际写入值取 OrekiCrunchPolicy.eternityWaitMs() 的自适应窗口。 */
+export const CRUNCH_ETERNITY_GROW_SECONDS = 60;
 export const CRUNCH_PAUSE_SECONDS = 3600;
 
 const STATE = {
@@ -171,7 +172,7 @@ export class OrekiManagedCrunchInterval {
     if (!decision.allow) {
       const seconds =
         decision.reason === "eternity-grow"
-          ? CRUNCH_ETERNITY_GROW_SECONDS
+          ? eternityWaitMs() / 1000
           : CRUNCH_PAUSE_SECONDS;
       return OrekiManagedCrunchInterval.apply(seconds, `pause:${decision.reason}`);
     }
