@@ -14,6 +14,34 @@
 # 当时返回的仍是 `text: auto`，等于硬链接保护一直没生效。
 * text=auto
 
+# 【R99 统一 LF】按扩展名的换行声明。必须排在 * text=auto 之后、
+# 下方 -text 硬链接保护之前：gitattributes 后规则覆盖前规则，
+# 这样既强制 LF-only，又不会削弱共享硬链接的 -text 保护。
+*.kt text eol=lf
+*.kts text eol=lf
+*.java text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.rs text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.zsh text eol=lf
+*.gradle text eol=lf
+*.properties text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.toml text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.smali text eol=lf
+
 docs/AGENTS_GLOBAL.md -text
 docs/SHARED_GAMEPLAY_STANDARD.md -text
 # docs/FACTS.md 同理（工作区根 FACTS.md 与两仓 docs/FACTS.md 是三处硬链接）。
