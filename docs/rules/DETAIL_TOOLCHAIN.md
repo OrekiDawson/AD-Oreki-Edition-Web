@@ -431,6 +431,80 @@ cd web && node _tools/_r42c/verify-reuse.mjs
 > 补充：Android SDK / AVD / adb **下载**一律直连 `developer.android.google.cn`，不使用代理，详见 **§43**（2026-10-31 22:51 下达）。
 
 
+## §33.9 R99 更新：Kubuntu 现状与代理实测（2026-11-10，长期有效）
+
+> 本节补充 §33 正文。§33 仍是网络路径选择的唯一源；本节只更新「当前机器的事实」与「主动搜索」两件事。
+
+### 一、本机实测基线（2026-11-10 12:05 CST）
+
+- 代理 `127.0.0.1:7897` **确实在监听**：`ss -ltnp` 显示 `LISTEN 0 4096 *:7897 *:*`（监听全部接口）。
+- 协议为 **HTTP 代理**（`curl -x http://127.0.0.1:7897` 可用）。
+- 连通性实测（`https://api.github.com/`）：
+  - 经代理：`HTTP=200 time=0.482930s`
+  - 直连：`HTTP=200 time=0.483166s`
+  - 两者**基本等价**。因此当前 GitHub API 直连可用，代理作为备用；**出现直连慢/超时/不稳定时必须主动切到代理**。
+- 2026-10-31 记录的「默认不启用代理」**只是当时的测量结果**，不作为 Kubuntu 的永久判断。
+
+### 二、使用纪律（在 §33 正文基础上强调）
+
+1. **先实测再选择**：每次环境变化后重新比较直连与代理的实际耗时与成功率，不凭历史印象决定。
+2. **优先进程级/单命令级**：`curl -x`、`git -c http.proxy=…`、单次命令环境变量；**不擅自改系统全局代理**。
+3. **本地与内网绝不走代理**：`localhost`、`127.0.0.1`、`127.0.0.1:7897`、局域网、ADB/AVD 一律 `--noproxy '*'` 或设 `NO_PROXY`。
+4. **Android SDK/AVD/adb 下载走 §43**：直连 `developer.android.google.cn`，不加代理。
+5. **失败即回退**：代理不可用时立即改直连或其它已授权路径，**不做无限重试**。
+6. **安全**：不关闭 TLS 校验，不把代理凭据写入仓库或日志。
+
+## §33.10 R99 新增：DeepSeek 官方 Search/Fetch 与 Tavily 主动搜索（2026-11-10，长期有效）
+
+> 本节是「外部资料检索」的唯一源。本地取证仍以 §6.3（优先 ripgrep）为第一手段。
+
+### 一、适用场景
+
+Android、Gradle、Kotlin、Rust 官方文档；工具链与 API 变化；GitHub 项目/Issue/Release；
+Android 3.21 兼容性问题；反编译、DEX、APK、ABI 相关技术问题；未知报错与第三方库问题；
+需要以最新事实支撑的技术决策。
+
+**不适用**：本项目内部代码、存档、构建产物等本地即可取证的问题——先用 `rg`、真实源码、Git 历史。
+
+### 二、可用渠道（2026-11-10 实测）
+
+| 渠道 | 端点 | 实测状态 |
+|---|---|---|
+| DeepSeek 官方 Search | `POST https://api.deepseek.com/v1/tools/search` | **可用**：`HTTP=200`，0.39s，返回 `results[]`（含 title/site_name/authority/rerank_score/date/url/summary） |
+| DeepSeek 官方 Fetch | `POST https://api.deepseek.com/v1/tools/fetch` | **可用**：`HTTP=200`，7.34s，返回 `{content:"…"}` 正文 |
+| Tavily | 已连接的 Tavily 工具（如 `tavily_search`） | **可用**：实测返回 5 条带 URL 与正文的结果 |
+
+调用方式（密钥只从本机文件读取，**禁止写入 Git**）：
+
+```bash
+set -a; . ~/.config/oreki/deepseek.env; set +a
+curl -sS -X POST https://api.deepseek.com/v1/tools/search \
+  -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"…","max_results":5}'
+```
+
+### 三、检索策略
+
+1. 本地问题先 `rg` / 真实源码 / Git 历史 / 既有证据。
+2. 外部变化或未知技术问题，**主动**调用 DeepSeek Search 或 Tavily，不靠猜测。
+3. 优先官方文档、原始源码、官方 Issue 与 Release。
+4. 必要时用 Fetch 取完整正文，不只读搜索摘要。
+5. 重要结论交叉验证，明确区分**事实**与**推测**。
+6. 已有充分证据的问题不重复搜索。
+7. 结果要能追溯来源与日期。
+8. 搜索失败改用其它已授权渠道，**不得编造资料或引用**。
+9. **不把本地私有源码、密钥、存档等敏感信息发送给第三方搜索服务。**
+
+主动搜索是提效工具，**不是每次改代码都必须联网的形式化步骤**。
+
+### 四、凭据与合规
+
+- 凭据存放：`~/.config/oreki/deepseek.env`（目录 700、文件 600），**位于所有 Git 仓库之外**。
+- 已核验：两个仓库的 `git grep` 均查不到该密钥，**未进入任何 Git 跟踪文件**。
+- **不得**未经授权购买额度；**不得**在报告、日志或提交中输出 API Key。
+- 不假设第三方「DeepSeek 兼容」API 自动支持官方 Search/Fetch 接口。
+
 ## §34 Android 模拟器生命周期与资源管理（用户 2026-10-31 18:54 下达，长期有效，**本节是 AVD 生命周期的唯一源**）
 
 1. `oreki_test` **只在有明确测试或调试任务时运行**。
