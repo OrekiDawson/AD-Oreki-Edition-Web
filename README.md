@@ -47,11 +47,11 @@ node serve.mjs 8080
 | `src/components/` | 界面组件 |
 | `public/` | 样式和静态资源 |
 | `scripts/` | 定向检查和生成工具 |
-| `docs/` | 规则、事实和验证记录 |
+| `docs/` | 事实、历史验证记录与旧规则归档 |
 
 ## 6. 规则与交付
 
-规则入口：[docs/RULES_INDEX.md](docs/RULES_INDEX.md)。修改前检查 [docs/rules/CORE.md](docs/rules/CORE.md) 和 [docs/rules/WEB.md](docs/rules/WEB.md)。提交前检查链接、命令、中文术语和测试范围；本地服务器可用不等于线上部署成功。
+规则入口：[AGENTS.md](AGENTS.md)；规则索引见 [docs/RULES_INDEX.md](docs/RULES_INDEX.md)。提交前检查链接、命令、中文术语和测试范围；本地服务器可用不等于线上部署成功。
 
 ## 7. 反馈与许可证
 
