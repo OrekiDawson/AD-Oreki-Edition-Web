@@ -9908,3 +9908,6 @@ TT 早已达标；真实阻断是 **EC 全 0**：`unlocked=0 / current=0 / compl
 - `[R101 合法永恒存档回归 PASS]` 合法存档 `eternities=25 / bigEternities=14 / EP=66042.09 / infinities=126617` 注入修复后 MOD，冷启动后正常推进（运行后 26/15/约3.7e6/约1.2e5），关键字段未被清零或改写；GUI 显示永恒点数与时间页签。证据 `reports/R101-p0-fix/legal-save-before-mod.json`、`mod-legal-main.png`。
 
 - `[R101 P0 复验性能 FAIL]` 2026-11-11 22:08 同一 AVD 合法永恒页 15 秒 `gfxinfo`：604 帧（约 40.3 fps）、现代 jank 263（43.54%）、p95 32 ms、p99 42 ms、Missed Vsync 0、Slow UI 16、Slow issue draw commands 229；按 p95≤16ms、Slow UI=0 口径 **FAIL**。P0 已修复，但性能门禁未过，稳定版四渠道发布继续 BLOCKED。证据 `reports/R101-p0-fix/gfxinfo-15s.txt`。
+
+- `[GitHub Linguist 语言统计修正]` 2026-11-11：GitHub languages API 基线为 Smali 205,092,029 B、Python 1,381,738 B、Kotlin 420,537 B、Rust 99,830 B；Smali 主要来自 `reports/r50` 历史反编译树，Python 均属构建/测试/历史脚本。已在 `.gitattributes` 增加 `*.py linguist-vendored`、`reports/** linguist-generated`、`archive/** linguist-vendored`；未改任何源文件或构建行为，`scripts/payload` 的 Kotlin/Smali 生产代码不排除。GitHub 重新计算后需复核语言占比；未更新前标记待确认。
+- `[Python 严格禁增基线]` 2026-11-11：仓库 tracked `.py` 为 119 个 / 1,368,116 B（含 `scripts/build_mod.py` 425,406 B 与历史 reports 脚本），全部为构建/测试/证据辅助代码，无 Android 运行时 Python。本轮未新增 Python 文件/代码/依赖，门禁 PASS。
