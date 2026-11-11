@@ -47,7 +47,8 @@ const env = {
 };
 
 globalThis.player = {
-  auto: { autobuyersOn: true },
+  // [R101 P0] 原版「自动永恒」单项开关的数据源（Autobuyer.eternity.isActive 同源）。
+  auto: { autobuyersOn: true, eternity: { isActive: true } },
   options: {},
   requirementChecks: { reality: { noEternities: true } },
   records: {},
@@ -76,8 +77,9 @@ const { OrekiEternityAutomation: A } = await import(
 );
 
 /** 把自动化强制置为「启用」，并允许逐条覆盖门禁方法。 */
-function arm({ hold = false, ec = false } = {}) {
+function arm({ hold = false, ec = false, autoEternity = true } = {}) {
   player.auto.autobuyersOn = env.autobuyersOn;
+  player.auto.eternity.isActive = autoEternity;
   A.holdForRealityUpgrade10 = () => hold;
   A.ecEntryPending = () => ec;
 }
@@ -379,6 +381,44 @@ try {
       tickBody.indexOf("this.buyEternityUpgrades()") >= 0
       && tickBody.indexOf("this.buyEternityUpgrades()") < tickBody.indexOf("this.buyTimeDimensions()"));
   }
+}
+
+// ---------------- ⑬ R101 P0：原版「自动永恒」单项开关（与 Android 同语义） ----------------
+//
+// 缺陷背景：tickEternity() 直接调原版「无确认永恒」入口，历史上只看 MOD 总开关
+// （this.active），不看玩家存档里的 player.auto.eternity.isActive。Android 侧同一
+// 缺陷由 OrekiAutoEternityGate 收敛修复；本组用例锁死 Web 端的等价判据。
+{
+  reset();
+  arm({ autoEternity: false });
+  env.canEternity = true;
+  env.ep = 1;
+  env.gained = 1e100;
+  check("autoEternity 关闭时不发起永恒", A.tickEternity() === false);
+  check("autoEternity 关闭时 eternity 调用 0 次", env.eternityCalls.length === 0,
+    `calls=${env.eternityCalls.length}`);
+
+  // 手动入口不受影响：本函数之外的原版 eternity() 直接调用不经过门禁。
+  check("手动入口仍可直接调用原版 eternity（门禁只在 MOD tick 内）",
+    (() => { let called = 0; const saved = globalThis.eternity;
+      globalThis.eternity = () => { called += 1; return true; };
+      try { globalThis.eternity(false, true); return called === 1; }
+      finally { globalThis.eternity = saved; } })());
+
+  // 重新打开开关 → 同一状态必须放行（反向条件不能被永久禁用）。
+  reset();
+  arm({ autoEternity: true });
+  env.canEternity = true;
+  env.ep = 1;
+  env.gained = 1e100;
+  check("autoEternity 开启后同样条件放行", A.tickEternity() === true);
+  check("autoEternity 开启后恰好发起 1 次", env.eternityCalls.length === 1);
+
+  const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
+  check("源码门禁读的是 player.auto.eternity.isActive",
+    src.includes("player.auto.eternity.isActive !== true"));
+  check("EC 自动进入同样受 autoEternity 约束（canEternity 窗口内不自动进入）",
+    src.includes("player.auto.eternity.isActive !== true && Player.canEternity"));
 }
 
 // ---------------- 汇总 ----------------
