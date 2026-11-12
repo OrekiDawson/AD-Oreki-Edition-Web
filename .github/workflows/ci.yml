@@ -49,6 +49,24 @@ jobs:
       - name: Enforce tutorial source, generated module and wording contract
         run: node scripts/validate_tutorial.mjs
 
+      - name: Test incremental repository policy
+        run: python3 -m unittest discover -s scripts/tests -p 'test_repository_policy.py' -v
+      - name: Reject new sensitive assets, credentials and CRLF
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            echo "::notice::NOT RUN: manual dispatch has no trusted comparison base"
+            exit 0
+          fi
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ && ! "$BASE_SHA" =~ ^0+$ ]] || {
+            echo "::error::Missing trustworthy base SHA for repository policy"
+            exit 1
+          }
+          git fetch --no-tags --filter=blob:none --depth=1 origin "$BASE_SHA"
+          python3 scripts/check_repository_policy.py --base "$BASE_SHA" --policy web
+
   browser:
     name: Mobile Chromium smoke
     runs-on: ubuntu-latest
