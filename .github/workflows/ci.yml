@@ -42,6 +42,8 @@ jobs:
           node scripts/check_eternity_gate.mjs
           node scripts/test-r100-newgame-autobuyers.mjs
           node scripts/test-scheduler-beat.mjs
+      - name: Protect exact Web production deploy source
+        run: node scripts/check_deploy_workflow.mjs
       # Existing JSON/generated-module drift is recorded as debt; production deployment
       # checks it strictly and fails until the generated asset is synchronized.
       - name: Tutorial generated-source consistency (existing debt, advisory)
