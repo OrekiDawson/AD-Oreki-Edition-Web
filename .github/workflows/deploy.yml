@@ -1,0 +1,80 @@
+name: Deploy Web to oreki.net (manual)
+
+'on':
+  workflow_dispatch:
+    inputs:
+      approved_sha:
+        description: 'Exact main commit SHA approved for production'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oreki-web-production
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Re-run Web CI for the selected commit
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy validated source to Pages repository
+    needs: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: web-production
+    steps:
+      - name: Verify approved source revision
+        env:
+          APPROVED_SHA: ${{ inputs.approved_sha }}
+        run: |
+          if [[ ! "$APPROVED_SHA" =~ ^[0-9a-f]{40}$ ]] || [[ "$APPROVED_SHA" != "$GITHUB_SHA" ]]; then
+            echo "::error::approved_sha must match this workflow's main commit"
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Require cross-repository deploy credential
+        env:
+          PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+        run: |
+          test -n "$PAGES_DEPLOY_TOKEN" || {
+            echo "::error::Configure PAGES_DEPLOY_TOKEN in the web-production environment"
+            exit 1
+          }
+      - name: Checkout Pages destination
+        uses: actions/checkout@v4
+        with:
+          repository: OrekiDawson/OrekiDawson.github.io
+          ref: main
+          path: pages-site
+          token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+      - name: Sync only the game deployment files
+        run: |
+          set -euo pipefail
+          for dir in src modules public; do
+            test -d "$dir"
+            mkdir -p "pages-site/$dir"
+            rsync -a --delete "$dir/" "pages-site/$dir/"
+          done
+          for file in index.html .nojekyll LICENSE MOD-LICENSE NOTICE.md; do
+            test -f "$file"
+            cp "$file" "pages-site/$file"
+          done
+          # Preserve Pages-only CNAME, Ads.txt and metadata.
+          test -f pages-site/CNAME
+          grep -Fxq 'oreki.net' pages-site/CNAME
+          git -C pages-site add src modules public index.html .nojekyll LICENSE MOD-LICENSE NOTICE.md
+          if git -C pages-site diff --cached --quiet; then
+            echo "Pages already matches the validated source"
+            exit 0
+          fi
+          git -C pages-site config user.name "github-actions[bot]"
+          git -C pages-site config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C pages-site commit -m "deploy: sync validated AD Web ${GITHUB_SHA}"
+          git -C pages-site push origin HEAD:main
