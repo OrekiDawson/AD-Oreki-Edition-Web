@@ -43,6 +43,9 @@ export default {
       // （它自己持久化到 localStorage 的 oreki.automation.*），这里只做镜像供绑定。
       automationEnabled: OrekiSmartExecutor.enabled,
       automationIntervalInput: String(OrekiSmartExecutor.intervalSec),
+      // [R103-07] 镜像执行层的真实间隔：computed 直接读 OrekiSmartExecutor（普通对象）没有响应式依赖，
+      // 一旦求值就被 Vue 永久缓存，应用 1 秒/60 秒后界面仍显示旧值。这里由 update() 每帧同步。
+      automationIntervalLive: OrekiSmartExecutor.intervalSec,
       automationStrict: OrekiSmartExecutor.strictGlobal,
       automationAppliedHint: "",
     };
@@ -61,11 +64,11 @@ export default {
     },
     /** [Oreki R50 web · 九修] 当前生效的间隔（只读镜像，读的是执行层的真实值） */
     automationIntervalLabel() {
-      return `${OrekiSmartExecutor.intervalSec} 秒`;
+      return `${this.automationIntervalLive} 秒`;
     },
     /** 当前档位文案：一眼看出是默认档还是严格档 */
     automationModeLabel() {
-      return OrekiSmartExecutor.strictGlobal
+      return this.automationStrict
         ? "当前档位：严格（连续购买也纳入间隔管辖）"
         : "当前档位：默认（间隔只管辖策略决策）";
     },
@@ -160,6 +163,9 @@ export default {
       this.scaleAutobuyerInterval = GameSpeed.scaleAutobuyerInterval;
       this.scaleTickspeedAutobuyerInterval = GameSpeed.scaleTickspeedAutobuyerInterval;
       this.dynamicSpeed = GameSpeed.isDynamic;
+      // [R103-07] 同步执行层真实间隔/档位（见 data() 里的 automationIntervalLive 说明）。
+      this.automationIntervalLive = OrekiSmartExecutor.intervalSec;
+      this.automationStrict = OrekiSmartExecutor.strictGlobal;
       this.refreshSmartRows();
     },
     /**

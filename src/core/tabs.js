@@ -195,6 +195,16 @@ export const Tabs = (function() {
     get current() {
       return Tabs.all.find(tab => tab.isOpen);
     },
+    /**
+     * [R103-07] 存档恢复门禁：`player.options.lastOpenTab` 来自存档，可能被手改、旧档或损坏数据污染。
+     * 只允许恢复「已解锁且未被玩家隐藏」的页签；否则返回 null，由调用方退回合法页签。
+     * 不加这一道闸时，`show()` 会直接把锁定页签写成当前页（永恒 → 时间研究），
+     * 未解锁阶段就会渲染出本不该可见的内容 —— 阶段门禁在「存档恢复」这条路上被绕开。
+     */
+    findRestorableTab(tabId) {
+      const tab = Tabs.all.find(t => t.id === tabId);
+      return tab !== undefined && tab.isUnlocked && !tab.isHidden ? tab : null;
+    },
     oldUI: [
       Tab.dimensions,
       Tab.options,

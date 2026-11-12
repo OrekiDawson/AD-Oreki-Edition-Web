@@ -1,0 +1,75 @@
+{
+  "set1": {
+    "intervalSec": 1,
+    "stored": "1",
+    "labels": [
+      "调度间隔 1 秒",
+      "当前档位：默认（间隔只管辖策略决策）",
+      "策略决策",
+      "原版自动购买器的职责",
+      "也纳入间隔管辖",
+      "注意：开启后游戏推进可能显著变慢甚至停滞"
+    ]
+  },
+  "mark1": {
+    "lastAt": 27941.19999998808,
+    "count": 4
+  },
+  "exec1": {
+    "log": [
+      {
+        "task": "early",
+        "at": 1096,
+        "gapMs": null
+      },
+      {
+        "task": "breakUpgrades",
+        "at": 11111,
+        "gapMs": 10015
+      },
+      {
+        "task": "early",
+        "at": 21142,
+        "gapMs": 10031
+      },
+      {
+        "task": "breakUpgrades",
+        "at": 27941,
+        "gapMs": 6799
+      },
+      {
+        "task": "early",
+        "at": 28962,
+        "gapMs": 1020
+      },
+      {
+        "task": "breakUpgrades",
+        "at": 29987,
+        "gapMs": 1025
+      },
+      {
+        "task": "early",
+        "at": 31012,
+        "gapMs": 1025
+      }
+    ],
+    "fresh": [
+      {
+        "task": "early",
+        "at": 28962,
+        "gapMs": 1020
+      },
+      {
+        "task": "breakUpgrades",
+        "at": 29987,
+        "gapMs": 1025
+      },
+      {
+        "task": "early",
+        "at": 31012,
+        "gapMs": 1025
+      }
+    ],
+    "waitedMs": 2899
+  }
+}

@@ -1,0 +1,58 @@
+[PASS] S1-new-save-gate | fresh-progress-flags | infinity=false, eternity=false, reality=false
+[PASS] S1-new-save-gate | no-infinity-eternity-reality-tab | avail infinity=false, eternity=false, reality=false
+[PASS] S1-new-save-gate | sidebar-has-no-locked-stage-entry | sidebar=["维度","自动化","成就","统计数据","选项"]
+[PASS] S1-new-save-gate | no-time-studies-subtab-in-dom | subtabBar=["Ω 反物质维度","自动购买器","成就","隐藏成就","统计数据","存档","视觉效果","游戏玩法"]
+[PASS] S1-new-save-gate | time-dimension-locked | T.dimensions.time.isUnlocked=false
+[PASS] S1-new-save-gate | time-studies-parent-gated | eternityTabAvailable=false, studiesSubtabUnlocked=true, comp=AntimatterDimensionsTab, studiesText=false
+[PASS] S1-new-save-gate | no-locked-content-rendered | timeStudies=false, reality=false, comp=AntimatterDimensionsTab
+[PASS] S1-new-save-gate | reverse-save-restore-eternity-blocked | view=dimensions/antimatter, comp=AntimatterDimensionsTab, eternityAvail=false, studiesText=false
+[PASS] S1-new-save-gate | reverse-save-restore-time-dimension-blocked | view=dimensions/antimatter, comp=AntimatterDimensionsTab, studiesText=false
+[PASS] S1-new-save-gate | reverse-url-hash-query-blocked | hash=dimensions/antimatter, query=dimensions/antimatter
+[PASS] S1-new-save-gate | no-pageerror | count=0
+[PASS] S2-first-big-crunch | big-crunch-reachable-by-real-play | Player.canCrunch=true
+[PASS] S2-first-big-crunch | pre-crunch-still-locked | infinityUnlocked=false, infinityTab=false, eternityTab=false
+[PASS] S2-first-big-crunch | first-crunch-enters-infinity-stage | infinityUnlocked=true, infinities=1, IP=10
+[PASS] S2-first-big-crunch | no-eternity-entry-after-first-crunch | eternityTab=false, eternityUnlocked=false
+[PASS] S2-first-big-crunch | no-reality-entry-after-first-crunch | realityTab=false
+[PASS] S2-first-big-crunch | no-time-studies-rendered-after-first-crunch | comp=AntimatterDimensionsTab, studiesText=false
+[PASS] S2-first-big-crunch | auto-break-only-after-2nd-infinity | first break at infinities=2 (t+978ms)
+[PASS] S2-first-big-crunch | eternity-not-unlocked-when-break-opens | at break: eternityTab=false, eternities=0
+[PASS] S2-first-big-crunch | infinity-tab-available-after-crunch | infinityTab=true
+[PASS] S2-first-big-crunch | eternity-still-absent-after-break | eternityTab=false, eternities=0
+[PASS] S2-first-big-crunch | sidebar-no-eternity-reality-entry | sidebar=["维度","自动化","挑战","无限","成就","统计数据","选项"]
+[PASS] S2-first-big-crunch | reverse-post-crunch-save-cannot-reach-time-studies | view=dimensions/antimatter, comp=AntimatterDimensionsTab, eternityTab=false, studiesText=false
+[PASS] S2-first-big-crunch | positive-restore-unlocked-tab-still-works | view=infinity/upgrades, infinityTab=true
+[PASS] S2-first-big-crunch | real-save-exported-from-ui | len=7040, source=clipboard, valid=true
+[PASS] S2-first-big-crunch | no-pageerror | count=0
+[PASS] S3-autobuyer | stage-restored-from-real-save | infinity=true, infinityTab=true, eternityTab=false
+[PASS] S3-autobuyer | ui-shows-automation-on-default-10s | toggle="智能自动操作： 启用", labels=["调度间隔 10 秒","当前档位：默认（间隔只管辖策略决策）","策略决策"], input=10
+[PASS] S3-autobuyer | mod-scheduler-really-executing-10s-beat | executions=3, gaps=[null,10015,10031]
+[PASS] S3-autobuyer | switch-off-applies-immediately | enabled=false, stored=0, toggle="智能自动操作： 关闭"
+[PASS] S3-autobuyer | mod-stops-executing-while-switch-off | execLog 3→3, lastBeatAt 21142→21142, actions 0→0
+[PASS] S3-autobuyer | vanilla-autobuyers-not-disabled-by-mod-switch | player.auto.autobuyersOn=true
+[PASS] S3-autobuyer | switch-on-applies-immediately | enabled=true, stored=1
+[PASS] S3-autobuyer | interval-1s-applied-and-stored | interval=1, stored=1, labels=["调度间隔 1 秒","当前档位：默认（间隔只管辖策略决策）","策略决策","原版自动购买器的职责","也纳入间隔管辖","注意：开启后游戏推进可能显著变慢甚至停滞"]
+[PASS] S3-autobuyer | interval-1s-takes-effect | executions=3, gaps=[1020,1025,1025]
+[PASS] S3-autobuyer | interval-60s-applied-and-stored | interval=60, stored=60, labels=["调度间隔 60 秒","当前档位：默认（间隔只管辖策略决策）","策略决策","原版自动购买器的职责","也纳入间隔管辖","注意：开启后游戏推进可能显著变慢甚至停滞"]
+[PASS] S3-autobuyer | interval-60s-takes-effect | executions=+1, gap=60025ms, entry={"task":"breakUpgrades","at":91036.69999998808,"gapMs":60025.09999999404,"taskGapMs":61050.19999998808}
+[PASS] S3-autobuyer | interval-60s-persists-after-reload | enabled=true, interval=60, stored=60
+[PASS] S3-autobuyer | stage-not-advanced-by-reload | eternityTab=false, stage=infinityDimensions
+[PASS] S3-autobuyer | manual-click-recorded-and-mod-yields | manualAction=buy:买到 10 个, manualClick 0→2, hold={"goalId":"unlock-eternity","remainSec":60}
+[PASS] S3-autobuyer | mod-verb-layer-not-acting-during-manual-hold | actionCount 0→0, attemptCount=0, holdRemain=55
+[PASS] S3-autobuyer | no-eternity-layer-entry-while-eternities-zero | eternities=0, eternityTab=false, studiesText=false
+[PASS] S3-autobuyer | no-eternity-reality-tasks-executed-while-zero-eternities | tasks=[], eternityStageAllowed=true
+[PASS] S3-autobuyer | no-pageerror | count=0
+[PASS] S4-save-import | fresh-before-import | infinity=false
+[PASS] S4-save-import | import-modal-recognizes-save | info="反物质：2.38e280 无限次数：3 这将覆盖你当前的游戏进度！ 这个存档上次打开的时间为 1 分 53 秒 前。 离线进度：使用导入存档的设置 导入后将计算 3,443 个时间间隔为 33 毫秒 的离线进度"
+[PASS] S4-save-import | imported-stage-matches-save | infinityUnlocked=true, infinities=6 (exported 3)
+[PASS] S4-save-import | imported-entry-matches-stage | infinityTab=true, eternityTab=false, realityTab=false
+[PASS] S4-save-import | imported-no-eternity-content | studiesText=false, comp=OptionsSavingTab
+[PASS] S4-save-import | import-persisted-by-real-autosave | waited=17130ms, savedInfinities=9, importedInfinities=3
+[PASS] S4-save-import | settings-persist-after-reload | interval=1, enabled=true
+[PASS] S4-save-import | stage-and-resources-persist-after-reload | infinities 6→2910, stage=infinityDimensions, infinityTab=true
+[PASS] S4-save-import | reload-does-not-show-eternity-entry | eternityTab=false
+[PASS] S4-save-import | no-pageerror | count=0
+
+=== SUMMARY ===
+{"PASS":54}
+evidence: /home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R103-07/evidence

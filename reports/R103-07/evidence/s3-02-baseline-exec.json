@@ -1,0 +1,37 @@
+{
+  "log": [
+    {
+      "task": "early",
+      "at": 1096,
+      "gapMs": null
+    },
+    {
+      "task": "breakUpgrades",
+      "at": 11111,
+      "gapMs": 10015
+    },
+    {
+      "task": "early",
+      "at": 21142,
+      "gapMs": 10031
+    }
+  ],
+  "fresh": [
+    {
+      "task": "early",
+      "at": 1096,
+      "gapMs": null
+    },
+    {
+      "task": "breakUpgrades",
+      "at": 11111,
+      "gapMs": 10015
+    },
+    {
+      "task": "early",
+      "at": 21142,
+      "gapMs": 10031
+    }
+  ],
+  "waitedMs": 15470
+}

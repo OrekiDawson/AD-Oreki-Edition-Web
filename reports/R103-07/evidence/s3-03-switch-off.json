@@ -1,0 +1,26 @@
+{
+  "beforeOff": {
+    "count": 3,
+    "lastAt": 21142,
+    "actionCount": 0,
+    "attemptCount": 0,
+    "autobuyersOn": true
+  },
+  "offState": {
+    "enabled": false,
+    "storedEnabled": "0",
+    "actionCount": 0,
+    "attemptCount": 0,
+    "lastBeatAt": 21142,
+    "count": 3,
+    "autobuyersOn": true,
+    "toggleText": "智能自动操作： 关闭"
+  },
+  "afterOff": {
+    "count": 3,
+    "lastBeatAt": 21142,
+    "actionCount": 0,
+    "attemptCount": 0,
+    "enabled": false
+  }
+}

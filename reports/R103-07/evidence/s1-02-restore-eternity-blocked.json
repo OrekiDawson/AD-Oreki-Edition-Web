@@ -1,0 +1,85 @@
+{
+  "progress": {
+    "infinity": false,
+    "eternity": false,
+    "reality": false
+  },
+  "player": {
+    "infinities": "0",
+    "eternities": "0",
+    "realities": "0",
+    "break": false,
+    "antimatter": "4.22336030577882e+276",
+    "infinityPoints": "0",
+    "autobuyersOn": true
+  },
+  "view": {
+    "tab": "dimensions",
+    "subtab": "antimatter"
+  },
+  "tabAvail": {
+    "dimensions": true,
+    "automation": true,
+    "challenges": false,
+    "infinity": false,
+    "eternity": false,
+    "reality": false,
+    "celestials": false
+  },
+  "tabUnlocked": {
+    "dimensions": true,
+    "infinity": false,
+    "eternity": false,
+    "reality": false
+  },
+  "timeDimensionUnlocked": false,
+  "eternityStudiesUnlocked": true,
+  "sidebarTabNames": [
+    "维度",
+    "自动化",
+    "成就",
+    "统计数据",
+    "选项"
+  ],
+  "sidebarText": "4.22e276 反物质 维度 Ω 反物质维度 自动化 自动购买器 成就 成就 隐藏成就 统计数据 统计数据 选项 存档 视觉效果 游戏玩法",
+  "subtabBar": [
+    "Ω 反物质维度",
+    "自动购买器",
+    "成就",
+    "隐藏成就",
+    "统计数据",
+    "存档",
+    "视觉效果",
+    "游戏玩法"
+  ],
+  "currentComponent": "AntimatterDimensionsTab",
+  "bodyHasTimeStudies": false,
+  "bodyHasReality": false,
+  "exec": {
+    "enabled": true,
+    "intervalSec": 10,
+    "strictGlobal": false,
+    "stage": "preInfinity",
+    "actionCount": 0,
+    "attemptCount": 0,
+    "eternityStageAllowed": false,
+    "lastBeatAt": 1135.1000000089407,
+    "execLog": [
+      {
+        "task": "routine",
+        "at": 1135,
+        "gapMs": null,
+        "taskGapMs": null
+      }
+    ],
+    "manualClickCount": 0,
+    "manualHold": null,
+    "lastAction": null
+  },
+  "storage": {
+    "automationEnabled": null,
+    "automationInterval": null,
+    "automationStrict": null,
+    "saveLength": 6922
+  }
+}

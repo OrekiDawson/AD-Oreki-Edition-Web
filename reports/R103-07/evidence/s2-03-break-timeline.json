@@ -1,0 +1,26 @@
+[
+  {
+    "atMs": 23,
+    "inf": "1",
+    "break": false,
+    "eternityStageAllowed": false,
+    "eternityTab": false,
+    "eternities": "0"
+  },
+  {
+    "atMs": 398,
+    "inf": "2",
+    "break": false,
+    "eternityStageAllowed": false,
+    "eternityTab": false,
+    "eternities": "0"
+  },
+  {
+    "atMs": 978,
+    "inf": "2",
+    "break": true,
+    "eternityStageAllowed": true,
+    "eternityTab": false,
+    "eternities": "0"
+  }
+]

@@ -1,0 +1,94 @@
+{
+  "progress": {
+    "infinity": true,
+    "eternity": false,
+    "reality": false
+  },
+  "player": {
+    "infinities": "3",
+    "eternities": "0",
+    "realities": "0",
+    "break": true,
+    "antimatter": "5.09671847047326e+163",
+    "infinityPoints": "3635619061",
+    "autobuyersOn": true
+  },
+  "view": {
+    "tab": "infinity",
+    "subtab": "upgrades"
+  },
+  "tabAvail": {
+    "dimensions": true,
+    "automation": true,
+    "challenges": true,
+    "infinity": true,
+    "eternity": false,
+    "reality": false,
+    "celestials": false
+  },
+  "tabUnlocked": {
+    "dimensions": true,
+    "infinity": true,
+    "eternity": false,
+    "reality": false
+  },
+  "timeDimensionUnlocked": false,
+  "eternityStudiesUnlocked": true,
+  "sidebarTabNames": [
+    "维度",
+    "自动化",
+    "挑战",
+    "无限",
+    "成就",
+    "统计数据",
+    "选项"
+  ],
+  "sidebarText": "3.64e9 无限点数 维度 Ω 反物质维度 自动化 自动购买器 挑战 Ω 普通挑战 ∞ 无限挑战 无限 无限升级 ∝ 打破无限 Ξ 复制器 成就 成就 隐藏成就 统计数据 统计数据 最近重置 倍率明细 选项 存档 视觉效果 游戏玩法",
+  "subtabBar": [
+    "Ω 反物质维度",
+    "自动购买器",
+    "Ω 普通挑战",
+    "∞ 无限挑战",
+    "无限升级",
+    "∝ 打破无限",
+    "Ξ 复制器",
+    "成就",
+    "隐藏成就",
+    "统计数据",
+    "最近重置",
+    "倍率明细",
+    "存档",
+    "视觉效果",
+    "游戏玩法"
+  ],
+  "currentComponent": "InfinityUpgradesTab",
+  "bodyHasTimeStudies": false,
+  "bodyHasReality": false,
+  "exec": {
+    "enabled": true,
+    "intervalSec": 10,
+    "strictGlobal": false,
+    "stage": "infinityDimensions",
+    "actionCount": 0,
+    "attemptCount": 0,
+    "eternityStageAllowed": true,
+    "lastBeatAt": 1176.7000000029802,
+    "execLog": [
+      {
+        "task": "routine",
+        "at": 1177,
+        "gapMs": null,
+        "taskGapMs": null
+      }
+    ],
+    "manualClickCount": 0,
+    "manualHold": null,
+    "lastAction": null
+  },
+  "storage": {
+    "automationEnabled": null,
+    "automationInterval": null,
+    "automationStrict": null,
+    "saveLength": 7038
+  }
+}

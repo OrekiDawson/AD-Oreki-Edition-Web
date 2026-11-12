@@ -1,0 +1,334 @@
+{
+  "generatedAt": "2026-11-12T14:07:06.430Z",
+  "baseUrl": "http://127.0.0.1:8099/",
+  "viewport": "412x839 (Pixel 7 mobile, touch, DPR 2.625)",
+  "totals": {
+    "PASS": 54
+  },
+  "results": [
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "fresh-progress-flags",
+      "status": "PASS",
+      "detail": "infinity=false, eternity=false, reality=false"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "no-infinity-eternity-reality-tab",
+      "status": "PASS",
+      "detail": "avail infinity=false, eternity=false, reality=false"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "sidebar-has-no-locked-stage-entry",
+      "status": "PASS",
+      "detail": "sidebar=[\"维度\",\"自动化\",\"成就\",\"统计数据\",\"选项\"]"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "no-time-studies-subtab-in-dom",
+      "status": "PASS",
+      "detail": "subtabBar=[\"Ω 反物质维度\",\"自动购买器\",\"成就\",\"隐藏成就\",\"统计数据\",\"存档\",\"视觉效果\",\"游戏玩法\"]"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "time-dimension-locked",
+      "status": "PASS",
+      "detail": "T.dimensions.time.isUnlocked=false"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "time-studies-parent-gated",
+      "status": "PASS",
+      "detail": "eternityTabAvailable=false, studiesSubtabUnlocked=true, comp=AntimatterDimensionsTab, studiesText=false"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "no-locked-content-rendered",
+      "status": "PASS",
+      "detail": "timeStudies=false, reality=false, comp=AntimatterDimensionsTab"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "reverse-save-restore-eternity-blocked",
+      "status": "PASS",
+      "detail": "view=dimensions/antimatter, comp=AntimatterDimensionsTab, eternityAvail=false, studiesText=false"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "reverse-save-restore-time-dimension-blocked",
+      "status": "PASS",
+      "detail": "view=dimensions/antimatter, comp=AntimatterDimensionsTab, studiesText=false"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "reverse-url-hash-query-blocked",
+      "status": "PASS",
+      "detail": "hash=dimensions/antimatter, query=dimensions/antimatter"
+    },
+    {
+      "scenario": "S1-new-save-gate",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "big-crunch-reachable-by-real-play",
+      "status": "PASS",
+      "detail": "Player.canCrunch=true"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "pre-crunch-still-locked",
+      "status": "PASS",
+      "detail": "infinityUnlocked=false, infinityTab=false, eternityTab=false"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "first-crunch-enters-infinity-stage",
+      "status": "PASS",
+      "detail": "infinityUnlocked=true, infinities=1, IP=10"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "no-eternity-entry-after-first-crunch",
+      "status": "PASS",
+      "detail": "eternityTab=false, eternityUnlocked=false"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "no-reality-entry-after-first-crunch",
+      "status": "PASS",
+      "detail": "realityTab=false"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "no-time-studies-rendered-after-first-crunch",
+      "status": "PASS",
+      "detail": "comp=AntimatterDimensionsTab, studiesText=false"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "auto-break-only-after-2nd-infinity",
+      "status": "PASS",
+      "detail": "first break at infinities=2 (t+978ms)"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "eternity-not-unlocked-when-break-opens",
+      "status": "PASS",
+      "detail": "at break: eternityTab=false, eternities=0"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "infinity-tab-available-after-crunch",
+      "status": "PASS",
+      "detail": "infinityTab=true"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "eternity-still-absent-after-break",
+      "status": "PASS",
+      "detail": "eternityTab=false, eternities=0"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "sidebar-no-eternity-reality-entry",
+      "status": "PASS",
+      "detail": "sidebar=[\"维度\",\"自动化\",\"挑战\",\"无限\",\"成就\",\"统计数据\",\"选项\"]"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "reverse-post-crunch-save-cannot-reach-time-studies",
+      "status": "PASS",
+      "detail": "view=dimensions/antimatter, comp=AntimatterDimensionsTab, eternityTab=false, studiesText=false"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "positive-restore-unlocked-tab-still-works",
+      "status": "PASS",
+      "detail": "view=infinity/upgrades, infinityTab=true"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "real-save-exported-from-ui",
+      "status": "PASS",
+      "detail": "len=7040, source=clipboard, valid=true"
+    },
+    {
+      "scenario": "S2-first-big-crunch",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "stage-restored-from-real-save",
+      "status": "PASS",
+      "detail": "infinity=true, infinityTab=true, eternityTab=false"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "ui-shows-automation-on-default-10s",
+      "status": "PASS",
+      "detail": "toggle=\"智能自动操作： 启用\", labels=[\"调度间隔 10 秒\",\"当前档位：默认（间隔只管辖策略决策）\",\"策略决策\"], input=10"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "mod-scheduler-really-executing-10s-beat",
+      "status": "PASS",
+      "detail": "executions=3, gaps=[null,10015,10031]"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "switch-off-applies-immediately",
+      "status": "PASS",
+      "detail": "enabled=false, stored=0, toggle=\"智能自动操作： 关闭\""
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "mod-stops-executing-while-switch-off",
+      "status": "PASS",
+      "detail": "execLog 3→3, lastBeatAt 21142→21142, actions 0→0"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "vanilla-autobuyers-not-disabled-by-mod-switch",
+      "status": "PASS",
+      "detail": "player.auto.autobuyersOn=true"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "switch-on-applies-immediately",
+      "status": "PASS",
+      "detail": "enabled=true, stored=1"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-1s-applied-and-stored",
+      "status": "PASS",
+      "detail": "interval=1, stored=1, labels=[\"调度间隔 1 秒\",\"当前档位：默认（间隔只管辖策略决策）\",\"策略决策\",\"原版自动购买器的职责\",\"也纳入间隔管辖\",\"注意：开启后游戏推进可能显著变慢甚至停滞\"]"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-1s-takes-effect",
+      "status": "PASS",
+      "detail": "executions=3, gaps=[1020,1025,1025]"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-60s-applied-and-stored",
+      "status": "PASS",
+      "detail": "interval=60, stored=60, labels=[\"调度间隔 60 秒\",\"当前档位：默认（间隔只管辖策略决策）\",\"策略决策\",\"原版自动购买器的职责\",\"也纳入间隔管辖\",\"注意：开启后游戏推进可能显著变慢甚至停滞\"]"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-60s-takes-effect",
+      "status": "PASS",
+      "detail": "executions=+1, gap=60025ms, entry={\"task\":\"breakUpgrades\",\"at\":91036.69999998808,\"gapMs\":60025.09999999404,\"taskGapMs\":61050.19999998808}"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-60s-persists-after-reload",
+      "status": "PASS",
+      "detail": "enabled=true, interval=60, stored=60"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "stage-not-advanced-by-reload",
+      "status": "PASS",
+      "detail": "eternityTab=false, stage=infinityDimensions"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "manual-click-recorded-and-mod-yields",
+      "status": "PASS",
+      "detail": "manualAction=buy:买到 10 个, manualClick 0→2, hold={\"goalId\":\"unlock-eternity\",\"remainSec\":60}"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "mod-verb-layer-not-acting-during-manual-hold",
+      "status": "PASS",
+      "detail": "actionCount 0→0, attemptCount=0, holdRemain=55"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "no-eternity-layer-entry-while-eternities-zero",
+      "status": "PASS",
+      "detail": "eternities=0, eternityTab=false, studiesText=false"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "no-eternity-reality-tasks-executed-while-zero-eternities",
+      "status": "PASS",
+      "detail": "tasks=[], eternityStageAllowed=true"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "fresh-before-import",
+      "status": "PASS",
+      "detail": "infinity=false"
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "import-modal-recognizes-save",
+      "status": "PASS",
+      "detail": "info=\"反物质：2.38e280 无限次数：3 这将覆盖你当前的游戏进度！ 这个存档上次打开的时间为 1 分 53 秒 前。 离线进度：使用导入存档的设置 导入后将计算 3,443 个时间间隔为 33 毫秒 的离线进度\""
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "imported-stage-matches-save",
+      "status": "PASS",
+      "detail": "infinityUnlocked=true, infinities=6 (exported 3)"
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "imported-entry-matches-stage",
+      "status": "PASS",
+      "detail": "infinityTab=true, eternityTab=false, realityTab=false"
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "imported-no-eternity-content",
+      "status": "PASS",
+      "detail": "studiesText=false, comp=OptionsSavingTab"
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "import-persisted-by-real-autosave",
+      "status": "PASS",
+      "detail": "waited=17130ms, savedInfinities=9, importedInfinities=3"
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "settings-persist-after-reload",
+      "status": "PASS",
+      "detail": "interval=1, enabled=true"
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "stage-and-resources-persist-after-reload",
+      "status": "PASS",
+      "detail": "infinities 6→2910, stage=infinityDimensions, infinityTab=true"
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "reload-does-not-show-eternity-entry",
+      "status": "PASS",
+      "detail": "eternityTab=false"
+    },
+    {
+      "scenario": "S4-save-import",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    }
+  ]
+}

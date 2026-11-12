@@ -1727,7 +1727,9 @@ export function init() {
   SteamRuntime.initialize();
   Cloud.init();
   GameStorage.load();
-  Tabs.all.find(t => t.config.id === player.options.lastOpenTab)?.show(true);
+  // [R103-07] 恢复上次页签同样过阶段门禁：lastOpenTab 指向未解锁/被隐藏页签时退回维度页，
+  // 避免手改或损坏的存档在未解锁阶段直达永恒/时间研究等内容。
+  (Tabs.findRestorableTab(player.options.lastOpenTab) ?? Tab.dimensions).show(true);
   Payments.init();
 }
 

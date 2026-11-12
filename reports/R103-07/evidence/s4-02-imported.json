@@ -1,0 +1,107 @@
+{
+  "imported": {
+    "progress": {
+      "infinity": true,
+      "eternity": false,
+      "reality": false
+    },
+    "player": {
+      "infinities": "6",
+      "eternities": "0",
+      "realities": "0",
+      "break": true,
+      "antimatter": "1.05159042715851e+175",
+      "infinityPoints": "5345768636019",
+      "autobuyersOn": true
+    },
+    "view": {
+      "tab": "options",
+      "subtab": "saving"
+    },
+    "tabAvail": {
+      "dimensions": true,
+      "automation": true,
+      "challenges": true,
+      "infinity": true,
+      "eternity": false,
+      "reality": false,
+      "celestials": false
+    },
+    "tabUnlocked": {
+      "dimensions": true,
+      "infinity": true,
+      "eternity": false,
+      "reality": false
+    },
+    "timeDimensionUnlocked": false,
+    "eternityStudiesUnlocked": true,
+    "sidebarTabNames": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "sidebarText": "1.05e175 反物质 维度 Ω 反物质维度 自动化 自动购买器 挑战 Ω 普通挑战 ∞ 无限挑战 无限 无限升级 ∝ 打破无限 Ξ 复制器 成就 成就 隐藏成就 统计数据 统计数据 最近重置 倍率明细 选项 存档 视觉效果 游戏玩法",
+    "subtabBar": [
+      "Ω 反物质维度",
+      "自动购买器",
+      "Ω 普通挑战",
+      "∞ 无限挑战",
+      "无限升级",
+      "∝ 打破无限",
+      "Ξ 复制器",
+      "成就",
+      "隐藏成就",
+      "统计数据",
+      "最近重置",
+      "倍率明细",
+      "存档",
+      "视觉效果",
+      "游戏玩法"
+    ],
+    "currentComponent": "OptionsSavingTab",
+    "bodyHasTimeStudies": false,
+    "bodyHasReality": false,
+    "exec": {
+      "enabled": true,
+      "intervalSec": 10,
+      "strictGlobal": false,
+      "stage": "infinityDimensions",
+      "actionCount": 0,
+      "attemptCount": 0,
+      "eternityStageAllowed": true,
+      "lastBeatAt": 11184.59999999404,
+      "execLog": [
+        {
+          "task": "routine",
+          "at": 1157,
+          "gapMs": null,
+          "taskGapMs": null
+        },
+        {
+          "task": "early",
+          "at": 11185,
+          "gapMs": 10027,
+          "taskGapMs": null
+        }
+      ],
+      "manualClickCount": 0,
+      "manualHold": null,
+      "lastAction": null
+    },
+    "storage": {
+      "automationEnabled": null,
+      "automationInterval": null,
+      "automationStrict": null,
+      "saveLength": 0
+    }
+  },
+  "exported": {
+    "infinities": "3",
+    "IP": "3635619061",
+    "antimatter": "6.8385404240679e+307"
+  }
+}

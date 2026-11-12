@@ -1,0 +1,192 @@
+[
+  {
+    "type": "error",
+    "at": 1794492283971,
+    "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+  },
+  {
+    "type": "log",
+    "at": 1794492283986,
+    "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
+  },
+  {
+    "type": "info",
+    "at": 1794492284127,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-infinity"
+  },
+  {
+    "type": "info",
+    "at": 1794492284127,
+    "text": "[OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)"
+  },
+  {
+    "type": "error",
+    "at": 1794492286021,
+    "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+  },
+  {
+    "type": "log",
+    "at": 1794492286034,
+    "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
+  },
+  {
+    "type": "info",
+    "at": 1794492286172,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492287396,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492287396,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492291830,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492291836,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492297109,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492297112,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492302519,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492302526,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492307834,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492307839,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492313874,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492313877,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492320210,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492320214,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492326970,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492326980,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492335324,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492335328,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492344693,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492344704,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492354764,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492354764,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492365614,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492365620,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "error",
+    "at": 1794492377426,
+    "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+  },
+  {
+    "type": "log",
+    "at": 1794492377434,
+    "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
+  },
+  {
+    "type": "info",
+    "at": 1794492377532,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492378743,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492378755,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492389930,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492389935,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  }
+]

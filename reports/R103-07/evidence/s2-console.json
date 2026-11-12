@@ -1,0 +1,87 @@
+[
+  {
+    "type": "error",
+    "at": 1794492262135,
+    "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+  },
+  {
+    "type": "log",
+    "at": 1794492262153,
+    "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
+  },
+  {
+    "type": "info",
+    "at": 1794492262313,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-infinity"
+  },
+  {
+    "type": "info",
+    "at": 1794492262313,
+    "text": "[OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)"
+  },
+  {
+    "type": "info",
+    "at": 1794492268464,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip"
+  },
+  {
+    "type": "info",
+    "at": 1794492272390,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492272390,
+    "text": "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)"
+  },
+  {
+    "type": "error",
+    "at": 1794492275179,
+    "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+  },
+  {
+    "type": "log",
+    "at": 1794492275192,
+    "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
+  },
+  {
+    "type": "info",
+    "at": 1794492275315,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492276021,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492276022,
+    "text": "[OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)"
+  },
+  {
+    "type": "error",
+    "at": 1794492278246,
+    "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+  },
+  {
+    "type": "log",
+    "at": 1794492278252,
+    "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
+  },
+  {
+    "type": "info",
+    "at": 1794492278372,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794492278958,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794492278958,
+    "text": "[OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)"
+  }
+]

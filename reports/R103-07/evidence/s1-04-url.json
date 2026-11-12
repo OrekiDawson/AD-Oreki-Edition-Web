@@ -1,0 +1,12 @@
+{
+  "hash": {
+    "tab": "dimensions",
+    "subtab": "antimatter"
+  },
+  "query": {
+    "tab": "dimensions",
+    "subtab": "antimatter"
+  },
+  "hashComp": "AntimatterDimensionsTab",
+  "queryComp": "AntimatterDimensionsTab"
+}

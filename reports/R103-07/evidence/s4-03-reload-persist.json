@@ -1,0 +1,32 @@
+{
+  "preReload": {
+    "intervalSec": 1,
+    "stored": "1",
+    "infinities": "6",
+    "stage": "infinityDimensions"
+  },
+  "postReload": {
+    "view": {
+      "tab": "options",
+      "subtab": "gameplay"
+    },
+    "progress": {
+      "infinity": true,
+      "eternity": false,
+      "reality": false
+    },
+    "infinities": "2910",
+    "intervalSec": 1,
+    "enabled": true,
+    "stage": "infinityDimensions",
+    "tabAvail": {
+      "dimensions": true,
+      "automation": true,
+      "challenges": true,
+      "infinity": true,
+      "eternity": false,
+      "reality": false,
+      "celestials": false
+    }
+  }
+}

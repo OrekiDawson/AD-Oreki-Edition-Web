@@ -144,7 +144,8 @@ export const GameStorage = {
     this.loadPlayerObject(this.saves[slot] ?? Player.defaultStart);
     this.loadBackupTimes();
     this.backupOfflineSlots();
-    Tabs.all.find(t => t.id === player.options.lastOpenTab).show(false);
+    // [R103-07] 切换存档槽同样过阶段门禁：只恢复已解锁且未隐藏的页签，否则退回维度页。
+    (Tabs.findRestorableTab(player.options.lastOpenTab) ?? Tab.dimensions).show(false);
     Modal.hideAll();
     Cloud.resetTempState();
     GameUI.notify.info("存档已加载");

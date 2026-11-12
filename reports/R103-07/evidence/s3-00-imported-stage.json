@@ -1,0 +1,10 @@
+{
+  "view": {
+    "tab": "options",
+    "subtab": "saving"
+  },
+  "stage": "infinityDimensions",
+  "enabled": true,
+  "intervalSec": 10,
+  "inf": "4"
+}
