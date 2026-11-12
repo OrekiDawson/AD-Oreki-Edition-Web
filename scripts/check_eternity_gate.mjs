@@ -19,6 +19,10 @@
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+// 生产模块用游戏全局 Decimal；Node 夹具必须提供同一个真实实现，
+// 否则 eternityUpgradeReserve 的原生 number→Decimal 归一化会 ReferenceError。
+import Decimal from "../modules/break_infinity.js";
+globalThis.Decimal = Decimal;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -96,6 +100,9 @@ function reset() {
   delete globalThis.OrekiIu15Sprint;
   A.holdForRealityUpgrade10 = ORIG_HOLD;
   A.ecEntryPending = ORIG_EC;
+  // [R104 P0] 新档引导窗口的会话缓存必须逐例重置，否则用例之间会互相污染。
+  delete A._freshSessionBootstrap;
+  delete A._eternityAutobuyerAdopted;
 }
 
 // ---------------- ① 自动化关闭 → 一次都不发起 ----------------
@@ -263,9 +270,13 @@ try {
     !autoSrc.includes("eternityPoints.value.sub(") && !autoSrc.includes("eternityUpgrades.add("));
 
   // 行为验证：用最小假对象跑真实方法体（不加载游戏；A 已在文件顶部 import）
-  const mkCost = v => ({ v, lt(o) { return this.v < o.v; }, log10() { return Math.log10(this.v); } });
+  // [R104 P0] 原版 EternityUpgrade.cost 是原生 number，不是 Decimal/MathDouble；
+  // 回归必须用真实数据形状（历史用带 .lt 的假对象，掩盖了线上 TypeError）。
+  const mkCost = v => v;
+  // 预留量已是真实 Decimal（R104 修复后），gte 比较必须兼容 Decimal 与假对象。
+  const numOf = o => (o && typeof o.toNumber === "function" ? o.toNumber() : (o && o.v !== undefined ? o.v : o));
   const mkEP = v => ({
-    v, lte: () => false, log10: () => Math.log10(v), gte: o => v >= o.v,
+    v, lte: () => false, log10: () => Math.log10(v), gte: o => v >= numOf(o),
   });
   const savedAll = globalThis.EternityUpgrade;
   const savedEter = globalThis.Currency.eternities;
@@ -279,14 +290,16 @@ try {
     globalThis.EternityUpgrade = { all };
     globalThis.Currency.eternities = { value: { lt: () => false } };
     globalThis.Currency.eternityPoints = { value: mkEP(0.483) };
-    check("EP 0.483 时预留 5 EP（旧 10 倍判定会漏掉）", A.eternityUpgradeReserve() === all[0].cost);
+    const reserveOf = () => { const r = A.eternityUpgradeReserve(); return r === null ? null : r.toNumber(); };
+    check("EP 0.483 时预留 5 EP（旧 10 倍判定会漏掉）", reserveOf() === 5);
+    check("原生 number cost 不再抛 cost.lt（R104 P0）", true);
     check("EP 0.483 < 预留 → 不买时间维度", A.isEternityPointsBeyondReserve() === false);
 
     globalThis.Currency.eternityPoints = { value: mkEP(5.2) };
     check("EP 5.2 ≥ 预留 → 放行（先买 TD1 解锁商店）", A.isEternityPointsBeyondReserve() === true);
 
     all[0].isBought = true; // 买到首档后，最便宜变成 10
-    check("首档买完后预留自动抬到 10 EP", A.eternityUpgradeReserve() === all[1].cost);
+    check("首档买完后预留自动抬到 10 EP", reserveOf() === 10);
 
     all[1].isBought = true; // 只剩 5e4，EP 5.2 差 4 个数量级 → 遥不可及
     check("第三档 5e4 遥不可及 → 不预留（不锁死 TD）", A.eternityUpgradeReserve() === null);
@@ -354,8 +367,15 @@ try {
     check("同一笔购买不会被重复补发", A2.settleTimeTheoremReward() === 0 && added === 499);
     total = 6;
     check("批量新增 2 次 → 补发 998 TT", A2.settleTimeTheoremReward() === 998 && added === 1497);
+    total = 2_400_000;
+    check("[R104 P1] 高倍率单拍真实大额购买 delta=2.4e6 → 按 ×500 补发（不再当换档丢弃）",
+      A2.settleTimeTheoremReward() === (2_400_000 - 6) * 499);
+    const addedAfterBig = added;
+    total = 2_400_000 + 200_000_000;
+    check("超过 1e8 的换档级跳变仍只重设基线、不发奖",
+      A2.settleTimeTheoremReward() === 0 && added === addedAfterBig);
     total = 0;
-    check("计数回退只重置基线、不发奖", A2.settleTimeTheoremReward() === 0 && added === 1497);
+    check("计数回退只重置基线、不发奖", A2.settleTimeTheoremReward() === 0 && added === addedAfterBig);
   } finally {
     globalThis.TimeTheorems = savedTT;
     globalThis.Currency = savedCur;
@@ -418,7 +438,127 @@ try {
   check("源码门禁读的是 player.auto.eternity.isActive",
     src.includes("player.auto.eternity.isActive !== true"));
   check("EC 自动进入同样受 autoEternity 约束（canEternity 窗口内不自动进入）",
-    src.includes("player.auto.eternity.isActive !== true && Player.canEternity"));
+    src.includes("player.auto.eternity.isActive !== true")
+    && src.includes("!this._eternityBootstrapActive()")
+    && src.includes("Player.canEternity) return false"));
+}
+
+// ---------------- ⑫ [R104 P0] 新档引导窗口 ----------------
+// 背景：全新存档 auto.eternity.isActive 默认 false，而自动永恒自动器要 100 次永恒才解锁
+// （secret-formula/eternity/eternity-milestones.js:141）。R101 门禁把 isActive=false
+// 一律当玩家关闭 ⇒ 新档永远不结算。这里锁死「新档放行 / 已有进度仍拦截」的边界。
+{
+  const savedPlayer = globalThis.player;
+  const mkEternities = (v) => ({ lt: (n) => v < n, toNumber: () => v });
+  const runCase = ({ eternities, isActive, unlocked }) => {
+    reset();
+    player.eternities = mkEternities(eternities);
+    player.auto.eternity.isActive = isActive;
+    arm({ hold: false, ec: false, autoEternity: isActive });
+    if (unlocked !== undefined) {
+      globalThis.EternityMilestone = { autobuyerEternity: { isReached: unlocked } };
+    } else {
+      delete globalThis.EternityMilestone;
+    }
+    env.canEternity = true;
+    env.ep = 0;
+    env.gained = 1e100;
+    return A.tickEternity();
+  };
+
+  check("新档（eternities=0）+ 开关关闭 → 引导窗口放行首次永恒",
+    runCase({ eternities: 0, isActive: false }) === true);
+  check("新档首次永恒发起的原版 eternity 恰好 1 次", env.eternityCalls.length === 1,
+    `calls=${env.eternityCalls.length}`);
+
+  check("已有进度（eternities=13）+ 开关关闭 + 自动器未解锁 → 仍拦截（R101 P0 不回退）",
+    runCase({ eternities: 13, isActive: false, unlocked: false }) === false);
+  check("已有进度拦截时 eternity 调用 0 次", env.eternityCalls.length === 0);
+
+  check("已有进度（eternities=50）+ 开关关闭 + 自动器已解锁 → 拦截",
+    runCase({ eternities: 50, isActive: false, unlocked: true }) === false);
+
+  check("全新档会话推进到 50 次永恒、自动器解锁 → 一次性接管原版开关并继续放行",
+    (() => {
+      // 模拟同一会话：先在新档时采样，再推进到 50
+      reset();
+      globalThis.player.eternities = mkEternities(0);
+      player.auto.eternity.isActive = false;
+      arm({ hold: false, ec: false, autoEternity: false });
+      A._eternityBootstrapActive(); // 采样全新档
+      globalThis.player.eternities = mkEternities(50);
+      globalThis.EternityMilestone = { autobuyerEternity: { isReached: true } };
+      env.canEternity = true;
+      env.ep = 0;
+      env.gained = 1e100;
+      const r = A.tickEternity();
+      const adopted = A._eternityAutobuyerAdopted === true;
+      const switchOn = player.auto.eternity.isActive === true;
+      delete globalThis.EternityMilestone;
+      return r === true && adopted === true && switchOn;
+    })());
+
+  check("新档会话内开关被重置为 false → 下次 tickEternity 幂等补回 true 并继续放行",
+    (() => {
+      player.auto.eternity.isActive = false;
+      env.canEternity = true;
+      env.ep = 0;
+      env.gained = 1e100;
+      env.eternityCalls = [];
+      globalThis.EternityMilestone = { autobuyerEternity: { isReached: true } };
+      const r = A.tickEternity();
+      delete globalThis.EternityMilestone;
+      return r === true && player.auto.eternity.isActive === true;
+    })());
+  check("载入已有进度（eternities=13）不接管：仍按玩家开关拦截（R101 P0 不回退）",
+    (() => {
+      reset();
+      globalThis.player.eternities = mkEternities(13);
+      player.auto.eternity.isActive = false;
+      arm({ hold: false, ec: false, autoEternity: false });
+      globalThis.EternityMilestone = { autobuyerEternity: { isReached: true } };
+      env.canEternity = true;
+      env.ep = 0;
+      env.gained = 1e100;
+      const r = A.tickEternity();
+      const stillOff = player.auto.eternity.isActive === false;
+      delete globalThis.EternityMilestone;
+      return r === false && stillOff;
+    })());
+  check("接管过的会话在 reality 重置后继续维持 isActive（EC 链不再自锁）",
+    (() => {
+      reset();
+      A._freshSessionBootstrap = true;   // 本会话全新档
+      A._eternityAutobuyerAdopted = true; // 已接管过
+      globalThis.player.eternities = mkEternities(236); // reality 后 et 已 >0
+      player.auto.eternity.isActive = false;             // reality 重置写回 false
+      globalThis.EternityMilestone = { autobuyerEternity: { isReached: true } };
+      A._adoptEternityAutobuyerIfNeeded();
+      const on = player.auto.eternity.isActive === true;
+      delete globalThis.EternityMilestone;
+      return on;
+    })());
+
+  globalThis.player = savedPlayer;
+  delete globalThis.EternityMilestone;
+  reset();
+}
+
+// ---------------- ⑬ [R104 P0] tick 内部节流不得按被调用次数放大 ----------------
+// 实测（diag-frame-20261113-0125）：tick() 在统一节拍下约 45s 才被服务一次，_frame%30 变成
+// ~22 分钟/次研究、_frame%20 变成 ~15 分钟/次 EC。改为真实时间节流后必须锁死。
+{
+  const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
+  check("tick 研究节流改为真实时间（_lastStudyTickAt，1s）",
+    src.includes("_lastStudyTickAt") && src.includes("nowMs - (this._lastStudyTickAt || 0) >= 1000"));
+  check("tick EC 节流改为真实时间（_lastEcTickAt，2s）",
+    src.includes("_lastEcTickAt") && src.includes("nowMs - (this._lastEcTickAt || 0) >= 2000"));
+  check("禁止回归：tick 不再用 _frame % STUDY_TICK_INTERVAL 控制研究购买",
+    !src.includes("if (this._frame % STUDY_TICK_INTERVAL === 0)"));
+  check("禁止回归：tick 不再用 _frame % 20 控制 EC 购买",
+    !src.includes("if (this._frame % 20 === 0) ec = this.buyEcStudiesAndStart();"));
+  check("EC1 入口资源=永恒次数，不得压永恒（与 EC4 同型例外）",
+    src.includes("if (id === 1 || id === 4) return false;"));
 }
 
 // ---------------- 汇总 ----------------

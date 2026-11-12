@@ -9954,3 +9954,27 @@ TT 早已达标；真实阻断是 **EC 全 0**：`unlocked=0 / current=0 / compl
 
 - [R103-07 Web 阶段门禁/自动购买器定向验收与 Pages 自动部署核查] 2026-11-12 21:35–22:10：真实浏览器（Playwright 1.65.0 + Chromium 158 headless，Pixel 7 上下文 412×839/touch/DPR2.625，本地 serve.mjs 8099）定向验收 **54/54 PASS**：新档无无限/永恒/现实入口、时间研究不可达；首次大坍缩后进入无限阶段、不提前出现永恒入口、自动 Break 仅在 `infinities≥2` 后发生；自动购买器总开关关闭立即停止（execLog/beat/actionCount 全冻结，原版 autobuyersOn 不变）、1 s/60 s 间隔实测生效（gap 1012–1023 ms / 60025 ms）且刷新持久化、手动点击触发 60 s 让路、eternities=0 时无永恒层任务；真实存档导出→导入→自动存档（17.1 s）→刷新后阶段/资源/设置保持。**修复 2 个真实缺陷**：(1) P1 存档恢复绕过父页签门禁：手改 `player.options.lastOpenTab=7` 后刷新可直接渲染 `TimeStudiesTab`（永恒未解锁）；新增 `Tabs.findRestorableTab()` 并在 `game.js init` 与 `GameStorage.loadSlot` 过门禁，修复后反向用例全部被拦截、合法无限页恢复仍正常（Android 由 `MainActivity.W8()` 覆盖，Web 之前缺此汇聚点）；(2) P2 应用 1/60 秒间隔后面板仍显示旧间隔（computed 读非响应式 `OrekiSmartExecutor` 被永久缓存），改为 update() 镜像后即时刷新。未发现需要新增的 Android/Web 行为差异。**oreki.net 自动 Pages 部署 BLOCKED**：`deploy.yml` active 但从未运行，`web-production` 环境不存在（environments total_count=0）、`PAGES_DEPLOY_TOKEN` 缺失（仓库 secrets total_count=0）；线上仍为 1bf34c3（`src/main.js` SHA-256 与仓库一致），最近部署为 owner 手工提交；本地发布预检全 PASS（check_stage_gate 18/18、check_eternity_gate 70/70、R100 自动购买器 39/39、scheduler 22/22、validate_tutorial PASS、check_deploy_workflow PASS；上游 4acde60 新增「approved_sha 检出 + 双重核验 HEAD」与 CI 结构守卫，属安全加固，不改变环境/Secret 两项缺失阻断）。最小权限修复需用户手工：创建 Environment `web-production`，生成仅对 `OrekiDawson/OrekiDawson.github.io` 有 Contents:Read&Write 的 fine-grained PAT，命名为 `PAGES_DEPLOY_TOKEN` 存入该环境，再以 main 当前 SHA 作为 `approved_sha` 手动触发。生产部署、Android Chrome/AVD **NOT RUN**。证据 `reports/R103-07/`（README、result.json、evidence/、before-fix/、accept-r103-07.mjs）。修复提交 `38e3c3e`（Web 仓 main，普通推送未强推；GitHub Actions Web CI run 43234338073 两项 job success），本条为后续文档提交。
 
+
+## [R104] 全新存档 180 分钟通关专项：Web 侧 6 个真实 P0 与修复（2026-11-13）
+
+真实现场（移动 Chromium 412×915、真实新档、playwright 原生 API、真实墙钟、未改任何时间源）：
+- 修复前 `run-20261112-234635`：canEternity=true 后 400+ s 不结算、EP=0、eternities=0、executor stalled>240s。
+- 逐轮定位（每轮都保留 PRE-FIX 证据目录）：
+
+| # | 根因 | 真实证据 | 修复 |
+|---|---|---|---|
+| P0-1 | R101 autoEternity 门禁把新档默认 `isActive=false` 当玩家关闭；自动器要 100 次永恒才解锁 | canEt=true 后 400+ s 零结算 | `oreki-eternity-automation.js` 新档引导窗口 + 解锁后一次性接管原版开关；载入已有进度仍严格拦截（R101 P0 不回退） |
+| P0-2 | `OrekiSmartExecutor.runCycle` 调度饿死：routine 每拍 didAct 后 break，eternityReset 主循环调用 **0 次** | 页面探针 lastToken 恒 null；直接调 tickEternity 返回 true 且真实结算 | 饥饿兜底（attemptSeq/taskLastAttemptSeq）+ 饥饿组按「最久未被尝试」轮转 |
+| P0-3 | `_justCrunchedFrame` 连续坍缩下每拍返回 true，永恒永久被跳过 | canEt=true 持续 400+ s | 连续 2 次后放行；正常偶发坍缩仍跳 1 帧 |
+| P0-4 | 饥饿组内部仍按 priority，靠前任务 didAct 即吃拍 | attempted.eternityReset 仅 2 次 | 组内改最久未尝试优先（诊断跑实测主循环自然结算首次永恒，et 0→0.699） |
+| P0-5 | `eternityUpgradeReserve()` 把原生 number `upgrade.cost` 当 Decimal 调 `.lt()` → buyTimeDimensions 永久失败 | clean run t≈612 s `_lastError="cost.lt is not a function"`，EP/TD/TT 停摆 | 原生 number 归一化为 Decimal；Node 夹具改用真实 number 形状 |
+| P0-6 | `tick()` 用帧计数节流，在统一节拍下被放大：探针实测 `_frame` 90 s 只涨 2（tick ≈45 s 一次），`_frame%30`≈22 min/次研究、`_frame%20`≈15 min/次 EC | `diag-frame-20261113-0125` | 改为 `Date.now()` 1 s（研究）/2 s（EC）时间窗；`_frame` 仅诊断 |
+
+回归（Node，生产模块夹具）：check_stage_gate 18/18、check_eternity_gate **82/82**、scheduler 22/22、
+r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、check_deploy_workflow 全 PASS。
+（`test-r94-id1-peak-window.mjs` 有 1 条 HEAD 既有的过期断言，且不在 CI 列表，已记录未改。）
+
+最终干净主跑：`reports/R104/web/run-20261113-012633-pass3/`（--probe-et 0，全新 browser context）。
+判据：`player.isGameEnd` 首次 true；结果与耗时以该目录 summary 为准（由 R104 收口报告汇总）。
+反向回归：已有进度 + `auto.eternity.isActive=false` → 96 次 tickEternity 全 false、0 次 true、bootstrap=false（R101 P0 未回退）。
+

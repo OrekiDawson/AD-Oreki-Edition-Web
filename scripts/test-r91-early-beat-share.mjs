@@ -178,9 +178,15 @@ function runBeats(exec, advance, { beats, hint, routineActs, earlyActs = true })
 {
   const { exec, advance } = createExecutorHarness();
   const served = runBeats(exec, advance, { beats: 6, hint: "", routineActs: true });
-  check("9. 无优先提示时 routine 独占全部 6 拍（缺陷复现：early=0）", () => {
-    assert.equal(served.routine, 6);
-    assert.equal(served.early, 0);
+  // [R104 P0] 原断言是「缺陷复现：routine 独占 6/6、early=0」——那正是 R104-02 实测到的
+  // 调度饿死：priority 10 的 routine 每拍都 didAct，priority 30/31 的 eternity/eternityReset
+  // 与更后面的 reality/celestial/endgame 永远轮不到（新档 canEternity=true 后 400+ 秒
+  // 一次都没调用 tickEternity）。oreki-smart-executor.js 已加饥饿兜底：
+  // 连续 2 拍没被尝试过的任务排序时临时前置。现期望 routine=4 / early=2，
+  // 即 routine 不再独占，early 也能稳定拿到节拍。
+  check("[R104 P0] 无优先提示时饥饿兜底让 early 也拿到节拍（routine 4/6、early 2/6）", () => {
+    assert.equal(served.routine, 4, `routine 实际 ${served.routine} 拍`);
+    assert.equal(served.early, 2, `early 实际 ${served.early} 拍`);
   });
 }
 

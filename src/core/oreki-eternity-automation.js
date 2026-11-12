@@ -69,8 +69,16 @@ const RESERVE_REACHABLE_LOG10 = 2.0;
  */
 const TT_REWARD_MULTIPLIER = 500;
 
-/** 单帧购买次数合理上限：超过即判定为切换存档，只重设基线、不发奖。 */
-const TT_REWARD_MAX_DELTA_PER_TICK = 50;
+/**
+ * [R104 P1] 单帧购买次数上限：只用于拦截**数量级异常的换档跳变**（例如会话内导入更高进度存档）。
+ *
+ * 原值 50 的设定前提是 tick 每帧都被调用；但 R104 起 tick 走统一节拍（实测 ~45 s 才被服务一次），
+ * 100000× 下每次服务都会真实购买数十万 TT ⇒ delta 恒 > 50，×500 奖励**一次都不会发**
+ * （pass7 实测 _lastError 长期为 "delta 134/2.4e6 超出单帧上限 50"），TT 加速链断裂，
+ * EP 卡在 e3682.74 到不了 isRealityAvailable 要求的 e4000。
+ * 合法真实购买量远小于 1e8；只有换档级跳变才会超过它。
+ */
+const TT_REWARD_MAX_DELTA_PER_TICK = 1e8;
 
 /**
  * 普通时间研究 id 列表：直接从数据库取，不再手写区间。
@@ -99,6 +107,9 @@ function* studyIds() {
 
 export const OrekiEternityAutomation = {
   _frame: 0,
+  /** [R104 P0] 研究/EC 的真实时间节流（毫秒）；不再用被服务次数放大后的 _frame 取模。 */
+  _lastStudyTickAt: 0,
+  _lastEcTickAt: 0,
   /** [Oreki R40-A] 「满级关换关 respec」的次数与上次快照，仅用于观测与防抖 */
   _respecCount: 0,
   _fullEcRespec: null,
@@ -201,8 +212,13 @@ export const OrekiEternityAutomation = {
     let cheapest = null;
     for (const upgrade of EternityUpgrade.all) {
       if (upgrade.isBought) continue;
-      const cost = upgrade.cost;
-      if (cost === null || cost === undefined) continue;
+      const rawCost = upgrade.cost;
+      if (rawCost === null || rawCost === undefined) continue;
+      // [R104 P0] 原版 cost 是**原生 number**（secret-formula/eternity/eternity-upgrades.js：
+      // cost: 5 / 10 / 5e4 / 1e16 / 1e40 …），直接 .lt() 会抛 TypeError；
+      // 异常被 buyTimeDimensions 的 catch 吞掉 ⇒ 每次调用都返回 false ⇒ TD/TT 永远买不到，
+      // 整条时间研究/膨胀/现实链停摆（R104-02 实测 t≈612s 起 _lastError="cost.lt is not a function"）。
+      const cost = rawCost instanceof Decimal ? rawCost : new Decimal(rawCost);
       if (cheapest === null || cost.lt(cheapest)) cheapest = cost;
     }
     if (cheapest === null) return null;
@@ -677,7 +693,8 @@ export const OrekiEternityAutomation = {
       // 该窗口内不自动进入；canEternity 为假时 EC 进入不会结算，自动化照常推进。
       // Android 同源门禁：OrekiAutoEternityGate.challengeAutoStartAllowed()。
       try {
-        if (player.auto.eternity.isActive !== true && Player.canEternity) return false;
+        if (player.auto.eternity.isActive !== true &&
+            !this._eternityBootstrapActive() && Player.canEternity) return false;
       } catch (e) {
         return false;
       }
@@ -776,7 +793,13 @@ export const OrekiEternityAutomation = {
       // 而 `Currency.infinities` 每次永恒都会清零，只有 `infinitiesBanked`
       // 会在永恒时按 5% 结算累积（eternity.js:53 + 时间研究 191）。
       // 也就是说「暂停永恒」对 EC4 是**反效果**：攒不到 1e6，反而把唯一的累积途径关掉。
-      if (id === 4) return false;
+      //
+      // [R104 P0] EC1 同型例外：入口资源就是**永恒次数**
+      // （ec-time-studies.js:9-12 secondary.resource="永恒次数"、current=Currency.eternities、
+      //   required=20000 → MOD 的 OREKI_EC_REQUIREMENT_DIVISOR=100 下为 200）。
+      // 压住永恒 ⇒ 永恒次数不涨 ⇒ 200 永远到不了 ⇒ ecEntryPending 永远 true ⇒ 永恒永远被压住。
+      // 实测（pass3，t=1042→1712 s 共 670 秒零进度）：et=48、ecPend=true、canEt=true、EP 恒 6.79e5。
+      if (id === 1 || id === 4) return false;
       const study = TimeStudy.eternityChallenge(id);
       if (!study || study.isBought) return false;
       const primaryMet = (study.config.requirement || []).some(s => {
@@ -807,7 +830,19 @@ export const OrekiEternityAutomation = {
       const prev = this._lastInfinitiesToken;
       this._lastInfinitiesToken = now;
       if (prev === undefined || prev === null) return false;
-      if (now > prev) { this._crunchSkipFrames = 1; return true; }
+      // [R104 P0] 连续坍缩下逐帧武装会**永久**挡死永恒：R104-02 真实新档实测
+      // canEternity=true 持续 400+ 秒、tickEternity 每拍都在这里返回 false
+      // （反物质自动坍缩器在高倍率下几乎每帧都触发大坍缩）。
+      // 只容忍连续 2 帧；超过就放行——此时「同帧无坍缩」在物理上不可满足，
+      // 继续挡只会让新档永远不结算。正常偶发坍缩仍按原语义跳 1 帧。
+      const crunched = now > prev;
+      this._crunchSkipStreak = crunched ? (this._crunchSkipStreak ?? 0) + 1 : 0;
+      if (this._crunchSkipStreak > 2) {
+        this._crunchSkipStreak = 0;
+        this._crunchSkipFrames = 0;
+        return false;
+      }
+      if (crunched) this._crunchSkipFrames = 1;
       if (this._crunchSkipFrames > 0) { this._crunchSkipFrames -= 1; return true; }
       return false;
     } catch (e) {
@@ -815,9 +850,76 @@ export const OrekiEternityAutomation = {
     }
   },
 
+  // ------------------------------------------------------------ [R104 P0] 新档引导
+  //
+  // 缺陷（R104-02 真实新档实测，2026-11-12）：全新存档的 auto.eternity.isActive 默认 false，
+  // 而原版「自动永恒」自动器要到 100 次永恒才解锁
+  // （src/core/secret-formula/eternity/eternity-milestones.js:141 autobuyerEternity），
+  // 解锁前界面上没有这个开关。R101 门禁把 isActive=false 一律当成玩家主动关闭
+  // ⇒ 新档在 canEternity 为真后永远不结算（实测 t≈312s canEt=true 但 EP=0、eternities=0、
+  // 执行器 stalledSec=241）。
+  //
+  // 修法（与 Android OrekiAutoEternityGate 同一语义）：
+  //   · 本会话从「从未永恒过」的全新档启动 → 引导窗口；
+  //   · 引导窗口内、开关关闭也允许 MOD 驱动永恒：还没永恒过，或原版自动器仍未解锁；
+  //   · 自动器解锁后由本模块一次性把原版开关置 true（真实存档字段），此后只认开关；
+  //   · 载入已有进度存档（eternities>0）时引导窗口关闭，R101 P0 语义不变。
+  _eternitiesLt(n) {
+    try {
+      const v = player.eternities;
+      if (v === undefined || v === null) return false;
+      if (typeof v.lt === "function") return v.lt(n) === true;
+      if (typeof v.toNumber === "function") return v.toNumber() < n;
+      if (typeof v === "number") return v < n;
+    } catch (e) { /* ignore */ }
+    return false;
+  },
+
+  _sampleFreshSession() {
+    if (this._freshSessionBootstrap === undefined) {
+      this._freshSessionBootstrap = this._eternitiesLt(1);
+    }
+    return this._freshSessionBootstrap === true;
+  },
+
+  _eternityAutobuyerUnlocked() {
+    try {
+      const milestone = globalThis.EternityMilestone?.autobuyerEternity;
+      if (milestone && typeof milestone.isReached === "boolean") return milestone.isReached;
+    } catch (e) { /* ignore */ }
+    // 读不到里程碑时按原版配置值保守判断（100 次永恒解锁自动永恒）。
+    return !this._eternitiesLt(100);
+  },
+
+  _eternityBootstrapActive() {
+    if (!this._sampleFreshSession()) return false;
+    if (this._eternitiesLt(1)) return true;
+    return !this._eternityAutobuyerUnlocked();
+  },
+
+  _adoptEternityAutobuyerIfNeeded() {
+    try {
+      // [R104 P0] 会话内一旦接管过，就要持续维持：reality 重置会把 isActive 写回 false，
+      // 而 buyEcStudiesAndStart 的 R101 护栏要求「autoEternity 开 或 引导窗口」才允许进 EC；
+      // 若此时 isActive=false 且 canEternity=true，EC 链会永久停住（pass5 实测 realities=5 冻结）。
+      // 载入已有进度的存档从未接管过（adopted 不为 true），因此不会走到这里 —— R101 P0 不变。
+      if (!this._sampleFreshSession() && this._eternityAutobuyerAdopted !== true) return;
+      // [R104 P0] 幂等接管：原版在 reality/eternity 重置路径会把 isActive 写回 false
+      // （pass4 实测：reality 重置后 eUnl=true 但 eAct=false），一次性短路会让永恒入口
+      // 再次被门禁挡住。本会话是新档引导会话时，只要原版总开关没被玩家关闭、
+      // 自动器已解锁，就把开关补回 true。载入已有进度存档不会走到这里（R101 P0 不变）。
+      if (player.auto.autobuyersOn === false) return;
+      if (player.auto.eternity.isActive === true) return;
+      if (!this._eternityAutobuyerUnlocked()) return;
+      player.auto.eternity.isActive = true;
+      this._eternityAutobuyerAdopted = true;
+    } catch (e) { /* ignore */ }
+  },
+
   tickEternity() {
     try {
       if (!this.active) return false;
+      this._adoptEternityAutobuyerIfNeeded();
       // [R101 P0 对齐 Android] 原版「自动永恒」单项开关关闭时，MOD 不得主动永恒。
       //
       // 缺陷背景：本函数直接调用原版「无确认永恒」入口，历史上只受 MOD 总开关
@@ -826,7 +928,8 @@ export const OrekiEternityAutomation = {
       // Web 这里补同一条判据。读不到开关时 fail-closed（宁可不自动，也不误结算）。
       // 玩家手动点击永恒按钮走原版 UI 入口（eternity.js），不经过本函数。
       try {
-        if (player.auto.eternity.isActive !== true) return false;
+        if (player.auto.eternity.isActive !== true &&
+            !this._eternityBootstrapActive()) return false;
       } catch (e) {
         return false;
       }
@@ -1078,7 +1181,13 @@ export const OrekiEternityAutomation = {
     let studies = 0;
     let dilation = 0;
     let ec = false;
-    if (this._frame % STUDY_TICK_INTERVAL === 0) {
+    // [R104 P0] 帧计数节流在 runCycle 统一节拍下会被放大 100~1000 倍：
+    // tick() 实际约 45s 才被服务一次（探针 diag-frame-20261113-0125：_frame 90s 只涨 2），
+    // 于是 _frame%30 变成 ~22 分钟才买一次研究、_frame%20 变成 ~15 分钟才试一次 EC。
+    // 改为真实时间节流：只要被服务到就按 1s/2s 间隔推进，不再依赖被调用次数。
+    const nowMs = Date.now();
+    if (nowMs - (this._lastStudyTickAt || 0) >= 1000) {
+      this._lastStudyTickAt = nowMs;
       // 换列（121 ↔ 123）或换维度分叉（71 ↔ 73）只能靠 respec：
       // 这些研究互斥，买了一条就再也买不到另一条
       if (this.needsBranchRespec()) {
@@ -1089,8 +1198,11 @@ export const OrekiEternityAutomation = {
       }
     }
     this.tryReplicantiGalaxyForEc6();
-    // EC 的进入会触发 eternity 重置，节流到每 20 帧才尝试一次
-    if (this._frame % 20 === 0) ec = this.buyEcStudiesAndStart();
+    // EC 的进入会触发 eternity 重置；真实时间 2s 节流（原先按帧计数）
+    if (nowMs - (this._lastEcTickAt || 0) >= 2000) {
+      this._lastEcTickAt = nowMs;
+      ec = this.buyEcStudiesAndStart();
+    }
     return { dims, tt, upgrades, studies, dilation, ec };
   },
 };

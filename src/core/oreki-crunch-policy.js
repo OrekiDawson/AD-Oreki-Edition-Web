@@ -100,6 +100,32 @@ let waitStartedAt = null;
 /** 永恒层上一次「周期结算」的时刻（单调时钟毫秒）；null 表示本周期尚未起算。 */
 let lastEternityCycleAt = null;
 
+/**
+ * [R104 P1] 「EP 高位但无法永恒」时强制压住坍缩的窗口状态。
+ *
+ * 真实事故（pass8，72 分钟真实新档）：第一次现实后 EP 指数已 3682.7（realities=5），
+ * 但 Player.canEternity=false（gEP≈1e4.38 远小于 EP），坍缩策略在
+ * eternity-ip-jump（allow）与 eternity-grow（deny）之间**每帧 1:1 交替**
+ * （console 实测 23844 : 23844 次）⇒ 托管间隔每帧被恢复成短间隔 ⇒ 反物质峰值
+ * 恒等 1e25.699、maxIP 只在 1e84~278 抖动 ⇒ gEP 永远抬不动 ⇒
+ * isRealityAvailable（maxEP.exponent ≥ 4000）永不可达。
+ *
+ * 修法：EP 指数已很高（≥3000）且当前不能永恒时，暂停坍缩，让反物质峰值连续长
+ * 10 个数量级（或 120 s 上限）再恢复既有判据；一次高收益坍缩把 maxIP 拉上去后
+ * gEP 才能重新超过 EP，永恒→EP 增长→现实门槛才可能推进。
+ */
+let epHighGrowStartedAt = null;
+let epHighGrowBaseMaxAMLog10 = null;
+
+/** 进入「EP 高位压坍缩」窗口的最低 EP 指数（e3000）。 */
+const EP_HIGH_GROW_MIN_EXPONENT = 3000;
+
+/** 压坍缩窗口的硬上限（毫秒）：到点必须放行一次，避免判据误判把循环永久按住。 */
+const EP_HIGH_GROW_MAX_MS = 120000;
+
+/** 反物质峰值至少需要新长出的数量级。 */
+const EP_HIGH_GROW_MIN_ORDERS = 10;
+
 function throttleLog(decision) {
   const key = `${decision.allow}:${decision.reason}`;
   if (key === lastKey) return;
@@ -151,6 +177,25 @@ export class OrekiCrunchPolicy {
     //    1e593 依旧、galaxies/dimensionBoosts 依旧不涨）。真正决定能否结算永恒的是
     //    `OrekiEternity` 的「gainedEP ≥ 10×EP」门槛，与坍缩无关，交给它自己判断。
     if (this.isInEternityLayer()) {
+      // [R104 P1] EP 高位 + 无法永恒：先压住坍缩让反物质峰值长大（见文件模块状态注释）。
+      const epLog10 = Currency.eternityPoints.value.log10();
+      if (!Player.canEternity && epLog10 >= EP_HIGH_GROW_MIN_EXPONENT) {
+        const nowHigh = monotonicNowMs();
+        const maxAMLog10 = player.records.thisEternity.maxAM.log10();
+        if (epHighGrowStartedAt === null) {
+          epHighGrowStartedAt = nowHigh;
+          epHighGrowBaseMaxAMLog10 = maxAMLog10;
+        }
+        const grew = maxAMLog10 - epHighGrowBaseMaxAMLog10 >= EP_HIGH_GROW_MIN_ORDERS;
+        if (!grew && nowHigh - epHighGrowStartedAt < EP_HIGH_GROW_MAX_MS) {
+          return this.waitWithin("ep-high-grow", EP_HIGH_GROW_MAX_MS);
+        }
+        epHighGrowStartedAt = null;
+        epHighGrowBaseMaxAMLog10 = null;
+      } else {
+        epHighGrowStartedAt = null;
+        epHighGrowBaseMaxAMLog10 = null;
+      }
       const leapEternity = this.gainVersusIp();
       if (leapEternity !== null && leapEternity >= 1) {
         // 收益够一个数量级：立刻结算，并把周期计时重新起算（与 Android 同序）。

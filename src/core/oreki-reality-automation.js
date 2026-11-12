@@ -37,6 +37,9 @@ const OREKI_REALITY_INTERVAL_CELESTIAL_MS = 15000;
 
 export const OrekiRealityAutomation = {
   _frame: 0,
+  /** [R104 P0] 现实升级/符文的真实时间节流（毫秒），不再用被节拍放大的 _frame 取模。 */
+  _lastUpgradeTickAt: 0,
+  _lastGlyphTickAt: 0,
   _lastRealityAt: 0,
   _realitiesFired: 0,
   /** 「现实就绪」的起始时间戳（用于给膨胀研究 1 留窗口），0 表示当前未就绪 */
@@ -632,12 +635,18 @@ export const OrekiRealityAutomation = {
     if (!PlayerProgress.realityUnlocked()) return { reality, upgrades: 0, glyphs: 0 };
     let upgrades = 0;
     let glyphs = 0;
-    // 现实升级与符文只在每 10 帧跑一次，避免每帧遍历数据库
-    if (this._frame % 10 === 0) {
+    // [R104 P0] 帧计数节流在统一节拍下会被放大（tick 实测约 45s 服务一次）：
+    // _frame%10 变成 ~7.5 分钟才买一次现实升级、_frame%30 变成 ~22 分钟才处理符文，
+    // 直接导致 realities=5 后 ruAll=false/ach147=false 长期不推进。
+    // 改为真实时间窗：被服务到就按 1s（升级）/2s（符文）推进。
+    const nowMs = Date.now();
+    if (nowMs - (this._lastUpgradeTickAt || 0) >= 1000) {
+      this._lastUpgradeTickAt = nowMs;
       this.tryUnlockRealityUpgrades();
       upgrades = this.buyRebuyableUpgrades() + this.buyRealityUpgrades();
     }
-    if (this._frame % 30 === 0) {
+    if (nowMs - (this._lastGlyphTickAt || 0) >= 2000) {
+      this._lastGlyphTickAt = nowMs;
       // 符文形态由 9/16/17/18/24 的要求独占；只有五条全部拿到之后
       // 才回到「装备评分最高的 3 个」的常规策略，避免两边互相拆台。
       const glyphReqsDone = this._glyphReqsDone();

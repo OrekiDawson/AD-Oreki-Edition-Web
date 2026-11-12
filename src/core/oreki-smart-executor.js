@@ -343,6 +343,21 @@ const STATE = {
   taskLastAct: Object.create(null),
   /** taskId → 被服务次数（公平轮转用，防止一个话痨任务饿死后面的任务） */
   served: Object.create(null),
+  /**
+   * [R104 P0] 饥饿兜底：累计「尝试」次数与每个任务最近一次被尝试时的序号。
+   *
+   * 缺陷（R104-02 实测）：routine（priority 10）几乎每拍都能 didAct，runCycle 在
+   * markExecuted 后立刻 break ⇒ priority 30/31 的 eternity/eternityReset、
+   * 以及更后面的 reality/celestial/endgame 一次都轮不到。真实现场：
+   * 全新档 canEternity=true 持续 400+ 秒、_justCrunchedFrame 从未被调用、
+   * 探针直接调 tickEternity() 返回 true（门禁全过），说明是调度饿死而非门禁。
+   *
+   * 修法：记录每个任务最近一次「被尝试」的全局尝试序号；连续 2 拍以上没被尝试过的
+   * 任务在排序时临时前置（仍按各自 priority 排）。只改「先问谁」，不放宽任何闸门
+   * （间隔 / 同帧单动作 / 关闭即停 / 阶段门禁全部照旧）。
+   */
+  attemptSeq: 0,
+  taskLastAttemptSeq: Object.create(null),
   /** 最近 N 条执记录（taskId, at, gapMs），探针与面板都能读 */
   execLog: [],
   /** 本次「拍子」被跳过的任务数（诊断：节拍是否在限制） */
@@ -979,10 +994,30 @@ function runCycle(tasks) {
   const priorityOf = task => (hint && task.id === hint && STATE.lastBeatTask !== hint
     ? Number.NEGATIVE_INFINITY
     : task.priority);
+  // [R104 P0] 饥饿兜底：连续 STARVATION_ATTEMPTS 拍以上没被尝试到的任务先问。
+  // no-op 不消耗节拍，所以「先问」不会减慢前面真正有工作的任务；
+  // 只有被前置的任务真的 didAct 时才吃掉这一拍（与正常优先级语义一致）。
+  const STARVATION_ATTEMPTS = 2;
+  const starvedOf = task =>
+    (STATE.attemptSeq - (STATE.taskLastAttemptSeq[task.id] ?? 0)) >= STARVATION_ATTEMPTS;
   const ordered = tasks
     .map(t => ({ id: t[0], priority: Number(t[1]) || 0, fn: t[2], cls: t[3] || "" }))
     .filter(t => typeof t.fn === "function")
-    .sort((a, b) => priorityOf(a) - priorityOf(b));
+    .sort((a, b) => {
+      const sa = starvedOf(a) ? 0 : 1;
+      const sb = starvedOf(b) ? 0 : 1;
+      if (sa !== sb) return sa - sb;
+      // [R104 P0·2] 饥饿组内部必须按「最久没被尝试」轮转，而不是按 priority：
+      // 只把 starved 任务放到前面但仍按 priority 排时，组内靠前的任务（breakGate/early）
+      // 只要有一拍真的 didAct 就吃掉节拍，后面的 eternity/eternityReset/reality/celestial
+      // 仍然永远轮不到（R104-02 实测 wrapper：attempted.eternityReset=0）。
+      if (sa === 0) {
+        const la = STATE.taskLastAttemptSeq[a.id] ?? 0;
+        const lb = STATE.taskLastAttemptSeq[b.id] ?? 0;
+        if (la !== lb) return la - lb;
+      }
+      return priorityOf(a) - priorityOf(b);
+    });
 
   for (const task of ordered) {
     // 第一道：本帧名额（同帧最多 1 个真动作）
@@ -994,6 +1029,10 @@ function runCycle(tasks) {
 
     // 第三道：默认档的单任务二次闸（严格档的全局闸已蕴含）
     if (!STATE.strictGlobal && !taskGateFree(task.id, gateNow)) continue;
+
+    // [R104 P0] 记录「本任务已被尝试过」，供饥饿兜底计算。
+    STATE.attemptSeq += 1;
+    STATE.taskLastAttemptSeq[task.id] = STATE.attemptSeq;
 
     let result;
     try {

@@ -42,7 +42,7 @@ function policyClassSource() {
   if (!POLICY_SRC.includes(CLASS_MARKER)) {
     throw new Error("策略源码结构变了：找不到 `export class OrekiCrunchPolicy`");
   }
-  return `${POLICY_SRC.replace(CLASS_MARKER, "class OrekiCrunchPolicy")}
+  return `${POLICY_SRC.replace(CLASS_MARKER, "class OrekiCrunchPolicy").replace(/^export /gm, "")}
 ;globalThis.__OrekiCrunchPolicy = OrekiCrunchPolicy;`;
 }
 
@@ -155,6 +155,10 @@ function makeHarness(over = {}) {
     Currency: {
       infinityPoints: {
         get value() { throwIf("ip"); return dec(cfg.ipExponent); },
+      },
+      // [R104 P1] 策略在永恒层新增「EP 高位压坍缩」判据，读取真实 EP。
+      eternityPoints: {
+        get value() { throwIf("ep"); return dec(cfg.eternityPointsExponent); },
       },
     },
     InfinityDimension(tier) { throwIf("infinityDimension"); return dimensions[tier]; },
