@@ -85,6 +85,8 @@ jobs:
           # Preserve Pages-only CNAME, Ads.txt and metadata.
           test -f pages-site/CNAME
           grep -Fxq 'oreki.net' pages-site/CNAME
+          # Validate the exact staged tree before any Git commit or push.
+          python3 scripts/check_pages_staging.py pages-site
           git -C pages-site add src modules public index.html .nojekyll LICENSE MOD-LICENSE NOTICE.md
           if git -C pages-site diff --cached --quiet; then
             echo "Pages already matches the validated source"
