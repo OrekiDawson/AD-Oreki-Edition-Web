@@ -51,6 +51,17 @@ class RepositoryPolicyTests(unittest.TestCase):
         token = b"gh" + b"p_" + b"A" * 25
         self.assertFalse(check(blob=b"export TOKEN=" + token, added=[b"safe code"]))
 
+    def test_renamed_keystore_is_treated_as_sensitive_new_path(self):
+        self.assertTrue(check(path="credentials/prod.jks", is_new=True))
+
+    def test_new_binary_blob_with_embedded_key_is_rejected(self):
+        payload = b"\x00\xff" + b"-----BEGIN " + b"PRIVATE KEY-----" + b"\x00"
+        self.assertTrue(check(path="assets/secret.dat", blob=payload, is_new=True))
+
+    def test_modified_binary_blob_with_embedded_key_is_rejected(self):
+        payload = b"\x00" + b"-----BEGIN " + b"PRIVATE KEY-----" + b"\x00"
+        self.assertTrue(check(path="assets/storage.bin", blob=payload, is_new=False))
+
     def test_new_private_key_pem_header_rejected(self):
         header = b"-----BEGIN " + b"RSA PRIVATE KEY-----"
         self.assertTrue(check(added=[header]))
