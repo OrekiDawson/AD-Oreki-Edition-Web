@@ -54,6 +54,8 @@
 ## 8. Web Playwright 长期调试与验收规则（强制）
 
 - Playwright + Chromium 是 Web 版的默认真实浏览器调试、自动化测试与发布验收工具；优先复用现有环境，缺失时安装兼容版本。
+- 原生 Playwright 是默认方案：用 Playwright Test 启动并管理 Chromium，browser.newContext() 创建隔离环境，Locator API 操作与断言，Trace / Console / pageerror / 截图定位问题；不以 connectOverCDP() 或直接发送 CDP 指令作为常规调试方式。
+- CDP 只用于原生 Playwright 无法满足的底层诊断（Chromium 性能事件、网络/渲染内部状态、临时附着既有浏览器），使用时说明原因；日常点击、输入、滚动、存档导入导出、阶段与挑战验收、自动购买器 GUI、常规截图与错误采集仍走 Playwright 高层 API。
 - 涉及 Web 游戏逻辑、自动化、阶段推进、挑战、存档、教程或 GUI 的生产修改，必须执行与改动相关的 Playwright 真实浏览器测试；Node 静态断言、代码审查和浏览器启动成功不能代替行为验收。
 - 默认使用与 Android Chrome 近似的手机视口、触控和移动端配置；不为无关变更扩展桌面专用回归。模拟 Chromium 不等于真机 Chrome，重大触控、布局及兼容缺陷按需在 AVD/真机 Android Chrome 补充验证。
 - 排查 Bug 时按需收集浏览器 Console、pageerror、截图、Playwright Trace 及游戏关键状态；使用 `savestates/` 的真实存档副本复现，比较修复前后真实资源、阶段、结算、交互和存档持久化。
