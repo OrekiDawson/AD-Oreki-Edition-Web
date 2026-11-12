@@ -9943,3 +9943,6 @@ TT 早已达标；真实阻断是 **EC 全 0**：`unlocked=0 / current=0 / compl
 
 - [R102 插件本地不可见的诊断] 2026-11-12 13:35：服务端确认 dsh-feng-gu 已安装且 Loader 行 active（include:feng-gu），页面 HTML 组合脚本包含 dsh-feng-gu/client.js（rev 9a3bb34a47c6，含 2027 日历逻辑）；但 DSH 运行实例日志反复出现 HMR is disposed 与 config reload at package.json failed，插件安装后已打开的页面无法热加载新插件。结论：需刷新页面（HTML 会带新组合脚本）或重启 DSH web 进程后才能看到插件；本次先要求用户刷新验证。
 
+
+- [R102 Web Playwright 规则与实测] 2026-11-12 13:38：Web AGENTS.md §8 增补——原生 Playwright 为默认方案（Playwright Test 管理 Chromium、browser.newContext() 隔离、Locator API、Trace/Console/pageerror/截图），connectOverCDP() 与直接 CDP 指令仅用于底层特殊诊断；日常点击/输入/存档/阶段/挑战/自动购买器/截图仍走高层 API。Commit a5823f4（Web 仓，已推送）。实测环境：Playwright 1.65.0（npm 经 registry.npmmirror.com 安装于 /tmp/pwtest，未改 Web 仓依赖）、Chromium headless shell 158.0.8127.18（PLAYWRIGHT_DOWNLOAD_HOST=cdn.npmmirror.com/binaries/playwright 下载成功）。实测：Pixel 7 移动上下文 412x839、touch=true；加载 Web MOD（标题「AD: Oreki Edition — 反物质维度」）并真实点击「买到 10 个」，页面状态变为「这个宇宙已因反物质过多而坍缩 / 大坍缩」，非仅 DOM 检查；Console 捕获 MOD 自身 OREKI_CRUNCH_DEC 日志；pageerror 0；唯一请求失败为离线环境 CSP 拦截 googletagmanager；截图 /tmp/pwtest/screenshot-initial.png 与 screenshot-after-click.png、Trace 22,096,043 B（/tmp/pwtest/trace.zip）。结论：原生 Playwright + Chromium 可用，手机视口/触控/交互/截图/Console/pageerror/Trace 全部验证 PASS。注意 Playwright 尚未落地为 Web 仓依赖，18:00 后按需加入 package.json + 测试脚本。
+
