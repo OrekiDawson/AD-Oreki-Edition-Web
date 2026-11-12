@@ -11,6 +11,7 @@ assert.match(deploy, /ref: \$\{\{ inputs\.approved_sha \}\}/);
 assert.match(deploy, /git rev-parse HEAD/);
 assert.match(deploy, /\$actual.*\$APPROVED_SHA.*\$GITHUB_SHA/);
 assert.match(deploy, /needs: gate/);
+assert.match(deploy, /python3 scripts\/check_pages_staging\.py pages-site/);
 assert.match(deploy, /environment: web-production/);
 assert.match(deploy, /grep -Fxq 'oreki\.net' pages-site\/CNAME/);
 console.log("PASS: Pages deploy uses the exact CI-approved Web commit and retains production gates");
