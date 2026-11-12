@@ -57,10 +57,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '26'
-      # Pin the test runner; no production dependency or package.json change.
+      # Cache only the exact Chromium revision used by pinned Playwright.
+      # No lockfile or production dependency changes.
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ runner.arch }}-1.65.0-v1
+      - name: Cache npm download artifacts
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-playwright-${{ runner.os }}-${{ runner.arch }}-1.65.0-v1
       - name: Install Playwright test runner
         run: npm install --no-save --no-package-lock @playwright/test@1.65.0
-      - name: Install Chromium
+      # install --with-deps remains idempotent; on a cache hit no browser download.
+      # System libraries are still installed on each fresh GitHub-hosted runner.
+      - name: Ensure Chromium and runtime dependencies
         run: npx playwright install --with-deps chromium
       - name: Real browser smoke test
         run: npx playwright test --config=.github/playwright.config.mjs
