@@ -147,6 +147,12 @@
 - 修复前复现截图：`before-fix/`。
 - 导入用真实存档副本：`evidence/r103-real-infinity-save.txt`（由真实游玩导出，非构造进度）。
 
+## 6.1 提交与 CI 结果
+
+- 修复提交：`38e3c3e`（main，普通推送，未强推）。
+- GitHub Actions「Web CI」run 43234338073（https://github.com/OrekiDawson/AD-Oreki-Edition-Web/actions/runs/43234338073）**success**：Node checks + Mobile Chromium smoke 两项 job 均 success，38 s。
+- 本报告为后续文档补充提交，代码修复以 `38e3c3e` 为准。
+
 ## 7. 未执行 / 说明
 
 - **生产部署：NOT RUN**（按要求不执行；只做本地构建/静态检查与线上一致性核查）。
