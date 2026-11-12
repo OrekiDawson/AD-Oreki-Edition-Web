@@ -38,7 +38,18 @@ jobs:
           fi
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.approved_sha }}
           persist-credentials: false
+      - name: Verify the actual source checkout matches the approved SHA
+        env:
+          APPROVED_SHA: ${{ inputs.approved_sha }}
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          [[ "$actual" == "$APPROVED_SHA" && "$actual" == "$GITHUB_SHA" ]] || {
+            echo "::error::Source checkout differs from approved/validated commit"
+            exit 1
+          }
       - uses: actions/setup-node@v4
         with:
           node-version: '26'
