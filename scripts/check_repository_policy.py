@@ -8,7 +8,6 @@ new Java/Smali payload files. It cannot prove a code change is safe or honest.
 from __future__ import annotations
 
 import argparse
-from fnmatch import fnmatch
 from pathlib import Path
 import re
 import subprocess
@@ -41,7 +40,8 @@ def git(*args: str) -> bytes:
 
 
 def changed_paths(base: str, filter_name: str) -> set[str]:
-    raw = git("diff", "--no-ext-diff", "--name-only", "-z", f"--diff-filter={filter_name}",
+    raw = git("diff", "--no-ext-diff", "--find-renames", "--find-copies", "--name-only", "-z",
+              f"--diff-filter={filter_name}",
               base, "HEAD", "--")
     return {name.decode("utf-8") for name in raw.split(b"\0") if name}
 
@@ -63,8 +63,15 @@ def inspect(path: str, blob: bytes, added: list[bytes], is_new: bool, policy: st
         issues.append("new Android Java/Smali payload prohibited; Kotlin business only")
     if suffix in TEXT_SUFFIXES and b"\r" in blob:
         issues.append("modified text contains CR instead of LF-only lines")
-    if any(SECRET_MARKERS.search(line) for line in added):
-        issues.append("new text contains a private-key or credential-shaped marker")
+    # Renamed/new files and modified binary data have no usable added-text lines.
+    # Inspect full tracked bytes in those cases, including a .dat containing a PEM key.
+    # Existing token-shaped text in an otherwise edited file remains historical debt.
+    inspect_full_blob = is_new or b"\x00" in blob
+    secret_found = SECRET_MARKERS.search(blob) if inspect_full_blob else any(
+        SECRET_MARKERS.search(line) for line in added
+    )
+    if secret_found:
+        issues.append("new or binary content contains a private-key or credential-shaped marker")
     return issues
 
 
@@ -78,7 +85,9 @@ def main() -> int:
     # Fail closed if a caller supplied an unresolved/stale comparison base.
     git("cat-file", "-e", f"{args.base}^{{commit}}")
     current = changed_paths(args.base, "ACMR")
-    added_paths = changed_paths(args.base, "A")
+    # Treat a rename/copy to a credential filename like creating that filename.
+    # An unchanged blob is still dangerous when made visible at config/.env.
+    added_paths = changed_paths(args.base, "ACR")
     failures = []
     for path in sorted(current):
         # Read the *tracked blob* rather than potentially untracked workspace edits.
