@@ -65,3 +65,11 @@
 - 浏览器测试失败时自行定位并尝试修复；无法复现或运行须明确记录 `FAIL` / `BLOCKED` / `NOT RUN`，不得伪报 `PASS`。
 - oreki.net 部署前，本次变更影响的关键 Playwright 浏览器场景必须 `PASS`；静态测试不能代替发布门禁。Web 自身通过门禁即可独立部署，不等待 Android。
 - 本规则跨 R102 及后续轮次持续生效，优先于旧的 Web 暂停指令；DeepSeek 高峰期限制仍适用于使用 DeepSeek 的开发 Agent。
+
+## 9. 双端协作、CI/CD 与交付长期增量规则（2026-11-12）
+
+- **强制读取 [Web 移动端开发与交付长期规则](docs/DELIVERY_RULES.md)**。本节补充现有 Web Playwright、DeepSeek 峰谷、原版结算和真实存档规则，不重新启用旧归档。
+- Web 保持 ACTIVE，独立 Node + Playwright CI；必须以真实移动 Chromium/必要 Android Chrome 验收本次业务变更，浏览器冒烟或静态 PASS 不代替实际玩法 PASS。源码/生成教程数据必须同步，部署严格 fail-closed。
+- ChatGPT 管理 GitHub Pages 和 oreki.net；两小时至少一份**合格稳定版**为节奏目标，不因 Android 构建 BLOCKED 而停工，也不绕过 Web 自身发布门禁。
+- 当轮已完成成果中文 Commit/Push，普通已验收改动可推 main，高风险与 CI/CD/生产部署走 PR，禁止强推；只在真实完成部署并验证线上资源后报告 DEPLOY PASS。
+- /goal、180 分钟真实通关、双端等价、阶段门禁、智能购买器、实时 GUI、教程附录 F、测试存档、最小必要原版对照和 Goal 收口的完整约束见上述增量规则。
