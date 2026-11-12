@@ -1,0 +1,70 @@
+name: Web CI
+
+'on':
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  logic:
+    name: Node checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+      - name: Syntax checks
+        run: |
+          node --check src/main.js
+          node --check src/game.js
+          node --check serve.mjs
+      - name: Targeted game-rule checks
+        run: |
+          node scripts/check_stage_gate.mjs
+          node scripts/check_eternity_gate.mjs
+          node scripts/test-r100-newgame-autobuyers.mjs
+          node scripts/test-scheduler-beat.mjs
+      # Existing JSON/generated-module drift is recorded as debt; production deployment
+      # checks it strictly and fails until the generated asset is synchronized.
+      - name: Tutorial generated-source consistency (existing debt, advisory)
+        continue-on-error: true
+        run: node scripts/validate_tutorial.mjs
+
+  browser:
+    name: Mobile Chromium smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+      # Pin the test runner; no production dependency or package.json change.
+      - name: Install Playwright test runner
+        run: npm install --no-save --no-package-lock @playwright/test@1.65.0
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Real browser smoke test
+        run: npx playwright test --config=.github/playwright.config.mjs
+      - name: Upload failure traces and screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-playwright-failure
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
