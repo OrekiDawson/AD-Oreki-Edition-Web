@@ -25,6 +25,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '26'
+      - name: Enforce active repository rule entrypoints
+        run: |
+          test -s AGENTS.md
+          test -s docs/DELIVERY_RULES.md
+          test -s .github/pull_request_template.md
+          grep -Fq 'DELIVERY_RULES.md' AGENTS.md
       - name: Syntax checks
         run: |
           node --check src/main.js
