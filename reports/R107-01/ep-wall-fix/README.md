@@ -16,8 +16,12 @@
 - **验证（真实新档，interval=1）**：
   - 10000×：r5 410.8 s、r10 573 s、r15 654.2 s、r20 731.2 s、**r50 1055.4 s**；
   - 100000×：r50 1011.9 s；两跑次均无冻结签名、pageErrors=0；
+  - gameEnd 专项（100000×、30 min、只以 gameEnd 停止）：r20 737.5 s、r30 1417.8 s、r50 1568.9 s，
+    结束时 realities=75、stage=laitela、goal=unlock-pelle、**未到 gameEnd**；
   - 49/49 定向验收 **PASS**。
-- **未完成项**：gameEnd 30 min 窗口内未到；默认间隔 180 min 全量跑次 **NOT RUN**。
+- **未完成项**：gameEnd 30 min 窗口内未到（r75、laitela）；默认间隔 180 min 全量跑次 **NOT RUN**。
+- **门禁建议**：本修复可作为 180 min 门禁的 EP 墙修复候选；gameEnd/180 min 仍未验证 PASS，
+  且 R50→HEAD 的节拍回归（连续购买路径不再每帧）是下一个待评估候选。
 
 ## 目录
 

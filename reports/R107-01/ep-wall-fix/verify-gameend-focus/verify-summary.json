@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-11-13T20:22:39.666Z",
+  "applied": {
+    "interval": 1,
+    "speed": 100000,
+    "dynamic": false
+  },
+  "marks": {
+    "ep4000": 111.9,
+    "r1": 397.2,
+    "r5": 397.2,
+    "r10": 561.4,
+    "r15": 670.3,
+    "r16": 737.5,
+    "r20": 737.5,
+    "r30": 1417.8,
+    "r50": 1568.9
+  },
+  "maxRealities": 75,
+  "maxEpLog10": 5262620.69,
+  "maxMaxEpExponent": 5262620,
+  "realityAvailTrue": 54,
+  "gameEndAtWall": null,
+  "pageErrors": [],
+  "consoleErrors": [
+    "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The actio"
+  ]
+}
