@@ -3,12 +3,12 @@
 
 Official pricing: peak Mon-Fri 09:00-12:00 and 14:00-18:00,
 excluding Chinese statutory holidays; weekends, including makeup
-workdays on Saturdays/Sundays, are off-peak.
+workdays on Saturdays/Sundays, are off-peak (explicit overrides below).
 
 2026: 国办发明电〔2025〕7号 (2025-11-04)
 https://www.gov.cn/zhengce/zhengceku/202511/content_7047091.htm
 2027: 国办发明电〔2026〕10号 (2026-11-05)
-https://www.gov.cn/zhengce/content/202611/content_7085101.htm
+https://paper.people.com.cn/rmrb/pc/content/202611/06/content_30189674.html
 
 Update the table when a new official notice is published. For unknown
 years, never assume an unlisted weekday is a holiday: default to
@@ -41,6 +41,21 @@ HOLIDAY_SPANS = {
 }
 
 
+# Make-up workdays explicitly remain off-peak, even though they are
+# administratively designated workdays. This is also the requested policy
+# if an exceptional make-up date were ever on a weekday.
+MAKEUP_WORKDAYS = {
+    2026: frozenset((
+        "2026-01-04", "2026-02-14", "2026-02-28",
+        "2026-05-09", "2026-09-20", "2026-10-10",
+    )),
+    2027: frozenset((
+        "2027-01-31", "2027-02-14", "2027-05-08",
+        "2027-09-26", "2027-10-09",
+    )),
+}
+
+
 def pricing_window(moment: datetime | None = None) -> tuple[str, str]:
     """Return ("peak"|"offpeak", reason) using real Beijing local time.
 
@@ -57,6 +72,8 @@ def pricing_window(moment: datetime | None = None) -> tuple[str, str]:
     today = local.date().isoformat()
     if any(start <= today <= end for start, end in HOLIDAY_SPANS.get(local.year, ())):
         return "offpeak", "statutory-holiday"
+    if today in MAKEUP_WORKDAYS.get(local.year, ()):
+        return "offpeak", "makeup-workday"
     if local.weekday() >= 5:
         return "offpeak", "weekend"
 
