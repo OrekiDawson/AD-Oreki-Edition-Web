@@ -1,0 +1,23 @@
+{
+  "changes": [],
+  "base": {
+    "view": {
+      "tab": "dimensions",
+      "subtab": "antimatter"
+    },
+    "execLog": 1,
+    "lastBeatAt": 1896.800000000745,
+    "totalAM": "1.5807302973058e+131",
+    "infinities": "0"
+  },
+  "after": {
+    "view": {
+      "tab": "dimensions",
+      "subtab": "antimatter"
+    },
+    "execLog": 7,
+    "execStage": "infinityDimensions",
+    "totalAM": "2.31943526600708e+371",
+    "infinities": "15"
+  }
+}

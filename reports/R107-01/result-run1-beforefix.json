@@ -1,0 +1,118 @@
+{
+  "generatedAt": "2026-11-13T14:49:11.508Z",
+  "round": "R107-01",
+  "task": "T7 Web 行为等价：新闻关闭/无意义切页/自动购买器/阶段解锁显示",
+  "env": {
+    "startedAt": "2026-11-13T14:47:15.989Z",
+    "playwright": "1.65.0",
+    "playwrightBase": "/home/oreki/.npm/_npx/e41f203b7505f1fb",
+    "chromium": "158.0.8127.18",
+    "baseUrl": "http://127.0.0.1:38387/",
+    "viewport": "412x839 (Pixel 7 mobile, DPR 2.625, isMobile, hasTouch)",
+    "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Mobile Safari/537.36"
+  },
+  "viewport": "412x839 (Pixel 7 mobile, DPR 2.625, isMobile, hasTouch)",
+  "totals": {
+    "PASS": 13,
+    "FAIL": 3
+  },
+  "pass": false,
+  "results": [
+    {
+      "scenario": "S0-news-closed",
+      "id": "news-nodes-absent-in-dom",
+      "status": "PASS",
+      "detail": "counts={\"#news\":0,\".c-news-ticker\":0,\"[class*='news-ticker']\":0,\".c-news-line\":0,\".c-news-ticker__line\":0}"
+    },
+    {
+      "scenario": "S0-news-closed",
+      "id": "no-news-text-rendered",
+      "status": "PASS",
+      "detail": "bodyMentionsNews=false, head=\"你拥有 8.43e159 反物质。 你每秒获得 7.01e158 反物质。 每个计数频率使反物质维度的生产效率 ×1.145 计数频率：8.32e5 / 秒 买到 10 个 维度献祭（×170.00） 购买最大数量（M） 购买10个维度的加成倍数：×2.00 | 献祭加成：×1.00 计数频率价格: 1e104 购买最\""
+    },
+    {
+      "scenario": "S0-news-closed",
+      "id": "fresh-save-baseline",
+      "status": "PASS",
+      "detail": "antimatter=8.43153623511156e+159, infinities=0, realities=0"
+    },
+    {
+      "scenario": "S0-news-closed",
+      "id": "no-news-entry-in-visual-options",
+      "status": "PASS",
+      "detail": "bodyMentionsNews=false, newsNodes=0, buttons=[]"
+    },
+    {
+      "scenario": "S0-news-closed",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "no-automatic-tab-switch-without-input",
+      "status": "PASS",
+      "detail": "changes=[]"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "business-ticks-without-tab-switch",
+      "status": "PASS",
+      "detail": "execLog 1→7, lastBeatAt 2286→62434"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "antimatter-grows-while-idle",
+      "status": "FAIL",
+      "detail": "am 5.0802890831678e+143→2.9170398573484e+69, stage=infinityDimensions"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "no-forced-tab-switch-while-away",
+      "status": "PASS",
+      "detail": "changes=[], view=options/gameplay"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "business-ticks-while-away-from-dimensions",
+      "status": "FAIL",
+      "detail": "execLog 7→10, am 6.61752581543849e+311→5.58977621059985e+309, view=options/gameplay"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "fresh-no-high-stage-entry",
+      "status": "PASS",
+      "detail": "infinity=false, tabs={\"dimensions\":true,\"automation\":true,\"challenges\":false,\"infinity\":false,\"eternity\":false,\"reality\":false,\"celestials\":false}"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "fresh-sidebar-has-no-locked-stage-entry",
+      "status": "PASS",
+      "detail": "sidebar=[\"维度\",\"自动化\",\"成就\",\"统计数据\",\"选项\"]"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "fresh-no-locked-content-rendered",
+      "status": "PASS",
+      "detail": "comp=AntimatterDimensionsTab, studies=false, reality=false"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "big-crunch-reachable-by-real-play",
+      "status": "PASS",
+      "detail": "canCrunch=true"
+    },
+    {
+      "scenario": "RUNNER",
+      "id": "scenario-crash",
+      "status": "FAIL",
+      "detail": "locator.click: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('.btn-big-crunch')\n    - locator resolved to <button class=\"btn-big-crunch\">↵        大坍缩↵      </button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"l-tab-btn-inner\" data-v-modern-tab-button=\"\">…</div> from <div id=\"ui-fixed\" class=\"c-game-ui--fixed\" data-v-game-ui-component-fixed=\"\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"l-tab-btn-inner\" data-v-modern-tab-button=\"\">…</div> from <div id=\"ui-fixed\" class=\"c-game-ui--fixed\" data-v-game-ui-component-fixed=\"\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    14 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"l-tab-btn-inner\" data-v-modern-tab-button=\"\">…</div> from <div id=\"ui-fixed\" class=\"c-game-ui--fixed\" data-v-game-ui-component-fixed=\"\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n    at firstCrunch (/home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/accept-r107-01.mjs:278:41)\n    at async runScenarios (/home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/accept-r107-01.mjs:400:3)\n    at async file:///home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/accept-r107-01.mjs:707:1"
+    }
+  ]
+}

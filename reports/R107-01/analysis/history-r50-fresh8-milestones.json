@@ -1,0 +1,31 @@
+{
+  "run": "r50-fresh8",
+  "baseline": "hardReset + 250ms 轮询取 rtp=6021ms 帧（realities=0/eternities=0/infinities=3/speed=10000）",
+  "source": "web/reports/_r50/r50-fresh8.jsonl + summary.json（2026-11-01）",
+  "milestones_sec_after_clear": {
+    "infinity": 9.6,
+    "eternity": 19.6,
+    "realities1": 79.6,
+    "v": 394.6,
+    "iu15": 414.6,
+    "laitela": 414.6,
+    "iu25": 699.6,
+    "pelle": 699.6,
+    "doomed": 699.6,
+    "gameEnd": 739.6
+  },
+  "final": {
+    "tag": "r50-fresh8",
+    "targetId": "353F402768BB23A99F800A957C817CE5",
+    "gameEnd": true,
+    "elapsedSec": 721,
+    "samplesPulled": 168,
+    "lastStage": {
+      "id": "doomed",
+      "title": "Pelle 与 Doom 终局阶段"
+    },
+    "lastEnd": 1.104099675817734,
+    "lastReal": "100",
+    "lastSpd": 40000
+  }
+}

@@ -1,0 +1,50 @@
+[PASS] S0-news-closed | news-nodes-absent-in-dom | counts={"#news":0,".c-news-ticker":0,"[class*='news-ticker']":0,".c-news-line":0,".c-news-ticker__line":0}
+[PASS] S0-news-closed | no-news-text-rendered | bodyMentionsNews=false, head="你拥有 8.43e159 反物质。 你每秒获得 7.01e158 反物质。 每个计数频率使反物质维度的生产效率 ×1.145 计数频率：8.32e5 / 秒 买到 10 个 维度献祭（×170.00） 购买最大数量（M） 购买10个维度的加成倍数：×2.00 | 献祭加成：×1.00 计数频率价格: 1e104 购买最"
+[PASS] S0-news-closed | fresh-save-baseline | antimatter=8.43153623511156e+159, infinities=0, realities=0
+[PASS] S0-news-closed | no-news-entry-in-visual-options | bodyMentionsNews=false, newsNodes=0, buttons=[]
+[PASS] S0-news-closed | no-pageerror | count=0
+[PASS] S1-no-meaningless-tab-switch | no-automatic-tab-switch-without-input | changes=[]
+[PASS] S1-no-meaningless-tab-switch | business-ticks-without-tab-switch | execLog 1→7, lastBeatAt 2286→62434
+[FAIL] S1-no-meaningless-tab-switch | antimatter-grows-while-idle | am 5.0802890831678e+143→2.9170398573484e+69, stage=infinityDimensions
+[PASS] S1-no-meaningless-tab-switch | no-forced-tab-switch-while-away | changes=[], view=options/gameplay
+[FAIL] S1-no-meaningless-tab-switch | business-ticks-while-away-from-dimensions | execLog 7→10, am 6.61752581543849e+311→5.58977621059985e+309, view=options/gameplay
+[PASS] S1-no-meaningless-tab-switch | no-pageerror | count=0
+[PASS] S2-stage-unlock-display | fresh-no-high-stage-entry | infinity=false, tabs={"dimensions":true,"automation":true,"challenges":false,"infinity":false,"eternity":false,"reality":false,"celestials":false}
+[PASS] S2-stage-unlock-display | fresh-sidebar-has-no-locked-stage-entry | sidebar=["维度","自动化","成就","统计数据","选项"]
+[PASS] S2-stage-unlock-display | fresh-no-locked-content-rendered | comp=AntimatterDimensionsTab, studies=false, reality=false
+[PASS] S2-stage-unlock-display | big-crunch-reachable-by-real-play | canCrunch=true
+[FAIL] RUNNER | scenario-crash | locator.click: Timeout 8000ms exceeded.
+Call log:
+  - waiting for locator('.btn-big-crunch')
+    - locator resolved to <button class="btn-big-crunch">↵        大坍缩↵      </button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - <div class="l-tab-btn-inner" data-v-modern-tab-button="">…</div> from <div id="ui-fixed" class="c-game-ui--fixed" data-v-game-ui-component-fixed="">…</div> subtree intercepts pointer events
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - <div class="l-tab-btn-inner" data-v-modern-tab-button="">…</div> from <div id="ui-fixed" class="c-game-ui--fixed" data-v-game-ui-component-fixed="">…</div> subtree intercepts pointer events
+    - retrying click action
+      - waiting 100ms
+    14 × waiting for element to be visible, enabled and stable
+       - element is visible, enabled and stable
+       - scrolling into view if needed
+       - done scrolling
+       - <div class="l-tab-btn-inner" data-v-modern-tab-button="">…</div> from <div id="ui-fixed" class="c-game-ui--fixed" data-v-game-ui-component-fixed="">…</div> subtree intercepts pointer events
+     - retrying click action
+       - waiting 500ms
+
+    at firstCrunch (/home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/accept-r107-01.mjs:278:41)
+    at async runScenarios (/home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/accept-r107-01.mjs:400:3)
+    at async file:///home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/accept-r107-01.mjs:707:1
+
+=== SUMMARY ===
+{"PASS":13,"FAIL":3}
+evidence: /home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/evidence
+EXIT:1

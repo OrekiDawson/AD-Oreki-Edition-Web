@@ -1,0 +1,684 @@
+{
+  "reached": true,
+  "waitedEtMs": 349862,
+  "transitions": [
+    {
+      "atMs": 4,
+      "et": "0",
+      "inf": "17",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 15214,
+      "et": "0",
+      "inf": "18",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 33370,
+      "et": "0",
+      "inf": "19",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 45439,
+      "et": "0",
+      "inf": "20",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 57490,
+      "et": "0",
+      "inf": "21",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 66557,
+      "et": "0",
+      "inf": "22",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 81607,
+      "et": "0",
+      "inf": "23",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 93620,
+      "et": "0",
+      "inf": "24",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 105683,
+      "et": "0",
+      "inf": "25",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 120775,
+      "et": "0",
+      "inf": "26",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 135866,
+      "et": "0",
+      "inf": "27",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 150944,
+      "et": "0",
+      "inf": "28",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 162992,
+      "et": "0",
+      "inf": "29",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 178035,
+      "et": "0",
+      "inf": "30",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 196086,
+      "et": "0",
+      "inf": "31",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 199091,
+      "et": "0",
+      "inf": "33",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 202096,
+      "et": "0",
+      "inf": "34",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 205101,
+      "et": "0",
+      "inf": "35",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 208135,
+      "et": "0",
+      "inf": "248",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 211148,
+      "et": "0",
+      "inf": "26931",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 214179,
+      "et": "0",
+      "inf": "53932",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 217195,
+      "et": "0",
+      "inf": "80925",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 220223,
+      "et": "0",
+      "inf": "107785",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 223253,
+      "et": "0",
+      "inf": "134725",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 226273,
+      "et": "0",
+      "inf": "161674",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 229277,
+      "et": "0",
+      "inf": "188382",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 232282,
+      "et": "0",
+      "inf": "215108",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 235290,
+      "et": "0",
+      "inf": "241816",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 238306,
+      "et": "0",
+      "inf": "278457",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 241322,
+      "et": "0",
+      "inf": "581261",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 244331,
+      "et": "0",
+      "inf": "881462",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 247340,
+      "et": "0",
+      "inf": "1181763",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 250360,
+      "et": "0",
+      "inf": "1485363",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 253374,
+      "et": "0",
+      "inf": "1785764",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 256379,
+      "et": "0",
+      "inf": "2085964.0000000002",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 259389,
+      "et": "0",
+      "inf": "2386264",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 262412,
+      "et": "0",
+      "inf": "2690514",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 265414,
+      "et": "0",
+      "inf": "2990514",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 268425,
+      "et": "0",
+      "inf": "3290714",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 271429,
+      "et": "0",
+      "inf": "3591014",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 274432,
+      "et": "0",
+      "inf": "3891564",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 277461,
+      "et": "0",
+      "inf": "4195264",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 280467,
+      "et": "0",
+      "inf": "4496968",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 283478,
+      "et": "0",
+      "inf": "4797618",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 286507,
+      "et": "0",
+      "inf": "5101568",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 289519,
+      "et": "0",
+      "inf": "5401668",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 292570,
+      "et": "0",
+      "inf": "5705518",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 295572,
+      "et": "0",
+      "inf": "6009118",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 298581,
+      "et": "0",
+      "inf": "6309418",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 301596,
+      "et": "0",
+      "inf": "6610068",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 304623,
+      "et": "0",
+      "inf": "6914268",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 307630,
+      "et": "0",
+      "inf": "7214168",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 310653,
+      "et": "0",
+      "inf": "7517468",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 313656,
+      "et": "0",
+      "inf": "7818118",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 316661,
+      "et": "0",
+      "inf": "8118318",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 319683,
+      "et": "0",
+      "inf": "8421022",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 322703,
+      "et": "0",
+      "inf": "8723972",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 325724,
+      "et": "0",
+      "inf": "9024622",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 328744,
+      "et": "0",
+      "inf": "9328472",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 331749,
+      "et": "0",
+      "inf": "9628672",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 334807,
+      "et": "0",
+      "inf": "9932922",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 337825,
+      "et": "0",
+      "inf": "10236122",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 340828,
+      "et": "0",
+      "inf": "10536672",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 343833,
+      "et": "0",
+      "inf": "10836972",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 346858,
+      "et": "0",
+      "inf": "11140572",
+      "brk": true,
+      "stage": "infinityDimensions",
+      "allowed": true,
+      "eternityTab": false,
+      "realityTab": false
+    },
+    {
+      "atMs": 349862,
+      "et": "5",
+      "inf": "250",
+      "brk": true,
+      "stage": "eternityTimeStudy",
+      "allowed": true,
+      "eternityTab": true,
+      "realityTab": false
+    }
+  ],
+  "afterEt": {
+    "eternities": "5",
+    "stage": "eternityTimeStudy",
+    "allowed": true,
+    "eternityTab": true,
+    "realityTab": false,
+    "drawer": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "永恒",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "goalId": "unlock-dilation"
+  }
+}

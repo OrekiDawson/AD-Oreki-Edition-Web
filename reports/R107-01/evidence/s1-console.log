@@ -1,0 +1,26 @@
+[error] Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+[requestfailed] https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer :: csp
+[log] 🌌 Antimatter Dimensions: Reality Update 🌌
+[info] [OREKI_CRUNCH_DEC] allow=true reason=pre-infinity
+[info] [OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)
+[requestfailed] http://127.0.0.1:42643/public/images/stars-bg.webm :: net::ERR_ABORTED
+[requestfailed] http://127.0.0.1:42643/public/images/realityanimbg.webm :: net::ERR_ABORTED
+[info] [OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip
+[info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)
+[info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[info] [OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)
+[info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait

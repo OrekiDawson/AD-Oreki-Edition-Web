@@ -1,0 +1,12 @@
+# R107-01 源码快照
+
+- 采集时间：2026-11-13T15:33Z（+08:00 2026-11-13 夜）
+- 仓库：/home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition
+- 分支：main
+- **验收/跑次使用的源码 HEAD：1d1f7ae824884f2efc53cff69096a662bc3f8499**
+- 采集时 HEAD：53f0d62f4c87f6fa5f864de6bc8fe73a93c6e10e
+  - 1d1f7ae..53f0d62 的差异仅为 **AGENTS/README/DELIVERY_RULES/FACTS 文档 + .github CI + scripts/deepseek_ci_triage.py** ；
+    `git diff --stat 1d1f7ae..HEAD` 未涉及 `src/`、`index.html`、`public/`，验收结果与 180 分钟跑次仍然对应当前生产代码。
+- 工作区状态：仅未跟踪的 `reports/R107-01/`（生产代码 0 改动）
+- 验收脚本运行时的源码即 1d1f7ae（脚本运行前后未修改 src/、index.html、public/）
+- 浏览器：Playwright 1.65.0 + Chromium 158.0.8127.18

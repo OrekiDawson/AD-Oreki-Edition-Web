@@ -1,0 +1,297 @@
+===== 23:35:50 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":1246.1,"iso":"2026-11-13T15:35:47.439Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":32.1,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":10.646,"etStr":"44249523326
+-- BASE events --
+[2026-11-13T15:21:33.641Z] [EVENT] 首次现实(realities>=1) {"seq":7,"tag":"首次现实(realities>=1)","key":"reality","value":5,"wall_sec":2024.3,"iso":"2026-11-1
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+-- BASE last --
+{"t":2874.2,"iso":"2026-11-13T15:35:43.613Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":52.7,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":5,"etLog10":10.01,"e
+===== 23:40:50 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":1546,"iso":"2026-11-13T15:40:47.332Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":14.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":10.798,"etStr":"62783052326",
+-- BASE events --
+[2026-11-13T15:21:33.641Z] [EVENT] 首次现实(realities>=1) {"seq":7,"tag":"首次现实(realities>=1)","key":"reality","value":5,"wall_sec":2024.3,"iso":"2026-11-1
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+-- BASE last --
+{"t":3174.3,"iso":"2026-11-13T15:40:43.739Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":19.2,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":10,"etLog10":10.545,
+===== 23:45:50 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":1846.1,"iso":"2026-11-13T15:45:47.508Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":11.2,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":10.901,"etStr":"79530336926
+-- BASE events --
+[2026-11-13T15:21:33.641Z] [EVENT] 首次现实(realities>=1) {"seq":7,"tag":"首次现实(realities>=1)","key":"reality","value":5,"wall_sec":2024.3,"iso":"2026-11-1
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+-- BASE last --
+{"t":3474.3,"iso":"2026-11-13T15:45:43.761Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":17.1,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":10,"etLog10":10.946,
+===== 23:50:50 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":2146.1,"iso":"2026-11-13T15:50:47.469Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":52.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":10.992,"etStr":"98198398826
+-- BASE events --
+[2026-11-13T15:21:33.641Z] [EVENT] 首次现实(realities>=1) {"seq":7,"tag":"首次现实(realities>=1)","key":"reality","value":5,"wall_sec":2024.3,"iso":"2026-11-1
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+-- BASE last --
+{"t":3774.3,"iso":"2026-11-13T15:50:43.778Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":59.1,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":10,"etLog10":11.166,
+===== 23:55:50 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":2446,"iso":"2026-11-13T15:55:47.394Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":52,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.179,"etStr":"150885650726","
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":4074.3,"iso":"2026-11-13T15:55:43.758Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":55.7,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.851,
+===== 00:00:50 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":2746.1,"iso":"2026-11-13T16:00:47.507Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":47.4,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.378,"etStr":"23881204172
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":4374.2,"iso":"2026-11-13T16:00:43.627Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":57.2,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":12.435,
+===== 00:05:50 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3046.2,"iso":"2026-11-13T16:05:47.545Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":25.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.513,"etStr":"32547815372
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":4674.3,"iso":"2026-11-13T16:05:43.737Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":35,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":12.677,"e
+===== 00:10:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3346,"iso":"2026-11-13T16:10:47.382Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":23.6,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.614,"etStr":"410704085726.
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":4974.4,"iso":"2026-11-13T16:10:43.799Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":25.9,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":12.841,
+===== 00:15:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":5274.2,"iso":"2026-11-13T16:15:43.679Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":27,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":12.952,"e
+===== 00:20:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":5574.3,"iso":"2026-11-13T16:20:43.778Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.6,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.041,
+===== 00:25:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":5874.3,"iso":"2026-11-13T16:25:43.724Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":27.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.116,
+===== 00:30:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":6174.3,"iso":"2026-11-13T16:30:43.705Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.2,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.179,
+===== 00:35:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":6474.3,"iso":"2026-11-13T16:35:43.779Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":26.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.234,
+===== 00:40:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":6774.2,"iso":"2026-11-13T16:40:43.654Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":26.8,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.283,
+===== 00:45:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":7074.3,"iso":"2026-11-13T16:45:43.719Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":29,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.327,"e
+===== 00:50:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":7374.4,"iso":"2026-11-13T16:50:43.813Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.367,
+===== 00:55:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":7674.2,"iso":"2026-11-13T16:55:43.680Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.4,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.404,
+===== 01:00:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":7974.3,"iso":"2026-11-13T17:00:43.714Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":29.2,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.438,
+===== 01:05:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":8274.2,"iso":"2026-11-13T17:05:43.666Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.3,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.469,
+===== 01:10:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":8574.3,"iso":"2026-11-13T17:10:43.759Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.6,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.498,
+===== 01:15:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":8874.2,"iso":"2026-11-13T17:15:43.608Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.2,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.526,
+===== 01:20:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":9174.3,"iso":"2026-11-13T17:20:43.786Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.6,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.552,
+===== 01:25:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":9474.3,"iso":"2026-11-13T17:25:43.711Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.1,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.576,
+===== 01:30:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":9774.3,"iso":"2026-11-13T17:30:43.730Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.9,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.599,
+===== 01:35:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":10074.3,"iso":"2026-11-13T17:35:43.742Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":29.1,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.621
+===== 01:40:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":10374.3,"iso":"2026-11-13T17:40:43.773Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":28.3,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.642
+===== 01:45:51 =====
+-- AB events --
+[2026-11-13T15:19:57.532Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":296.2,"iso":"2026-11-13T15:19:57.531Z","in_page_t"
+[2026-11-13T15:20:17.548Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":316.2,"iso":"2026-11-13T15:20:17.54
+-- AB last --
+{"t":3596.2,"iso":"2026-11-13T16:14:57.531Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":24.5,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":11.683,"etStr":"48249292772
+-- BASE events --
+[2026-11-13T15:21:33.647Z] [EVENT] 5 现实 {"seq":8,"tag":"5 现实","key":"reality5","value":5,"wall_sec":2024.3,"iso":"2026-11-13T15:21:33.646Z","in_page_t
+[2026-11-13T15:55:03.631Z] [EVENT] 现实升级 RU10 已购 {"seq":9,"tag":"现实升级 RU10 已购","key":"ru10","value":null,"wall_sec":4034.3,"iso":"2026-11-13T15:55:03.6
+-- BASE last --
+{"t":10674.3,"iso":"2026-11-13T17:45:43.697Z","vis":"visible","hidden":false,"pageHasFocus":true,"fps":27.8,"gameEnd":false,"endState":0,"doomed":false,"pelleUnl":false,"realities":15,"etLog10":13.662

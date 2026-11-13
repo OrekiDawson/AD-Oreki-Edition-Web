@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "intervalSec": 60,
+  "stored": "60",
+  "stage": "infinityDimensions",
+  "hasEternity": false
+}
