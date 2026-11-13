@@ -1,0 +1,12 @@
+{
+  "clampLow": {
+    "intervalSec": 1,
+    "stored": "1",
+    "input": "1"
+  },
+  "clampHigh": {
+    "intervalSec": 60,
+    "stored": "60",
+    "input": "60"
+  }
+}

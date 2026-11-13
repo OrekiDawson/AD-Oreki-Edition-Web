@@ -1,0 +1,77 @@
+{
+  "criteria": "player.isGameEnd 首次 true 且真实墙钟 <= 180 min",
+  "runs": {
+    "R50-fresh8-2026-11-01": {
+      "source": "web/reports/_r50（旧代码）",
+      "milestones": {
+        "infinity": 9.6,
+        "eternity": 19.6,
+        "reality": 79.6,
+        "v": 394.6,
+        "iu15": 414.6,
+        "iu25": 699.6,
+        "gameEnd": 739.6
+      },
+      "result": "PASS(gameEnd)"
+    },
+    "R104-pass10-62f41e7": {
+      "source": "reports/R104/web/run-20261113-073558-pass10",
+      "milestones": {
+        "infinity": 22.1,
+        "break": 52,
+        "eternity": 522.2,
+        "timestudy": 562.2,
+        "dilation": 1812.1,
+        "ds6": 1842.1,
+        "reality": 1852.1
+      },
+      "terminal": {
+        "wall": 3032.2,
+        "realities": 10
+      },
+      "result": "FAIL(50.5min 停止)"
+    },
+    "R107-main-1d1f7ae": {
+      "source": "reports/R107-01/run-180min",
+      "milestones": {
+        "infinity": 24.4,
+        "break": 54.3,
+        "eternity": 524.3,
+        "timestudy": 564.4,
+        "dilation": 1994.5,
+        "ds6": 2014.4,
+        "reality": 2024.3
+      },
+      "terminal": {
+        "wall": 10794.3,
+        "realities": 15,
+        "epLog10": 3683.25,
+        "maxEpExponent": 3683,
+        "ep_freeze_sec": 5890.1,
+        "gameEnd": false,
+        "endState": 0
+      },
+      "result": "FAIL(180min 上限, realities=15)"
+    },
+    "R107-AB-interval1-53f0d62": {
+      "source": "reports/R107-01/run-interval1",
+      "milestones": {
+        "infinity": 6.1,
+        "break": 16.1,
+        "eternity": 96.1,
+        "timestudy": 96.1,
+        "dilation": 256.1,
+        "ds6": 256.1,
+        "reality": 296.2
+      },
+      "terminal": {
+        "wall": 3596.2,
+        "realities": 15,
+        "epLog10": 3683.25,
+        "ep_freeze_sec": 2950.1
+      },
+      "result": "FAIL(60min 上限)"
+    }
+  },
+  "notes": "R50 fresh8 为旧代码的历史完成证据（零起点基线验证）；当前代码在两轮真实新档中均未通关。"
+}
