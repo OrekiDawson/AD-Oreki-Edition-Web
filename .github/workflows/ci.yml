@@ -93,6 +93,8 @@ jobs:
 
       - name: Test incremental repository policy
         run: python3 -m unittest discover -s scripts/tests -p 'test_repository_policy.py' -v
+      - name: Ensure DeepSeek AI review and failure triage remain disabled
+        run: python3 -m unittest discover -s scripts/tests -p 'test_no_deepseek_ci.py' -v
       - name: Verify DeepSeek off-peak billing calendar and time boundaries
         run: python3 -m unittest discover -s scripts/tests -p 'test_deepseek_pricing.py' -v
       - name: Test Pages pre-push integrity policy
