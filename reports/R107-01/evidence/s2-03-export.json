@@ -1,0 +1,13 @@
+{
+  "len": 6989,
+  "valid": true,
+  "state": {
+    "infinities": "3",
+    "IP": "29",
+    "stage": "breakInfinity",
+    "view": {
+      "tab": "options",
+      "subtab": "saving"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "log": [
+    {
+      "task": "breakGate",
+      "at": 1510,
+      "gapMs": null
+    },
+    {
+      "task": "early",
+      "at": 11537,
+      "gapMs": 10027
+    },
+    {
+      "task": "routine",
+      "at": 21541,
+      "gapMs": 10004
+    }
+  ],
+  "fresh": [
+    {
+      "task": "breakGate",
+      "at": 1510,
+      "gapMs": null
+    },
+    {
+      "task": "early",
+      "at": 11537,
+      "gapMs": 10027
+    },
+    {
+      "task": "routine",
+      "at": 21541,
+      "gapMs": 10004
+    }
+  ],
+  "waitedMs": 14975
+}

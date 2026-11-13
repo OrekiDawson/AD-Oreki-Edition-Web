@@ -1,0 +1,12 @@
+{
+  "view": {
+    "tab": "options",
+    "subtab": "saving"
+  },
+  "stage": "infinityDimensions",
+  "goalId": "unlock-eternity",
+  "enabled": true,
+  "intervalSec": 10,
+  "inf": "3",
+  "eternityStageAllowed": true
+}

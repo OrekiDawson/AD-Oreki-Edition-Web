@@ -1,0 +1,50 @@
+{
+  "run": "run-interval1",
+  "source_sha": "53f0d62f4c87f6fa5f864de6bc8fe73a93c6e10e",
+  "interval": {
+    "requested": 1,
+    "applied": 1,
+    "path": "ui-real-click"
+  },
+  "terminal": {
+    "wall_sec": 3599.3,
+    "realities": 15,
+    "epLog10": 3683.25,
+    "maxEpExponent": 3683,
+    "ecDone": "5,5,5,5,5,5,5,5,5,5,5,5",
+    "dsN": 5,
+    "smStage": "realityTree",
+    "gameEnd": false,
+    "endState": 0
+  },
+  "ep_wall": {
+    "requirement": "player.records.thisReality.maxEP.exponent >= 4000 (src/core/reality.js:120)",
+    "first_freeze_wall_sec": 649.2,
+    "last_freeze_wall_sec": 3599.3,
+    "freeze_duration_sec": 2950.1,
+    "ep_log10_frozen": 3683.25
+  },
+  "conclusion": "默认 10 s 与玩家可配 1 s 两轮真实新档都到达 realities=15 后卡在同一 EP 指数 3683（< 4000 门槛），分别冻结 5890.1 s / 2950.1 s；节拍只影响到达时间（首次现实 2024.3 s vs 296.2 s），不能越过 EP 墙。",
+  "baseline_10s": {
+    "run": "run-180min",
+    "source_sha": "1d1f7ae824884f2efc53cff69096a662bc3f8499",
+    "terminal": {
+      "wall_sec": 10799.5,
+      "realities": 15,
+      "epLog10": 3683.25,
+      "maxEpExponent": 3683,
+      "ecDone": "5,5,5,5,5,5,5,5,5,5,5,5",
+      "dsN": 5,
+      "ds6": false,
+      "smStage": "realityTree",
+      "gameEnd": false,
+      "endState": 0
+    },
+    "ep_wall": {
+      "first_freeze_wall_sec": 4909.4,
+      "last_freeze_wall_sec": 10799.5,
+      "freeze_duration_sec": 5890.1,
+      "ep_log10_frozen": 3683.25
+    }
+  }
+}

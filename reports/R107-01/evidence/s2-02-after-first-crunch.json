@@ -1,0 +1,129 @@
+{
+  "post": {
+    "progress": {
+      "infinity": true,
+      "eternity": false,
+      "reality": false
+    },
+    "player": {
+      "infinities": "1",
+      "eternities": "0",
+      "realities": "0",
+      "break": false,
+      "antimatter": "1.1208366685479e+263",
+      "maxAM": "2.67312314769065e+266",
+      "totalAM": "1.56562511259366e+317",
+      "infinityPoints": "10",
+      "autobuyersOn": true,
+      "lastOpenTab": 0
+    },
+    "view": {
+      "tab": "dimensions",
+      "subtab": "antimatter"
+    },
+    "tabAvail": {
+      "dimensions": true,
+      "automation": true,
+      "challenges": true,
+      "infinity": true,
+      "eternity": false,
+      "reality": false,
+      "celestials": false
+    },
+    "tabUnlocked": {
+      "dimensions": true,
+      "infinity": true,
+      "eternity": false,
+      "reality": false
+    },
+    "timeDimensionUnlocked": false,
+    "sidebarTabNames": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "subtabBar": [
+      "Ω 反物质维度",
+      "自动购买器",
+      "Ω 普通挑战",
+      "无限升级",
+      "∝ 打破无限",
+      "Ξ 复制器",
+      "成就",
+      "隐藏成就",
+      "统计数据",
+      "最近重置",
+      "倍率明细",
+      "存档",
+      "视觉效果",
+      "游戏玩法"
+    ],
+    "currentComponent": "AntimatterDimensionsTab",
+    "bodyHasTimeStudies": false,
+    "bodyHasReality": false,
+    "news": {
+      "counts": {
+        "#news": 0,
+        ".c-news-ticker": 0,
+        "[class*='news-ticker']": 0,
+        ".c-news-line": 0,
+        ".c-news-ticker__line": 0
+      },
+      "total": 0,
+      "bodyMentionsNews": false,
+      "bodyTextHead": "你拥有 1.12e263 反物质。 你每秒获得 1.88e241 反物质。 每个计数频率使反物质维度的生产效率 ×1.165 计数频率：4.79e6 / 秒 你拥有 10 无限点数。 你现在在反物质宇宙中 (没有正在进行的挑战)。 买到 10 个 维度献祭（×388.58） 购买最大数量（M） 购买10个维度的加成倍数：×2.00 | 献祭加成：×1.00 计数频率价格: 1e104 购买最大数量 第一反物质维度 ×2.94e37 3.13e182 (+6.77%/秒) 购买 0 个 价格：1e265 反物质 第二反物质维度 ×3.04e30 1.81e147 (+6.18%/秒) 购买 0 个 价格：1e266 反物质 第三反物质维度 ×9.27e25 3.09e116 (+5.50%/秒) 购买 0 个 价格：1e264 反物质 第四反物质维度 ×9.05e22 4.82e88 (+4"
+    },
+    "exec": {
+      "enabled": true,
+      "intervalSec": 10,
+      "strictGlobal": false,
+      "stage": "breakInfinity",
+      "goalId": "break-infinity",
+      "actionCount": 0,
+      "attemptCount": 0,
+      "eternityStageAllowed": false,
+      "lastBeatAt": 1490.6000000014901,
+      "execLog": [
+        {
+          "task": "routine",
+          "at": 1491,
+          "gapMs": null,
+          "taskGapMs": null
+        }
+      ],
+      "manualClickCount": 2,
+      "manualHold": null,
+      "lastAction": null,
+      "blockers": [
+        {
+          "id": "intervalNotMaxed",
+          "title": "大坍缩自动器间隔未拉满",
+          "advice": "打破无限要求间隔 <= 100。需要累计 32767 IP 逐级购买 15 次。",
+          "source": "src/core/autobuyers/autobuyer.js:165-177"
+        }
+      ],
+      "degradedCount": 0
+    },
+    "storage": {
+      "automationEnabled": null,
+      "automationInterval": null,
+      "saveLength": 0
+    }
+  },
+  "uiDelayMs": 22,
+  "checks": {
+    "drawer": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "成就",
+      "统计数据",
+      "选项"
+    ]
+  }
+}

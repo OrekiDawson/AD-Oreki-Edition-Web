@@ -1,0 +1,37 @@
+{
+  "manualBefore": {
+    "mc": 0,
+    "ac": 0,
+    "count": 4,
+    "am": "4.1849729192447e+189"
+  },
+  "manualAfter": {
+    "mc": 2,
+    "ac": 0,
+    "count": 4,
+    "hold": {
+      "goalId": "unlock-eternity",
+      "remainSec": 60
+    },
+    "execState": {
+      "early": "upgrades",
+      "breakUpgrades": "1",
+      "breakGate": "false",
+      "routine": "true",
+      "eternity": "",
+      "eternityReset": "false",
+      "reality": "",
+      "celestial": "stage=1"
+    }
+  },
+  "manualLater": {
+    "mc": 2,
+    "ac": 0,
+    "attemptCount": 0,
+    "hold": {
+      "goalId": "unlock-eternity",
+      "remainSec": 55
+    }
+  },
+  "manualAction": "buy:购买 1 个"
+}
