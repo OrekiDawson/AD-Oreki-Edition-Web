@@ -42,6 +42,12 @@ jobs:
           node scripts/check_eternity_gate.mjs
           node scripts/test-r100-newgame-autobuyers.mjs
           node scripts/test-scheduler-beat.mjs
+          # R104 real fresh-save failures: scheduler starvation, clock throttling,
+          # breakthrough/reset priority and ID1 reserve. Keep these in fast CI.
+          node scripts/test-r91-early-beat-share.mjs
+          node scripts/test-r88-executor-clock.mjs
+          node scripts/test-r90-early-routine-beat.mjs
+          node scripts/test-r87-break-id1-reserve.mjs
       - name: Protect exact Web production deploy source
         run: node scripts/check_deploy_workflow.mjs
       # Source JSON, generated tutorial, and player-visible terminology are
