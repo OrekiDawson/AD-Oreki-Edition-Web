@@ -40,7 +40,7 @@ jobs:
             run_browser=false
             while IFS= read -r -d '' path; do
               case "$path" in
-                docs/*|reports/*|README.md|CHANGELOG.md|LICENSE|MOD-LICENSE|NOTICE.md)
+                docs/*|reports/*|AGENTS.md|PROJECT_PAUSED.md|WEB_ANDROID_DIFFERENCES.md|README.md|CHANGELOG.md|LICENSE|MOD-LICENSE|NOTICE.md)
                   ;;
                 *)
                   run_browser=true
