@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-11-13T23:53:13.493Z",
+  "run": "run-default",
+  "status": "PARTIAL (stopped at Lead request to free host CPU for Android 180min run; browser verification window to be rescheduled)",
+  "config": {
+    "freshSave": true,
+    "defaultSettings": true,
+    "intervalInjected": false,
+    "speedInjected": false,
+    "dynamicSpeed": true,
+    "viewport": "412x839 Pixel 7 mobile DPR2.625 isMobile hasTouch",
+    "observedWallSec": 1337.8,
+    "targetWindowSec": [
+      1800,
+      2700
+    ]
+  },
+  "milestones": {
+    "firstInfinity": 6.3,
+    "breakInfinity": 10.4,
+    "firstEternity": 83.2,
+    "firstReality": 427,
+    "realities5": 427,
+    "realities10": 706.8,
+    "realities15": 938.8,
+    "realities20": 1177.4
+  },
+  "maxRealities": 20,
+  "effectiveIntervalFirstSeen": {
+    "1": {
+      "wall": 0,
+      "realities": 0
+    },
+    "2": {
+      "wall": 427,
+      "realities": 5
+    },
+    "3": {
+      "wall": 706.8,
+      "realities": 10
+    }
+  },
+  "lastState": {
+    "wall": 1337.8,
+    "realities": 20,
+    "stage": "celestialsTeresa",
+    "goal": "unlock-effarig",
+    "configuredIntervalSec": 10,
+    "effectiveIntervalSec": 3,
+    "stageCapSec": 3,
+    "storedInterval": null,
+    "speed": 10000
+  },
+  "pageErrors": null,
+  "note": "脚本在 Lead 要求暂停 Web 重型跑次时被终止（未写出完整 summary.json）；本文件由 samples.jsonl + milestones-*.json 回填。"
+}

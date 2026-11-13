@@ -10,10 +10,10 @@
       "eternities": "0",
       "realities": "0",
       "break": false,
-      "antimatter": "1.57853329613558e+266",
-      "maxAM": "1.57853329613558e+266",
-      "totalAM": "1.54687502244945e+317",
-      "infinityPoints": "10",
+      "antimatter": "4.44525162289732e+296",
+      "maxAM": "5.74525162289842e+296",
+      "totalAM": "1.50000005867328e+317",
+      "infinityPoints": "0",
       "autobuyersOn": true,
       "lastOpenTab": 0
     },
@@ -75,7 +75,7 @@
       },
       "total": 0,
       "bodyMentionsNews": false,
-      "bodyTextHead": "你拥有 1.58e266 反物质。 你每秒获得 1.48e265 反物质。 每个计数频率使反物质维度的生产效率 ×1.165 计数频率：2.08e10 / 秒 你拥有 10 无限点数。 你现在在反物质宇宙中 (没有正在进行的挑战)。 买到 10 个 维度献祭（×475.18） 购买最大数量（M） 购买10个维度的加成倍数：×2.00 | 献祭加成：×1.00 计数频率价格: 1e159 购买最大数量 第一反物质维度 ×7.35e36 6.44e199 (+7.92%/秒) 购买 9 个 价格：9e265 反物质 第二反物质维度 ×7.59e29 5.43e162 (+7.82%/秒) 购买 1 个 价格：1e266 反物质 第三反物质维度 ×4.63e25 3.43e129 (+6.08%/秒) 购买 0 个 价格：1e269 反物质 第四反物质维度 ×2.26e22 1.97e99 (+"
+      "bodyTextHead": "你拥有 4.45e296 反物质。 你每秒获得 3.13e187 反物质。 每个计数频率使反物质维度的生产效率 ×1.165 计数频率：177.314 / 秒 你拥有 0 无限点数。 你现在在反物质宇宙中 (没有正在进行的挑战)。 买到 10 个 维度献祭（×460.54） 购买最大数量（M） 购买10个维度的加成倍数：×2.00 | 献祭加成：×1.00 计数频率价格: 1e37 购买最大数量 第一反物质维度 ×7.10e22 1.06e86 (+8.71%/秒) 购买 10 个 价格：1e104 反物质 第二反物质维度 ×3.07e22 1.09e73 (+8.48%/秒) 购买 10 个 价格：1e139 反物质 第三反物质维度 ×1.54e22 2.24e60 (+7.93%/秒) 购买 10 个 价格：1e175 反物质 第四反物质维度 ×7.68e21 9.19e47 (+6."
     },
     "exec": {
       "enabled": true,
@@ -86,26 +86,61 @@
       "actionCount": 0,
       "attemptCount": 0,
       "eternityStageAllowed": false,
-      "lastBeatAt": 838.7999999970198,
+      "lastBeatAt": 8455.10000000149,
       "execLog": [
         {
           "task": "routine",
-          "at": 839,
+          "at": 1290,
           "gapMs": null,
+          "taskGapMs": null
+        },
+        {
+          "task": "celestial",
+          "at": 2321,
+          "gapMs": 1032,
+          "taskGapMs": null
+        },
+        {
+          "task": "routine",
+          "at": 3341,
+          "gapMs": 1020,
+          "taskGapMs": 2051
+        },
+        {
+          "task": "celestial",
+          "at": 4368,
+          "gapMs": 1027,
+          "taskGapMs": 2047
+        },
+        {
+          "task": "routine",
+          "at": 5382,
+          "gapMs": 1014,
+          "taskGapMs": 2041
+        },
+        {
+          "task": "early",
+          "at": 6416,
+          "gapMs": 1034,
+          "taskGapMs": null
+        },
+        {
+          "task": "celestial",
+          "at": 7435,
+          "gapMs": 1019,
+          "taskGapMs": 3067
+        },
+        {
+          "task": "breakGate",
+          "at": 8455,
+          "gapMs": 1020,
           "taskGapMs": null
         }
       ],
       "manualClickCount": 2,
       "manualHold": null,
       "lastAction": null,
-      "blockers": [
-        {
-          "id": "intervalNotMaxed",
-          "title": "大坍缩自动器间隔未拉满",
-          "advice": "打破无限要求间隔 <= 100。需要累计 32767 IP 逐级购买 15 次。",
-          "source": "src/core/autobuyers/autobuyer.js:165-177"
-        }
-      ],
+      "blockers": [],
       "degradedCount": 0
     },
     "storage": {
@@ -114,7 +149,7 @@
       "saveLength": 0
     }
   },
-  "uiDelayMs": 2,
+  "uiDelayMs": 9,
   "checks": {
     "drawer": [
       "维度",

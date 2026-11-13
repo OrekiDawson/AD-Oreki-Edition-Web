@@ -1,0 +1,34 @@
+{
+  "name": "firstEternity",
+  "wall": 83.2,
+  "state": {
+    "infinities": null,
+    "infinitiesLog10": null,
+    "breakFlag": true,
+    "eternitiesLog10": 0.7,
+    "realities": 0,
+    "maxAMLog10": 281.17,
+    "maxIPLog10": null,
+    "epLog10": 19.6,
+    "stage": "eternityTimeStudy",
+    "goal": "unlock-dilation",
+    "configuredIntervalSec": 10,
+    "effectiveIntervalSec": 1,
+    "stageCapSec": 1,
+    "storedInterval": null,
+    "storedEnabled": null,
+    "speed": 10000,
+    "dynamicSpeed": true,
+    "fps": null,
+    "served": {
+      "routine": 22,
+      "celestial": 21,
+      "early": 20,
+      "breakGate": 2,
+      "breakUpgrades": 17,
+      "eternityReset": 1
+    },
+    "lastBeatAt": 84633.60000000149,
+    "wall_sec": 83.2
+  }
+}

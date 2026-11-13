@@ -1,0 +1,32 @@
+{
+  "name": "breakInfinity",
+  "wall": 10.4,
+  "state": {
+    "infinities": null,
+    "infinitiesLog10": 0.48,
+    "breakFlag": true,
+    "eternitiesLog10": null,
+    "realities": 0,
+    "maxAMLog10": 206.35,
+    "maxIPLog10": 4.52,
+    "epLog10": null,
+    "stage": "infinityDimensions",
+    "goal": "unlock-eternity",
+    "configuredIntervalSec": 10,
+    "effectiveIntervalSec": 1,
+    "stageCapSec": 1,
+    "storedInterval": null,
+    "storedEnabled": null,
+    "speed": 10000,
+    "dynamicSpeed": true,
+    "fps": null,
+    "served": {
+      "routine": 4,
+      "celestial": 4,
+      "early": 2,
+      "breakGate": 2
+    },
+    "lastBeatAt": 11995.10000000149,
+    "wall_sec": 10.4
+  }
+}

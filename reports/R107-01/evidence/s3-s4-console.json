@@ -1,582 +1,797 @@
 [
   {
     "type": "error",
-    "at": 1794598458420,
+    "at": 1794613746759,
     "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
   },
   {
     "type": "requestfailed",
-    "at": 1794598458442,
+    "at": 1794613746777,
     "text": "https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer :: csp"
   },
   {
     "type": "log",
-    "at": 1794598458442,
+    "at": 1794613746777,
     "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
   },
   {
     "type": "info",
-    "at": 1794598458715,
+    "at": 1794613746926,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-infinity"
   },
   {
     "type": "info",
-    "at": 1794598458718,
+    "at": 1794613746926,
     "text": "[OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)"
   },
   {
     "type": "requestfailed",
-    "at": 1794598460195,
-    "text": "http://127.0.0.1:36625/public/images/stars-bg.webm :: net::ERR_ABORTED"
+    "at": 1794613748092,
+    "text": "http://127.0.0.1:38343/public/images/stars-bg.webm :: net::ERR_ABORTED"
   },
   {
     "type": "requestfailed",
-    "at": 1794598460196,
-    "text": "http://127.0.0.1:36625/public/images/realityanimbg.webm :: net::ERR_ABORTED"
+    "at": 1794613748092,
+    "text": "http://127.0.0.1:38343/public/images/realityanimbg.webm :: net::ERR_ABORTED"
   },
   {
     "type": "error",
-    "at": 1794598461658,
+    "at": 1794613749098,
     "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
   },
   {
     "type": "requestfailed",
-    "at": 1794598461663,
+    "at": 1794613749112,
     "text": "https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer :: csp"
   },
   {
     "type": "log",
-    "at": 1794598461663,
+    "at": 1794613749112,
     "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
   },
   {
     "type": "info",
-    "at": 1794598461796,
+    "at": 1794613749233,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip"
   },
   {
     "type": "info",
-    "at": 1794598461831,
+    "at": 1794613749269,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598461832,
+    "at": 1794613749269,
     "text": "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)"
   },
   {
     "type": "info",
-    "at": 1794598463121,
+    "at": 1794613749722,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598463121,
+    "at": 1794613749722,
     "text": "[OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)"
   },
   {
     "type": "info",
-    "at": 1794598466977,
+    "at": 1794613753230,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598466983,
+    "at": 1794613753237,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598471533,
+    "at": 1794613757025,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598471537,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598476383,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598476387,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "requestfailed",
-    "at": 1794598476903,
-    "text": "http://127.0.0.1:36625/public/images/stars-bg.webm :: net::ERR_ABORTED"
-  },
-  {
-    "type": "requestfailed",
-    "at": 1794598476903,
-    "text": "http://127.0.0.1:36625/public/images/realityanimbg.webm :: net::ERR_ABORTED"
-  },
-  {
-    "type": "info",
-    "at": 1794598481860,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598481869,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598488966,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598488967,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598497374,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598497382,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598505955,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598505958,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598515131,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598515131,
+    "at": 1794613757025,
     "text": "[OrekiCrunchInterval] managed interval 3600 -> 5 (resume:ip-jump)"
   },
   {
     "type": "info",
-    "at": 1794598515166,
+    "at": 1794613757057,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598515166,
+    "at": 1794613757057,
     "text": "[OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)"
   },
   {
     "type": "info",
-    "at": 1794598526924,
+    "at": 1794613761505,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598526931,
+    "at": 1794613761516,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
+    "type": "requestfailed",
+    "at": 1794613764320,
+    "text": "http://127.0.0.1:38343/public/images/stars-bg.webm :: net::ERR_ABORTED"
+  },
+  {
+    "type": "requestfailed",
+    "at": 1794613764320,
+    "text": "http://127.0.0.1:38343/public/images/realityanimbg.webm :: net::ERR_ABORTED"
+  },
+  {
     "type": "error",
-    "at": 1794598552909,
+    "at": 1794613766461,
     "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
   },
   {
     "type": "requestfailed",
-    "at": 1794598552917,
+    "at": 1794613766466,
     "text": "https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer :: csp"
   },
   {
     "type": "log",
-    "at": 1794598552917,
+    "at": 1794613766466,
     "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
   },
   {
     "type": "info",
-    "at": 1794598552990,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+    "at": 1794613766508,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip"
   },
   {
     "type": "info",
-    "at": 1794598561231,
+    "at": 1794613766525,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598561243,
+    "at": 1794613766525,
+    "text": "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)"
+  },
+  {
+    "type": "info",
+    "at": 1794613766607,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613766607,
+    "text": "[OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)"
+  },
+  {
+    "type": "info",
+    "at": 1794613769352,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613769356,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613772663,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613772671,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613776727,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613776737,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "requestfailed",
-    "at": 1794598568148,
-    "text": "http://127.0.0.1:36625/public/images/stars-bg.webm :: net::ERR_ABORTED"
+    "at": 1794613781895,
+    "text": "http://127.0.0.1:38343/public/images/stars-bg.webm :: net::ERR_ABORTED"
   },
   {
     "type": "requestfailed",
-    "at": 1794598568149,
-    "text": "http://127.0.0.1:36625/public/images/realityanimbg.webm :: net::ERR_ABORTED"
+    "at": 1794613781895,
+    "text": "http://127.0.0.1:38343/public/images/realityanimbg.webm :: net::ERR_ABORTED"
   },
   {
     "type": "info",
-    "at": 1794598572981,
+    "at": 1794613782763,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598572988,
+    "at": 1794613782783,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598588953,
+    "at": 1794613787481,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598588965,
+    "at": 1794613787492,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598606608,
+    "at": 1794613793987,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598606613,
+    "at": 1794613793995,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598618484,
+    "at": 1794613797188,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598618498,
+    "at": 1794613797198,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598630172,
+    "at": 1794613805369,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598630175,
+    "at": 1794613805382,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598642188,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598642201,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598654823,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598654826,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598669502,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598669510,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598684224,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598684235,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598699706,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598699707,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598713161,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598713177,
-    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
-  },
-  {
-    "type": "info",
-    "at": 1794598725352,
+    "at": 1794613815468,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
   },
   {
     "type": "info",
-    "at": 1794598725353,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598725355,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598725355,
+    "at": 1794613815476,
     "text": "[OrekiCrunchInterval] managed interval 3600 -> 5 (resume:id-peak-reached)"
   },
   {
     "type": "info",
-    "at": 1794598738773,
+    "at": 1794613816005,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613816005,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
+  },
+  {
+    "type": "info",
+    "at": 1794613816629,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613816631,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598738774,
+    "at": 1794613816645,
+    "text": "[OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)"
+  },
+  {
+    "type": "info",
+    "at": 1794613816805,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598738776,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598763596,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598763597,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598778834,
+    "at": 1794613816805,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598778834,
+    "at": 1794613817486,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598778837,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598779338,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598779338,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598780557,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598780558,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598782900,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598782900,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598786825,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598786825,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598792531,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598792532,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598801143,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598801144,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598812862,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
-  },
-  {
-    "type": "info",
-    "at": 1794598812862,
-    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
-  },
-  {
-    "type": "info",
-    "at": 1794598818895,
+    "at": 1794613817486,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598818895,
+    "at": 1794613819605,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598818896,
+    "at": 1794613819605,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794598818898,
+    "at": 1794613820712,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598818899,
+    "at": 1794613820713,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
+  },
+  {
+    "type": "info",
+    "at": 1794613820727,
+    "text": "[OrekiCrunchInterval] managed interval 3600 -> 5 (resume:id-peak-reached)"
+  },
+  {
+    "type": "info",
+    "at": 1794613820910,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613820911,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
+  },
+  {
+    "type": "info",
+    "at": 1794613822231,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613822231,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached"
+  },
+  {
+    "type": "info",
+    "at": 1794613824803,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613824806,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613824806,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613824808,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613824809,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613824811,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613824817,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613824817,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613824820,
+    "text": "[OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)"
+  },
+  {
+    "type": "info",
+    "at": 1794613824838,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613824842,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613824845,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613824849,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613824903,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613824906,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613825043,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613825044,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613825480,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613825481,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613826359,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613826362,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613828472,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613828472,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
+  },
+  {
+    "type": "info",
+    "at": 1794613828897,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613828899,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ready"
   },
   {
     "type": "info",
-    "at": 1794598929169,
+    "at": 1794613828910,
+    "text": "[OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ready)"
+  },
+  {
+    "type": "info",
+    "at": 1794613839148,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598929169,
-    "text": "[OREKI_MANAGED_AUTO] key=ipmult nowMs=377232.8 event=player-disable-recorded"
+    "at": 1794613839149,
+    "text": "[OREKI_MANAGED_AUTO] key=ipmult nowMs=73293.6 event=player-disable-recorded"
   },
   {
     "type": "info",
-    "at": 1794598929201,
-    "text": "[OREKI_MANAGED_AUTO] key=ipmult nowMs=377264.1 event=restore-due"
+    "at": 1794613839175,
+    "text": "[OREKI_MANAGED_AUTO] key=ipmult nowMs=73319.8 event=restore-due"
   },
   {
     "type": "info",
-    "at": 1794598929201,
-    "text": "[OREKI_MANAGED_AUTO] key=ipmult nowMs=377264.1 event=isActive-reenabled"
+    "at": 1794613839176,
+    "text": "[OREKI_MANAGED_AUTO] key=ipmult nowMs=73319.8 event=isActive-reenabled"
   },
   {
     "type": "info",
-    "at": 1794598930053,
+    "at": 1794613840001,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
   },
   {
     "type": "info",
-    "at": 1794598930053,
+    "at": 1794613840001,
     "text": "[OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)"
   },
   {
     "type": "info",
-    "at": 1794598930515,
+    "at": 1794613840525,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598930515,
+    "at": 1794613840525,
     "text": "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)"
   },
   {
     "type": "info",
-    "at": 1794598930711,
+    "at": 1794613840722,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
   },
   {
     "type": "info",
-    "at": 1794598930711,
+    "at": 1794613840722,
     "text": "[OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)"
   },
   {
     "type": "info",
-    "at": 1794598931378,
+    "at": 1794613841414,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598931378,
+    "at": 1794613841422,
     "text": "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)"
   },
   {
     "type": "info",
-    "at": 1794598931836,
+    "at": 1794613841877,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
   },
   {
     "type": "info",
-    "at": 1794598931836,
+    "at": 1794613841878,
     "text": "[OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)"
   },
   {
     "type": "info",
-    "at": 1794598933016,
+    "at": 1794613843036,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598933017,
+    "at": 1794613843036,
+    "text": "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)"
+  },
+  {
+    "type": "info",
+    "at": 1794613843076,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
   },
   {
     "type": "info",
-    "at": 1794598934271,
+    "at": 1794613843076,
+    "text": "[OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)"
+  },
+  {
+    "type": "info",
+    "at": 1794613843220,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
   },
   {
     "type": "info",
-    "at": 1794598934275,
+    "at": 1794613843224,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843225,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843225,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843236,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843236,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843255,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843255,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843256,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843257,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843266,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843273,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843286,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843288,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843291,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843293,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843318,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843319,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843330,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843330,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843349,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843358,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843358,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843359,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843388,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843388,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843423,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843426,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843459,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843459,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843520,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843521,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843632,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843634,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843719,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843719,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843854,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843855,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843957,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613843959,
+    "text": "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)"
+  },
+  {
+    "type": "info",
+    "at": 1794613843975,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613843977,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump"
+  },
+  {
+    "type": "info",
+    "at": 1794613844022,
+    "text": "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow"
+  },
+  {
+    "type": "info",
+    "at": 1794613844022,
+    "text": "[OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)"
   }
 ]

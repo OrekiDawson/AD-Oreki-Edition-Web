@@ -2,26 +2,28 @@
   "manualBefore": {
     "mc": 0,
     "ac": 0,
-    "count": 4,
-    "am": "1.10512369661074e+704"
+    "count": 7,
+    "am": "5.27195802199e+171"
   },
   "manualAfter": {
     "mc": 2,
     "ac": 0,
-    "count": 4,
+    "count": 8,
     "hold": {
       "goalId": "unlock-eternity",
       "remainSec": 60
     },
     "execState": {
-      "early": "upgrades",
       "breakUpgrades": "1",
       "breakGate": "false",
+      "early": "upgrades",
       "routine": "true",
       "eternity": "",
       "eternityReset": "false",
       "reality": "",
-      "celestial": "stage=1"
+      "celestial": "stage=1",
+      "perk": "",
+      "endgame": ""
     }
   },
   "manualLater": {

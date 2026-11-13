@@ -1,27 +1,32 @@
 [
   {
     "type": "error",
-    "at": 1794598351884,
+    "at": 1794613637497,
     "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
   },
   {
     "type": "requestfailed",
-    "at": 1794598351897,
+    "at": 1794613637516,
     "text": "https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer :: csp"
   },
   {
     "type": "log",
-    "at": 1794598351897,
+    "at": 1794613637516,
     "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
   },
   {
     "type": "info",
-    "at": 1794598352015,
+    "at": 1794613637689,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-infinity"
   },
   {
     "type": "info",
-    "at": 1794598352015,
+    "at": 1794613637689,
     "text": "[OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)"
+  },
+  {
+    "type": "info",
+    "at": 1794613641851,
+    "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip"
   }
 ]

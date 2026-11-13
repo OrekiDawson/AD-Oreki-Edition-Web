@@ -5,9 +5,9 @@
       "tab": "dimensions",
       "subtab": "antimatter"
     },
-    "execLog": 1,
-    "lastBeatAt": 709.2999999970198,
-    "totalAM": "1.62010331275868e+117",
+    "execLog": 2,
+    "lastBeatAt": 2349,
+    "totalAM": "6.05107058023175e+130",
     "infinities": "0"
   },
   "after": {
@@ -15,9 +15,9 @@
       "tab": "dimensions",
       "subtab": "antimatter"
     },
-    "execLog": 7,
+    "execLog": 12,
     "execStage": "infinityDimensions",
-    "totalAM": "1.57474835322421e+371",
-    "infinities": "15"
+    "totalAM": "5.00801900456096e+955",
+    "infinities": "18044"
   }
 }

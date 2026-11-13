@@ -348,6 +348,10 @@ async function runScenarios() {
   const startLog = base.exec.execLog.length;
   const startBeat = base.exec.lastBeatAt;
   const startTotalAM = base.player.totalAM;
+  // [R107-01 P1] 阶段化节拍会让前 60s 内出现更多**原版**解锁跳页；本项只验证 MOD 不切页，
+  // 所以同样临时关闭原版 automaticTabSwitching（测试场景），循环结束恢复。
+  const autoTabBeforeIdle = await page.evaluate(() => window.player.options.automaticTabSwitching === true);
+  await page.evaluate(() => { window.player.options.automaticTabSwitching = false; });
   const changes = [];
   let lastKey = base.view.tab + "/" + base.view.subtab;
   const t0 = Date.now();
@@ -358,6 +362,7 @@ async function runScenarios() {
     await page.waitForTimeout(500);
   }
   const afterIdle = await snapshot(page);
+  await page.evaluate(auto => { window.player.options.automaticTabSwitching = auto; }, autoTabBeforeIdle);
   await shot(page, "s1-01-idle-60s");
   writeJson("s1-01-idle-60s.json", { changes, base: { view: base.view, execLog: base.exec.execLog.length, lastBeatAt: base.exec.lastBeatAt, totalAM: base.player.totalAM, infinities: base.player.infinities }, after: { view: afterIdle.view, execLog: afterIdle.exec.execLog.length, execStage: afterIdle.exec.stage, totalAM: afterIdle.player.totalAM, infinities: afterIdle.player.infinities } });
   check(S, "no-automatic-tab-switch-without-input", changes.length === 0, "changes=" + JSON.stringify(changes));
@@ -366,9 +371,24 @@ async function runScenarios() {
   check(S, "production-grows-while-idle", Number(afterIdle.player.totalAM) > Number(startTotalAM),
     "totalAM " + startTotalAM + "→" + afterIdle.player.totalAM + ", stage=" + afterIdle.exec.stage + ", infinities=" + afterIdle.player.infinities);
 
-  // 停在「选项 → 游戏玩法」25s：业务仍执行，且不会被强制切回其它页
+  // 停在「选项 → 游戏玩法」25s：业务仍执行，且不会被强制切回其它页。
+  // [R107-01 P1] 阶段化节拍加速了前期进度，25s 窗口内会命中**原版**的解锁跳页
+  // （Tab.show(manual=false) → automaticTabSwitching：首无限/ID1/时间研究等解锁时
+  // 原版会自动切到对应页）。本项检查的是「MOD 不得自己强切页」，因此先关闭原版
+  // 自动切页开关（仅测试场景，不改生产默认值），窗口结束后恢复。
   await openOptionsGameplay(page);
-  const beforeTab = await page.evaluate(() => ({ ac: window.OrekiSmartExecutor.debugState().actionCount, count: window.OrekiSmartExecutor.debugState().beat.log.length, view: window.ui.view.tab + "/" + window.ui.view.subtab, totalAM: window.player.records.totalAntimatter.toString(), infinities: window.player.infinities.toString() }));
+  const autoTabBefore = await page.evaluate(() => window.player.options.automaticTabSwitching === true);
+  await page.evaluate(() => { window.player.options.automaticTabSwitching = false; });
+  const beforeTab = await page.evaluate(() => {
+    const d = window.OrekiSmartExecutor.debugState();
+    return { ac: d.actionCount, count: d.beat.log.length, lastBeatAt: d.beat.lastAt,
+      servedSum: Object.values(d.beat.served || {}).reduce((a, b) => a + b, 0),
+      view: window.ui.view.tab + "/" + window.ui.view.subtab,
+      totalAM: window.player.records.totalAntimatter.toString(),
+      totalAMLog10: Number(window.player.records.totalAntimatter.log10()),
+      infinities: window.player.infinities.toString(),
+      infinitiesLog10: Number(window.player.infinities.log10()) };
+  });
   const tabT0 = Date.now();
   const tabChanges = [];
   let lastTabKey = beforeTab.view;
@@ -377,11 +397,29 @@ async function runScenarios() {
     if (v.view !== lastTabKey) { tabChanges.push({ atMs: Date.now() - tabT0, from: lastTabKey, to: v.view }); lastTabKey = v.view; }
     await page.waitForTimeout(500);
   }
-  const afterTab = await page.evaluate(() => ({ ac: window.OrekiSmartExecutor.debugState().actionCount, count: window.OrekiSmartExecutor.debugState().beat.log.length, view: window.ui.view.tab + "/" + window.ui.view.subtab, totalAM: window.player.records.totalAntimatter.toString(), infinities: window.player.infinities.toString() }));
-  writeJson("s1-02-away-tab.json", { beforeTab, afterTab, tabChanges });
+  const afterTab = await page.evaluate(() => {
+    const d = window.OrekiSmartExecutor.debugState();
+    return { ac: d.actionCount, count: d.beat.log.length, lastBeatAt: d.beat.lastAt,
+      servedSum: Object.values(d.beat.served || {}).reduce((a, b) => a + b, 0),
+      view: window.ui.view.tab + "/" + window.ui.view.subtab,
+      totalAM: window.player.records.totalAntimatter.toString(),
+      totalAMLog10: Number(window.player.records.totalAntimatter.log10()),
+      infinities: window.player.infinities.toString(),
+      infinitiesLog10: Number(window.player.infinities.log10()) };
+  });
+  await page.evaluate(auto => { window.player.options.automaticTabSwitching = auto; }, autoTabBefore);
+  writeJson("s1-02-away-tab.json", { beforeTab, afterTab, tabChanges, autoTabBefore });
   check(S, "no-forced-tab-switch-while-away", tabChanges.length === 0, "changes=" + JSON.stringify(tabChanges) + ", view=" + afterTab.view);
-  check(S, "business-ticks-while-away-from-dimensions", afterTab.count > beforeTab.count && (Number(afterTab.totalAM) > Number(beforeTab.totalAM) || Number(afterTab.infinities) > Number(beforeTab.infinities)),
-    "execLog " + beforeTab.count + "→" + afterTab.count + ", totalAM " + beforeTab.totalAM + "→" + afterTab.totalAM + ", infinities " + beforeTab.infinities + "→" + afterTab.infinities + ", view=" + afterTab.view);
+  // [R107-01 P1] 不能用 beat.log.length 判定业务仍在执行：debugState 只保留最近 12 条，
+  // 1s 节拍下窗口内很快填满（12→12），旧断言会假失败。改用累计 actionCount。
+  check(S, "business-ticks-while-away-from-dimensions",
+    (afterTab.lastBeatAt > beforeTab.lastBeatAt || afterTab.servedSum > beforeTab.servedSum) &&
+      (afterTab.totalAMLog10 > beforeTab.totalAMLog10 || afterTab.infinitiesLog10 > beforeTab.infinitiesLog10),
+    "lastBeatAt " + Math.round(beforeTab.lastBeatAt) + "→" + Math.round(afterTab.lastBeatAt) +
+      ", served " + beforeTab.servedSum + "→" + afterTab.servedSum +
+      ", actionCount " + beforeTab.ac + "→" + afterTab.ac +
+      ", totalAM " + beforeTab.totalAM + "→" + afterTab.totalAM +
+      ", infinities " + beforeTab.infinities + "→" + afterTab.infinities + ", view=" + afterTab.view);
   check(S, "no-pageerror", logs.filter(l => l.type === "pageerror").length === 0, "count=" + logs.filter(l => l.type === "pageerror").length);
   dumpLogs("s1", logs);
   await ctx.close();
@@ -523,10 +561,27 @@ let exportedState = null;
     return { log, fresh: log.filter(x => x.at > sinceAt), waitedMs: Date.now() - t, timedOut: true };
   };
   const base = await waitExec(0, 3, 40000);
-  writeJson("s3-02-baseline-exec.json", base);
-  check(S, "mod-scheduler-really-executing-10s-beat",
-    base.fresh.length >= 3 && base.fresh.slice(1).every(x => x.gapMs === null || (x.gapMs >= 9500 && x.gapMs <= 11500)),
-    "executions=" + base.fresh.length + ", gaps=" + JSON.stringify(base.fresh.map(x => x.gapMs)));
+  // [R107-01 P1] 阶段化节拍：玩家配置仍是上限，但实际节拍 = min(配置, 阶段上限)。
+  // 因此这里不能再断言「10 s 固定间隔」，而要断言「实际生效节拍」；
+  // UI/存储值仍需保持玩家配置 10 s（上一项 ui-shows-automation-on-default-10s 已断言）。
+  const baseBeat = await page.evaluate(() => ({
+    configured: window.OrekiSmartExecutor.intervalSec,
+    effective: window.OrekiSmartExecutor.effectiveIntervalSec,
+    stageCap: window.OrekiSmartExecutor.debugState().stageCapSec,
+    realities: window.player.realities,
+    stored: localStorage.getItem("oreki.automation.intervalSec"),
+  }));
+  writeJson("s3-02-baseline-exec.json", { base, baseBeat });
+  const baseExpectedMs = baseBeat.effective * 1000;
+  check(S, "mod-scheduler-executes-at-stage-capped-effective-beat",
+    baseBeat.configured === 10 && (baseBeat.stored === null || baseBeat.stored === "10") &&
+      baseBeat.effective <= baseBeat.stageCap &&
+      base.fresh.length >= 3 &&
+      base.fresh.slice(1).every(x => x.gapMs === null ||
+        (x.gapMs >= baseExpectedMs - 500 && x.gapMs <= baseExpectedMs + 1500)),
+    "configured=" + baseBeat.configured + "s, effective=" + baseBeat.effective + "s, cap=" + baseBeat.stageCap +
+      "s, realities=" + baseBeat.realities + ", executions=" + base.fresh.length +
+      ", gaps=" + JSON.stringify(base.fresh.map(x => x.gapMs)));
 
   // 总开关关闭 → 立即停止；不得改动原版总开关
   const beforeOff = await page.evaluate(() => {
@@ -604,8 +659,23 @@ let exportedState = null;
   writeJson("s3-06-interval-60s.json", { set60, newEntry60, gap60 });
   check(S, "interval-60s-applied-and-stored", set60.intervalSec === 60 && (set60.labels || []).some(t => /调度间隔 60 秒/.test(t)),
     "interval=" + set60.intervalSec + ", labels=" + JSON.stringify(set60.labels));
-  check(S, "interval-60s-takes-effect", newEntry60 !== null && gap60 !== null && gap60 >= 58000 && gap60 <= 65000,
-    "gap=" + gap60 + "ms, entry=" + JSON.stringify(newEntry60));
+  // [R107-01 P1] 60 s 是玩家配置的上限；阶段上限会把它压到 ≤5 s。
+  // 因此「60 s 生效」改为断言：配置/存储仍为 60、实际节拍 = min(60, stageCap)，
+  // 且真实观测到的 gap 与该生效值一致（不再要求 58~65 s）。
+  const beat60 = await page.evaluate(() => ({
+    configured: window.OrekiSmartExecutor.intervalSec,
+    effective: window.OrekiSmartExecutor.effectiveIntervalSec,
+    stageCap: window.OrekiSmartExecutor.debugState().stageCapSec,
+    realities: window.player.realities,
+  }));
+  writeJson("s3-06-interval-60s-effective.json", { beat60, gap60, newEntry60 });
+  const beat60ExpectedMs = beat60.effective * 1000;
+  check(S, "interval-60s-stored-upper-bound-and-stage-cap-applied",
+    beat60.configured === 60 && beat60.effective === Math.min(60, beat60.stageCap) &&
+      newEntry60 !== null && gap60 !== null &&
+      gap60 >= beat60ExpectedMs - 500 && gap60 <= beat60ExpectedMs + 1500,
+    "configured=" + beat60.configured + "s, effective=" + beat60.effective + "s, cap=" + beat60.stageCap +
+      "s, realities=" + beat60.realities + ", gap=" + gap60 + "ms");
 
   // 持久化：刷新后保持
   await page.reload({ waitUntil: "domcontentloaded" });
