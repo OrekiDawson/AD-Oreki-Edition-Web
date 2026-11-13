@@ -1,0 +1,388 @@
+{
+  "run_id": "web-run1",
+  "mode": "full",
+  "criterion": {
+    "id": "player.isGameEnd-first-true",
+    "description": "window 内 player.isGameEnd 首次为 true 即通关",
+    "formula_file": "web/AD-Oreki-Edition/src/core/celestials/pelle/game-end.js",
+    "OREKI_PELLE_END_OFFSET": 1,
+    "OREKI_PELLE_END_TARGET_EXP": 1000,
+    "pass_condition": "gameEnd 首次为 true 且真实墙钟耗时 <= 180 分钟"
+  },
+  "source": {
+    "repo": "/home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition",
+    "sha": "62f41e7cf66ae1bff8a82a0b6066170ac8bd1e84",
+    "branch": "main",
+    "dirty": "",
+    "dirty_stat": "",
+    "dirty_files": "",
+    "last_commit": "62f41e7cf66ae1bff8a82a0b6066170ac8bd1e84 2026-11-13T06:44:45+08:00 修复：R104 真实新档链路 11 个阻塞（门禁/调度/GC/永恒/现实/节流/TT/EC）"
+  },
+  "environment": {
+    "host": "Oreki-Desktop",
+    "platform": "linux x64",
+    "node": "v26.13.0",
+    "playwright": null,
+    "chromium_executable": "/home/oreki/.cache/ms-playwright/chromium-1254/chrome-linux64/chrome",
+    "browser_version": "158.0.8127.18",
+    "viewport": {
+      "width": 412,
+      "height": 915
+    },
+    "device_scale_factor": 2.625,
+    "is_mobile": true,
+    "has_touch": true,
+    "user_agent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Mobile Safari/537.36",
+    "locale": "zh-CN",
+    "launch_args": [
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-features=CalculateNativeWinOcclusion",
+      "--mute-audio",
+      "--no-sandbox",
+      "--disable-dev-shm-usage"
+    ],
+    "server": "http://127.0.0.1:40877/ (serve /home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition)",
+    "page_visibility_enforcement": "Playwright CDP session: Emulation.setFocusEmulationEnabled + Page.setWebLifecycleState(active)（仅保活仿真，不碰游戏时间源）"
+  },
+  "timing": {
+    "start_iso": "2026-11-13T04:43:03.450Z",
+    "start_monotonic_ms": 3323.711,
+    "end_iso": "2026-11-13T05:07:16.064Z",
+    "end_monotonic_ms": 1456050.566,
+    "wall_sec_total": 1452.7,
+    "gameend_wall_sec": null,
+    "gameend_iso": null,
+    "stopwatch_note": "t0 = 新档文档起始 Date.now()（页面内 __orekiT0）；墙钟 = Node performance.now() 单调差值自 T_GAME0；全程不改任何游戏时间源",
+    "process_start_monotonic_ms": 75.531,
+    "t0_source": "document-start Date.now()（页面内 window.__orekiT0），Node 端 reload 前 recorded=2026-11-13T04:43:03.412Z",
+    "t0_in_page": 1794544983450,
+    "player_created_ms_after_t0": 1407,
+    "wall_sec_total_process": 1463.6
+  },
+  "freshness": {
+    "method": "全新 browser context（无 storage）+ 每个 document 起始 localStorage.clear() + 页面加载后 clear + reload",
+    "storage_keys_at_start": [],
+    "birth": {
+      "at": 1794544984857,
+      "globalKeys": [
+        "player",
+        "Tab",
+        "Tabs",
+        "GameSpeed",
+        "OrekiSmartExecutor",
+        "Pelle",
+        "GameEnd"
+      ],
+      "realities": 0,
+      "brk": false,
+      "infinitiesLog10": null,
+      "totalAntimatter": "0",
+      "antimatter": "10",
+      "dimensionBoosts": 0,
+      "galaxies": 0,
+      "endState": 0,
+      "speed": 10000,
+      "isDynamic": true,
+      "tutorialActive": true,
+      "tutorialState": 0,
+      "storageAtStart": [],
+      "speedStorageAtStart": []
+    },
+    "verdict": "PASS(全新存档)"
+  },
+  "defaults": {
+    "speed_storage_at_birth": null,
+    "speed_dynamic_storage_at_birth": null,
+    "speed_factor_at_birth": 10000,
+    "speed_is_dynamic_at_birth": true,
+    "tutorial_active_at_birth": true,
+    "tutorial_state_at_birth": 0,
+    "automation_interval_sec_at_birth": 10,
+    "final_speed_factor": 100000,
+    "speed_ramps": 4,
+    "note": "oreki-game-speed 默认 10000×、动态升档默认开启；均为产品默认值，本轮不修改",
+    "storage_at_birth": {
+      "oreki-game-speed": null,
+      "oreki-game-speed-dynamic": null,
+      "oreki.automation.enabled": null,
+      "oreki.automation.intervalSec": null
+    }
+  },
+  "events": [
+    {
+      "seq": 1,
+      "tag": "首次无限(infTotal>=1)",
+      "key": "infinity",
+      "value": 0,
+      "wall_sec": 22.7,
+      "iso": "2026-11-13T04:43:26.086Z",
+      "in_page_t": 22.6,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": false,
+      "factor": 40000,
+      "ramps": 2,
+      "in_game_tt_sec": 432950
+    },
+    {
+      "seq": 2,
+      "tag": "首次打破无限(player.break)",
+      "key": "break",
+      "value": true,
+      "wall_sec": 52.5,
+      "iso": "2026-11-13T04:43:55.913Z",
+      "in_page_t": 52.5,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": true,
+      "factor": 40000,
+      "ramps": 2,
+      "in_game_tt_sec": 1626190
+    },
+    {
+      "seq": 3,
+      "tag": "首次永恒(eternities>=1)",
+      "key": "eternity",
+      "value": 0.699,
+      "wall_sec": 522.6,
+      "iso": "2026-11-13T04:51:46.026Z",
+      "in_page_t": 522.6,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": true,
+      "factor": 100000,
+      "ramps": 4,
+      "in_game_tt_sec": 40186010
+    },
+    {
+      "seq": 4,
+      "tag": "首次时间研究(tsN>=1)",
+      "key": "timestudy",
+      "value": 14,
+      "wall_sec": 572.6,
+      "iso": "2026-11-13T04:52:35.965Z",
+      "in_page_t": 572.5,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": true,
+      "factor": 100000,
+      "ramps": 4,
+      "in_game_tt_sec": 45182110
+    }
+  ],
+  "firsts": {
+    "infinity": {
+      "seq": 1,
+      "tag": "首次无限(infTotal>=1)",
+      "key": "infinity",
+      "value": 0,
+      "wall_sec": 22.7,
+      "iso": "2026-11-13T04:43:26.086Z",
+      "in_page_t": 22.6,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": false,
+      "factor": 40000,
+      "ramps": 2,
+      "in_game_tt_sec": 432950
+    },
+    "break": {
+      "seq": 2,
+      "tag": "首次打破无限(player.break)",
+      "key": "break",
+      "value": true,
+      "wall_sec": 52.5,
+      "iso": "2026-11-13T04:43:55.913Z",
+      "in_page_t": 52.5,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": true,
+      "factor": 40000,
+      "ramps": 2,
+      "in_game_tt_sec": 1626190
+    },
+    "eternity": {
+      "seq": 3,
+      "tag": "首次永恒(eternities>=1)",
+      "key": "eternity",
+      "value": 0.699,
+      "wall_sec": 522.6,
+      "iso": "2026-11-13T04:51:46.026Z",
+      "in_page_t": 522.6,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": true,
+      "factor": 100000,
+      "ramps": 4,
+      "in_game_tt_sec": 40186010
+    },
+    "timestudy": {
+      "seq": 4,
+      "tag": "首次时间研究(tsN>=1)",
+      "key": "timestudy",
+      "value": 14,
+      "wall_sec": 572.6,
+      "iso": "2026-11-13T04:52:35.965Z",
+      "in_page_t": 572.5,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": true,
+      "factor": 100000,
+      "ramps": 4,
+      "in_game_tt_sec": 45182110
+    }
+  },
+  "gameend": {
+    "reached": false,
+    "at_wall_sec": null,
+    "at_iso": null,
+    "sample": null
+  },
+  "confirm": {
+    "duration_ms": 180000,
+    "samples_after": 0,
+    "regressions": 0,
+    "ok": false
+  },
+  "samples": {
+    "count": 146,
+    "interval_ms": 10000,
+    "screenshots": 23,
+    "screenshot_interval_ms": 60000
+  },
+  "anomalies": {
+    "pageerrors": [],
+    "console_errors": [
+      {
+        "at": "2026-11-13T04:43:02.498Z",
+        "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The actio"
+      },
+      {
+        "at": "2026-11-13T04:43:04.802Z",
+        "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The actio"
+      }
+    ],
+    "sample_errors": [],
+    "freeze_watchdog": [],
+    "aborted": null,
+    "console_prefix_counts": {
+      "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump": 1928,
+      "[OREKI_CRUNCH_DEC] allow=false reason=eternity-grow": 1920,
+      "[OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)": 95,
+      "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)": 94,
+      "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump": 37,
+      "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait": 29,
+      "[OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow": 19,
+      "[OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached": 12,
+      "[OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)": 3,
+      "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Conten": 2,
+      "requestfailed https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer :: csp": 2,
+      "🌌 Antimatter Dimensions: Reality Update 🌌": 2,
+      "[OREKI_CRUNCH_DEC] allow=true reason=pre-infinity": 2,
+      "[OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)": 2,
+      "requestfailed http://127.0.0.1:40877/public/images/stars-bg.webm :: net::ERR_ABORTED": 2,
+      "requestfailed http://127.0.0.1:40877/public/images/realityanimbg.webm :: net::ERR_ABORTED": 2,
+      "[OrekiCrunchInterval] managed interval 3600 -> 5 (resume:id-peak-reached)": 2,
+      "[OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)": 2,
+      "[OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)": 2,
+      "[OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip": 1,
+      "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)": 1,
+      "[OrekiCrunchInterval] managed interval 3600 -> 5 (resume:ip-jump)": 1,
+      "[OREKI_CRUNCH_DEC] allow=true reason=eternity-ready": 1,
+      "[OREKI_MANAGED_AUTO] key=ipmult nowMs=522622.3 event=player-disable-recorded": 1,
+      "[OREKI_MANAGED_AUTO] key=ipmult nowMs=522652.6 event=restore-due": 1,
+      "[OREKI_MANAGED_AUTO] key=ipmult nowMs=522652.6 event=isActive-reenabled": 1
+    },
+    "console_suppressed_lines": 3448
+  },
+  "result": "FAIL",
+  "result_reason": "被外部 SIGTERM 终止（采样数据保留）",
+  "scheduler": {
+    "served_first": {
+      "routine": 1
+    },
+    "served_last": {
+      "routine": 36,
+      "celestial": 35,
+      "early": 34,
+      "breakGate": 1,
+      "breakUpgrades": 13,
+      "eternityReset": 5,
+      "eternity": 21
+    },
+    "served_delta": {
+      "routine": 35,
+      "celestial": 35,
+      "early": 34,
+      "breakGate": 1,
+      "breakUpgrades": 13,
+      "eternityReset": 5,
+      "eternity": 21
+    },
+    "eternity_served": 21,
+    "eternity_reset_served": 5,
+    "eternity_reset_served_delta_total": 5,
+    "eternity_served_delta_total": 21,
+    "last_beat_log": [
+      {
+        "task": "eternity",
+        "gapMs": 10032.10000000894,
+        "taskGapMs": 40095.40000000596
+      },
+      {
+        "task": "celestial",
+        "gapMs": 10030.59999999404,
+        "taskGapMs": 40121.09999999404
+      },
+      {
+        "task": "routine",
+        "gapMs": 10033.20000000298,
+        "taskGapMs": 40129.5
+      },
+      {
+        "task": "early",
+        "gapMs": 10032,
+        "taskGapMs": 40127.90000000596
+      },
+      {
+        "task": "eternity",
+        "gapMs": 10031.79999999702,
+        "taskGapMs": 40127.59999999404
+      },
+      {
+        "task": "celestial",
+        "gapMs": 10032.20000000298,
+        "taskGapMs": 40129.20000000298
+      },
+      {
+        "task": "routine",
+        "gapMs": 10032.29999999702,
+        "taskGapMs": 40128.29999999702
+      },
+      {
+        "task": "early",
+        "gapMs": 10030.09999999404,
+        "taskGapMs": 40126.39999999106
+      }
+    ],
+    "note": "OrekiSmartExecutor.debugState().beat.served 累计值；修复后 eternityReset 必须 > 0"
+  }
+}

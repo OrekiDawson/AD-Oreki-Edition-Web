@@ -9978,3 +9978,19 @@ r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、che
 判据：`player.isGameEnd` 首次 true；结果与耗时以该目录 summary 为准（由 R104 收口报告汇总）。
 反向回归：已有进度 + `auto.eternity.isActive=false` → 96 次 tickEternity 全 false、0 次 true、bootstrap=false（R101 P0 未回退）。
 
+
+## [R105-02] Web 真实新档 24 分钟跑次：首次现实前 EP/时间研究层的增长停摆（2026-11-13）
+
+- 源码 62f41e7（main，工作区 clean），Chromium 158 手机视口（412x915 / Pixel 7 UA），全新 browser context。
+- 真实墙钟里程碑（Node performance.now 单调计时，未改任何时间源）：
+  首次无限 22.7 s、首次 Break 52.5 s、首次永恒 522.6 s、首次时间研究 572.6 s。
+- 24 分钟窗口内未到首次现实（R104 pass10 为 1852 s，本轮窗口不足）。停摆现场：
+  - wall≈1080–1445 s：maxIP 冻结在 7.7e7（多次采样同值），EP 冻结 1.594516e6，
+    canEt=1 但 eAct=0（原版自动永恒未启用/未解锁，MOD 引导窗口内由 MOD 驱动）；
+  - console 高频振荡：managed interval 60 → 5 (resume:eternity-ip-jump) 紧接
+    5 → 60 (pause:eternity-grow)，每 4–13 s 一次，另有 OREKI_CRUNCH_DEC allow=false reason=ep-high-grow；
+    坍缩间隔被反复改回 5 s ⇒ maxAM 无法跨坍缩累积，IP 无法增长；
+  - 本次跑次在 wall 1443 s 停止（summary.result_reason=被外部 SIGTERM 终止，采样保留；停止原因待查，P1）。
+- 结论：Web 首次现实前的「EP/时间研究层」存在与 R104 同类但更早出现的调度振荡；
+  未在本轮修复/验证，转入 R105-02 下一轮（修复后必须真实新档跑到首次现实并记录墙钟）。
+- 证据：reports/R105/web-run1/（summary.json / run.log / samples.jsonl / screenshots）。
