@@ -1,98 +1,88 @@
-name: Deploy Web to oreki.net (manual)
+name: Request approved Web Pages deployment
 
 'on':
   workflow_dispatch:
     inputs:
       approved_sha:
-        description: 'Exact main commit SHA approved for production'
+        description: Exact immutable main commit SHA approved for production
         required: true
         type: string
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
-  group: oreki-web-production
+  group: oreki-web-production-request
   cancel-in-progress: false
 
 jobs:
   gate:
-    name: Re-run Web CI for the selected commit
+    name: Reuse successful Web CI for the exact source commit
     if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/ci.yml
-
-  deploy:
-    name: Deploy validated source to Pages repository
-    needs: gate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment: web-production
+    timeout-minutes: 10
+    outputs:
+      ci_run_id: ${{ steps.ci.outputs.ci_run_id }}
     steps:
-      - name: Verify approved source revision
-        env:
-          APPROVED_SHA: ${{ inputs.approved_sha }}
-        run: |
-          if [[ ! "$APPROVED_SHA" =~ ^[0-9a-f]{40}$ ]] || [[ "$APPROVED_SHA" != "$GITHUB_SHA" ]]; then
-            echo "::error::approved_sha must match this workflow's main commit"
-            exit 1
-          fi
-      - uses: actions/checkout@v4
+      - name: Verify selected main SHA and actual checkout
+        uses: actions/checkout@v4
         with:
           ref: ${{ inputs.approved_sha }}
           persist-credentials: false
-      - name: Verify the actual source checkout matches the approved SHA
+      - name: Check approved SHA against the source
         env:
           APPROVED_SHA: ${{ inputs.approved_sha }}
         run: |
           set -euo pipefail
+          [[ "$APPROVED_SHA" =~ ^[0-9a-f]{40}$ ]] || exit 1
           actual="$(git rev-parse HEAD)"
           [[ "$actual" == "$APPROVED_SHA" && "$actual" == "$GITHUB_SHA" ]] || {
-            echo "::error::Source checkout differs from approved/validated commit"
+            echo "::error::Selected revision differs from the current main SHA"
             exit 1
           }
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '26'
-      - name: Block production when tutorial data is out of sync
-        run: node scripts/validate_tutorial.mjs
-      - name: Require cross-repository deploy credential
+      - name: Require successful push CI with both Node and mobile Chromium
+        id: ci
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&event=push&per_page=100")"
+          ci_run="$(echo "$runs" | jq -r --arg sha "$GITHUB_SHA" \
+            '[.workflow_runs[] | select(.head_sha == $sha and .head_branch == "main" and .status == "completed" and .conclusion == "success")] | first | .id // empty')"
+          [[ "$ci_run" =~ ^[0-9]+$ ]] || { echo "::error::Missing successful push CI for exact SHA"; exit 1; }
+          jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$ci_run/jobs?per_page=100")"
+          echo "$jobs" | jq -e '[.jobs[] | select(.name=="Node checks" and .conclusion=="success")] | length == 1' >/dev/null
+          echo "$jobs" | jq -e '[.jobs[] | select(.name=="Mobile Chromium smoke" and .conclusion=="success")] | length == 1' >/dev/null
+          echo "ci_run_id=$ci_run" >> "$GITHUB_OUTPUT"
+          echo "::notice::Reusing CI $ci_run for Web $GITHUB_SHA; no duplicate Playwright run"
+
+  dispatch:
+    name: Send immutable Web source to the official Pages artifact workflow
+    needs: gate
+    runs-on: ubuntu-latest
+    environment: web-production
+    timeout-minutes: 10
+    steps:
+      - name: Require scoped Pages Actions permission
         env:
           PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
         run: |
           test -n "$PAGES_DEPLOY_TOKEN" || {
-            echo "::error::Configure PAGES_DEPLOY_TOKEN in the web-production environment"
+            echo "::error::Set PAGES_DEPLOY_TOKEN (Pages repository Actions:write) in web-production environment"
             exit 1
           }
-      - name: Checkout Pages destination
-        uses: actions/checkout@v4
-        with:
-          repository: OrekiDawson/OrekiDawson.github.io
-          ref: main
-          path: pages-site
-          token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
-      - name: Sync only the game deployment files
+      - name: Dispatch verified Web commit, not a moving branch
+        env:
+          GH_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          APPROVED_SHA: ${{ inputs.approved_sha }}
+          CI_RUN: ${{ needs.gate.outputs.ci_run_id }}
         run: |
           set -euo pipefail
-          for dir in src modules public; do
-            test -d "$dir"
-            mkdir -p "pages-site/$dir"
-            rsync -a --delete "$dir/" "pages-site/$dir/"
-          done
-          for file in index.html .nojekyll LICENSE MOD-LICENSE NOTICE.md; do
-            test -f "$file"
-            cp "$file" "pages-site/$file"
-          done
-          # Preserve Pages-only CNAME, Ads.txt and metadata.
-          test -f pages-site/CNAME
-          grep -Fxq 'oreki.net' pages-site/CNAME
-          # Validate the exact staged tree before any Git commit or push.
-          python3 scripts/check_pages_staging.py pages-site
-          git -C pages-site add src modules public index.html .nojekyll LICENSE MOD-LICENSE NOTICE.md
-          if git -C pages-site diff --cached --quiet; then
-            echo "Pages already matches the validated source"
-            exit 0
-          fi
-          git -C pages-site config user.name "github-actions[bot]"
-          git -C pages-site config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -C pages-site commit -m "deploy: sync validated AD Web ${GITHUB_SHA}"
-          git -C pages-site push origin HEAD:main
+          [[ "$APPROVED_SHA" == "$GITHUB_SHA" ]] || exit 1
+          gh api -X POST "repos/OrekiDawson/OrekiDawson.github.io/actions/workflows/deploy-approved-web.yml/dispatches" \
+            -f ref=main \
+            -f "inputs[approved_sha]=$APPROVED_SHA" \
+            -f "inputs[web_ci_run_id]=$CI_RUN"
+          echo "::notice::Pages deployment requested for Web SHA $APPROVED_SHA / CI $CI_RUN"
+          echo "::notice::This workflow only requests deployment; official Pages workflow must independently PASS."
