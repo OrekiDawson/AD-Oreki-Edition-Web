@@ -132,6 +132,8 @@
 - `[读码]` 官方 Web 源码仓 `IvarK/AntimatterDimensionsSourceCode` 最新提交仍是 `5409e320`（2026-07-17），**无 3.21 对应提交或标签**。因此 3.21 的 Web 侧基线无法建立，`web.commit` 留空并由 `baseline verify` 明确报出。
 - `[实测]` 基线管理工具（Rust，零第三方依赖）五命令 `update / verify / diff / status / rollback` 全部可用；3.20 与 3.21 的 inventory 各 15319~15354 类，可用于后续增量 diff 而无需重复反编译。
 - `[实测]` `scripts/build_mod.py` 原有的 **25 处** `_baseline_version().startswith("3.20")` 分支已全部收敛为 `baseline/version-config.json` 的声明式配置（现存 0 处）。配置化改造后 3.20 构建仍 EXIT=0、产出 77.7 MiB APK，未破坏现有可构建状态。
+- `[读码]` **2026-11-13 起 Web 上游正式冻结**：`IvarK/AntimatterDimensionsSourceCode` @ `5409e320cecef96a917cca1dfb68f1f183e499ca`（2026-07-17，AD 11.5 / Reality Update；与 `docs/SHARED_GAMEPLAY_STANDARD.md` 一致），不自动追新；完整升级条件见 `AGENTS.md` §10 / `docs/DELIVERY_RULES.md` §5。
+- `[实测]` Android 冻结基线为官方 3.21.0（base APK SHA-256 `4e9970a808d10b6cc1a1068b078ec3c7d922051086a576c66d071c1216f527ac`、versionCode `30210000`）；Web 与其独立，不要求版本号同源。
 
 ## 7. 仓库与产物
 
