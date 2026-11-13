@@ -10004,3 +10004,16 @@ r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、che
 - **完整 Web 上游升级三种边界**：研究评估（无需新授权，不得改冻结基线/整包替换；当前 P0 或构建链未完成不构成禁止研究评估的理由）/
   用户授权（完整基线替换必须用户明确批准的新轮次）/ 正式发布门禁（完整升级发布前必判，条目见 DELIVERY_RULES 5.5.3）。
 - Web 冻结基线仍为 `5409e320cecef96a917cca1dfb68f1f183e499ca`（2026-07-17）；本轮未做任何上游升级或部署。
+
+## R107-01 Web 行为等价与 180 分钟墙（2026-11-14）
+
+- 定向真实浏览器验收 **49/49 PASS**（Playwright 1.65.0 + Chromium 158，Pixel 7 412×839 touch、真实新档/真实点击）：
+  S0 关闭新闻 5/5、S1 无意义切页 6/6、S2 阶段解锁显示 11/11、S3 自动购买器 21/21、S4 首次永恒后 6/6；pageerror 0。
+- **Web 生产代码 0 改动**（未发现为等价必须立即修改的缺陷）。
+- **180 分钟真实墙钟 FAIL（有证据）**：默认 10s 节拍主跑 180 min 停在 realities=15、EP log10 冻结 3683.25（冻结 5890.1s）、gameEnd=false；
+  受控 A/B 仅把自动操作间隔改 1s：首次无限/永恒/现实 6.1s/96.1s/296.2s（6.8×），但 realities=15 后 EP 同样冻结 3683.25（2950.1s）。
+  根因：isRealityAvailable() 的 maxEP.exponent>=4000 门槛（src/core/reality.js:120）+ 默认 10s 节拍拖慢前段；
+  R50 fresh8（旧代码）739.6s 真实通关证明机制可达 → 高度怀疑 R50 后回归，待修。
+- 双端差异（实测）：4 条实现差异 + 2 条功能缺口（Web 缺 Android 阶段化节拍 OrekiBeatStrategy 1–10s；两端均未达 180min 门禁）。
+- 证据：web/reports/R107-01/{README.md(378行), result.json, evidence/(41), run-180min/, run-interval1/, analysis/, runner/}；
+  未部署 oreki.net（无生产改动）。
