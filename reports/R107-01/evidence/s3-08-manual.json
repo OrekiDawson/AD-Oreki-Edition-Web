@@ -3,7 +3,7 @@
     "mc": 0,
     "ac": 0,
     "count": 4,
-    "am": "4.1849729192447e+189"
+    "am": "1.10512369661074e+704"
   },
   "manualAfter": {
     "mc": 2,
@@ -33,5 +33,5 @@
       "remainSec": 55
     }
   },
-  "manualAction": "buy:购买 1 个"
+  "manualAction": "buy:买到 10 个"
 }

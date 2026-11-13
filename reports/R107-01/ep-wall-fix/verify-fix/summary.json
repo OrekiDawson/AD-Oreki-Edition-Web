@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-11-13T19:33:29.586Z",
+  "run": "verify-fix",
+  "applied": {
+    "interval": 1,
+    "speed": 10000,
+    "dynamic": false
+  },
+  "marks": {
+    "r1": 410.8,
+    "r5": 410.8,
+    "r10": 573,
+    "r15": 654.2,
+    "r16": 731.2,
+    "r20": 731.2
+  },
+  "maxRealities": 20,
+  "maxEpLog10": 3561904.53,
+  "firstEp4000Wall": 104.9,
+  "pageErrors": [],
+  "note": "修复后定向验证：realities 15 -> 20+，冻结签名消失；脚本原 traceInstalled 未定义 bug 已修（仅影响 summary 写出）。"
+}

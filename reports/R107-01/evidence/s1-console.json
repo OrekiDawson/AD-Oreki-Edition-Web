@@ -1,132 +1,132 @@
 [
   {
     "type": "error",
-    "at": 1794582279342,
+    "at": 1794598356184,
     "text": "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
   },
   {
     "type": "requestfailed",
-    "at": 1794582279358,
+    "at": 1794598356195,
     "text": "https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer :: csp"
   },
   {
     "type": "log",
-    "at": 1794582279360,
+    "at": 1794598356195,
     "text": "🌌 Antimatter Dimensions: Reality Update 🌌"
   },
   {
     "type": "info",
-    "at": 1794582279550,
+    "at": 1794598356301,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-infinity"
   },
   {
     "type": "info",
-    "at": 1794582279550,
+    "at": 1794598356301,
     "text": "[OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)"
   },
   {
     "type": "requestfailed",
-    "at": 1794582294776,
-    "text": "http://127.0.0.1:42643/public/images/stars-bg.webm :: net::ERR_ABORTED"
+    "at": 1794598371310,
+    "text": "http://127.0.0.1:36625/public/images/stars-bg.webm :: net::ERR_ABORTED"
   },
   {
     "type": "requestfailed",
-    "at": 1794582294779,
-    "text": "http://127.0.0.1:42643/public/images/realityanimbg.webm :: net::ERR_ABORTED"
+    "at": 1794598371311,
+    "text": "http://127.0.0.1:36625/public/images/realityanimbg.webm :: net::ERR_ABORTED"
   },
   {
     "type": "info",
-    "at": 1794582299644,
+    "at": 1794598376396,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip"
   },
   {
     "type": "info",
-    "at": 1794582329711,
+    "at": 1794598406416,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794582329712,
+    "at": 1794598406418,
     "text": "[OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)"
   },
   {
     "type": "info",
-    "at": 1794582331738,
+    "at": 1794598408010,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794582331739,
+    "at": 1794598408010,
     "text": "[OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)"
   },
   {
     "type": "info",
-    "at": 1794582335101,
+    "at": 1794598411243,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794582335112,
+    "at": 1794598411244,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794582338864,
+    "at": 1794598414968,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794582338868,
+    "at": 1794598414973,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794582342887,
+    "at": 1794598418765,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794582342894,
+    "at": 1794598418767,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794582348338,
+    "at": 1794598424076,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794582348342,
+    "at": 1794598424081,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794582354071,
+    "at": 1794598429719,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794582354078,
+    "at": 1794598429725,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794582360162,
+    "at": 1794598436026,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794582360170,
+    "at": 1794598436029,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   },
   {
     "type": "info",
-    "at": 1794582367210,
+    "at": 1794598442490,
     "text": "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump"
   },
   {
     "type": "info",
-    "at": 1794582367210,
+    "at": 1794598442495,
     "text": "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait"
   }
 ]

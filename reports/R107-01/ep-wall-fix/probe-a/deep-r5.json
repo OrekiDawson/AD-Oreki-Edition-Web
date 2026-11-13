@@ -1,0 +1,517 @@
+{
+  "wall_sec": 275.7,
+  "realities": 5,
+  "etLog10": 6.46,
+  "epLog10": null,
+  "maxEpExponent": 0,
+  "maxEPLog10": null,
+  "maxIPLog10": null,
+  "gainedEPLog10": null,
+  "gainedIPLog10": 1.61,
+  "ttLog10": null,
+  "ttPurchased": 0,
+  "ds6": false,
+  "dsN": 0,
+  "ecDone": "0,0,0,0,0,0,0,0,0,0,0,0",
+  "isRealityAvailable": false,
+  "isBootstrap": true,
+  "gameSpeed": 100000,
+  "dimBoost": 19,
+  "gal": 1,
+  "id1Unl": false,
+  "canEternity": false,
+  "stage": "glyphs",
+  "goal": "buy-all-reality-upgrades",
+  "blockers": [
+    {
+      "id": "intervalNotMaxed",
+      "title": "大坍缩自动器间隔未拉满",
+      "advice": "打破无限要求间隔 <= 100。需要累计 32767 IP 逐级购买 15 次。",
+      "source": "src/core/autobuyers/autobuyer.js:165-177"
+    }
+  ],
+  "lastAction": null,
+  "visitedTabs": null,
+  "deep": {
+    "isRealityAvailable": false,
+    "thisRealityMaxEP": "0",
+    "thisRealityMaxEPExponent": 0,
+    "thisEternityMaxIP": "0",
+    "gainedEternityPoints": "0",
+    "gainedInfinityPoints": "41",
+    "currentEP": "0",
+    "currentIP": "0",
+    "timeTheorems": "0",
+    "timeTheoremTotalPurchased": 0,
+    "timeStudiesBought": [],
+    "eternityUpgradeBits": 0,
+    "eternityUpgradesStr": "[object Set]",
+    "dilation": {
+      "studies": [],
+      "dilatedTime": "0",
+      "totalTachyonParticles": "undefined",
+      "nextThreshold": "1000"
+    },
+    "realityUpgradesBought": [
+      6,
+      7,
+      8,
+      13,
+      14,
+      15,
+      18,
+      20
+    ],
+    "ach147": false,
+    "ach116": false,
+    "teresa": false,
+    "pelle": false,
+    "doomed": false,
+    "eternityMilestones": [
+      "all:false",
+      "autobuyerIPMult:true",
+      "keepAutobuyers:true",
+      "autobuyerReplicantiGalaxy:true",
+      "keepInfinityUpgrades:true",
+      "bigCrunchModes:true",
+      "autoEP:true",
+      "autoIC:true",
+      "keepBreakUpgrades:true",
+      "autobuyMaxGalaxies:true",
+      "unlockReplicanti:true",
+      "autobuyerID1:true",
+      "autobuyerID2:true",
+      "autobuyerID3:true",
+      "autobuyerID4:true",
+      "autobuyerID5:true",
+      "autobuyerID6:true",
+      "autobuyerID7:true",
+      "autobuyerID8:true",
+      "autoUnlockID:true",
+      "unlockAllND:true",
+      "replicantiNoReset:true",
+      "autobuyerReplicantiChance:true",
+      "autobuyerReplicantiInterval:true",
+      "autobuyerReplicantiMaxGalaxies:true",
+      "autobuyerEternity:true",
+      "autoEternities:true",
+      "autoInfinities:true"
+    ],
+    "gameSpeed": 100000,
+    "intervalSec": 1,
+    "executor": {
+      "stage": {
+        "id": "glyphs",
+        "title": "符文装备与现实升级"
+      },
+      "goal": {
+        "id": "buy-all-reality-upgrades",
+        "title": "买齐一次性现实升级（= 成就 147 的唯一判据）",
+        "done": false,
+        "manualHold": null
+      },
+      "blockers": [
+        {
+          "id": "intervalNotMaxed",
+          "title": "大坍缩自动器间隔未拉满",
+          "advice": "打破无限要求间隔 <= 100。需要累计 32767 IP 逐级购买 15 次。",
+          "source": "src/core/autobuyers/autobuyer.js:165-177"
+        }
+      ],
+      "lastResult": {
+        "breakUpgrades": "0",
+        "breakGate": "false",
+        "routine": "true",
+        "early": "ids=13",
+        "eternity": "",
+        "eternityReset": "false",
+        "reality": "reality upgrades=18",
+        "celestial": "stage=1",
+        "perk": "",
+        "endgame": ""
+      },
+      "beat": {
+        "lastAt": 288710.1000000015,
+        "nextInMs": 414.6000000014901,
+        "skips": 8036,
+        "served": {
+          "routine": 68,
+          "early": 65,
+          "celestial": 67,
+          "breakGate": 1,
+          "breakUpgrades": 19,
+          "eternityReset": 6,
+          "eternity": 46,
+          "reality": 1
+        },
+        "log": [
+          {
+            "task": "routine",
+            "at": 277416.299999997,
+            "gapMs": 1025.8999999985099,
+            "taskGapMs": 3117.1999999955297
+          },
+          {
+            "task": "early",
+            "at": 278426,
+            "gapMs": 1009.7000000029802,
+            "taskGapMs": 7168.30000000447
+          },
+          {
+            "task": "eternity",
+            "at": 279476.799999997,
+            "gapMs": 1050.7999999970198,
+            "taskGapMs": 4113.69999999553
+          },
+          {
+            "task": "celestial",
+            "at": 280519.299999997,
+            "gapMs": 1042.5,
+            "taskGapMs": 4128.89999999851
+          },
+          {
+            "task": "routine",
+            "at": 281540.8999999985,
+            "gapMs": 1021.6000000014901,
+            "taskGapMs": 4124.60000000149
+          },
+          {
+            "task": "early",
+            "at": 282544.8999999985,
+            "gapMs": 1004,
+            "taskGapMs": 4118.89999999851
+          },
+          {
+            "task": "celestial",
+            "at": 283575.19999999553,
+            "gapMs": 1030.2999999970198,
+            "taskGapMs": 3055.89999999851
+          },
+          {
+            "task": "routine",
+            "at": 284577.799999997,
+            "gapMs": 1002.6000000014901,
+            "taskGapMs": 3036.89999999851
+          },
+          {
+            "task": "celestial",
+            "at": 285612.1000000015,
+            "gapMs": 1034.3000000044703,
+            "taskGapMs": 2036.9000000059605
+          },
+          {
+            "task": "routine",
+            "at": 286638.3999999985,
+            "gapMs": 1026.2999999970198,
+            "taskGapMs": 2060.60000000149
+          },
+          {
+            "task": "early",
+            "at": 287671.299999997,
+            "gapMs": 1032.8999999985099,
+            "taskGapMs": 5126.39999999851
+          },
+          {
+            "task": "reality",
+            "at": 288710.1000000015,
+            "gapMs": 1038.8000000044703,
+            "taskGapMs": null
+          }
+        ]
+      },
+      "actionCount": 0,
+      "attemptCount": 0,
+      "manualHold": null
+    },
+    "challenge": {
+      "normalBits": 0,
+      "infinityBits": 0,
+      "ecUnlocked": 0,
+      "ecCurrent": 0
+    },
+    "autoReality": {
+      "mode": 0,
+      "rm": {
+        "mantissa": 1,
+        "exponent": 0
+      },
+      "glyph": 0,
+      "time": 0,
+      "shard": 0,
+      "isActive": false
+    },
+    "autoEternity": {
+      "mode": 0,
+      "amount": {
+        "mantissa": 1,
+        "exponent": 0
+      },
+      "increaseWithMult": true,
+      "time": 1,
+      "xHighest": {
+        "mantissa": 1,
+        "exponent": 0
+      },
+      "isActive": false
+    },
+    "autoOn": true,
+    "am": "6.62248090317182e+143",
+    "dims": [
+      {
+        "i": 1,
+        "amount": "3.98400880423224e+112",
+        "bought": 480
+      },
+      {
+        "i": 2,
+        "amount": "1.6106892001174e+91",
+        "bought": 360
+      },
+      {
+        "i": 3,
+        "amount": "2.26774647632979e+72",
+        "bought": 290
+      },
+      {
+        "i": 4,
+        "amount": "2.40774285197057e+55",
+        "bought": 240
+      },
+      {
+        "i": 5,
+        "amount": "8.34261684291341e+40",
+        "bought": 170
+      },
+      {
+        "i": 6,
+        "amount": "4.37934024731464e+27",
+        "bought": 140
+      },
+      {
+        "i": 7,
+        "amount": "3102763259786880",
+        "bought": 110
+      },
+      {
+        "i": 8,
+        "amount": "88",
+        "bought": 88
+      }
+    ],
+    "tickspeed": {
+      "amount": "undefined"
+    },
+    "dimBoostState": "ERR:DimensionBoost is not defined",
+    "breakFlag": false,
+    "infinityGoal": "1.7976931348623157e+308",
+    "autoDims": {
+      "reality": false,
+      "eternity": false,
+      "bigCrunch": true,
+      "galaxy": true,
+      "dimBoost": true,
+      "tickspeed": true,
+      "sacrifice": true,
+      "antimatterDims": true,
+      "infinityDims": true,
+      "timeDims": true,
+      "replicantiGalaxies": false,
+      "replicantiUpgrades": true,
+      "timeTheorems": false,
+      "dilationUpgrades": true,
+      "blackHolePower": true,
+      "realityUpgrades": true,
+      "imaginaryUpgrades": true,
+      "darkMatterDims": false,
+      "ascension": false,
+      "annihilation": false,
+      "singularity": false,
+      "ipMultBuyer": true,
+      "epMultBuyer": false
+    },
+    "autoUpgrades": {
+      "infinityUpgrades": null,
+      "bigCrunch": true,
+      "eternity": false,
+      "reality": false
+    },
+    "infinityUpgradeBits": null,
+    "achievements34": true,
+    "achievements111": false,
+    "recordsInfinity": {
+      "maxAM": "3.09862241754927e+146",
+      "bestIP": "0",
+      "realTime": 606
+    },
+    "purchaseState": [
+      {
+        "i": 1,
+        "amount": "3.98400880423224e+112",
+        "isAvailable": true,
+        "affordable": false,
+        "cost": "1e+145"
+      },
+      {
+        "i": 2,
+        "amount": "1.6106892001174e+91",
+        "isAvailable": true,
+        "affordable": false,
+        "cost": "1e+146"
+      },
+      {
+        "i": 3,
+        "amount": "2.26774647632979e+72",
+        "isAvailable": true,
+        "affordable": false,
+        "cost": "1e+149"
+      },
+      {
+        "i": 4,
+        "amount": "2.40774285197057e+55",
+        "isAvailable": true,
+        "affordable": false,
+        "cost": "1e+150"
+      },
+      {
+        "i": 5,
+        "amount": "8.34261684291341e+40",
+        "isAvailable": true,
+        "affordable": false,
+        "cost": "1e+145"
+      },
+      {
+        "i": 6,
+        "amount": "4.37934024731464e+27",
+        "isAvailable": true,
+        "affordable": false,
+        "cost": "1e+153"
+      },
+      {
+        "i": 7,
+        "amount": "3102763259786880",
+        "isAvailable": true,
+        "affordable": false,
+        "cost": "1e+150"
+      },
+      {
+        "i": 8,
+        "amount": "88",
+        "isAvailable": true,
+        "affordable": false,
+        "cost": "1e+144"
+      }
+    ],
+    "autobuyerActive": {
+      "group": true,
+      "tickspeed": true,
+      "dimboost": true,
+      "galaxy": true,
+      "sacrifice": true,
+      "bigCrunch": true,
+      "crunchMode": 2,
+      "crunchInterval": 150000
+    },
+    "autoData": {
+      "antimatterDimsGroup": true,
+      "tiers": [
+        {
+          "isActive": true,
+          "isBought": false,
+          "interval": 500,
+          "mode": 10
+        },
+        {
+          "isActive": true,
+          "isBought": false,
+          "interval": 600,
+          "mode": 10
+        },
+        {
+          "isActive": true,
+          "isBought": false,
+          "interval": 700,
+          "mode": 10
+        },
+        {
+          "isActive": true,
+          "isBought": false,
+          "interval": 800,
+          "mode": 10
+        },
+        {
+          "isActive": true,
+          "isBought": false,
+          "interval": 900,
+          "mode": 10
+        },
+        {
+          "isActive": true,
+          "isBought": false,
+          "interval": 1000,
+          "mode": 10
+        },
+        {
+          "isActive": true,
+          "isBought": false,
+          "interval": 1100,
+          "mode": 10
+        },
+        {
+          "isActive": true,
+          "isBought": false,
+          "interval": 1200,
+          "mode": 10
+        }
+      ],
+      "tickspeed": {
+        "isUnlocked": false,
+        "cost": 1,
+        "interval": 500,
+        "mode": 1,
+        "isActive": true,
+        "lastTick": 287691,
+        "isBought": false
+      },
+      "galaxy": {
+        "cost": 1,
+        "interval": 20000,
+        "limitGalaxies": false,
+        "maxGalaxies": 1,
+        "buyMax": false,
+        "buyMaxInterval": 0,
+        "isActive": true,
+        "lastTick": 287486
+      }
+    },
+    "bigCrunchState": {
+      "canCrunch": false,
+      "maxAM": "3.09862241754927e+146",
+      "infinityGoal": "1.7976931348623157e+308",
+      "currentAM": "6.62248090317182e+143",
+      "break": false,
+      "autoCrunchActive": true,
+      "autoCrunchMode": 2
+    },
+    "playerStats": {
+      "infinities": "0",
+      "totalTickBought": 25,
+      "sacrificed": "1.8541517638067755e+97",
+      "dimensionBoosts": 19,
+      "galaxies": 1,
+      "break": false
+    },
+    "records": {
+      "thisReality": {
+        "maxEP": "0",
+        "maxAM": "1.2882397446817169e+2544741247",
+        "realTime": 606
+      },
+      "thisEternity": {
+        "maxIP": "0",
+        "maxAM": "3.09862241754927e+146"
+      },
+      "totalTimePlayed": 27789371800
+    }
+  },
+  "key": "r5"
+}

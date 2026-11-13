@@ -1,0 +1,26 @@
+=== host at diag start ===
+2026-11-14T02:27:36+0800
+ 02:27:36 up 10:20,  1 user,  load average: 4.21, 7.22, 12.35
+=== host at diag2 start ===
+2026-11-14T02:43:32+0800
+ 02:43:32 up 10:36,  1 user,  load average: 13.03, 12.06, 11.04
+=== host at diag2 restart ===
+2026-11-14T02:43:54+0800
+ 02:43:54 up 10:37,  1 user,  load average: 14.54, 12.46, 11.19
+=== host at diag3 start ===
+2026-11-14T03:00:37+0800
+ 03:00:37 up 10:53,  1 user,  load average: 16.13, 9.69, 10.25
+=== host at verify-fix start ===
+2026-11-14T03:16:19+0800
+ 03:16:19 up 11:09,  1 user,  load average: 17.70, 17.88, 15.76
+=== host at verify-fix-long start ===
+2026-11-14T03:32:30+0800
+ 03:32:30 up 11:25,  1 user,  load average: 6.00, 12.09, 14.72
+=== acceptance after ep fix start ===
+2026-11-14T03:32:30+0800
+=== host at verify-gameend-100k start ===
+2026-11-14T03:33:32+0800
+ 03:33:32 up 11:26,  1 user,  load average: 5.13, 10.57, 14.01
+=== host at verify-gameend-focus start ===
+2026-11-14T03:52:22+0800
+ 03:52:22 up 11:45,  1 user,  load average: 16.78, 17.35, 15.98

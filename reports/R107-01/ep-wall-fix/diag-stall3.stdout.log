@@ -1,0 +1,5 @@
+[2026-11-13T19:00:48.109Z] applied {"interval":1,"speed":10000,"dynamic":false}
+[2026-11-13T19:11:55.545Z] sustained stall detected at wall 666.5 am 130.7 dims [null,null,null,null,null,null,null,null]
+[2026-11-13T19:12:30.005Z] interactive diag written
+[2026-11-13T19:12:30.005Z] done {"stallDetected":true,"pageErrors":0}
+EXIT:0

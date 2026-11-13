@@ -1,0 +1,243 @@
+{
+  "autoData": {
+    "antimatterDims": {
+      "all": [
+        {
+          "isUnlocked": true,
+          "cost": 100000000000000,
+          "interval": 100,
+          "bulk": 10000000000,
+          "mode": 10,
+          "isActive": true,
+          "lastTick": 621035
+        },
+        {
+          "isUnlocked": true,
+          "cost": 100000000000000,
+          "interval": 100,
+          "bulk": 10000000000,
+          "mode": 10,
+          "isActive": true,
+          "lastTick": 621035
+        },
+        {
+          "isUnlocked": true,
+          "cost": 100000000000000,
+          "interval": 100,
+          "bulk": 10000000000,
+          "mode": 10,
+          "isActive": true,
+          "lastTick": 621035
+        },
+        {
+          "isUnlocked": true,
+          "cost": 100000000000000,
+          "interval": 100,
+          "bulk": 10000000000,
+          "mode": 10,
+          "isActive": true,
+          "lastTick": 621035
+        },
+        {
+          "isUnlocked": true,
+          "cost": 100000000000000,
+          "interval": 100,
+          "bulk": 10000000000,
+          "mode": 10,
+          "isActive": true,
+          "lastTick": 621035
+        },
+        {
+          "isUnlocked": true,
+          "cost": 100000000000000,
+          "interval": 100,
+          "bulk": 10000000000,
+          "mode": 10,
+          "isActive": true,
+          "lastTick": 621035
+        },
+        {
+          "isUnlocked": true,
+          "cost": 100000000000000,
+          "interval": 100,
+          "bulk": 10000000000,
+          "mode": 10,
+          "isActive": true,
+          "lastTick": 621035
+        },
+        {
+          "isUnlocked": true,
+          "cost": 100000000000000,
+          "interval": 100,
+          "bulk": 10000000000,
+          "mode": 10,
+          "isActive": true,
+          "lastTick": 621035
+        }
+      ],
+      "isActive": true
+    },
+    "tickspeed": {
+      "isUnlocked": false,
+      "cost": 16,
+      "interval": 100,
+      "mode": 1,
+      "isActive": true,
+      "lastTick": 621035,
+      "isBought": false
+    },
+    "galaxy": {
+      "cost": 2048,
+      "interval": 100,
+      "limitGalaxies": false,
+      "maxGalaxies": 1,
+      "buyMax": false,
+      "buyMaxInterval": 0,
+      "isActive": true,
+      "lastTick": 0
+    },
+    "bigCrunch": {
+      "cost": 32768,
+      "interval": 100,
+      "mode": 2,
+      "amount": {
+        "mantissa": 7.328674474114592,
+        "exponent": 8509792
+      },
+      "increaseWithMult": true,
+      "time": 5,
+      "xHighest": {
+        "mantissa": 1,
+        "exponent": 1
+      },
+      "isActive": true,
+      "lastTick": 0
+    },
+    "autobuyersOn": true
+  },
+  "autobuyers": {
+    "groupIsActive": true,
+    "dims": [
+      {
+        "i": 1,
+        "isActive": true,
+        "isUnlocked": true,
+        "interval": 50,
+        "mode": 10,
+        "lastTick": 621035
+      },
+      {
+        "i": 2,
+        "isActive": true,
+        "isUnlocked": true,
+        "interval": 50,
+        "mode": 10,
+        "lastTick": 621035
+      },
+      {
+        "i": 3,
+        "isActive": true,
+        "isUnlocked": true,
+        "interval": 50,
+        "mode": 10,
+        "lastTick": 621035
+      },
+      {
+        "i": 4,
+        "isActive": true,
+        "isUnlocked": true,
+        "interval": 50,
+        "mode": 10,
+        "lastTick": 621035
+      },
+      {
+        "i": 5,
+        "isActive": true,
+        "isUnlocked": true,
+        "interval": 50,
+        "mode": 10,
+        "lastTick": 621035
+      },
+      {
+        "i": 6,
+        "isActive": true,
+        "isUnlocked": true,
+        "interval": 50,
+        "mode": 10,
+        "lastTick": 621035
+      },
+      {
+        "i": 7,
+        "isActive": true,
+        "isUnlocked": true,
+        "interval": 50,
+        "mode": 10,
+        "lastTick": 621035
+      },
+      {
+        "i": 8,
+        "isActive": true,
+        "isUnlocked": true,
+        "interval": 50,
+        "mode": 10,
+        "lastTick": 621035
+      }
+    ],
+    "tickspeed": {
+      "isActive": true,
+      "interval": 50,
+      "isUnlocked": true,
+      "isBought": false
+    },
+    "bigCrunch": {
+      "isActive": true,
+      "interval": 50,
+      "mode": 2
+    }
+  },
+  "startingValue": "4.999999999999999e+130",
+  "perkSAM": true,
+  "perkNoReset": true,
+  "perksBought": [
+    0,
+    201,
+    57,
+    31,
+    54,
+    72,
+    73,
+    71,
+    60,
+    61,
+    62,
+    70,
+    104,
+    105,
+    106,
+    202,
+    203,
+    204,
+    205,
+    10,
+    30,
+    14,
+    17,
+    15,
+    16,
+    12,
+    101,
+    13,
+    102,
+    80,
+    81
+  ],
+  "upgradeSkip": {
+    "skip1": true,
+    "skip2": true,
+    "skip3": true,
+    "skipGalaxy": true
+  },
+  "breakUpgrades": [],
+  "breaks": true,
+  "broke": true
+}

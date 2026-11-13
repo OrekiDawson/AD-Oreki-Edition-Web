@@ -1,0 +1,93 @@
+{
+  "group": {
+    "isActive": true,
+    "collapseDisplay": true
+  },
+  "tier1": {
+    "canTick": true,
+    "isActive": true,
+    "isUnlocked": true,
+    "interval": 50,
+    "effectiveInterval": 0.005,
+    "timeSinceLastTick": 706693,
+    "lastTick": 0,
+    "realTimePlayed": 706693,
+    "hasAutobuyer": true,
+    "isAffordable": true,
+    "isAvailable": true,
+    "mode": 10,
+    "bulk": 1e+100,
+    "thisSetting": true
+  },
+  "autobuyersAllLen": 62,
+  "autobuyersAllFirst": [
+    "AntimatterDimensionAutobuyerState",
+    "AntimatterDimensionAutobuyerState",
+    "AntimatterDimensionAutobuyerState"
+  ],
+  "playerFlags": {
+    "autobuyersOn": true,
+    "lastUpdate": 1794597145707,
+    "now": 1794597145743,
+    "break": true
+  },
+  "gameEndFlags": {
+    "creditsEverClosed": false,
+    "endState": 0,
+    "speedrunPaused": false
+  },
+  "before": {
+    "dims": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "am": "4.999999999999999e+130",
+    "infinities": "6493336348640"
+  },
+  "manualAutobuyersTick": "ok",
+  "afterAutobuyersTick": {
+    "dims": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "am": "4.999999999999999e+130",
+    "lastTick1": 0
+  },
+  "manualBuyMax1": "ok",
+  "afterBuyMax1": {
+    "dim1": "0",
+    "am": "4.999999999999999e+130"
+  },
+  "manualADTick": "ok",
+  "afterADTick": {
+    "am": "4.999999999999999e+130",
+    "maxAM": "4.999999999999999e+130"
+  },
+  "after3s": {
+    "am": "4.999999999999999e+130",
+    "maxAM": "4.999999999999999e+130",
+    "dims": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "lastTick1": 0
+  }
+}

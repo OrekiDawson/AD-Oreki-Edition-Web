@@ -1,0 +1,315 @@
+{
+  "generatedAt": "2026-11-13T15:14:13.447Z",
+  "round": "R107-01",
+  "task": "T7 Web 行为等价：新闻关闭/无意义切页/自动购买器/阶段解锁显示",
+  "env": {
+    "startedAt": "2026-11-13T15:04:29.388Z",
+    "playwright": "1.65.0",
+    "playwrightBase": "/home/oreki/.npm/_npx/e41f203b7505f1fb",
+    "chromium": "158.0.8127.18",
+    "baseUrl": "http://127.0.0.1:42643/",
+    "viewport": "412x839 (Pixel 7 mobile, DPR 2.625, isMobile, hasTouch)",
+    "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Mobile Safari/537.36"
+  },
+  "viewport": "412x839 (Pixel 7 mobile, DPR 2.625, isMobile, hasTouch)",
+  "totals": {
+    "PASS": 49
+  },
+  "pass": true,
+  "results": [
+    {
+      "scenario": "S0-news-closed",
+      "id": "news-nodes-absent-in-dom",
+      "status": "PASS",
+      "detail": "counts={\"#news\":0,\".c-news-ticker\":0,\"[class*='news-ticker']\":0,\".c-news-line\":0,\".c-news-ticker__line\":0}"
+    },
+    {
+      "scenario": "S0-news-closed",
+      "id": "no-news-text-rendered",
+      "status": "PASS",
+      "detail": "bodyMentionsNews=false, head=\"你拥有 6.54e191 反物质。 你每秒获得 7.88e151 反物质。 每个计数频率使反物质维度的生产效率 ×1.145 计数频率：745.039 / 秒 买到 10 个 维度献祭（×159.85） 购买最大数量（M） 购买10个维度的加成倍数：×2.00 | 献祭加成：×1.00 计数频率价格: 1e52 购买最\""
+    },
+    {
+      "scenario": "S0-news-closed",
+      "id": "fresh-save-baseline",
+      "status": "PASS",
+      "detail": "antimatter=6.540506446801e+191, infinities=0, realities=0"
+    },
+    {
+      "scenario": "S0-news-closed",
+      "id": "no-news-entry-in-visual-options",
+      "status": "PASS",
+      "detail": "bodyMentionsNews=false, newsNodes=0, buttons=[]"
+    },
+    {
+      "scenario": "S0-news-closed",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "no-automatic-tab-switch-without-input",
+      "status": "PASS",
+      "detail": "changes=[]"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "business-ticks-without-tab-switch",
+      "status": "PASS",
+      "detail": "execLog 1→7, lastBeatAt 1897→62039"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "production-grows-while-idle",
+      "status": "PASS",
+      "detail": "totalAM 1.5807302973058e+131→2.31943526600708e+371, stage=infinityDimensions, infinities=15"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "no-forced-tab-switch-while-away",
+      "status": "PASS",
+      "detail": "changes=[], view=options/gameplay"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "business-ticks-while-away-from-dimensions",
+      "status": "PASS",
+      "detail": "execLog 7→9, totalAM 8.08326601329098e+402→8.19403386994311e+529, infinities 16→20, view=options/gameplay"
+    },
+    {
+      "scenario": "S1-no-meaningless-tab-switch",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "fresh-no-high-stage-entry",
+      "status": "PASS",
+      "detail": "infinity=false, tabs={\"dimensions\":true,\"automation\":true,\"challenges\":false,\"infinity\":false,\"eternity\":false,\"reality\":false,\"celestials\":false}"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "fresh-sidebar-has-no-locked-stage-entry",
+      "status": "PASS",
+      "detail": "sidebar=[\"维度\",\"自动化\",\"成就\",\"统计数据\",\"选项\"]"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "fresh-no-locked-content-rendered",
+      "status": "PASS",
+      "detail": "comp=AntimatterDimensionsTab, studies=false, reality=false"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "stage-gate-blocks-eternity-layer-before-infinity",
+      "status": "PASS",
+      "detail": "eternityStageAllowed=false, infinityUnlocked=false"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "big-crunch-reachable-by-real-play",
+      "status": "PASS",
+      "detail": "canCrunch=true"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "first-crunch-enters-infinity-stage",
+      "status": "PASS",
+      "detail": "infinityUnlocked=true, infinities=1, IP=10"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "infinity-entry-appears-without-reload",
+      "status": "PASS",
+      "detail": "infinityTab=true, drawer=[\"维度\",\"自动化\",\"挑战\",\"无限\",\"成就\",\"统计数据\",\"选项\"], uiDelay=22ms"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "eternity-reality-still-absent",
+      "status": "PASS",
+      "detail": "eternityTab=false, realityTab=false, eternities=0"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "no-time-studies-after-first-crunch",
+      "status": "PASS",
+      "detail": "comp=AntimatterDimensionsTab, studiesText=false"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "real-save-exported-from-ui",
+      "status": "PASS",
+      "detail": "len=6989, valid=true"
+    },
+    {
+      "scenario": "S2-stage-unlock-display",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "stage-restored-from-real-save",
+      "status": "PASS",
+      "detail": "infinity=true, infinityTab=true, eternityTab=false, stage=infinityDimensions"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "stage-gate-allows-eternity-layer-exactly-after-break",
+      "status": "PASS",
+      "detail": "allowed=true, infinityUnlocked=true, break=true"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "no-eternity-layer-action-before-infinity",
+      "status": "PASS",
+      "detail": "infinityUnlocked=true, allowed=true, tasks=[]"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "stage-aware-goal-belongs-to-infinity-stage",
+      "status": "PASS",
+      "detail": "stage=infinityDimensions, goal=unlock-eternity"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "ui-shows-automation-on-default-10s",
+      "status": "PASS",
+      "detail": "toggle=\"智能自动操作： 启用\", labels=[\"调度间隔 10 秒\",\"当前档位：默认（间隔只管辖策略决策）\",\"策略决策\",\"原版自动购买器的职责\"], input=10"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "mod-scheduler-really-executing-10s-beat",
+      "status": "PASS",
+      "detail": "executions=3, gaps=[null,10027,10004]"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "switch-off-applies-immediately",
+      "status": "PASS",
+      "detail": "enabled=false, stored=0, toggle=\"智能自动操作： 关闭\""
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "mod-stops-executing-while-switch-off",
+      "status": "PASS",
+      "detail": "execLog 3→3, lastBeatAt 21541→21541, actions 0→0"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "vanilla-autobuyers-not-disabled-by-mod-switch",
+      "status": "PASS",
+      "detail": "player.auto.autobuyersOn=true"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "switch-on-applies-immediately",
+      "status": "PASS",
+      "detail": "enabled=true, stored=1"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-1s-applied-and-stored",
+      "status": "PASS",
+      "detail": "interval=1, stored=1, labels=[\"调度间隔 1 秒\",\"当前档位：默认（间隔只管辖策略决策）\",\"策略决策\",\"原版自动购买器的职责\",\"也纳入间隔管辖\",\"注意：开启后游戏推进可能显著变慢甚至停滞\"]"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-1s-takes-effect",
+      "status": "PASS",
+      "detail": "executions=3, gaps=[1019,1024,1028]"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-clamped-to-1-60-range",
+      "status": "PASS",
+      "detail": "0→1 (stored 1), 999→60 (stored 60)"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-60s-applied-and-stored",
+      "status": "PASS",
+      "detail": "interval=60, labels=[\"调度间隔 60 秒\",\"当前档位：默认（间隔只管辖策略决策）\",\"策略决策\",\"原版自动购买器的职责\",\"也纳入间隔管辖\",\"注意：开启后游戏推进可能显著变慢甚至停滞\"]"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-60s-takes-effect",
+      "status": "PASS",
+      "detail": "gap=60032ms, entry={\"task\":\"celestial\",\"at\":91735.80000000075,\"gapMs\":60032.10000000149,\"taskGapMs\":63102.699999999255}"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "interval-60s-persists-after-reload",
+      "status": "PASS",
+      "detail": "enabled=true, interval=60, stored=60"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "stage-not-advanced-by-reload",
+      "status": "PASS",
+      "detail": "eternityTab=false, stage=infinityDimensions"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "manual-click-recorded-and-mod-yields",
+      "status": "PASS",
+      "detail": "manualAction=buy:购买 1 个, manualClick 0→2, hold={\"goalId\":\"unlock-eternity\",\"remainSec\":60}"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "mod-verb-layer-not-acting-during-manual-hold",
+      "status": "PASS",
+      "detail": "actionCount 0→0, attemptCount=0, holdRemain=55"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "no-eternity-layer-entry-while-eternities-zero",
+      "status": "PASS",
+      "detail": "eternities=0, eternityTab=false, studiesText=false"
+    },
+    {
+      "scenario": "S3-autobuyer",
+      "id": "no-eternity-reality-tasks-while-zero-eternities",
+      "status": "PASS",
+      "detail": "tasks=[\"celestial\",\"celestial\"], allowed=true"
+    },
+    {
+      "scenario": "S4-stage-transition-to-eternity",
+      "id": "real-run-reaches-eternity-within-window",
+      "status": "PASS",
+      "detail": "eternities=5, waited=350s, transitions=[{\"atMs\":343833,\"et\":\"0\",\"inf\":\"10836972\",\"brk\":true,\"stage\":\"infinityDimensions\",\"allowed\":true,\"eternityTab\":false,\"realityTab\":false},{\"atMs\":346858,\"et\":\"0\",\"inf\":\"11140572\",\"brk\":true,\"stage\":\"infinityDimensions\",\"allowed\":true,\"eternityTab\":false,\"realityTab\":false},{\"atMs\":349862,\"et\":\"5\",\"inf\":\"250\",\"brk\":true,\"stage\":\"eternityTimeStudy\",\"allowed\":true,\"eternityTab\":true,\"realityTab\":false}]"
+    },
+    {
+      "scenario": "S4-stage-transition-to-eternity",
+      "id": "eternity-entry-appears-without-reload",
+      "status": "PASS",
+      "detail": "eternityTab=true, drawer=[\"维度\",\"自动化\",\"挑战\",\"无限\",\"永恒\",\"成就\",\"统计数据\",\"选项\"]"
+    },
+    {
+      "scenario": "S4-stage-transition-to-eternity",
+      "id": "executor-stage-switched-to-eternity-allowed",
+      "status": "PASS",
+      "detail": "stage=eternityTimeStudy, allowed=true, goal=unlock-dilation"
+    },
+    {
+      "scenario": "S4-stage-transition-to-eternity",
+      "id": "reality-entry-still-absent-at-first-eternity",
+      "status": "PASS",
+      "detail": "realityTab=false, realities=0"
+    },
+    {
+      "scenario": "S4-stage-transition-to-eternity",
+      "id": "eternity-layer-task-executed-after-unlock",
+      "status": "PASS",
+      "detail": "task={\"task\":\"eternityReset\",\"at\":368650}, stage=eternityTimeStudy"
+    },
+    {
+      "scenario": "S4-stage-transition-to-eternity",
+      "id": "no-pageerror",
+      "status": "PASS",
+      "detail": "count=0"
+    }
+  ]
+}

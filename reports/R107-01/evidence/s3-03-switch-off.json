@@ -1,7 +1,7 @@
 {
   "beforeOff": {
     "count": 3,
-    "lastAt": 21540.900000002235,
+    "lastAt": 21706.70000000298,
     "actionCount": 0,
     "attemptCount": 0,
     "autobuyersOn": true
@@ -11,14 +11,14 @@
     "storedEnabled": "0",
     "actionCount": 0,
     "attemptCount": 0,
-    "lastBeatAt": 21540.900000002235,
+    "lastBeatAt": 21706.70000000298,
     "count": 3,
     "autobuyersOn": true,
     "toggleText": "智能自动操作： 关闭"
   },
   "afterOff": {
     "count": 3,
-    "lastBeatAt": 21540.900000002235,
+    "lastBeatAt": 21706.70000000298,
     "actionCount": 0,
     "attemptCount": 0,
     "enabled": false
