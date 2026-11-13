@@ -4,7 +4,7 @@
 
 ## 1. 边界
 
-- Web 上游基线：`IvarK/AntimatterDimensionsSourceCode` @ `5409e320cecef96a917cca1dfb68f1f183e499ca`（2026-07-17，2026-11-13 起正式冻结，不自动追新；选择性移植与完整升级见第 10 节）；不跟随 Android 版本号假装同源验证。
+- Web 上游基线：`IvarK/AntimatterDimensionsSourceCode` @ `5409e320cecef96a917cca1dfb68f1f183e499ca`（2026-07-17，2026-11-13 起正式冻结；允许只读监测上游安全/重大缺陷，禁止未经授权自动升级、合并、修改冻结基线或部署；选择性移植与完整升级边界见第 10 节）；不跟随 Android 版本号假装同源验证。
 - 与 Android MOD 核心游戏行为保持等价；差异记录在 `WEB_ANDROID_DIFFERENCES.md` 或对应技术记录中。
 - 保持移动端可用性；玩家可见文本使用简体中文和项目官方术语。
 - `web/_deploy/site/` 是部署副本，不是第二个源码入口。
