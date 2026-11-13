@@ -10017,3 +10017,20 @@ r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、che
 - 双端差异（实测）：4 条实现差异 + 2 条功能缺口（Web 缺 Android 阶段化节拍 OrekiBeatStrategy 1–10s；两端均未达 180min 门禁）。
 - 证据：web/reports/R107-01/{README.md(378行), result.json, evidence/(41), run-180min/, run-interval1/, analysis/, runner/}；
   未部署 oreki.net（无生产改动）。
+
+### EP e4000 墙（R107-01）：接管自动永恒时未设结算门槛
+
+- 事实（2026-11-14 真实新档 + 逐帧诊断，reports/R107-01/ep-wall-fix/ROOT-CAUSE.md）：
+  R104（commit 62f41e7，P0-1）为打通首次永恒，在 100 次永恒里程碑解锁后把 player.auto.eternity.isActive 置 true，
+  但保留默认 mode=AMOUNT(0)/amount=1；原版在 canEternity 为真时立即结算，IP 被动生成让 canEternity 快速恢复，
+  形成近每帧永恒重置：thisEternity.maxIP 永远停在 SIP2 起始值 5e130、AM/维度每帧回初始、维度自动器 lastTick=0、
+  gainedEP≈1e5.4 远小于 EP e3683 ⇒ EP 冻结、realities 卡 15、isRealityAvailable 永假。R50（a926a45）无该接管故不冻结。
+- 修复（Web 生产）：src/core/oreki-eternity-automation.js 的 _adoptEternityAutobuyerIfNeeded：接管时若配置仍为默认
+  且本会话未配置过，一次性改 mode=X_HIGHEST(2)、xHighest=10（等价 R50「收益≥10×当前EP」门槛）；不覆盖玩家自定义、
+  不改 EP 公式/除数/现实门槛/存档字段。PR #18 合入（merge 2527004a）。
+- 验证（真实新档，interval=1、固定速度、动态速度关闭，未写任何字段）：修复前 realities=15 / EP=e3683.25 冻结
+  （A/B 2950.1s、180min 主跑 5890.1s）；修复后 r5@410.8s、r10@573s、r15@654.2s、r20@731.2s，冻结签名消失，
+  EP 最高 log10≈3.56e6；r50@1055.4s（10000×）、r50@1011.9s（100000×）；gameEnd 专项 30min 到 r75/1798.4s、
+  stage=laitela、gameEnd 未发生。定向验收 49/49 PASS。
+- 边界：完整 180 分钟默认配置跑次 **NOT RUN**；gameEnd 未验证，不能宣称 180min 门禁通过。
+  Android 同源门禁修复已落地（30min 26–36 次永恒）；EP 除数窗口（isOrekiBootstrapRun 的 DS6 未买判据）Android 尚未对齐。

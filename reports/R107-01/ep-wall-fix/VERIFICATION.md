@@ -41,10 +41,21 @@
 
 两个跑次 `pageErrors=0`、`realityAvailable=true` 采样 45/49 次，均未出现修复前的 EP 冻结签名。
 
-### 3.2 gameEnd 专项跑次
+### 3.2 gameEnd 专项跑次（100000×，只以 gameEnd 为停止条件，30 min 上限）
 
-`verify-gameend-focus/`：100000×、interval=1、**只以 gameEnd 为停止条件**、上限 30 min（1800 s）。
-截止本报告更新时仍在运行；结果见 `verify-gameend-focus/verify-summary.json` 与 stdout 日志。
+跑次 `verify-gameend-focus/`（1800 s 上限，实际到 1798.4 s；期间宿主负载 0.6~17）：
+
+| 里程碑 | wall |
+|---|---|
+| r10 / r15 | 561.4 s / 670.3 s |
+| r16 / r20 | 737.5 s / 737.5 s |
+| r30 | 1417.8 s |
+| r50 | 1568.9 s |
+| **结束时** | **realities=75、stage=laitela、goal=unlock-pelle、gameEnd=未发生（endState=0）** |
+
+- `gameEndAtWall=null`，`pageErrors=0`，`realityAvailableTrue` 采样 54 次，无冻结签名。
+- 结论：**30 min / r75 内未到 gameEnd**；EP 墙已修好，但后期 celestial/Laitela→Pelle 链与
+  R50→HEAD 的节拍回归仍可能让「180 min 通关」超时（见 `static-regression-diff.md`）。
 
 > 完整 180 分钟默认配置真实跑次：**NOT RUN**（本轮时间预算内未执行全量 180 min）。
 
@@ -75,6 +86,6 @@
 | realities 突破 15 | **PASS（r20、最高 r50）** |
 | isRealityAvailable 通过 | **PASS**（reality 持续推进 + rav 采样） |
 | realities 持续增长 | **PASS（15→20→30→50）** |
-| gameEnd | **未完成/NOT RUN**（30 min 窗口未到 gameEnd） |
+| gameEnd | **FAIL/NOT RUN**：30 min、100000×、r75、stage=laitela/unlock-pelle 未到 gameEnd |
 | 180 min 默认配置真实跑次 | **NOT RUN** |
 | 49/49 定向验收 | **PASS（49/49）** |

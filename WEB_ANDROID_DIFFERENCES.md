@@ -521,3 +521,6 @@ Android 没有 `ecEntryPending` / IU15 冲刺这两项：前者是 EC 入口等�
 | 6 | 180min 进度 | 首次现实 33.7min；realities=15 后 EP 冻结 3683.25；未通关 | R104/R105 记录 180min 内不可达终局 | **功能缺口：两端均未达 180min 门禁** |
 
 结论：四项体验验收 Web 全 PASS；无「必须立即改 Web」的等价阻断。阶段化节拍属进度策略调整，需受控实验 + 教程同步，不擅自改默认值。
+
+| 自动永恒结算门槛（R107-01） | 接管原版自动永恒时一次性把默认 AMOUNT=1 改为 X_HIGHEST×10（仅默认配置、新档会话首次接管）；避免每帧永恒重置钉死 maxIP | Android 同源门禁（AVD 已落地同源修复：修复后 30min 26–36 次永恒/EC 推进）；实现位置不同，语义须等价 | 已同步（2026-11-14 Web PR #18） |
+| EP 除数引导窗口 | isOrekiBootstrapRun()：现实未解锁 或 当前现实 DS6(TimeStudy.reality)未买 → 除数 30，否则 308 | 分支 r105-ep-scale：eternitiesZero() 或 realities==0 → 30，realities>0 即 308 | **未对齐**：Android 窗口更窄，下一轮扩到「当前现实 DS6 未买」 |
