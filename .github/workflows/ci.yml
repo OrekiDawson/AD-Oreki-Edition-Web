@@ -16,6 +16,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  classify:
+    name: Decide whether PR changes require browser smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run_browser: ${{ steps.paths.outputs.run_browser }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Keep full validation on main and any non-document changes
+        id: paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_browser=true
+          if [[ "$GITHUB_EVENT_NAME" == pull_request ]]; then
+            [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]] || exit 1
+            git fetch --no-tags --filter=blob:none --depth=1 origin "$BASE_SHA"
+            run_browser=false
+            while IFS= read -r -d '' path; do
+              case "$path" in
+                docs/*|reports/*|README.md|CHANGELOG.md|LICENSE|MOD-LICENSE|NOTICE.md)
+                  ;;
+                *)
+                  run_browser=true
+                  break
+                  ;;
+              esac
+            done < <(git diff --name-only -z "$BASE_SHA" HEAD)
+          fi
+          echo "run_browser=$run_browser" >> "$GITHUB_OUTPUT"
+          echo "::notice::Mobile Chromium required: $run_browser (main always tests)"
+
   logic:
     name: Node checks
     runs-on: ubuntu-latest
@@ -79,6 +115,8 @@ jobs:
 
   browser:
     name: Mobile Chromium smoke
+    needs: classify
+    if: needs.classify.outputs.run_browser == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
