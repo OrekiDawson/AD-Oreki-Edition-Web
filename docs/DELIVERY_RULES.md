@@ -7,7 +7,7 @@
 - Android/Web 同步推进，玩家可见 MOD 行为等价；新档真实墙钟不超过 180 分钟通关，减少无意义等待和重复切页，保留有趣手动操作。严禁伪造资源、存档、阶段、挑战完成和成就。
 - 新轮开发 Prompt 原样以 `/goal 基于原版https://github.com/IvarK/AntimatterDimensionsSourceCode和/home/oreki/Antimatter+Dimensions_3.21.0_APKPure.xapk制作反物质维度MOD。` 开头。轮内追加/修改不再用 /goal，不重置计时或历史编号；编号由 ChatGPT 按台账决定。Agent 读取当前有效 AGENTS、FACTS、tasks、最新状态及相关源码，Prompt 每轮重申适用规则。
 - P0 优先处理崩溃、不可达/错误可达阶段、存档损坏与核心功能失效；P1 处理通关瓶颈、自动化、实时 GUI 与跨端偏差；P2 才是非阻断迁移、体验/代码质量。避免只为凑工作量审计、重构或修改业务代码。
-- Web 保持 ACTIVE 且独立开发、独立 CI 和发布；Android APK/AVD 阻断不应阻碍 Web 自身已合格版本上线。Web 上游固定 **2026-07-17 冻结基线** `IvarK/AntimatterDimensionsSourceCode` @ `5409e320`（见第 5 节），不自动追新，不能因 Android 版本不同就伪称原版行为一致。
+- Web 保持 ACTIVE 且独立开发、独立 CI 和发布；Android APK/AVD 阻断不应阻碍 Web 自身已合格版本上线。Web 上游固定 **2026-07-17 冻结基线** `IvarK/AntimatterDimensionsSourceCode` @ `5409e320`（见第 5 节）；允许只读监测上游安全/重大缺陷，禁止未经用户授权自动升级、自动合并、修改冻结基线或部署；不能因 Android 版本不同就伪称原版行为一致。
 
 ## 2. 玩法、界面与定位
 
