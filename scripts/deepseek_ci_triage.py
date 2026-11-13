@@ -4,9 +4,10 @@ import json
 import os
 import re
 import sys
-import time
 import urllib.error
 import urllib.request
+
+from deepseek_pricing import pricing_window
 
 API = "https://api.deepseek.com/chat/completions"
 REPO = os.environ["GITHUB_REPOSITORY"]
@@ -38,6 +39,14 @@ def scrub(value):
 def main():
     write("## DeepSeek CI failure diagnosis (advisory only)")
     write("Original CI failure remains **FAIL**. AI diagnosis cannot approve a release.")
+    # Hard billing guard: skip BEFORE querying GitHub or contacting DeepSeek.
+    # Only optional AI commentary becomes green; the source workflow still FAILs.
+    period, reason = pricing_window()
+    if period == "peak":
+        write("**SKIPPED (peak hours, green advisory):** 09:00-12:00 / "
+              "14:00-18:00 Beijing weekdays. No DeepSeek API request was made.")
+        return
+    write(f"**Off-peak billing window:** {reason}; DeepSeek calls permitted.")
     if not KEY:
         write("**SKIPPED:** `DEEPSEEK_API_KEY` is not configured in this repository.")
         return
@@ -55,7 +64,7 @@ def main():
         payload = json.dumps({"repository": REPO, "run_id": RUN_ID,
                               "failed_jobs": data}, ensure_ascii=False)
         body = json.dumps({
-            "model": "deepseek-chat", "temperature": 0.1, "max_tokens": 700,
+            "model": "deepseek-flash", "temperature": 0.1, "max_tokens": 700,
             "messages": [
                 {"role": "system", "content": "You are a CI triage assistant. Answer in concise Simplified Chinese. Infer only from the provided job and step names. Distinguish facts from hypotheses. Never claim a check passed, suggest bypassing a gate, or request credentials. Provide next diagnostic actions."},
                 {"role": "user", "content": scrub(payload)}
