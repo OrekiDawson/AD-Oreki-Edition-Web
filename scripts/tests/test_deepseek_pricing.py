@@ -53,12 +53,17 @@ class DeepSeekPricingTests(unittest.TestCase):
 
     def test_weekends_including_makeup_workdays(self):
         # Official pricing says Mon-Fri, not 'all administratively working days'.
-        for day in ["2026-11-14", "2026-01-04", "2026-02-14",
-                    "2026-02-28", "2026-05-09", "2026-09-20", "2026-10-10",
+        self.assertEqual(pricing_window(at("2026-11-14", "09:30")),
+                         ("offpeak", "weekend"))
+        for day in ["2026-01-04", "2026-02-14", "2026-02-28",
+                    "2026-05-09", "2026-09-20", "2026-10-10",
                     "2027-01-31", "2027-02-14", "2027-05-08",
                     "2027-09-26", "2027-10-09"]:
             with self.subTest(day=day):
-                self.assertEqual(pricing_window(at(day, "09:30"))[0], "offpeak")
+                self.assertEqual(pricing_window(at(day, "09:30")),
+                                 ("offpeak", "makeup-workday"))
+                self.assertEqual(pricing_window(at(day, "14:00"))[0],
+                                 "offpeak")
 
     def test_utc_conversion_and_unknown_year(self):
         self.assertEqual(
