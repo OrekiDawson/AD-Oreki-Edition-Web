@@ -132,6 +132,8 @@
 - `[读码]` 官方 Web 源码仓 `IvarK/AntimatterDimensionsSourceCode` 最新提交仍是 `5409e320`（2026-07-17），**无 3.21 对应提交或标签**。因此 3.21 的 Web 侧基线无法建立，`web.commit` 留空并由 `baseline verify` 明确报出。
 - `[实测]` 基线管理工具（Rust，零第三方依赖）五命令 `update / verify / diff / status / rollback` 全部可用；3.20 与 3.21 的 inventory 各 15319~15354 类，可用于后续增量 diff 而无需重复反编译。
 - `[实测]` `scripts/build_mod.py` 原有的 **25 处** `_baseline_version().startswith("3.20")` 分支已全部收敛为 `baseline/version-config.json` 的声明式配置（现存 0 处）。配置化改造后 3.20 构建仍 EXIT=0、产出 77.7 MiB APK，未破坏现有可构建状态。
+- `[读码]` **2026-11-13 起 Web 上游正式冻结**：`IvarK/AntimatterDimensionsSourceCode` @ `5409e320cecef96a917cca1dfb68f1f183e499ca`（2026-07-17，AD 11.5 / Reality Update；与 `docs/SHARED_GAMEPLAY_STANDARD.md` 一致），不自动追新；完整升级条件见 `AGENTS.md` §10 / `docs/DELIVERY_RULES.md` §5。
+- `[实测]` Android 冻结基线为官方 3.21.0（base APK SHA-256 `4e9970a808d10b6cc1a1068b078ec3c7d922051086a576c66d071c1216f527ac`、versionCode `30210000`）；Web 与其独立，不要求版本号同源。
 
 ## 7. 仓库与产物
 
@@ -9994,3 +9996,11 @@ r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、che
 - 结论：Web 首次现实前的「EP/时间研究层」存在与 R104 同类但更早出现的调度振荡；
   未在本轮修复/验证，转入 R105-02 下一轮（修复后必须真实新档跑到首次现实并记录墙钟）。
 - 证据：reports/R105/web-run1/（summary.json / run.log / samples.jsonl / screenshots）。
+
+## R107-01 规则纠偏（2026-11-13 深夜，用户决定）
+
+- **上游监测边界**：允许对上游做只读监测（安全公告、重大缺陷/崩溃/存档/数据错误、重要修复信息）用于评估选择性移植；
+  禁止未经用户授权自动升级、自动合并上游代码、修改冻结基线、自动改版本号或自动部署。
+- **完整 Web 上游升级三种边界**：研究评估（无需新授权，不得改冻结基线/整包替换；当前 P0 或构建链未完成不构成禁止研究评估的理由）/
+  用户授权（完整基线替换必须用户明确批准的新轮次）/ 正式发布门禁（完整升级发布前必判，条目见 DELIVERY_RULES 5.5.3）。
+- Web 冻结基线仍为 `5409e320cecef96a917cca1dfb68f1f183e499ca`（2026-07-17）；本轮未做任何上游升级或部署。
