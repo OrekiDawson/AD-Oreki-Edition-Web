@@ -40,7 +40,7 @@ jobs:
             run_browser=false
             while IFS= read -r -d '' path; do
               case "$path" in
-                docs/*|reports/*|README.md|CHANGELOG.md|LICENSE|MOD-LICENSE|NOTICE.md)
+                docs/*|reports/*|AGENTS.md|PROJECT_PAUSED.md|WEB_ANDROID_DIFFERENCES.md|README.md|CHANGELOG.md|LICENSE|MOD-LICENSE|NOTICE.md)
                   ;;
                 *)
                   run_browser=true
@@ -138,8 +138,18 @@ jobs:
         with:
           path: ~/.npm
           key: npm-playwright-${{ runner.os }}-${{ runner.arch }}-1.65.0-v1
-      - name: Install Playwright test runner
+      - name: Cache pinned Playwright test modules
+        id: playwright-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: web-playwright-modules-${{ runner.os }}-${{ runner.arch }}-node26-v1.65.0-v1
+      - name: Install Playwright test runner only on cache miss
+        if: steps.playwright-modules.outputs.cache-hit != 'true'
         run: npm install --no-save --no-package-lock @playwright/test@1.65.0
+      - name: Reject stale or incorrect cached Playwright modules
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; const p=JSON.parse(fs.readFileSync('node_modules/@playwright/test/package.json','utf8')); if(p.version!=='1.65.0') process.exit(1)"
       # install --with-deps remains idempotent; on a cache hit no browser download.
       # System libraries are still installed on each fresh GitHub-hosted runner.
       - name: Ensure Chromium and runtime dependencies
