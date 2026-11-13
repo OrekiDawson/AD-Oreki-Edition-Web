@@ -1,0 +1,10 @@
+[2026-11-13T18:01:13.606Z] applied {"interval":1,"speed":100000}
+[2026-11-13T18:05:50.161Z] deep snapshot r5 wall 275.7 realities 5 epLog10 -Infinity
+[2026-11-13T18:08:00.289Z] deep snapshot r10 wall 405.8 realities 10 epLog10 -Infinity
+[2026-11-13T18:10:13.464Z] deep snapshot r15 wall 539 realities 15 epLog10 8.16
+[2026-11-13T18:10:13.464Z] reach realities=15 at wall 538.9 epLog10 8.16
+[2026-11-13T18:10:20.661Z] deep snapshot collapse wall 546.2 realities 15 epLog10 62.96 dimBoost 
+[2026-11-13T18:11:14.232Z] deep snapshot r15+60 wall 599.7 realities 15 epLog10 119.23
+[2026-11-13T18:11:50.315Z] progress past wall {"realities":15,"epLog10":4018.93,"isRealityAvailable":true}
+[2026-11-13T18:11:50.316Z] done {"states":621,"deepKeys":["r5","r10","r15","collapse","r15+60"],"pageErrors":0}
+EXIT:0

@@ -1,9 +1,9 @@
 {
-  "len": 6989,
+  "len": 7163,
   "valid": true,
   "state": {
-    "infinities": "3",
-    "IP": "29",
+    "infinities": "2",
+    "IP": "19",
     "stage": "breakInfinity",
     "view": {
       "tab": "options",

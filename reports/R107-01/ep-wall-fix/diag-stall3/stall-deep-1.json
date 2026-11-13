@@ -1,0 +1,8897 @@
+{
+  "deep": {
+    "realities": 15,
+    "amLog10": 130.7,
+    "maxAMLog10": 130.7,
+    "ipLog10": 130.59,
+    "maxIPLog10": 130.7,
+    "epLog10": 3683.25,
+    "etLog10": 10.39,
+    "etStr": "24437176516",
+    "etAuto": {
+      "mode": 0,
+      "amount": "1",
+      "xHighest": "1",
+      "isActive": true,
+      "increaseWithMult": true
+    },
+    "eAutoUnlocked": true,
+    "realTimePlayed": 676438,
+    "breakFlag": true,
+    "gamePaused": false,
+    "enslavedStoring": false,
+    "dimBoost": 4,
+    "gal": 1,
+    "dims": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "tickBought": 1,
+    "infinitiesLog10": 13.08,
+    "canCrunch": false,
+    "autoOn": true,
+    "groupActive": true,
+    "crunchActive": true,
+    "crunchInterval": 50,
+    "crunchMode": 2,
+    "cost1": "10",
+    "afford1": true,
+    "avail1": true,
+    "executorServed": null,
+    "lastAction": null,
+    "stage": "realityTree",
+    "goal": "grow-reality-tree",
+    "blockers": []
+  },
+  "post": {
+    "realities": 15,
+    "amLog10": 130.7,
+    "maxAMLog10": 130.7,
+    "ipLog10": 130.59,
+    "maxIPLog10": 130.7,
+    "epLog10": 3683.25,
+    "etLog10": 10.48,
+    "etStr": "30485981116",
+    "etAuto": {
+      "mode": 0,
+      "amount": "1",
+      "xHighest": "1",
+      "isActive": true,
+      "increaseWithMult": true
+    },
+    "eAutoUnlocked": true,
+    "realTimePlayed": 706612,
+    "breakFlag": true,
+    "gamePaused": false,
+    "enslavedStoring": false,
+    "dimBoost": 4,
+    "gal": 1,
+    "dims": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "tickBought": 1,
+    "infinitiesLog10": 12.82,
+    "canCrunch": false,
+    "autoOn": true,
+    "groupActive": true,
+    "crunchActive": true,
+    "crunchInterval": 50,
+    "crunchMode": 2,
+    "cost1": "10",
+    "afford1": true,
+    "avail1": true,
+    "executorServed": null,
+    "lastAction": null,
+    "stage": "realityTree",
+    "goal": "grow-reality-tree",
+    "blockers": [],
+    "wall_sec": 696.7
+  },
+  "trace": [
+    {
+      "t": 1794597115820,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 13.0436,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597116034,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9685,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597116188,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9846,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597116403,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9345,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597116587,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8975,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597116775,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8675,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597117001,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8675,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597117183,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.907,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597117395,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9518,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597117584,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8975,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597117770,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8675,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597117967,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597118172,
+      "am": 129.9943,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 128,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2.6334684555795866,
+          "cost": 130,
+          "aff": false
+        },
+        {
+          "amt": 2.5051499783199063,
+          "cost": 130,
+          "aff": false
+        },
+        {
+          "amt": 2.414973347970818,
+          "cost": 134,
+          "aff": false
+        },
+        {
+          "amt": 2.3222192947339195,
+          "cost": 132,
+          "aff": false
+        },
+        {
+          "amt": 2.204119982655925,
+          "cost": 137,
+          "aff": false
+        },
+        {
+          "amt": 2.0791812460476247,
+          "cost": 133,
+          "aff": false
+        },
+        {
+          "amt": 2,
+          "cost": 138,
+          "aff": false
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": false
+        }
+      ]
+    },
+    {
+      "t": 1794597118358,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597118600,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8777,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597118798,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 13.0296,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597118999,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9255,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597119197,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 13.0703,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597119409,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8777,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597119609,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.907,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597119792,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 13.0367,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597120000,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8675,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597120183,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9432,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597120379,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597120603,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9255,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597120782,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9846,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597120988,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8353,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597121194,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9767,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597121358,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7757,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597121569,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9164,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597121746,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.907,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597122000,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597122206,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597122401,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.824,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597122567,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 13.2033,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597122778,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9164,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597122989,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597123175,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597123385,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.907,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597123579,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597123791,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 13.0001,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597123979,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7494,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597124179,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8353,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597124369,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 13.0224,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597124575,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8353,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597124764,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.824,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597124969,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.824,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597125169,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597125401,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597125581,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597125790,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597125980,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597126184,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597126390,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597126601,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8675,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597126787,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9432,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597126968,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8675,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597127180,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597127397,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9603,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597127584,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597127759,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597127986,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9603,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597128181,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597128375,
+      "am": 129.9943,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9767,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 128,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2.6334684555795866,
+          "cost": 130,
+          "aff": false
+        },
+        {
+          "amt": 2.5051499783199063,
+          "cost": 130,
+          "aff": false
+        },
+        {
+          "amt": 2.414973347970818,
+          "cost": 134,
+          "aff": false
+        },
+        {
+          "amt": 2.3222192947339195,
+          "cost": 132,
+          "aff": false
+        },
+        {
+          "amt": 2.204119982655925,
+          "cost": 137,
+          "aff": false
+        },
+        {
+          "amt": 2.0791812460476247,
+          "cost": 133,
+          "aff": false
+        },
+        {
+          "amt": 2,
+          "cost": 138,
+          "aff": false
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": false
+        }
+      ]
+    },
+    {
+      "t": 1794597128609,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9255,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597128806,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8877,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597128971,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8877,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597129199,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597129389,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7494,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597129608,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9255,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597129780,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8675,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597129991,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8877,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597130170,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9432,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597130355,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8353,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597130578,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597130784,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597131004,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597131157,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597131381,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9925,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597131560,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9164,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597131808,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597131986,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8777,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597132187,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597132413,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8975,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597132576,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597132811,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9164,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597132973,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.907,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597133178,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8353,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597133369,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7628,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597133562,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.824,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597133760,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7883,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597133973,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8675,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597134172,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7883,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597134357,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7628,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597134587,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597134758,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8353,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597134972,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7757,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597135196,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8353,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597135405,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597135580,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8777,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597135815,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9518,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597135984,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597136187,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597136410,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9255,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597136577,
+      "am": 129.9943,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8777,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 128,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2.6334684555795866,
+          "cost": 130,
+          "aff": false
+        },
+        {
+          "amt": 2.5051499783199063,
+          "cost": 130,
+          "aff": false
+        },
+        {
+          "amt": 2.414973347970818,
+          "cost": 134,
+          "aff": false
+        },
+        {
+          "amt": 2.3222192947339195,
+          "cost": 132,
+          "aff": false
+        },
+        {
+          "amt": 2.204119982655925,
+          "cost": 137,
+          "aff": false
+        },
+        {
+          "amt": 2.0791812460476247,
+          "cost": 133,
+          "aff": false
+        },
+        {
+          "amt": 2,
+          "cost": 138,
+          "aff": false
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": false
+        }
+      ]
+    },
+    {
+      "t": 1794597136804,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9345,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597136986,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9255,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597137187,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597137372,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8877,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597137581,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597137788,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8975,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597137957,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9255,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597138150,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597138393,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597138587,
+      "am": 129.9943,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 128,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2.6334684555795866,
+          "cost": 130,
+          "aff": false
+        },
+        {
+          "amt": 2.5051499783199063,
+          "cost": 130,
+          "aff": false
+        },
+        {
+          "amt": 2.414973347970818,
+          "cost": 134,
+          "aff": false
+        },
+        {
+          "amt": 2.3222192947339195,
+          "cost": 132,
+          "aff": false
+        },
+        {
+          "amt": 2.204119982655925,
+          "cost": 137,
+          "aff": false
+        },
+        {
+          "amt": 2.0791812460476247,
+          "cost": 133,
+          "aff": false
+        },
+        {
+          "amt": 2,
+          "cost": 138,
+          "aff": false
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": false
+        }
+      ]
+    },
+    {
+      "t": 1794597138800,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8675,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597139003,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597139191,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.824,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597139399,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597139587,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597139774,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597139956,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597140173,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7628,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597140356,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7883,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597140568,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597140754,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597140971,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.824,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597141189,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597141352,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597141570,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8571,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597141803,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597141992,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7757,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597142174,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597142379,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7883,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597142571,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597142789,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7757,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597143016,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 13.0831,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597143179,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597143365,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8463,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597143590,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597143782,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8353,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597143958,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8125,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597144176,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.824,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597144373,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7757,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597144572,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.9345,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597144766,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8777,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597144976,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.7883,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597145209,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8006,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794597145372,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 130.5898,
+      "maxIP": 130.699,
+      "infinities": 12.8877,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    }
+  ],
+  "detectedWallSec": 666.5
+}

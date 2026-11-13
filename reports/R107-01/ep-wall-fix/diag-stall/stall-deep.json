@@ -1,0 +1,5923 @@
+{
+  "deep": {
+    "realities": 15,
+    "amLog10": 1153.96,
+    "maxAMLog10": 1153.96,
+    "ipLog10": 229.37,
+    "maxIPLog10": 229.54,
+    "epLog10": 117.11,
+    "etLog10": 9.93,
+    "dimBoost": 19,
+    "gal": 1,
+    "dims": [
+      625.3831477366824,
+      511.3290068746568,
+      406.74812918851035,
+      310.2164909773585,
+      221.84980272191513,
+      140.10837632185658,
+      62.144112788649494,
+      1.9030899869919435
+    ],
+    "tickBought": 2,
+    "infinitiesLog10": 7.82,
+    "canCrunch": true,
+    "breakFlag": true,
+    "autoOn": true,
+    "groupActive": true,
+    "crunchActive": true,
+    "crunchInterval": 50,
+    "crunchMode": 2,
+    "cost1": "1e+130",
+    "afford1": true,
+    "avail1": true,
+    "executorServed": null,
+    "lastAction": null,
+    "stage": "realityTree",
+    "goal": "grow-reality-tree",
+    "blockers": []
+  },
+  "post": {
+    "realities": 15,
+    "amLog10": 130922.17,
+    "maxAMLog10": 130922.17,
+    "ipLog10": 4474.6,
+    "maxIPLog10": 4474.6,
+    "epLog10": 117.11,
+    "etLog10": 10.09,
+    "dimBoost": 19,
+    "gal": 1,
+    "dims": [
+      114884.07272468133,
+      98339.5550677353,
+      81804.98561723476,
+      65278.94034947883,
+      48761.534974948205,
+      32251.22980554259,
+      15745.17674227343,
+      1.9030899869919435
+    ],
+    "tickBought": 2,
+    "infinitiesLog10": 8.95,
+    "canCrunch": true,
+    "breakFlag": true,
+    "autoOn": true,
+    "groupActive": true,
+    "crunchActive": true,
+    "crunchInterval": 50,
+    "crunchMode": 2,
+    "cost1": "1e+130",
+    "afford1": true,
+    "avail1": true,
+    "executorServed": null,
+    "lastAction": null,
+    "stage": "realityTree",
+    "goal": "grow-reality-tree",
+    "blockers": [],
+    "wall_sec": 616.1
+  },
+  "trace": [
+    {
+      "t": 1794595058687,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 235.6322,
+      "maxIP": 235.7323,
+      "infinities": 7.7648,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595058884,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 236.5441,
+      "maxIP": 236.6638,
+      "infinities": 7.8439,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595059077,
+      "am": 1153.7247,
+      "maxAM": 1153.7247,
+      "ip": 229.3574,
+      "maxIP": 229.5299,
+      "infinities": 7.7928,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.1985349156962,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.17083741388507,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.6164030879532,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.1112082370159,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.77096334178708,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.05598030194307,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.11816012895053,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595059277,
+      "am": 1154.5868,
+      "maxAM": 1154.5868,
+      "ip": 229.6261,
+      "maxIP": 229.7273,
+      "infinities": 7.8317,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.5406626595505,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.46244890868775,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.8574983337042,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.3017872337151,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.91102608943464,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.14552680053896,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.15719037849475,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595059479,
+      "am": 1154.2403,
+      "maxAM": 1154.2403,
+      "ip": 229.5562,
+      "maxIP": 229.6729,
+      "infinities": 7.8062,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.3446796580088,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.2948893246738,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.7183621672181,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.19107448475694,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.8287367580043,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.09166088663648,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.13174788212011,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595059677,
+      "am": 1154.1337,
+      "maxAM": 1154.1337,
+      "ip": 229.3095,
+      "maxIP": 229.4982,
+      "infinities": 7.8558,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.6300525077417,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.5410001120252,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.9252108921879,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.3586611473452,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.95706135821098,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.18072342446158,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.18154835756365,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595059881,
+      "am": 1154.0831,
+      "maxAM": 1154.1033,
+      "ip": 229.4884,
+      "maxIP": 229.6221,
+      "infinities": 7.8062,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 378,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.3289229913503,
+          "cost": 1180.5250632586988,
+          "aff": false
+        },
+        {
+          "amt": 511.28179614487243,
+          "cost": 1175.473089003695,
+          "aff": false
+        },
+        {
+          "amt": 406.7079324742738,
+          "cost": 1167.3295997675696,
+          "aff": false
+        },
+        {
+          "amt": 310.18330827866964,
+          "cost": 1161.094595550323,
+          "aff": false
+        },
+        {
+          "amt": 221.82363403877406,
+          "cost": 1166.8204986348505,
+          "aff": false
+        },
+        {
+          "amt": 140.08922165426327,
+          "cost": 1163.8404930118552,
+          "aff": false
+        },
+        {
+          "amt": 62.131972136603935,
+          "cost": 1158.1545786813367,
+          "aff": false
+        },
+        {
+          "amt": 2.740362689494244,
+          "cost": 1166.7627556432951,
+          "aff": false
+        }
+      ]
+    },
+    {
+      "t": 1794595060075,
+      "am": 1154.1044,
+      "maxAM": 1154.1044,
+      "ip": 229.4884,
+      "maxIP": 229.6221,
+      "infinities": 7.8062,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.3297567569585,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.2825096317862,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.7085256824931,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.18378120819443,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.8239866896044,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.08945402639915,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.13208423004535,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595060272,
+      "am": 1154.444,
+      "maxAM": 1154.444,
+      "ip": 229.5062,
+      "maxIP": 229.6353,
+      "infinities": 7.8439,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.5996503110796,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.5137376988556,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.9010882625109,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.3376783011606,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.93921829551897,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.1660201452621,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.169984861856705,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595060494,
+      "am": 1156.189,
+      "maxAM": 1156.189,
+      "ip": 230.0177,
+      "maxIP": 230.3328,
+      "infinities": 7.931,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 626.3417310267936,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 512.146683472225,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 407.4248990935356,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.75235418984073,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 222.24475924185444,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.36242614925294,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.25725592350289,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595060683,
+      "am": 1152.6608,
+      "maxAM": 1152.6608,
+      "ip": 229.0606,
+      "maxIP": 229.3541,
+      "infinities": 7.7349,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 624.7231119401098,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 510.76513778644284,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.280426808655,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 309.84495530586173,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.57443375877702,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 139.9291740670771,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.061077242228635,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595060862,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 235.8602,
+      "maxIP": 235.9221,
+      "infinities": 7.7648,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595061063,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 235.5151,
+      "maxIP": 235.642,
+      "infinities": 7.7791,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595061259,
+      "am": 1154.4754,
+      "maxAM": 1154.4754,
+      "ip": 229.567,
+      "maxIP": 229.6812,
+      "infinities": 7.8317,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.5339740572542,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.4570687668672,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.8534266523594,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.29902401284613,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.90957132904143,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.14538050062148,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.158352539053034,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595061458,
+      "am": 1154.1122,
+      "maxAM": 1154.1122,
+      "ip": 229.4889,
+      "maxIP": 229.6225,
+      "infinities": 7.8062,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.3359016716842,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.287768083134,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.71289767046306,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.18726673278667,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.82658575081877,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.0911666242357,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.1329103645041,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595061661,
+      "am": 1154.2578,
+      "maxAM": 1154.2578,
+      "ip": 229.6118,
+      "maxIP": 229.7161,
+      "infinities": 7.7928,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.2746884451533,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.23454847727805,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.66767168528196,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.1500343682804,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.7973470069874,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.0699215010792,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.11965886202246,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595061883,
+      "am": 1154.2538,
+      "maxAM": 1154.2538,
+      "ip": 229.6632,
+      "maxIP": 229.757,
+      "infinities": 7.7791,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.1924029560707,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.1637034975268,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.6082672148621,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.10207040719195,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.7608235552303,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.04483855865348,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.10601642892813,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595062090,
+      "am": 7476.2796,
+      "maxAM": 7476.2796,
+      "ip": 359.4737,
+      "maxIP": 359.4737,
+      "infinities": 9.0996,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.511069131003,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.5320082004655,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.50115371542,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.99448197498,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.1277034598597,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.3611300697357,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8466628160745,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595062286,
+      "am": 7475.3477,
+      "maxAM": 7475.3477,
+      "ip": 359.3215,
+      "maxIP": 359.3215,
+      "infinities": 8.9782,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6334.695876918543,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5398.833239480649,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4472.918808488245,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.528560240448,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.77820521797,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.1280553204886,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.7300115594699,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595062477,
+      "am": 7475.4975,
+      "maxAM": 7475.4975,
+      "ip": 359.3,
+      "maxIP": 359.3,
+      "infinities": 8.992,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6334.827081886146,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5398.945668414832,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.012461389009,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.6034371077917,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.8343060518946,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.1653801209936,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.7485603265555,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595062684,
+      "am": 7475.6438,
+      "maxAM": 7475.6438,
+      "ip": 359.277,
+      "maxIP": 359.277,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6334.955240974026,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.055486665747,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.103938802957,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.6765736847738,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.8891017919104,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.2018350240435,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.7666743926391,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595062873,
+      "am": 7475.6832,
+      "maxAM": 7475.6832,
+      "ip": 359.2786,
+      "maxIP": 359.2786,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6334.9899518437,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.085206350769,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.128667303329,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.696311000495,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.903847922981,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.2115899704631,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.771438154408,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595063083,
+      "am": 7475.7226,
+      "maxAM": 7475.7226,
+      "ip": 359.2802,
+      "maxIP": 359.2802,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.024586993147,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.114861203614,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.153341859572,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.7160052601353,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.918561886019,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.2213236368987,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.7761915242412,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595063281,
+      "am": 7475.6552,
+      "maxAM": 7475.6552,
+      "ip": 359.3064,
+      "maxIP": 359.3064,
+      "infinities": 8.992,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6334.965773061891,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.064416752092,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.111266887784,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.6822997680815,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.8932258736995,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.2043571043132,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.7675944713899,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595063463,
+      "am": 7475.8011,
+      "maxAM": 7475.8011,
+      "ip": 359.2833,
+      "maxIP": 359.2833,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.093631453698,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.173977544963,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.2025300817195,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.7552653630805,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.947893869762,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.2407275014398,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.7856672695804,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595063666,
+      "am": 7475.7336,
+      "maxAM": 7475.7336,
+      "ip": 359.3096,
+      "maxIP": 359.3096,
+      "infinities": 8.992,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.034666975462,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.1234041940825,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.160347858194,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.7214742669116,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.922493900949,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.2237186599828,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.7770495554792,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595063864,
+      "am": 7475.7726,
+      "maxAM": 7475.7726,
+      "ip": 359.2696,
+      "maxIP": 359.2696,
+      "infinities": 8.992,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.069002159379,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.15280221438,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.184808714873,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.7409979599706,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.9370804303885,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.233368025803,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.78176175768,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595064063,
+      "am": 7475.7017,
+      "maxAM": 7475.7017,
+      "ip": 359.3754,
+      "maxIP": 359.3754,
+      "infinities": 8.9782,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.007090339546,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.099702549252,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.140521204447,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.7055226042485,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2646.91041722937,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.2155169794878,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.7727228660684,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595064263,
+      "am": 7476.0613,
+      "maxAM": 7476.0613,
+      "ip": 359.3477,
+      "maxIP": 359.3477,
+      "infinities": 9.0183,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.321925331316,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.369529276503,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.36533966718,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.885332802463,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.045219163066,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.3053106486652,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8175082707273,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595064456,
+      "am": 7475.996,
+      "maxAM": 7475.996,
+      "ip": 359.2912,
+      "maxIP": 359.2912,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.264940416831,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.320653455817,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.324572940293,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.8526751693753,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.0206706237777,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.288871203176,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8091779190372,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595064656,
+      "am": 7476.0347,
+      "maxAM": 7476.0347,
+      "ip": 359.2928,
+      "maxIP": 359.2928,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.2989815452365,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.349799703766,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.348824307785,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.8720316564113,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.0351322303572,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.298437929299,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8138497647038,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595064858,
+      "am": 7476.0733,
+      "maxAM": 7476.0733,
+      "ip": 359.2944,
+      "maxIP": 359.2944,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.332949857166,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.378883605747,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.37302379982,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.8913467384987,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.0495629024967,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.3079841914916,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.818511616949,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595065056,
+      "am": 7476.2156,
+      "maxAM": 7476.2156,
+      "ip": 359.3124,
+      "maxIP": 359.3124,
+      "infinities": 9.0183,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.457600504821,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.485695291929,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.461996524528,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.9624805017334,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.1028577042584,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.3434400317794,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8361284957635,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595065282,
+      "am": 7476.0502,
+      "maxAM": 7476.0502,
+      "ip": 359.363,
+      "maxIP": 359.363,
+      "infinities": 8.992,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.313092368851,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.361793928241,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.358701933121,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.8797926826073,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.040776657413,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.3019657572156,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8152609934806,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595065482,
+      "am": 7476.0884,
+      "maxAM": 7476.0884,
+      "ip": 359.2824,
+      "maxIP": 359.2824,
+      "infinities": 8.992,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.346661510065,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.3905360575145,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.382617050454,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.898880788001,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.0550377508666,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.311399838729,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8198680630537,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595065677,
+      "am": 7476.2334,
+      "maxAM": 7476.2334,
+      "ip": 359.2583,
+      "maxIP": 359.2583,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.473707574497,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.4994013301075,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.473301531209,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3555.971384476916,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.1093606479426,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.347541943966,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.837829376452,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595065881,
+      "am": 7476.6691,
+      "maxAM": 7476.6691,
+      "ip": 359.3654,
+      "maxIP": 359.3654,
+      "infinities": 9.055,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.855119087226,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.826294037439,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.745675433143,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.189239573454,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.272696939084,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.4563594297106,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8921280567998,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595066077,
+      "am": 7476.3097,
+      "maxAM": 7476.3097,
+      "ip": 359.304,
+      "maxIP": 359.304,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.540830698944,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.556872610287,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.521120967122,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.0095520685622,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.1378763953226,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.3664058470792,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8470414352985,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595066274,
+      "am": 7476.3478,
+      "maxAM": 7476.3478,
+      "ip": 359.2629,
+      "maxIP": 359.2629,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.574286177689,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.5855174209755,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.544955109752,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.028575543134,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.1520892018366,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.3758079855354,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8516329056968,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595066468,
+      "am": 7476.3857,
+      "maxAM": 7476.3857,
+      "ip": 359.3071,
+      "maxIP": 359.3071,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.607671332301,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.6141020196565,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.5687391525025,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.0475590299543,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.1662721327266,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.3851903604948,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8562147247259,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595066673,
+      "am": 7476.6282,
+      "maxAM": 7476.6282,
+      "ip": 359.3825,
+      "maxIP": 359.3825,
+      "infinities": 9.0309,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.820032968777,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.796094939871,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.720363356455,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.168814517646,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.2571589041563,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.4457084156627,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8863640636322,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595066867,
+      "am": 7476.5651,
+      "maxAM": 7476.5651,
+      "ip": 359.3266,
+      "maxIP": 359.3266,
+      "infinities": 9.0183,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.764986693273,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.7488814577355,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.680982667687,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.137266622245,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.233443802123,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.4298261069973,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8783145483343,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595067070,
+      "am": 4419.7189,
+      "maxAM": 4419.7189,
+      "ip": 202.541,
+      "maxIP": 202.6615,
+      "infinities": 7.9958,
+      "dimBoost": 229,
+      "gal": 18,
+      "tick": 5,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 3487.9077551590053,
+          "cost": 3837.3987689801484,
+          "aff": true
+        },
+        {
+          "amt": 2928.074938173164,
+          "cost": 3835.138001649346,
+          "aff": true
+        },
+        {
+          "amt": 2394.804255095169,
+          "cost": 3829.7857193374216,
+          "aff": true
+        },
+        {
+          "amt": 1879.55131941915,
+          "cost": 3826.341922044376,
+          "aff": true
+        },
+        {
+          "amt": 1388.1281318698102,
+          "cost": 3866.754635515206,
+          "aff": true
+        },
+        {
+          "amt": 914.7227866638339,
+          "cost": 3839.317951042387,
+          "aff": true
+        },
+        {
+          "amt": 453.63903969069275,
+          "cost": 3867.750210862329,
+          "aff": true
+        },
+        {
+          "amt": 3.0530784434834195,
+          "cost": 3849.3464023232928,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595067259,
+      "am": 1153.3004,
+      "maxAM": 1153.3004,
+      "ip": 228.967,
+      "maxIP": 229.309,
+      "infinities": 7.8062,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.427511401111,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.36926587098725,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.78428351674273,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.2485406374927,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.87774771395127,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.1322166457946,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.16384844448942,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595067470,
+      "am": 1154.4066,
+      "maxAM": 1154.4066,
+      "ip": 229.5071,
+      "maxIP": 229.6359,
+      "infinities": 7.8062,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.566767977336,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.48533091155156,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.8771570216464,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.3182226067357,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.92423814753357,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.15551554371626,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.16395580675039,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595067661,
+      "am": 1154.17,
+      "maxAM": 1154.17,
+      "ip": 229.6104,
+      "maxIP": 229.7149,
+      "infinities": 7.7501,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.2012498565975,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.17139841650624,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.61481015229407,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.1074613630765,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.7650625295674,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.04792555144311,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.10795144017032,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595067859,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 235.2149,
+      "maxIP": 236.1056,
+      "infinities": 7.8317,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595068060,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 236.6229,
+      "maxIP": 236.7249,
+      "infinities": 7.8062,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595068260,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 236.5317,
+      "maxIP": 236.6545,
+      "infinities": 7.7791,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595068493,
+      "am": 1154.5273,
+      "maxAM": 1154.5273,
+      "ip": 229.5131,
+      "maxIP": 229.6404,
+      "infinities": 7.8191,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.663206072829,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.5679516707058,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.9459604444618,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.3732086932123,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.9654068976714,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.18286695751524,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.177489884210594,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595068690,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 237.2318,
+      "maxIP": 237.4497,
+      "infinities": 7.931,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595068882,
+      "am": 130.699,
+      "maxAM": 130.699,
+      "ip": 236.6231,
+      "maxIP": 236.7251,
+      "infinities": 7.8062,
+      "dimBoost": 4,
+      "gal": 1,
+      "tick": 1,
+      "canCrunch": false,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": null,
+          "cost": 1,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 2,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 4,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 6,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 9,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 13,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 18,
+          "aff": true
+        },
+        {
+          "amt": null,
+          "cost": 24,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595069085,
+      "am": 4524.4872,
+      "maxAM": 4524.4872,
+      "ip": 226.8628,
+      "maxIP": 227.2649,
+      "infinities": 8.0048,
+      "dimBoost": 233,
+      "gal": 19,
+      "tick": 470,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 3542.2475917544057,
+          "cost": 4569.041558361416,
+          "aff": false
+        },
+        {
+          "amt": 2974.1561488775396,
+          "cost": 4567.329880917341,
+          "aff": false
+        },
+        {
+          "amt": 2432.6268399085207,
+          "cost": 4562.526688492146,
+          "aff": false
+        },
+        {
+          "amt": 1909.1152783414777,
+          "cost": 4559.631981085829,
+          "aff": false
+        },
+        {
+          "amt": 1410.857537462111,
+          "cost": 4542.568021329829,
+          "aff": false
+        },
+        {
+          "amt": 929.1935663651104,
+          "cost": 4580.529824687387,
+          "aff": false
+        },
+        {
+          "amt": 461.27526606194255,
+          "cost": 4550.825260063539,
+          "aff": false
+        },
+        {
+          "amt": 3.093421685162235,
+          "cost": 4539.1797825149215,
+          "aff": false
+        }
+      ]
+    },
+    {
+      "t": 1794595069277,
+      "am": 1154.5496,
+      "maxAM": 1154.5496,
+      "ip": 229.5728,
+      "maxIP": 229.6857,
+      "infinities": 7.8062,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.5910226321288,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.5057124916583,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.893665527067,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.33085803747025,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.9330005035821,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.1604048250787,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.164972013426784,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595069477,
+      "am": 1154.6691,
+      "maxAM": 1154.6691,
+      "ip": 229.683,
+      "maxIP": 229.773,
+      "infinities": 7.7928,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.5265296056315,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.4497590975219,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.8462517652915,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.29198390805567,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.90266600652836,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.13860996038588,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.15171678109484,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595069672,
+      "am": 1154.7766,
+      "maxAM": 1154.7766,
+      "ip": 229.583,
+      "maxIP": 229.6936,
+      "infinities": 7.8317,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.774072365673,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.6625486649821,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 407.02428814017054,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.4352670903535,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 222.01119599624494,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.21238675752122,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.19074038564897,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595069870,
+      "am": 1154.5525,
+      "maxAM": 1154.5525,
+      "ip": 229.5729,
+      "maxIP": 229.6858,
+      "infinities": 7.8062,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.5933992099738,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.50774644688744,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.8953568596803,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.33220674746764,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.93400659096358,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.1610682898443,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.16529285557649,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595070066,
+      "am": 1154.4367,
+      "maxAM": 1154.4367,
+      "ip": 229.6221,
+      "maxIP": 229.7242,
+      "infinities": 7.7791,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.4167134429707,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.3560009563192,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.76855164554684,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.2303418097691,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.8570819296998,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.10908390501538,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.1382487471824,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595070270,
+      "am": 1154.676,
+      "maxAM": 1154.676,
+      "ip": 229.6324,
+      "maxIP": 229.7324,
+      "infinities": 7.8062,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.6102327807478,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.52181075721603,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.9066519095635,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.34073253690553,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.93976311995607,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.16405555839142,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.16551086367824,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595070470,
+      "am": 1154.6374,
+      "maxAM": 1154.6374,
+      "ip": 229.7749,
+      "maxIP": 229.8491,
+      "infinities": 7.7648,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.357821583802,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.3045875919338,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.72461677594475,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.1938854349503,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.82810404966435,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.0875845197632,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.124227856713524,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595070671,
+      "am": 1154.7627,
+      "maxAM": 1154.7627,
+      "ip": 229.78,
+      "maxIP": 229.8535,
+      "infinities": 7.7791,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.4596081202858,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.3918012123442,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.79725748028187,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.25195322321406,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.87159892185483,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.11650647588039,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.1385768967574,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595070865,
+      "am": 1154.4258,
+      "maxAM": 1154.4258,
+      "ip": 229.4581,
+      "maxIP": 229.6001,
+      "infinities": 7.8191,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.6586554900663,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.56437752958857,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.9433627449901,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.3715874353862,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.9647620814908,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.1831985829802,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.17879795132109,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595071058,
+      "am": 1154.6727,
+      "maxAM": 1154.6727,
+      "ip": 229.5784,
+      "maxIP": 229.69,
+      "infinities": 7.8191,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 625.6902491997541,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 511.5907231866807,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 406.9644603494864,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 310.38743698728666,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 221.97536358079546,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 140.18855202968908,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 62.17890334543413,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595071257,
+      "am": 7476.6783,
+      "maxAM": 7476.6783,
+      "ip": 359.22,
+      "maxIP": 359.22,
+      "infinities": 8.992,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.865436104007,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.834714428001,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.752199197485,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.1938667115764,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.275427450987,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.4571933153936,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8910653162633,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595071456,
+      "am": 7477.0266,
+      "maxAM": 7477.0266,
+      "ip": 359.3571,
+      "maxIP": 359.3571,
+      "infinities": 9.0309,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.170291307496,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.095988535198,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.96989220839,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.3679786261887,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.405958269307,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.5441430374217,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9344339419989,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595071656,
+      "am": 7476.8591,
+      "maxAM": 7476.8591,
+      "ip": 359.2836,
+      "maxIP": 359.2836,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.023939064115,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.970513310731,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.865294002838,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.2842574395495,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.3431141015812,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.5021758886094,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9133438121005,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595071880,
+      "am": 7476.7956,
+      "maxAM": 7476.7956,
+      "ip": 359.2247,
+      "maxIP": 359.2247,
+      "infinities": 8.992,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.968581759738,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.923028446884,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.82568157952,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.252517456763,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.3192465593256,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.4861807868842,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9052211509057,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595072079,
+      "am": 7476.6084,
+      "maxAM": 7476.6084,
+      "ip": 359.3592,
+      "maxIP": 359.3592,
+      "infinities": 8.9639,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.804925942632,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.7827215702355,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.70872364333,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.1589084610305,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.248986504051,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.4392696720681,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8816589765477,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595072291,
+      "am": 7477.8954,
+      "maxAM": 7477.8954,
+      "ip": 359.3453,
+      "maxIP": 359.3453,
+      "infinities": 9.1203,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.931184043928,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.748055866697,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.513134134956,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.8023951478212,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.7315493860065,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.760908749188,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 848.0423742488324,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595072480,
+      "am": 7477.3148,
+      "maxAM": 7477.3148,
+      "ip": 359.3803,
+      "maxIP": 359.3803,
+      "infinities": 9.0431,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.423273708179,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.312673963443,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.150280664196,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.512070109555,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.513752780235,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.6156405759104,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9696345080488,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595072678,
+      "am": 7477.049,
+      "maxAM": 7477.049,
+      "ip": 359.2027,
+      "maxIP": 359.2027,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.190939790833,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.113500479975,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.984267614607,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.3792174938458,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.4140605984044,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.5491088279593,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9362631939767,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595072880,
+      "am": 7477.0856,
+      "maxAM": 7477.0856,
+      "ip": 359.3354,
+      "maxIP": 359.3354,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.223060725793,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.141002645108,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.007151009912,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.397482119323,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.427706454054,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.558135913781,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9406715099706,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595073069,
+      "am": 7477.1222,
+      "maxAM": 7477.1222,
+      "ip": 359.2506,
+      "maxIP": 359.2506,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.255278295373,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.168587549465,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.030103249048,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.415801693236,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.4413933627443,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.5671901572491,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9450930882167,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595073273,
+      "am": 7477.2621,
+      "maxAM": 7477.2621,
+      "ip": 359.3122,
+      "maxIP": 359.3122,
+      "infinities": 9.0183,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.377863268696,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.273630591096,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.117604358986,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.485760871482,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.493810609298,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.6020654721106,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9624264713856,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595073473,
+      "am": 7476.7467,
+      "maxAM": 7476.7467,
+      "ip": 359.4292,
+      "maxIP": 359.4292,
+      "infinities": 8.9492,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6335.927028089492,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5399.887169801406,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.795517958812,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.228048860822,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.3004729881527,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.4731022404799,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.8978376292696,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595073665,
+      "am": 7477.231,
+      "maxAM": 7477.231,
+      "ip": 359.1639,
+      "maxIP": 359.1639,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.350898981455,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.25045863765,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.098224739336,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.470173585627,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.482015657238,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.5940628538458,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9582161869162,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595073860,
+      "am": 7476.9365,
+      "maxAM": 7476.9365,
+      "ip": 359.3725,
+      "maxIP": 359.3725,
+      "infinities": 8.9639,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.093430132023,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.029740838756,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4473.914257990979,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.3229578878086,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.3715510099582,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.5203492571038,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.921253640712,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595074060,
+      "am": 7477.4069,
+      "maxAM": 7477.4069,
+      "ip": 359.3181,
+      "maxIP": 359.3181,
+      "infinities": 9.0183,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.50518929142,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.382648006278,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.208313166628,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.558161071582,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.547902201857,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.6378484571287,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9799008488626,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595074267,
+      "am": 7477.3392,
+      "maxAM": 7477.3392,
+      "ip": 359.3457,
+      "maxIP": 359.3457,
+      "infinities": 9.0053,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.446107168907,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.331976541674,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.166052359932,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.5243109227963,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.5224627109806,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.620819624161,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9712826738041,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595074480,
+      "am": 7478.604,
+      "maxAM": 7478.604,
+      "ip": 359.5833,
+      "maxIP": 359.5833,
+      "infinities": 9.1589,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6337.552963504197,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5401.28068080801,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.956604557315,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3557.156711051225,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.996710770455,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.936915614682,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 848.1292265953713,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595074678,
+      "am": 7477.6189,
+      "maxAM": 7477.6189,
+      "ip": 359.2499,
+      "maxIP": 359.2499,
+      "infinities": 9.0309,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.691161062804,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.541960797236,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.34096697716,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.6641559016884,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.6272380515375,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.6905253263826,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 848.0059187376905,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595074856,
+      "am": 7477.1166,
+      "maxAM": 7477.1166,
+      "ip": 359.1202,
+      "maxIP": 359.1202,
+      "infinities": 8.9639,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.25179231155,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.165331624562,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.027077383065,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.413005886174,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.438827614603,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.5648544680278,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 847.9429874579157,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595075082,
+      "am": 7477.5923,
+      "maxAM": 7477.5923,
+      "ip": 359.3256,
+      "maxIP": 359.3256,
+      "infinities": 9.0183,
+      "dimBoost": 19,
+      "gal": 1,
+      "tick": 2,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 6336.668156310964,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 5400.522181487736,
+          "cost": 130,
+          "aff": true
+        },
+        {
+          "amt": 4474.324413109997,
+          "cost": 134,
+          "aff": true
+        },
+        {
+          "amt": 3556.6508274768653,
+          "cost": 132,
+          "aff": true
+        },
+        {
+          "amt": 2647.6171350690533,
+          "cost": 137,
+          "aff": true
+        },
+        {
+          "amt": 1745.6836477862373,
+          "cost": 133,
+          "aff": true
+        },
+        {
+          "amt": 848.002266639884,
+          "cost": 138,
+          "aff": true
+        },
+        {
+          "amt": 1.9030899869919435,
+          "cost": 144,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595075284,
+      "am": 4614.1506,
+      "maxAM": 4614.1506,
+      "ip": 259.869,
+      "maxIP": 260.2673,
+      "infinities": 7.9688,
+      "dimBoost": 231,
+      "gal": 18,
+      "tick": 4,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 3563.202060611043,
+          "cost": 3096.5409953075136,
+          "aff": true
+        },
+        {
+          "amt": 2985.5736732079135,
+          "cost": 3097.6547469335205,
+          "aff": true
+        },
+        {
+          "amt": 2434.5074197126314,
+          "cost": 3135.902397995845,
+          "aff": true
+        },
+        {
+          "amt": 1902.8829861803224,
+          "cost": 3133.531599556812,
+          "aff": true
+        },
+        {
+          "amt": 1399.3605184576843,
+          "cost": 3113.9178125616727,
+          "aff": true
+        },
+        {
+          "amt": 915.2799656394068,
+          "cost": 3122.3513149464834,
+          "aff": true
+        },
+        {
+          "amt": 446.3691561759593,
+          "cost": 3123.310567222893,
+          "aff": true
+        },
+        {
+          "amt": 3.0569048513364727,
+          "cost": 3106.696780227754,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595075483,
+      "am": 5583.5629,
+      "maxAM": 5583.5629,
+      "ip": 270.037,
+      "maxIP": 270.3424,
+      "infinities": 8.0848,
+      "dimBoost": 297,
+      "gal": 24,
+      "tick": 5,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 4401.437338838299,
+          "cost": 4667.266344152078,
+          "aff": true
+        },
+        {
+          "amt": 3704.740900950359,
+          "cost": 4671.675036220358,
+          "aff": true
+        },
+        {
+          "amt": 3036.030669531263,
+          "cost": 4671.792998249615,
+          "aff": true
+        },
+        {
+          "amt": 2386.7622580751404,
+          "cost": 4672.620230239849,
+          "aff": true
+        },
+        {
+          "amt": 1764.1717398676913,
+          "cost": 4711.352883470183,
+          "aff": true
+        },
+        {
+          "amt": 1162.4472091256002,
+          "cost": 4684.166057203494,
+          "aff": true
+        },
+        {
+          "amt": 575.8924217383393,
+          "cost": 4701.455360195348,
+          "aff": true
+        },
+        {
+          "amt": 3.167317334748176,
+          "cost": 4714.303644201829,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595075686,
+      "am": 3128.5617,
+      "maxAM": 3128.5617,
+      "ip": 270.1568,
+      "maxIP": 270.4058,
+      "infinities": 7.9034,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.192262129239,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1851.9815373373535,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.3329464533153,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.12617553225,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.5972978598585,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.0862625308304,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.3208979956349,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595075882,
+      "am": 3127.7241,
+      "maxAM": 3127.7241,
+      "ip": 269.5948,
+      "maxIP": 269.7029,
+      "infinities": 7.9423,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.321865957471,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1852.0962943205925,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.432856591561,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.2112388255025,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.6675143081178,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.1416321340965,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.36142075390785,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595076075,
+      "am": 3128.099,
+      "maxAM": 3128.099,
+      "ip": 269.8772,
+      "maxIP": 269.9369,
+      "infinities": 7.9168,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.216398330073,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1852.0039740035375,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.3536835848495,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.1452131291344,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.6146359220932,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.1019010584151,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.33483698856995,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595076276,
+      "am": 3128.2159,
+      "maxAM": 3128.2159,
+      "ip": 269.8824,
+      "maxIP": 269.9414,
+      "infinities": 7.9298,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.3109020691613,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1852.0851151222273,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.42146208314,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.1996290070263,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.655689179586,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.1295916955091,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.34916500526492,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595076468,
+      "am": 3128.1016,
+      "maxAM": 3128.1016,
+      "ip": 269.8774,
+      "maxIP": 269.9371,
+      "infinities": 7.9168,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.2184745920536,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1852.0057547169583,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.3551687497102,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.1464027454351,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.6155299898337,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.1024995775957,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.33513995919034,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595076671,
+      "am": 3128.1029,
+      "maxAM": 3128.1029,
+      "ip": 269.8774,
+      "maxIP": 269.9371,
+      "infinities": 7.9168,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.2195105797487,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1852.0066432356227,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.3559097993439,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.1469963260383,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.6159761014062,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.1027982201376,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.33529113270168,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595076872,
+      "am": 3126.3062,
+      "maxAM": 3126.3062,
+      "ip": 269.0025,
+      "maxIP": 270.0834,
+      "infinities": 7.9168,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2239.9894698707367,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1851.814400132799,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.2014643027082,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.030348435591,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.5371258171472,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.0617455420668,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.3320360608191,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595077066,
+      "am": 3128.3858,
+      "maxAM": 3128.3858,
+      "ip": 270.0142,
+      "maxIP": 270.3313,
+      "infinities": 7.9168,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.2572051628554,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1852.038183749169,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.3812962433296,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.1662287004635,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.6290544062709,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.1097224554418,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.3360612984453,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595077260,
+      "am": 3128.3555,
+      "maxAM": 3128.3555,
+      "ip": 270.2573,
+      "maxIP": 270.4801,
+      "infinities": 7.8455,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2239.8206788900197,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1851.661601806518,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.0646586308637,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1147.9095354181825,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.4323054541748,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 534.9729178335306,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.25920100671897,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595077456,
+      "am": 3127.8609,
+      "maxAM": 3127.8609,
+      "ip": 269.9208,
+      "maxIP": 269.9751,
+      "infinities": 7.8754,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2239.940750749256,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1851.7669350987342,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.1552533560593,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1147.9853915763576,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.4934230453296,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.0192968576649,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.29084146383298,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595077657,
+      "am": 3127.975,
+      "maxAM": 3127.975,
+      "ip": 269.9758,
+      "maxIP": 270.0241,
+      "infinities": 7.8754,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2239.9561171198498,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1851.7797969646113,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.1656107172198,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1147.9932444328015,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.498771397057,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.0221407046757,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.29118080612722,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595077858,
+      "am": 3127.9395,
+      "maxAM": 3127.9395,
+      "ip": 269.7943,
+      "maxIP": 270.239,
+      "infinities": 7.9168,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.2039846076095,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1851.9938089302636,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.3457671607646,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.1395453542386,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.6112167963863,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.1007305818974,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.33591516124122,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595078056,
+      "am": 3128.1895,
+      "maxAM": 3128.1895,
+      "ip": 269.9157,
+      "maxIP": 270.2866,
+      "infinities": 7.9168,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.2366292389815,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1852.0211070612925,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.3677187914504,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.1561504845815,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.6224754263865,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.1066427115546,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.33648079055556,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    },
+    {
+      "t": 1794595078256,
+      "am": 3128.5558,
+      "maxAM": 3128.5558,
+      "ip": 269.8973,
+      "maxIP": 269.9545,
+      "infinities": 7.9664,
+      "dimBoost": 127,
+      "gal": 10,
+      "tick": 3,
+      "canCrunch": true,
+      "group": true,
+      "crunchA": true,
+      "crunchI": 50,
+      "served": null,
+      "lastAction": null,
+      "dims": [
+        {
+          "amt": 2240.5859580045453,
+          "cost": 1243.9874395285146,
+          "aff": true
+        },
+        {
+          "amt": 1852.32127285223,
+          "cost": 1239.5773204130624,
+          "aff": true
+        },
+        {
+          "amt": 1490.6187216077624,
+          "cost": 1255.142390981081,
+          "aff": true
+        },
+        {
+          "amt": 1148.3579903262676,
+          "cost": 1247.2477218005884,
+          "aff": true
+        },
+        {
+          "amt": 832.7751522934465,
+          "cost": 1241.443873079714,
+          "aff": true
+        },
+        {
+          "amt": 535.2101566039887,
+          "cost": 1247.819334024966,
+          "aff": true
+        },
+        {
+          "amt": 251.39083170836372,
+          "cost": 1248.011274900842,
+          "aff": true
+        },
+        {
+          "amt": 2.792391689498254,
+          "cost": 1238.7743758981262,
+          "aff": true
+        }
+      ]
+    }
+  ],
+  "detectedWallSec": 596
+}

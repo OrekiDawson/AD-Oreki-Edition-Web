@@ -2,36 +2,36 @@
   "log": [
     {
       "task": "breakGate",
-      "at": 1510,
+      "at": 1671,
       "gapMs": null
     },
     {
       "task": "early",
-      "at": 11537,
-      "gapMs": 10027
+      "at": 11673,
+      "gapMs": 10002
     },
     {
       "task": "routine",
-      "at": 21541,
-      "gapMs": 10004
+      "at": 21707,
+      "gapMs": 10033
     }
   ],
   "fresh": [
     {
       "task": "breakGate",
-      "at": 1510,
+      "at": 1671,
       "gapMs": null
     },
     {
       "task": "early",
-      "at": 11537,
-      "gapMs": 10027
+      "at": 11673,
+      "gapMs": 10002
     },
     {
       "task": "routine",
-      "at": 21541,
-      "gapMs": 10004
+      "at": 21707,
+      "gapMs": 10033
     }
   ],
-  "waitedMs": 14975
+  "waitedMs": 15637
 }

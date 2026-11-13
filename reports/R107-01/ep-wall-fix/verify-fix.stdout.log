@@ -1,0 +1,48 @@
+[2026-11-13T19:16:29.726Z] applied {"interval":1,"speed":10000,"dynamic":false}
+[2026-11-13T19:16:30.567Z] progress {"w":0,"r":0,"ep":null,"maxIP":4.52,"am":189.45,"stage":"breakInfinity","goal":"break-infinity"}
+[2026-11-13T19:16:50.715Z] progress {"w":20.2,"r":0,"ep":null,"maxIP":16.4,"am":504.66,"stage":"infinityDimensions","goal":"unlock-eternity"}
+[2026-11-13T19:17:10.886Z] progress {"w":40.3,"r":0,"ep":null,"maxIP":30.37,"am":206.82,"stage":"infinityDimensions","goal":"unlock-eternity"}
+[2026-11-13T19:17:31.080Z] progress {"w":60.5,"r":0,"ep":null,"maxIP":194.45,"am":5670.27,"stage":"infinityDimensions","goal":"unlock-eternity"}
+[2026-11-13T19:17:51.247Z] progress {"w":80.7,"r":0,"ep":47.08,"maxIP":556.9,"am":9519.15,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:18:11.480Z] progress {"w":100.9,"r":0,"ep":3494.56,"maxIP":631107.28,"am":13232945.57,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:18:31.677Z] progress {"w":121.1,"r":0,"ep":740121.58,"maxIP":40630333.52,"am":1188907210.59,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:18:51.871Z] progress {"w":141.3,"r":0,"ep":1316724.35,"maxIP":70814873.49,"am":1762902746.92,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:19:12.097Z] progress {"w":161.5,"r":0,"ep":1659387.57,"maxIP":78877828.47,"am":1973241919.98,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:19:32.362Z] progress {"w":181.8,"r":0,"ep":1845262.7,"maxIP":83468247.38,"am":2083960113.24,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:19:50.546Z] progress {"w":200,"r":0,"ep":1997625.39,"maxIP":37797857.34,"am":1103933694.23,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:20:10.800Z] progress {"w":220.2,"r":0,"ep":2027411.82,"maxIP":69806660.41,"am":2041387184.54,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:20:31.064Z] progress {"w":240.5,"r":0,"ep":2033570.71,"maxIP":71416917,"am":2112202151.22,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:20:51.297Z] progress {"w":260.7,"r":0,"ep":2033570.71,"maxIP":71351279.07,"am":2110256743.44,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:21:11.557Z] progress {"w":281,"r":0,"ep":2033570.71,"maxIP":71343114.74,"am":2110244738.86,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:21:31.849Z] progress {"w":301.3,"r":0,"ep":2033570.71,"maxIP":71343090.03,"am":2110246594.89,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:21:52.152Z] progress {"w":321.6,"r":0,"ep":2033570.71,"maxIP":71420239.33,"am":2112599922.22,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:22:12.410Z] progress {"w":341.9,"r":0,"ep":2033570.71,"maxIP":69893860.85,"am":2066813760.98,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:22:30.629Z] progress {"w":360.1,"r":0,"ep":2033570.71,"maxIP":38462684.61,"am":1123712620.66,"stage":"eternityTimeStudy","goal":"unlock-dilation"}
+[2026-11-13T19:22:50.892Z] progress {"w":380.3,"r":0,"ep":2033570.71,"maxIP":1000070.63,"am":1733020.15,"stage":"dilation","goal":"unlock-reality"}
+[2026-11-13T19:23:11.186Z] progress {"w":400.6,"r":0,"ep":2033570.71,"maxIP":1000070.63,"am":1771916.1,"stage":"dilation","goal":"unlock-reality"}
+[2026-11-13T19:23:31.410Z] progress {"w":420.9,"r":5,"ep":null,"maxIP":4.45,"am":25.7,"stage":"glyphs","goal":"buy-all-reality-upgrades"}
+[2026-11-13T19:23:51.543Z] progress {"w":441,"r":5,"ep":null,"maxIP":45.85,"am":505.79,"stage":"glyphs","goal":"buy-all-reality-upgrades"}
+[2026-11-13T19:24:11.777Z] progress {"w":461.2,"r":5,"ep":null,"maxIP":173.33,"am":3984.99,"stage":"glyphs","goal":"buy-all-reality-upgrades"}
+[2026-11-13T19:24:32.133Z] progress {"w":481.5,"r":5,"ep":3725.2,"maxIP":153077.97,"am":25.7,"stage":"glyphs","goal":"buy-all-reality-upgrades"}
+[2026-11-13T19:24:52.455Z] progress {"w":501.9,"r":5,"ep":666720.04,"maxIP":7711218.52,"am":120986466.08,"stage":"glyphs","goal":"buy-all-reality-upgrades"}
+[2026-11-13T19:25:10.768Z] progress {"w":520.2,"r":5,"ep":1699084.18,"maxIP":50969447.18,"am":1482547878.75,"stage":"glyphs","goal":"buy-all-reality-upgrades"}
+[2026-11-13T19:25:31.139Z] progress {"w":540.6,"r":5,"ep":2471287.75,"maxIP":8276898.05,"am":2073872146.75,"stage":"glyphs","goal":"buy-all-reality-upgrades"}
+[2026-11-13T19:25:51.397Z] progress {"w":560.8,"r":5,"ep":2471287.75,"maxIP":1000154.43,"am":1974575.2,"stage":"glyphs","goal":"buy-all-reality-upgrades"}
+[2026-11-13T19:26:11.692Z] progress {"w":581.1,"r":10,"ep":14693.12,"maxIP":481302.1,"am":10058433.27,"stage":"realityTree","goal":"grow-reality-tree"}
+[2026-11-13T19:26:31.995Z] progress {"w":601.4,"r":10,"ep":1046411.98,"maxIP":9281204.2,"am":248005739.52,"stage":"realityTree","goal":"grow-reality-tree"}
+[2026-11-13T19:26:52.275Z] progress {"w":621.7,"r":10,"ep":1488911.74,"maxIP":12180350.66,"am":297516507.85,"stage":"realityTree","goal":"grow-reality-tree"}
+[2026-11-13T19:27:10.629Z] progress {"w":640,"r":10,"ep":2814758.09,"maxIP":89350066.21,"am":2616887148.2,"stage":"realityTree","goal":"grow-reality-tree"}
+[2026-11-13T19:27:30.789Z] progress {"w":660.2,"r":15,"ep":17004.39,"maxIP":523228,"am":10965740.86,"stage":"realityTree","goal":"grow-reality-tree"}
+[2026-11-13T19:27:50.985Z] progress {"w":680.4,"r":15,"ep":1072553.9,"maxIP":9366999.46,"am":250971582.64,"stage":"realityTree","goal":"grow-reality-tree"}
+[2026-11-13T19:28:11.217Z] progress {"w":700.7,"r":15,"ep":1502386.97,"maxIP":12233895.48,"am":337002892.03,"stage":"realityTree","goal":"grow-reality-tree"}
+[2026-11-13T19:28:31.556Z] progress {"w":721,"r":15,"ep":2996245.94,"maxIP":93468915.31,"am":2721214540.52,"stage":"realityTree","goal":"grow-reality-tree"}
+[2026-11-13T19:28:41.778Z] realities>=20 at wall 731.2
+file:///home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/ep-wall-fix/verify-ep-wall-fix.mjs:146
+fs.writeFileSync(OUT + "/summary.json", JSON.stringify({ generatedAt: new Date().toISOString(), applied, pageErrors, consoleErrors: consoleErrors.slice(0, 10), stallDetected: traceInstalled, note: "只读诊断；速度/间隔为玩家可配置项；未写任何 player 字段。" }, null, 2) + "\n");
+                                                                                                                                                                               ^
+
+ReferenceError: traceInstalled is not defined
+    at file:///home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/ep-wall-fix/verify-ep-wall-fix.mjs:146:176
+
+Node.js v26.13.0
+EXIT:1

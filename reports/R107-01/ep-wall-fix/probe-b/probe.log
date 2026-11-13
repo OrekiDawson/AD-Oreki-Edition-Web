@@ -1,0 +1,7 @@
+[2026-11-13T18:00:42.750Z] applied {"interval":1,"speed":20000}
+[2026-11-13T18:05:23.694Z] deep snapshot r5 wall 280.1 realities 5 epLog10 -Infinity
+[2026-11-13T18:07:34.995Z] deep snapshot r10 wall 411.4 realities 10 epLog10 -Infinity
+[2026-11-13T18:09:45.178Z] deep snapshot r15 wall 541.6 realities 15 epLog10 -Infinity
+[2026-11-13T18:09:45.179Z] reach realities=15 at wall 541.6 epLog10 -Infinity
+[2026-11-13T18:09:58.514Z] deep snapshot collapse wall 554.9 realities 15 epLog10 62.96 dimBoost 
+[2026-11-13T18:10:45.860Z] deep snapshot r15+60 wall 602.3 realities 15 epLog10 117.3

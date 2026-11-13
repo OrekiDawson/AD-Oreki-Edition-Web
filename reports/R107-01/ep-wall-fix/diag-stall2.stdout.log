@@ -1,0 +1,15 @@
+[2026-11-13T18:44:05.174Z] applied {"interval":1,"speed":10000,"dynamic":false}
+[2026-11-13T18:56:34.269Z] sustained stall detected at wall 748.2 am 130.7 dims [null,null,null,null,null,null,null,null]
+[2026-11-13T18:57:04.337Z] diagnostic written; continue sampling
+[2026-11-13T18:59:09.963Z] sustained stall detected at wall 903.9 am 130.7 dims [null,null,null,null,null,null,null,null]
+[2026-11-13T18:59:40.143Z] diagnostic written; continue sampling
+node:internal/modules/run_main:111
+    triggerUncaughtException(
+    ^
+
+page.waitForTimeout: Target page, context or browser has been closed
+    at /home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/ep-wall-fix/diag-stall2.mjs:201:14 {
+  log: []
+}
+
+Node.js v26.13.0
