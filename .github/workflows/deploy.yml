@@ -56,6 +56,13 @@ jobs:
           echo "$jobs" | jq -e '[.jobs[] | select(.name=="Mobile Chromium smoke" and .conclusion=="success")] | length == 1' >/dev/null
           echo "ci_run_id=$ci_run" >> "$GITHUB_OUTPUT"
           echo "::notice::Reusing CI $ci_run for Web $GITHUB_SHA; no duplicate Playwright run"
+          {
+            echo '### Web Pages 部署请求门禁'
+            echo ''
+            echo "- 源码 SHA: \`$GITHUB_SHA\`"
+            echo "- 复用的成功 Web CI Run: \`$ci_run\`"
+            echo '- 下一步: dispatch 至 Pages 的 deploy-approved-web.yml；线上验收需在 Pages 工作流完成后核对 deployment.json 与移动端行为（NOT RUN，尚未完成）'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   dispatch:
     name: 将不可变 Web 源码发送至官方 Pages Artifact 工作流
@@ -86,3 +93,14 @@ jobs:
             -f "inputs[web_ci_run_id]=$CI_RUN"
           echo "::notice::PASS：已为 Web SHA $APPROVED_SHA / CI $CI_RUN 请求 Pages 部署"
           echo "::notice::NOT RUN：本工作流仅发起请求，官方 Pages 工作流仍需独立通过"
+          {
+            echo '### Pages 部署请求已发送'
+            echo ''
+            echo "- Web SHA: \`$APPROVED_SHA\`"
+            echo "- Web CI Run: \`$CI_RUN\`"
+            echo '- Pages 工作流: deploy-approved-web.yml（ref=main）'
+            echo '- 线上验收: 待 Pages 工作流完成后核对 deployment.json 与 Android Chrome 实际行为（NOT RUN）'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # 尽力查询刚触发的 Pages Run，仅作可观测性；查询失败不影响已发送的部署请求。
+          pages_run_url="$(gh api "repos/OrekiDawson/OrekiDawson.github.io/actions/workflows/deploy-approved-web.yml/runs?per_page=1" --jq '.workflow_runs[0].html_url // empty' 2>/dev/null || true)"
+          if [[ -n "$pages_run_url" ]]; then echo "- Pages Run: $pages_run_url" >> "$GITHUB_STEP_SUMMARY"; fi
