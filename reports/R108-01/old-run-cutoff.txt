@@ -1,0 +1,2 @@
+OLD_CUTOFF {"wall": 2739.6, "realities": 60, "teresaEffarig": true, "effarigStage": 4, "enslavedUnl": true, "vUnl": false, "iu15": false, "stage": "celestialsEnslaved", "goal": "unlock-v", "speed": 10000}
+FIXED1_CUTOFF {"wall": 1312.2, "realities": 25, "imLog10": 9.99, "imCapLog10": 9.99, "iu15": true, "laitelaUnl": true, "laitelaTier": 0, "laitelaRunning": false, "laitelaEntropy": 0, "iu25": false, "pelleUnl": false, "stage": "laitela", "goal": "unlock-pelle", "speed": 10000}

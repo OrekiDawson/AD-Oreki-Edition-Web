@@ -1,0 +1,11 @@
+{
+  "realities": 0,
+  "antimatter": "4.9625785826019e+158",
+  "storageKeys": [],
+  "intervalCfg": 10,
+  "effInterval": 1,
+  "speed": 10000,
+  "dynamic": true,
+  "imCapMult": 3000,
+  "srcIMCapMult": 0
+}

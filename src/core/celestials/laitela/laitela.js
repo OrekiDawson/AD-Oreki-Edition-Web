@@ -29,6 +29,24 @@ import { DarkMatterDimensions } from "./dark-matter-dimension.js";
  */
 export const OREKI_LAITELA_ENTROPY_DIVISOR = 2e7;
 
+/**
+ * [R108-01] 莱特拉「层数推进」的完成时间窗（真实秒）。原版硬编码 30 s（game.js 的
+ * `Time.thisRealityRealTime.totalSeconds < 30`），是本 MOD 默认速度下**结构性不可达**的。
+ *
+ * 事实（reports/R108-01/web/REPORT.md §4.4，默认 10000×、全新档 2 s 只读采样）：
+ *   · 现实重置把反物质清零，AM 指数必须重新爬升；实测在一个现实内 AM 指数
+ *     达到 Laitela 入场线 4e8 的真实时刻是 **realMs≈130–230 s**（r0 129 s、r5 202 s、
+ *     r10 200 s），而原版 30 s 窗口内 AM 指数只有 ~1e3–1e6；
+ *   · 现实循环本身在默认设置下也要 136–226 s 一轮（R108-01 实测）。
+ *   ⇒ 30 s 内绝不可能「进入 run → 熵满 → 完成」，tier 永远停在 0，
+ *     而 IU25 要求 maxAllowedDimension === 0（= tier 8）⇒ 佩勒/终局全断。
+ * 按《Oreki 爽玩优先标准》§1「禁止制造实际无法抵达的终局」，把窗口按实测现实周期标定为
+ * **300 s**（>最大现实周期 226 s、>AM 指数达标时刻 230 s，留余量），语义仍是
+ * 「在这个窗口内完成一次莱特拉现实才升一层」，不改熵公式、不改 tier 上限、不改奖励。
+ * 配套：oreki-endgame-automation.js 的入场窗口/压现实上限同步放宽（见该文件注释）。
+ */
+export const OREKI_LAITELA_TIER_WINDOW_SEC = 300;
+
 export const Laitela = {
   displayName: "莱特拉",
   get celestial() {

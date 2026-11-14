@@ -10034,3 +10034,49 @@ r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、che
   stage=laitela、gameEnd 未发生。定向验收 49/49 PASS。
 - 边界：完整 180 分钟默认配置跑次 **NOT RUN**；gameEnd 未验证，不能宣称 180min 门禁通过。
   Android 同源门禁修复已落地（30min 26–36 次永恒）；EP 除数窗口（isOrekiBootstrapRun 的 DS6 未买判据）Android 尚未对齐。
+
+## R108-01 Web 默认设置 Reality 后链与 IM 上限阻断（2026-11-14）
+
+- 方法：全新 browser context + 默认设置（调度间隔 10s 不写盘、STAGECAP 生效、游戏速度 10000× 不注入、动态速度默认开）、
+  只做真实 UI 关弹窗、2s 只读采样；不改任何 player 字段、不改游戏时间源。脚本 reports/R108-01/web/run-reality-chain.mjs。
+- 结果（截止 2739.6s / 45.7min，旧代码跑次由 Lead 裁决停止）：首现实 **434.2s**（r=5，单次现实 +5 模拟现实）；
+  r10 709.6 / r15 945.6 / r20 1176.1 / r30 1547.1 / r50 2115.2 / r60 2566.2s；
+  RM 27.84→1e1200；RU 20/20（1176.1s，实测购买扣 RM 27.84→27.825）；glyph 21 枚/最高 28 级；
+  Teresa 解锁 1176.1s，浇注真实到 1e24（1635.9s 解锁鹿颈长）；Effarig stage1-4（1697.9/1719.4/1842s）；Enslaved 页签 1719.4s；
+  截止 r=60 时 V 天神仍未解锁（hold 收尾刚开始）；IU15/莱特拉/IU25/佩勒/gameEnd 未到。
+- **阻断（Web 侧真实）**：默认 10000× 下 EP 峰值平台 3.44e6 ⇒ log10(uncappedRM)≈2577 ⇒ IM 上限 (1577)^2×300 = **7.43e8 < IU15 成本 1e9**；
+  IM 只能从下方逼近上限 ⇒ IU15 冲刺 canArm 永不成立 ⇒ 莱特拉/IU25/佩勒/gameEnd 全断。动态升档只在「进度指纹连续 4s 不变」时触发，
+  现实循环里 IP/eternities/maxAM 持续变化 ⇒ 全程 speed 恒 10000，不会自动救场。反证：R107 100k 探针同代码可达 stage=laitela（r=35）。
+- 修复：src/core/machines.js OREKI_IM_CAP_MULT 300→**3000**（commit 89dcd7d，分支 feat/r108-01-web-reality-chain）⇒ 默认速度上限 7.43e9
+  （IU15 13.5%、IU25 5e9 占 67%），曲线形状/指数/updateIMCap 刷新条件不变，不发免费 IM。**双端统一 3000**（Android OrekiImCapScale.MULT）。
+  修复后默认设置完整回归：**RUNNING**（未完成前不标 PASS）。
+- 节奏差异：Teresa 浇注 Web 实测 459.8s（设计约 2.3s），归因 celestial 任务约每 19s 才被调度 + OREKI_MAX_REAL_FRAME_MS=100；
+  Android 走原版主循环帧累计真实时间，无此损失。列为双端节奏差异，下一轮评估 Web 调度粒度（不得用加大系数伪造速度）。
+- 证据：reports/R108-01/web/{REPORT.md, run-reality-chain.mjs, analyze-run.py, run-default/, analysis.json}。
+
+### R108-01 Web 后续两项真实阻断与修复（2026-11-14，默认设置真实新档）
+
+- 第二阻断（莱特拉 tier 结构性不可达，commit bc45c18）：OREKI_IM_CAP_MULT 修复后 IU15 于 880.7s 买入、
+  Laitela 解锁，但 431s 内 laitelaRunning/entropy 采样为 0、tier 恒 0。根因：原版 tier 要求现实开始后 30s 内完成，
+  而现实重置后 AM 指数到达入场线 4e8 的真实时刻为 realMs≈130–230s（实测 r0 129s / r5 202s / r10 200s），
+  默认速度现实周期 136–226s，且 oreki-endgame 入场窗口仅 15000ms。修复：OREKI_LAITELA_TIER_WINDOW_SEC=300
+  （game.js 三处判定同步）、LAT_RUN_ENTER_MAX_REAL_MS 15000→290000、LAT_TIER_WINDOW_MS 28000→250000；
+  熵公式/tier 上限/奖励/解锁语义不变。验证（run-fixed3）：tier 0→8，tier1 906.4s → tier8 1809.9s（8 次真实 run）。
+- 第三阻断（tier8 后 IU25 的 DS6 帧竞态，commit 6988b92）：tier8 @1809.9s、IM 6.83e9 ≥ IU25 5e9，
+  但到 2224.5s 内 iu25 恒 false、laiRuns 恒 8。根因：统一调度 reality(priority 40) 先于 endgame(70)，
+  DS6(TimeStudy.reality) 一买上就被自动现实清掉，endgame 看不到该帧。修复：tier>=8 且 IM 已够、DS6 未在位时
+  用 holdForLaitela 压住现实（IU25_HOLD_MAX_MS 90s→240s），DS6 到手后下一拍走原版真实购买路径；到期无条件放手。
+- 回归状态：run-fixed4（默认设置，三项修复）RUNNING，目标 IU25→Pelle→doomed→gameEnd；未完成前不标 PASS。
+- 证据：reports/R108-01/web/{REPORT.md, run-fixed/, run-fixed2/, run-fixed3/, run-fixed4/}。
+
+### R108-01 最终回归（Web 三项修复后）：默认设置全新档 gameEnd PASS
+
+- 跑次 run-fixed4（默认设置：interval 10s 未写盘、STAGECAP 生效、speed 10000x 未注入、动态速度默认开；
+  手机视口 412x839；只做真实 UI 关弹窗；不写 player 字段）：**gameEnd @1867.9 s（31.1 min）**，
+  endState=1.0417（>=1）、player.isGameEnd=true、Pelle 阶段反物质峰值 log10=1033.92、pageerror 0，采样 832 条。
+- 里程碑（真实墙钟）：ep4000 109.7 → 首现实 413.8 → im1e9 650.6 → r10 693.7 → IU15+Laitela 857.4 →
+  ach151 859.7 → r15 931.7 → r20/Teresa 1096.1 → r30 1366.8 → Effarig 解锁 1484.4 → tier8 1771.8 →
+  IU25+Pelle+doomed 1826.5 → gameEnd 1867.9 s。
+- 三项修复（均在 feat/r108-01-web-reality-chain）：89dcd7d（IM 上限 300→3000）、bc45c18（莱特拉 tier 窗口
+  30s→300s + 入场/压现实窗口）、6988b92（tier8 后压现实截取 DS6 帧买 IU25）。三项均被运行期验证。
+- 证据：reports/R108-01/web/{REPORT.md, run-fixed4/}；Web 默认设置全新档 180 分钟门禁由 FAIL 转为 PASS（31.1 min）。

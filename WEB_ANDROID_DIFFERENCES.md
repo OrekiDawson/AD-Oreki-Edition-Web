@@ -528,3 +528,27 @@ Android 没有 `ecEntryPending` / IU15 冲刺这两项：前者是 EC 入口等�
 | EC 满级后 respec | Web oreki-eternity-automation.js EC 满级时调用 respecTimeStudies | Android 同源已实现（OrekiEcAutomation，调原版 eternity/studies/d.c） | 已同步（R107-01，AVD：EC 12 关全满） |
 | 膨胀研究自动购买 | Web buyDilationStudies 按 id 顺序 canBeBought && buy() | Android OrekiDilationStudies 反射原版 D() 每 tick 买 1 个 | 已同步（R107-01，AVD：dilation [1..5]） |
 | 现实解锁成就豁免 | Web orekiAchievementsWaivedForReality：EC11/12 满级后豁免全部 preReality 成就 | Android OrekiRealityUnlock.waiveAchievements + z40 case24 注入（TD8/maxEP/Pelle 原版校验） | 已同步（R107-01，AVD：首次 reality 0→0.301） |
+
+## 20. R108-01 实测差异增量（2026-11-14，Web 默认设置真实新档 + Android 本轮同步修复）
+
+> 来源：Web 仓库 reports/R108-01/web/REPORT.md（默认设置真实新档，截止 2739.6s、realities=60、Teresa/Effarig/Enslaved 已推进、IU15 被 IM 上限阻断）；
+> Android 侧本轮修复来源：Lead 提供的 R108-01 Android 改动（OrekiImCapScale.MULT=3000，P0-2 节奏对齐，Teresa 主循环浇注）。
+
+| # | 能力 | Web | Android | 判定 |
+| --- | --- | --- | --- | --- |
+| 1 | 虚幻机器上限倍率 | OREKI_IM_CAP_MULT 原 300；默认 10000× 实测 EP 峰值平台 3.44e6 ⇒ IM 上限 7.43e8 < IU15 成本 1e9，IU15/莱特拉/IU25/佩勒/gameEnd 阻断 | 本轮同步改 3000（OrekiImCapScale.MULT） | **双端统一 3000**（Web commit 89dcd7d；Android 构建中）。修复后默认速度上限 7.43e9 |
+| 2 | Teresa 浇注节奏 | 真实墙钟 + 10 倍手感；但 celestial 任务约每 19s 才被调度一次、OREKI_MAX_REAL_FRAME_MS=100 ⇒ 默认设置实测 459.8s 才到 1e24（设计约 2.3s） | 走原版主循环按帧累计真实时间（无调度器节流），理论≈2.3s | **双端节奏差异（非语义差异）**：数值语义一致；Web 调度粒度损失列入下一轮评估，禁止靠加大系数伪造 |
+| 3 | P0-2 一次性 RU 节奏 | 一次调用可买多个（cost 升序）+ tryUnlock 约每 1s | 本轮对齐：每拍最多 8 个一次性 RU、tryUnlock 每拍 | **已对齐（Web 原本即如此，无需改）** |
+| 4 | 现实节奏 P0-1 | 2% RM 门控 + DS1 10s 窗口 + 8s/15s + hardcap×3 + holdReality | 本轮已同源实现；Android 暂无 holdReality 来源（P0-3/P0-4 未实现） | 语义等价；hold 来源为阶段差异 |
+| 5 | IU25 成本 | OREKI_IU25_COST = 5e9 | 本轮同值 5e9 | **一致**；修复后 IM 上限 7.43e9，IU25 占 67% 可攒到 |
+| 6 | 莱特拉熵分母 | laitela.js 已定 2e7（R40-A2），driveLaitela 入场线 4e8 配套 | 本轮补 2e7 | **一致**（Web 运行期仍未到，NOT RUN） |
+| 7 | Teresa vp / pouredAmount 字段 | 直接 Teresa.pouredAmount（普通 number） | 3.21 字段名不同，需反射（vp） | 平台 ABI 差异，语义一致 |
+
+## 21. R108-01 后续修复的双端对照（2026-11-14，Web 默认设置真实新档）
+
+| # | 能力 | Web | Android | 判定 |
+| --- | --- | --- | --- | --- |
+| 1 | 莱特拉 tier 完成窗口 | 原版 30s 在 MOD 默认 10000x 下不可达（AM 指数 130–230s 才到入场线）；已改 OREKI_LAITELA_TIER_WINDOW_SEC=300（game.js 三处）+ endgame 入场/压现实窗口 290000/250000，tier 0→8 实测 1806s 内完成 | 3.21 基线同样有原版 30s 判定；若其自动化也依赖 AM 指数入场，需同源标定 | **Web 已修并运行期验证；Android 待核对/对齐** |
+| 2 | tier8 后 IU25 的 DS6 帧 | reality 任务先于 endgame，DS6 一买上就被自动现实清掉；已加 holdForLaitela（最多 240s）截取该帧后再走原版购买 | Android 调度顺序/DS6 处理不同，本轮未对照 | Web 实现差异（已修并运行期验证：run-fixed4 iu25/doomed 1826.5s） |
+| 3 | Teresa 浇注节奏 | 真实墙钟但 celestial 任务约每 19s 才被调度 + OREKI_MAX_REAL_FRAME_MS=100 ⇒ 459.8s 才到 1e24（设计约 2.3s） | 原版主循环按帧累计真实时间，无调度器节流 | 双端节奏差异（非语义），下一轮评估 Web 调度粒度 |
+| 4 | 默认设置新档 180min 门禁 | 三项修复后 **gameEnd @1867.9s（31.1min）PASS**（endState 1.0417、pageerror 0） | Android 本轮同步修 IM 上限/Teresa 浇注/P0-2 节奏等，最终跑次由 Android 侧报告 | Web 已 PASS；Android 待其本轮结果 |

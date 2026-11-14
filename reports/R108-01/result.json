@@ -1,0 +1,154 @@
+{
+  "run": "R108-01 web FINAL (default settings, fresh save, three Web fixes)",
+  "sourceBaseline": "ce0ec9db26eb08791519185f816024568557288d",
+  "branch": "feat/r108-01-web-reality-chain",
+  "commits": {
+    "im_cap_fix": "89dcd7ded0e2df139eacc836a4a66685e69b3da4",
+    "laitela_window_fix": "bc45c1880d5521a79e6665b643e038afca282008",
+    "iu25_ds6_hold_fix": "6988b923f73ebfd556973ae4fb42b255c4d17ade"
+  },
+  "config": {
+    "freshSave": true,
+    "defaultSettings": true,
+    "intervalInjected": false,
+    "speedInjected": false,
+    "dynamicSpeed": true,
+    "viewport": "412x839 DPR2.625 isMobile hasTouch",
+    "maxWallSec": 5400,
+    "sampleMs": 2000
+  },
+  "milestones": {
+    "ep4000": 109.7,
+    "firstReality": 413.8,
+    "realities5": 413.8,
+    "im1e9": 650.6,
+    "realities10": 693.7,
+    "laitelaUnlocked": 857.4,
+    "iu15": 857.4,
+    "ach151": 859.7,
+    "realities15": 931.7,
+    "realities20": 1096.1,
+    "teresaUnlocked": 1096.1,
+    "realities30": 1366.8,
+    "effarigUnlocked": 1484.4,
+    "effarigStage2": 1598.3,
+    "effarigStage3": 1605.3,
+    "enslavedUnlocked": 1605.3,
+    "laitelaTier8": 1771.8,
+    "pelleUnlocked": 1826.5,
+    "doomed": 1826.5,
+    "iu25": 1826.5,
+    "endState1": 1867.9
+  },
+  "finalState": {
+    "wall": 1867.9,
+    "realities": 45,
+    "endState": 1.041734076396975,
+    "gameEnd": true,
+    "pelleUnl": true,
+    "doomed": true,
+    "iu15": true,
+    "iu25": true,
+    "laitelaTier": 8,
+    "imLog10": 10.01,
+    "pelleTotalAMLog10": 1033.92,
+    "stage": "doomed",
+    "goal": "reach-end-state",
+    "speed": 40000,
+    "effInterval": 3
+  },
+  "checks": [
+    {
+      "check": "default-settings-not-modified",
+      "status": "PASS",
+      "evidence": "configuredIntervalSeen=[10]; speedInjected=false; dynamic true; no player writes"
+    },
+    {
+      "check": "fresh-save",
+      "status": "PASS",
+      "evidence": "boot realities=0, localStorage empty"
+    },
+    {
+      "check": "first-reality",
+      "status": "PASS",
+      "evidence": "413.8 s"
+    },
+    {
+      "check": "realities-growth",
+      "status": "PASS",
+      "evidence": "r5 413.8 / r10 693.7 / r20 1096.1 / r30 1366.8 / r45(final)"
+    },
+    {
+      "check": "im-cap-fix",
+      "status": "PASS",
+      "evidence": "IM cap 1.023e+10, iu15 @857.4 s"
+    },
+    {
+      "check": "teresa-pour",
+      "status": "PASS",
+      "evidence": "teresaUnlocked @1096.1 s; effarig @1484.4 s"
+    },
+    {
+      "check": "effarig",
+      "status": "PASS",
+      "evidence": "stage2 1598.3 / stage3 1605.3"
+    },
+    {
+      "check": "enslaved-tab",
+      "status": "PASS",
+      "evidence": "1605.3 s"
+    },
+    {
+      "check": "laitela-tier8",
+      "status": "PASS",
+      "evidence": "tier8 @1771.8 s"
+    },
+    {
+      "check": "iu25",
+      "status": "PASS",
+      "evidence": "1826.5 s"
+    },
+    {
+      "check": "pelle-doomed",
+      "status": "PASS",
+      "evidence": "pelle @1826.5 s, doomed @1826.5 s"
+    },
+    {
+      "check": "game-end",
+      "status": "PASS",
+      "evidence": "gameEnd @1867.9 s, endState=1.0417"
+    },
+    {
+      "check": "pageerror",
+      "status": "PASS",
+      "evidence": "pageErrors=0"
+    },
+    {
+      "check": "v-celestial-unlock",
+      "status": "NOT RUN",
+      "evidence": "未在本轮回归中观测到 vUnlocks=true（终局链不需要 V/Ra）"
+    },
+    {
+      "check": "ra",
+      "status": "NOT RUN",
+      "evidence": "终局链不依赖 Ra；未观测"
+    },
+    {
+      "check": "android-avd",
+      "status": "NOT RUN",
+      "evidence": "Lead 独占"
+    },
+    {
+      "check": "teresa-pour-pace",
+      "status": "WARN",
+      "evidence": "459.8 s 完成 1e24（设计约 2.3 s；双端节奏差异，下一轮评估）"
+    }
+  ],
+  "summary": {
+    "PASS": 13,
+    "FAIL": 0,
+    "WARN": 1,
+    "NOT RUN": 3
+  },
+  "pageErrors": []
+}
