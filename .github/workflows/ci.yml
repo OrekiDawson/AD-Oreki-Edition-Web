@@ -23,7 +23,7 @@ jobs:
     outputs:
       run_browser: ${{ steps.paths.outputs.run_browser }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 2
       - name: 主干和非文档改动执行完整验证
@@ -57,8 +57,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: '26'
       - name: 检查当前仓库规则入口
@@ -124,24 +124,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: '26'
       # Cache only the exact Chromium revision used by the lockfile-pinned runner.
       - name: 缓存 Playwright 浏览器
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-chromium-${{ runner.os }}-${{ runner.arch }}-node26-${{ hashFiles('package-lock.json') }}-1.65.0-v1
       - name: 缓存 npm 下载包
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.npm
           key: npm-playwright-${{ runner.os }}-${{ runner.arch }}-node26-${{ hashFiles('package-lock.json') }}-1.65.0-v1
       - name: 缓存锁定版本的 Playwright 测试模块
         id: playwright-modules
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: node_modules
           key: web-playwright-modules-${{ runner.os }}-${{ runner.arch }}-node26-${{ hashFiles('package-lock.json') }}-v1
@@ -158,7 +158,7 @@ jobs:
         run: npx playwright test --config=.github/playwright.config.mjs
       - name: 上传失败 Trace 和截图证据
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-playwright-failure
           path: |
