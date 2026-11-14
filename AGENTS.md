@@ -102,3 +102,8 @@
 - 新建 worktree 使用 git worktree add 到上述目录，并在 /home/oreki/AD-Oreki-Unified/docs/WORKTREE_MAPPING.md 登记。
 - 本仓保持独立 Git 仓库与独立部署链：不转 Git Submodule、不与其他仓库合并历史；根目录轻量项目管理仓库只引用本仓文本，不改变 Web CI、部署与冻结上游基线。
 - 目录整理/迁移类改动不得中断页面部署或 Playwright 验收：移动前确认无进程占用，保留分支、HEAD、未提交与未跟踪文件，移动后校验并记录 PASS/FAIL/BLOCKED。
+
+## 13. DeepSeek 与 `main` / CI/CD 的 Git 同步（2026-11-14，强制）
+
+- **强制读取并执行 [Git Main 与 CI/CD 同步协作规范](docs/GIT_MAIN_CICD_SYNC.md)**。每轮开发前和关键提交/推送前核对 `origin/main` 与工作分支，保护未提交内容、隔离并行 Agent 的工作树；禁止强推及绕过 Required Checks。
+- 该同步只针对本仓 MOD `main`，不是解冻上游原版；CI/CD 不负责自动更新 Agent 本地工作树。发布仍遵守现行构建、真实验收及多渠道门禁；DeepSeek 高峰期全员停工规则优先。
