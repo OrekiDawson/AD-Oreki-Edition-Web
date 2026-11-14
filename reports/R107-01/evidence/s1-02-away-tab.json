@@ -1,17 +1,26 @@
 {
   "beforeTab": {
     "ac": 0,
-    "count": 7,
+    "count": 12,
+    "lastBeatAt": 64801.20000000298,
+    "servedSum": 63,
     "view": "options/gameplay",
-    "totalAM": "2.31983719319333e+402",
-    "infinities": "16"
+    "totalAM": "5.00801900456096e+955",
+    "totalAMLog10": 955.6996659682775,
+    "infinities": "22539",
+    "infinitiesLog10": 4.35293464355942
   },
   "afterTab": {
     "ac": 0,
-    "count": 9,
+    "count": 12,
+    "lastBeatAt": 89339.29999999702,
+    "servedSum": 87,
     "view": "options/gameplay",
-    "totalAM": "3.08956238777842e+528",
-    "infinities": "20"
+    "totalAM": "2.2758785879314e+16926",
+    "totalAMLog10": 16926.357149089887,
+    "infinities": "0",
+    "infinitiesLog10": null
   },
-  "tabChanges": []
+  "tabChanges": [],
+  "autoTabBefore": true
 }

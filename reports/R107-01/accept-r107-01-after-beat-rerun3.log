@@ -1,0 +1,54 @@
+[PASS] S0-news-closed | news-nodes-absent-in-dom | counts={"#news":0,".c-news-ticker":0,"[class*='news-ticker']":0,".c-news-line":0,".c-news-ticker__line":0}
+[PASS] S0-news-closed | no-news-text-rendered | bodyMentionsNews=false, head="你拥有 4.16e188 反物质。 你每秒获得 3.08e186 反物质。 每个计数频率使反物质维度的生产效率 ×1.145 计数频率：9.45e6 / 秒 买到 10 个 维度献祭（×234.11） 购买最大数量（M） 购买10个维度的加成倍数：×2.00 | 献祭加成：×1.00 计数频率价格: 1e122 购买最"
+[PASS] S0-news-closed | fresh-save-baseline | antimatter=4.16143581446423e+188, infinities=0, realities=0
+[PASS] S0-news-closed | no-news-entry-in-visual-options | bodyMentionsNews=false, newsNodes=0, buttons=["UI: 现代","刷新率：33 毫秒 33","主题：Normal ▼","Normal","Metro","Dark","Dark Metro","Invert","Invert Metro","AMOLED","AMOLED Metro","记数法：科学 ▼"]
+[PASS] S0-news-closed | no-pageerror | count=0
+[PASS] S1-no-meaningless-tab-switch | no-automatic-tab-switch-without-input | changes=[]
+[PASS] S1-no-meaningless-tab-switch | business-ticks-without-tab-switch | execLog 2→12, lastBeatAt 2349→62705
+[PASS] S1-no-meaningless-tab-switch | production-grows-while-idle | totalAM 6.05107058023175e+130→5.00801900456096e+955, stage=infinityDimensions, infinities=18044
+[PASS] S1-no-meaningless-tab-switch | no-forced-tab-switch-while-away | changes=[], view=options/gameplay
+[PASS] S1-no-meaningless-tab-switch | business-ticks-while-away-from-dimensions | lastBeatAt 64801→89339, served 63→87, actionCount 0→0, totalAM 5.00801900456096e+955→2.2758785879314e+16926, infinities 22539→0, view=options/gameplay
+[PASS] S1-no-meaningless-tab-switch | no-pageerror | count=0
+[PASS] S2-stage-unlock-display | fresh-no-high-stage-entry | infinity=false, tabs={"dimensions":true,"automation":true,"challenges":false,"infinity":false,"eternity":false,"reality":false,"celestials":false}
+[PASS] S2-stage-unlock-display | fresh-sidebar-has-no-locked-stage-entry | sidebar=["维度","自动化","成就","统计数据","选项"]
+[PASS] S2-stage-unlock-display | fresh-no-locked-content-rendered | comp=AntimatterDimensionsTab, studies=false, reality=false
+[PASS] S2-stage-unlock-display | stage-gate-blocks-eternity-layer-before-infinity | eternityStageAllowed=false, infinityUnlocked=false
+[PASS] S2-stage-unlock-display | big-crunch-reachable-by-real-play | canCrunch=true
+[PASS] S2-stage-unlock-display | first-crunch-enters-infinity-stage | infinityUnlocked=true, infinities=1, IP=0
+[PASS] S2-stage-unlock-display | infinity-entry-appears-without-reload | infinityTab=true, drawer=["维度","自动化","挑战","无限","成就","统计数据","选项"], uiDelay=9ms
+[PASS] S2-stage-unlock-display | eternity-reality-still-absent | eternityTab=false, realityTab=false, eternities=0
+[PASS] S2-stage-unlock-display | no-time-studies-after-first-crunch | comp=AntimatterDimensionsTab, studiesText=false
+[PASS] S2-stage-unlock-display | real-save-exported-from-ui | len=7146, valid=true
+[PASS] S2-stage-unlock-display | no-pageerror | count=0
+[PASS] S3-autobuyer | stage-restored-from-real-save | infinity=true, infinityTab=true, eternityTab=false, stage=infinityDimensions
+[PASS] S3-autobuyer | stage-gate-allows-eternity-layer-exactly-after-break | allowed=true, infinityUnlocked=true, break=true
+[PASS] S3-autobuyer | no-eternity-layer-action-before-infinity | infinityUnlocked=true, allowed=true, tasks=[]
+[PASS] S3-autobuyer | stage-aware-goal-belongs-to-infinity-stage | stage=infinityDimensions, goal=unlock-eternity
+[PASS] S3-autobuyer | ui-shows-automation-on-default-10s | toggle="智能自动操作： 启用", labels=["调度间隔 10 秒","当前档位：默认（间隔只管辖策略决策）","策略决策","原版自动购买器的职责"], input=10
+[PASS] S3-autobuyer | mod-scheduler-executes-at-stage-capped-effective-beat | configured=10s, effective=1s, cap=1s, realities=0, executions=5, gaps=[null,1010,1024,1036,1024]
+[PASS] S3-autobuyer | switch-off-applies-immediately | enabled=false, stored=0, toggle="智能自动操作： 关闭"
+[PASS] S3-autobuyer | mod-stops-executing-while-switch-off | execLog 5→5, lastBeatAt 5249→5249, actions 0→0
+[PASS] S3-autobuyer | vanilla-autobuyers-not-disabled-by-mod-switch | player.auto.autobuyersOn=true
+[PASS] S3-autobuyer | switch-on-applies-immediately | enabled=true, stored=1
+[PASS] S3-autobuyer | interval-1s-applied-and-stored | interval=1, stored=1, labels=["调度间隔 1 秒","当前档位：默认（间隔只管辖策略决策）","策略决策","原版自动购买器的职责","也纳入间隔管辖","注意：开启后游戏推进可能显著变慢甚至停滞"]
+[PASS] S3-autobuyer | interval-1s-takes-effect | executions=3, gaps=[1002,1015,1024]
+[PASS] S3-autobuyer | interval-clamped-to-1-60-range | 0→1 (stored 1), 999→60 (stored 60)
+[PASS] S3-autobuyer | interval-60s-applied-and-stored | interval=60, labels=["调度间隔 60 秒","当前档位：默认（间隔只管辖策略决策）","策略决策","原版自动购买器的职责","也纳入间隔管辖","注意：开启后游戏推进可能显著变慢甚至停滞"]
+[PASS] S3-autobuyer | interval-60s-stored-upper-bound-and-stage-cap-applied | configured=60s, effective=1s, cap=1s, realities=0, gap=1029ms
+[PASS] S3-autobuyer | interval-60s-persists-after-reload | enabled=true, interval=60, stored=60
+[PASS] S3-autobuyer | stage-not-advanced-by-reload | eternityTab=false, stage=infinityDimensions
+[PASS] S3-autobuyer | manual-click-recorded-and-mod-yields | manualAction=buy:买到 10 个, manualClick 0→2, hold={"goalId":"unlock-eternity","remainSec":60}
+[PASS] S3-autobuyer | mod-verb-layer-not-acting-during-manual-hold | actionCount 0→0, attemptCount=0, holdRemain=55
+[PASS] S3-autobuyer | no-eternity-layer-entry-while-eternities-zero | eternities=0, eternityTab=false, studiesText=false
+[PASS] S3-autobuyer | no-eternity-reality-tasks-while-zero-eternities | tasks=["celestial","celestial","celestial"], allowed=true
+[PASS] S4-stage-transition-to-eternity | real-run-reaches-eternity-within-window | eternities=5, waited=57s, transitions=[{"atMs":51113,"et":"0","inf":"1223981","brk":true,"stage":"infinityDimensions","allowed":true,"eternityTab":false,"realityTab":false},{"atMs":54117,"et":"0","inf":"1524192","brk":true,"stage":"infinityDimensions","allowed":true,"eternityTab":false,"realityTab":false},{"atMs":57121,"et":"5","inf":"1","brk":true,"stage":"eternityTimeStudy","allowed":true,"eternityTab":true,"realityTab":false}]
+[PASS] S4-stage-transition-to-eternity | eternity-entry-appears-without-reload | eternityTab=true, drawer=["维度","自动化","挑战","无限","永恒","成就","统计数据","选项"]
+[PASS] S4-stage-transition-to-eternity | executor-stage-switched-to-eternity-allowed | stage=eternityTimeStudy, allowed=true, goal=unlock-dilation
+[PASS] S4-stage-transition-to-eternity | reality-entry-still-absent-at-first-eternity | realityTab=false, realities=0
+[PASS] S4-stage-transition-to-eternity | eternity-layer-task-executed-after-unlock | task={"task":"eternity","at":77346}, stage=eternityTimeStudy
+[PASS] S4-stage-transition-to-eternity | no-pageerror | count=0
+
+=== SUMMARY ===
+{"PASS":49}
+evidence: /home/oreki/AD-Oreki-Unified/web/AD-Oreki-Edition/reports/R107-01/evidence
+EXIT:0

@@ -1,0 +1,29 @@
+[2026-11-13T23:30:10.435Z] fresh save booted; localStorage automation keys: {"enabled":null,"intervalSec":null}
+[2026-11-13T23:30:10.441Z] progress {"w":0,"inf":null,"brk":false,"etLog":null,"r":0,"ep":null,"stage":"preInfinity","goal":"unlock-first-infinity","cfg":10,"eff":1,"cap":1,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:30:16.765Z] milestone firstInfinity @ 6.3
+[2026-11-13T23:30:20.796Z] milestone breakInfinity @ 10.4
+[2026-11-13T23:31:11.418Z] progress {"w":61,"inf":null,"brk":true,"etLog":null,"r":0,"ep":null,"stage":"infinityDimensions","goal":"unlock-eternity","cfg":10,"eff":1,"cap":1,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:31:33.597Z] milestone firstEternity @ 83.2
+[2026-11-13T23:32:11.845Z] progress {"w":121.4,"inf":null,"brk":true,"etLog":1.45,"r":0,"ep":53082.69,"stage":"eternityTimeStudy","goal":"unlock-dilation","cfg":10,"eff":1,"cap":1,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:33:11.514Z] progress {"w":181.1,"inf":null,"brk":true,"etLog":1.88,"r":0,"ep":1837244.14,"stage":"eternityTimeStudy","goal":"unlock-dilation","cfg":10,"eff":1,"cap":1,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:34:11.014Z] progress {"w":240.6,"inf":null,"brk":true,"etLog":2.28,"r":0,"ep":2029989.16,"stage":"eternityTimeStudy","goal":"unlock-dilation","cfg":10,"eff":1,"cap":1,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:35:10.790Z] progress {"w":300.4,"inf":null,"brk":true,"etLog":3.9,"r":0,"ep":2032803.58,"stage":"eternityTimeStudy","goal":"unlock-dilation","cfg":10,"eff":1,"cap":1,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:36:11.732Z] progress {"w":361.3,"inf":null,"brk":true,"etLog":4.75,"r":0,"ep":2032803.58,"stage":"eternityTimeStudy","goal":"unlock-dilation","cfg":10,"eff":1,"cap":1,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:37:11.198Z] progress {"w":420.8,"inf":null,"brk":true,"etLog":4.89,"r":0,"ep":2032803.55,"stage":"dilation","goal":"unlock-reality","cfg":10,"eff":1,"cap":1,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:37:17.433Z] milestone firstReality @ 427
+[2026-11-13T23:37:17.433Z] milestone realities5 @ 427
+[2026-11-13T23:38:11.583Z] progress {"w":481.1,"inf":null,"brk":true,"etLog":null,"r":5,"ep":null,"stage":"glyphs","goal":"buy-all-reality-upgrades","cfg":10,"eff":2,"cap":2,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:40:12.069Z] progress {"w":601.6,"inf":null,"brk":true,"etLog":6.26,"r":5,"ep":788863.79,"stage":"glyphs","goal":"buy-all-reality-upgrades","cfg":10,"eff":2,"cap":2,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:41:10.597Z] progress {"w":660.2,"inf":null,"brk":true,"etLog":6.36,"r":5,"ep":2061840.44,"stage":"glyphs","goal":"buy-all-reality-upgrades","cfg":10,"eff":2,"cap":2,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:41:57.206Z] milestone realities10 @ 706.8
+[2026-11-13T23:42:11.707Z] progress {"w":721.3,"inf":null,"brk":true,"etLog":131.22,"r":10,"ep":14784.86,"stage":"realityTree","goal":"grow-reality-tree","cfg":10,"eff":3,"cap":3,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:43:10.463Z] progress {"w":780,"inf":null,"brk":true,"etLog":134.49,"r":10,"ep":671798.89,"stage":"realityTree","goal":"grow-reality-tree","cfg":10,"eff":3,"cap":3,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:44:11.019Z] progress {"w":840.6,"inf":null,"brk":true,"etLog":134.81,"r":10,"ep":1091667.47,"stage":"realityTree","goal":"grow-reality-tree","cfg":10,"eff":3,"cap":3,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:45:11.587Z] progress {"w":901.2,"inf":null,"brk":true,"etLog":134.99,"r":10,"ep":2139252.7,"stage":"realityTree","goal":"grow-reality-tree","cfg":10,"eff":3,"cap":3,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:45:49.193Z] milestone realities15 @ 938.8
+[2026-11-13T23:47:10.511Z] progress {"w":1020.1,"inf":null,"brk":true,"etLog":134.83,"r":15,"ep":944580.21,"stage":"realityTree","goal":"grow-reality-tree","cfg":10,"eff":3,"cap":3,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:48:11.562Z] progress {"w":1081.1,"inf":null,"brk":true,"etLog":135.07,"r":15,"ep":1274512.64,"stage":"realityTree","goal":"grow-reality-tree","cfg":10,"eff":3,"cap":3,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:49:47.790Z] milestone realities20 @ 1177.4
+[2026-11-13T23:50:11.091Z] progress {"w":1200.7,"inf":null,"brk":true,"etLog":134.42,"r":20,"ep":7795.43,"stage":"celestialsTeresa","goal":"unlock-effarig","cfg":10,"eff":3,"cap":3,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:51:11.638Z] progress {"w":1261.2,"inf":null,"brk":true,"etLog":134.97,"r":20,"ep":58774.8,"stage":"celestialsTeresa","goal":"unlock-effarig","cfg":10,"eff":3,"cap":3,"stored":null,"speed":10000,"fps":null}
+[2026-11-13T23:52:11.597Z] progress {"w":1321.2,"inf":null,"brk":true,"etLog":135.2,"r":20,"ep":85578.65,"stage":"celestialsTeresa","goal":"unlock-effarig","cfg":10,"eff":3,"cap":3,"stored":null,"speed":10000,"fps":null}

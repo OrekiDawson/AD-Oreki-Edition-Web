@@ -12,64 +12,74 @@
     ]
   },
   "mark1": {
-    "lastAt": 28514.39999999851,
-    "count": 4
+    "lastAt": 12406.19999999553,
+    "count": 6
   },
   "exec1": {
     "log": [
       {
         "task": "breakGate",
-        "at": 1671,
+        "at": 1156,
         "gapMs": null
       },
       {
         "task": "early",
-        "at": 11673,
-        "gapMs": 10002
+        "at": 2165,
+        "gapMs": 1010
       },
       {
         "task": "routine",
-        "at": 21707,
-        "gapMs": 10033
+        "at": 3189,
+        "gapMs": 1024
       },
       {
         "task": "celestial",
-        "at": 28514,
-        "gapMs": 6808
+        "at": 4225,
+        "gapMs": 1036
       },
       {
         "task": "breakUpgrades",
-        "at": 29533,
-        "gapMs": 1018
+        "at": 5249,
+        "gapMs": 1024
       },
       {
         "task": "early",
-        "at": 30553,
-        "gapMs": 1020
+        "at": 12406,
+        "gapMs": 7158
       },
       {
         "task": "routine",
-        "at": 31582,
-        "gapMs": 1029
+        "at": 13408,
+        "gapMs": 1002
+      },
+      {
+        "task": "celestial",
+        "at": 14423,
+        "gapMs": 1015
+      },
+      {
+        "task": "breakUpgrades",
+        "at": 15448,
+        "gapMs": 1024
       }
     ],
     "fresh": [
       {
-        "task": "breakUpgrades",
-        "at": 29533,
-        "gapMs": 1018
-      },
-      {
-        "task": "early",
-        "at": 30553,
-        "gapMs": 1020
-      },
-      {
         "task": "routine",
-        "at": 31582,
-        "gapMs": 1029
+        "at": 13408,
+        "gapMs": 1002
+      },
+      {
+        "task": "celestial",
+        "at": 14423,
+        "gapMs": 1015
+      },
+      {
+        "task": "breakUpgrades",
+        "at": 15448,
+        "gapMs": 1024
       }
     ],
-    "waitedMs": 2865
+    "waitedMs": 2265
   }
 }

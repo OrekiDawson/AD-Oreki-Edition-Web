@@ -524,3 +524,7 @@ Android 没有 `ecEntryPending` / IU15 冲刺这两项：前者是 EC 入口等�
 
 | 自动永恒结算门槛（R107-01） | 接管原版自动永恒时一次性把默认 AMOUNT=1 改为 X_HIGHEST×10（仅默认配置、新档会话首次接管）；避免每帧永恒重置钉死 maxIP | Android 同源门禁（AVD 已落地同源修复：修复后 30min 26–36 次永恒/EC 推进）；实现位置不同，语义须等价 | 已同步（2026-11-14 Web PR #18） |
 | EP 除数引导窗口 | isOrekiBootstrapRun()：现实未解锁 或 当前现实 DS6(TimeStudy.reality)未买 → 除数 30，否则 308 | 分支 r105-ep-scale：eternitiesZero() 或 realities==0 → 30，realities>0 即 308 | **未对齐**：Android 窗口更窄，下一轮扩到「当前现实 DS6 未买」 |
+
+| EC 满级后 respec | Web oreki-eternity-automation.js EC 满级时调用 respecTimeStudies | Android 同源已实现（OrekiEcAutomation，调原版 eternity/studies/d.c） | 已同步（R107-01，AVD：EC 12 关全满） |
+| 膨胀研究自动购买 | Web buyDilationStudies 按 id 顺序 canBeBought && buy() | Android OrekiDilationStudies 反射原版 D() 每 tick 买 1 个 | 已同步（R107-01，AVD：dilation [1..5]） |
+| 现实解锁成就豁免 | Web orekiAchievementsWaivedForReality：EC11/12 满级后豁免全部 preReality 成就 | Android OrekiRealityUnlock.waiveAchievements + z40 case24 注入（TD8/maxEP/Pelle 原版校验） | 已同步（R107-01，AVD：首次 reality 0→0.301） |

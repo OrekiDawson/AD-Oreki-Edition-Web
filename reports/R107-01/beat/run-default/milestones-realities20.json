@@ -1,0 +1,37 @@
+{
+  "name": "realities20",
+  "wall": 1177.4,
+  "state": {
+    "infinities": null,
+    "infinitiesLog10": 153.38,
+    "breakFlag": true,
+    "eternitiesLog10": 132.98,
+    "realities": 20,
+    "maxAMLog10": 17236.36,
+    "maxIPLog10": 853.56,
+    "epLog10": 26.94,
+    "stage": "celestialsTeresa",
+    "goal": "unlock-effarig",
+    "configuredIntervalSec": 10,
+    "effectiveIntervalSec": 3,
+    "stageCapSec": 3,
+    "storedInterval": null,
+    "storedEnabled": null,
+    "speed": 10000,
+    "dynamicSpeed": true,
+    "fps": null,
+    "served": {
+      "routine": 175,
+      "celestial": 181,
+      "early": 156,
+      "breakGate": 3,
+      "breakUpgrades": 28,
+      "eternityReset": 6,
+      "eternity": 123,
+      "reality": 11,
+      "perk": 31
+    },
+    "lastBeatAt": 1178822.200000003,
+    "wall_sec": 1177.4
+  }
+}

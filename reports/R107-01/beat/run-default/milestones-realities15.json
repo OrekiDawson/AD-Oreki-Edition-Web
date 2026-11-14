@@ -1,0 +1,37 @@
+{
+  "name": "realities15",
+  "wall": 938.8,
+  "state": {
+    "infinities": null,
+    "infinitiesLog10": 153.26,
+    "breakFlag": true,
+    "eternitiesLog10": 132.58,
+    "realities": 15,
+    "maxAMLog10": 4350.05,
+    "maxIPLog10": 234.31,
+    "epLog10": null,
+    "stage": "realityTree",
+    "goal": "grow-reality-tree",
+    "configuredIntervalSec": 10,
+    "effectiveIntervalSec": 3,
+    "stageCapSec": 3,
+    "storedInterval": null,
+    "storedEnabled": null,
+    "speed": 10000,
+    "dynamicSpeed": true,
+    "fps": null,
+    "served": {
+      "routine": 159,
+      "celestial": 165,
+      "early": 140,
+      "breakGate": 3,
+      "breakUpgrades": 28,
+      "eternityReset": 6,
+      "eternity": 107,
+      "reality": 8,
+      "perk": 19
+    },
+    "lastBeatAt": 940599.400000006,
+    "wall_sec": 938.8
+  }
+}

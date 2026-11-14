@@ -1,0 +1,17 @@
+=== host at default-beat run start ===
+2026-11-14T07:28:59+0800
+ 07:28:59 up 15:22,  1 user,  load average: 5.01, 11.34, 13.90
+=== acceptance after stage cap start ===
+2026-11-14T07:28:59+0800
+=== host at default-beat restart ===
+2026-11-14T07:30:07+0800
+ 07:30:07 up 15:23,  1 user,  load average: 3.98, 9.76, 13.16
+=== acceptance after beat (rerun) start ===
+2026-11-14T07:36:05+0800
+=== acceptance after beat (rerun2) start ===
+2026-11-14T07:41:44+0800
+=== acceptance after beat (rerun3) start ===
+2026-11-14T07:47:15+0800
+=== default beat run stopped for Lead Android 180min (host CPU reserve) ===
+2026-11-14T07:52:32+0800
+ 07:52:32 up 15:45,  1 user,  load average: 14.77, 15.72, 15.06

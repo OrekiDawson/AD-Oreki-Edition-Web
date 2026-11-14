@@ -4,3 +4,5 @@
 [info] [OREKI_CRUNCH_DEC] allow=true reason=pre-infinity
 [info] [OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)
 [info] [OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip
+[info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)

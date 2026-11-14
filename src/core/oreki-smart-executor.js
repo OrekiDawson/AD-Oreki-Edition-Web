@@ -868,14 +868,71 @@ function nowMs() {
 }
 
 /**
- * [R78] 某个任务此刻是否已过自己的间隔闸（共用 `STATE.intervalSec`）。
+ * [R107-01 P1] **阶段化节拍上限**（只约束 MOD 自动化，不动玩家配置/UI/游戏结算）。
+ *
+ * 依据（Android 同源实测，2026-11-14）：
+ *   · 默认 10 s 节拍下，首个 reality 约 42 分钟；玩家把间隔调到 1 s 时约 14.6 分钟；
+ *   · Web 旧默认 3 s（R50）曾 739.6 s 通关，R85 把默认改到 10 s 后同样显著变慢；
+ *   · MOD 自动化在**前中期**（现实数少）需要更高的购买/结算频率，
+ *     而后期的策略决策并不需要同样高的频率（每拍动作数受同帧唯一动作限制）。
+ *
+ * 语义：`effectiveInterval = min(玩家配置 intervalSec, stageCap(realities))`。
+ *   · 玩家配置仍是**上限**（配置 1 s 时不会被拉长；配置 60 s 时阶段上限仍可缩短）；
+ *   · 只改本调度器的判定与面板倒计时，**不写 player 字段、不改 UI 输入值/存储值**；
+ *   · 不改变任何游戏结算、资源产出或原版自动购买器（它们不经过本调度器）；
+ *   · 读不到 `player.realities`（Node 夹具/初始化中）时返回 Infinity，保持旧行为。
+ *
+ * 分档（可微调；依据是 Reality 的层阶与 R50/R107 实测的成长节奏）：
+ *   · realities == 0      → 1 s：首无限→首永恒→首现实，最需要高频；
+ *   · 1 ~ 9               → 2 s：现实奖励/升级重复期，仍高频；
+ *   · 10 ~ 49             → 3 s：现实树/天神期，动作间隔可放宽；
+ *   · >= 50               → 5 s：后期内容（Laitela/Pelle），策略决策为主。
+ */
+const STAGE_BEAT_CAPS = [
+  { minRealities: 50, capSec: 5 },
+  { minRealities: 10, capSec: 3 },
+  { minRealities: 1, capSec: 2 },
+  { minRealities: 0, capSec: 1 },
+];
+
+/** 只读：当前现实数（Number/Decimal 都兼容；读不到返回 null）。 */
+function readRealitiesForBeat() {
+  try {
+    if (typeof player === "undefined" || player === null) return null;
+    const value = player.realities;
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (value && typeof value.toNumber === "function") {
+      const num = value.toNumber();
+      return Number.isFinite(num) ? num : null;
+    }
+  } catch (e) { /* 读取失败按未知处理 */ }
+  return null;
+}
+
+/** 当前阶段允许的最短节拍（秒）；未知阶段返回 Infinity（保持旧行为）。 */
+function stageBeatCapSec() {
+  const realities = readRealitiesForBeat();
+  if (realities === null) return Infinity;
+  for (const tier of STAGE_BEAT_CAPS) {
+    if (realities >= tier.minRealities) return tier.capSec;
+  }
+  return Infinity;
+}
+
+/** 实际生效的节拍（毫秒）= min(玩家配置, 阶段上限)。 */
+function effectiveBeatMs() {
+  return Math.min(STATE.intervalSec, stageBeatCapSec()) * 1000;
+}
+
+/**
+ * [R78] 某个任务此刻是否已过自己的间隔闸（共用**实际生效**的 `effectiveBeatMs()`）。
  *
  * 注意：R78 起这条闸只是**第二道保险**。第一道永远是全局节拍 `beatGateFree()`，
  * 见 `runCycle`。保留它是因为：即便全局时钟因异常被清零，同一任务也不会被连点。
  */
 function taskGateFree(taskId, now) {
   const last = STATE.taskLastAct[taskId] ?? 0;
-  return !last || now - last >= STATE.intervalSec * 1000;
+  return !last || now - last >= effectiveBeatMs();
 }
 
 /**
@@ -884,7 +941,7 @@ function taskGateFree(taskId, now) {
  */
 function globalGateFree(now) {
   if (!STATE.lastBeatAt) return true;
-  return now - STATE.lastBeatAt >= STATE.intervalSec * 1000;
+  return now - STATE.lastBeatAt >= effectiveBeatMs();
 }
 
 /**
@@ -1130,10 +1187,10 @@ function tickUnsafe(observed) {
   const taskBlocked = !STATE.strictGlobal && !taskGateFree("executor", scheduleNow);
   if (frameBlocked || globalBlocked || taskBlocked) {
     const globalWaitMs = STATE.lastBeatAt
-      ? STATE.intervalSec * 1000 - (scheduleNow - STATE.lastBeatAt)
+      ? effectiveBeatMs() - (scheduleNow - STATE.lastBeatAt)
       : 0;
     const taskWaitMs = execLast
-      ? STATE.intervalSec * 1000 - (scheduleNow - execLast)
+      ? effectiveBeatMs() - (scheduleNow - execLast)
       : 0;
     STATE.beatSkips++;
     return {
@@ -1297,12 +1354,15 @@ function debugState() {
   return {
     enabled: STATE.enabled,
     // [Oreki R50 web · 九修] 调度节拍（面板与探针都读这里，不另算一遍）
+    // intervalSec 是**玩家配置值**（UI/存档不变）；effectiveIntervalSec 是实际生效值。
     intervalSec: STATE.intervalSec,
+    effectiveIntervalSec: Math.min(STATE.intervalSec, stageBeatCapSec()),
+    stageCapSec: stageBeatCapSec(),
     strictGlobal: STATE.strictGlobal,
     beat: {
       lastAt: STATE.lastBeatAt,
       nextInMs: STATE.lastBeatAt
-        ? Math.max(0, STATE.intervalSec * 1000 - (scheduleNow - STATE.lastBeatAt))
+        ? Math.max(0, effectiveBeatMs() - (scheduleNow - STATE.lastBeatAt))
         : 0,
       skips: STATE.beatSkips,
       served: { ...STATE.served },
@@ -1394,6 +1454,10 @@ export const OrekiSmartExecutor = {
   },
   get intervalSec() {
     return STATE.intervalSec;
+  },
+  /** [R107-01 P1] 实际生效节拍 = min(玩家配置, 阶段上限)；只读，供探针/验收使用。 */
+  get effectiveIntervalSec() {
+    return Math.min(STATE.intervalSec, stageBeatCapSec());
   },
   get strictGlobal() {
     return STATE.strictGlobal;

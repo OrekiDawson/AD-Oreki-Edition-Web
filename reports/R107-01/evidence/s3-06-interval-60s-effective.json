@@ -1,0 +1,15 @@
+{
+  "beat60": {
+    "configured": 60,
+    "effective": 1,
+    "stageCap": 1,
+    "realities": 0
+  },
+  "gap60": 1029,
+  "newEntry60": {
+    "task": "routine",
+    "at": 17494.89999999851,
+    "gapMs": 1029.1000000014901,
+    "taskGapMs": 4086.5
+  }
+}

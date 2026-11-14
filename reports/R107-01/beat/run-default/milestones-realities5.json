@@ -1,0 +1,36 @@
+{
+  "name": "realities5",
+  "wall": 427,
+  "state": {
+    "infinities": null,
+    "infinitiesLog10": null,
+    "breakFlag": false,
+    "eternitiesLog10": null,
+    "realities": 5,
+    "maxAMLog10": 147.12,
+    "maxIPLog10": null,
+    "epLog10": null,
+    "stage": "glyphs",
+    "goal": "buy-all-reality-upgrades",
+    "configuredIntervalSec": 10,
+    "effectiveIntervalSec": 2,
+    "stageCapSec": 2,
+    "storedInterval": null,
+    "storedEnabled": null,
+    "speed": 10000,
+    "dynamicSpeed": true,
+    "fps": null,
+    "served": {
+      "routine": 110,
+      "celestial": 116,
+      "early": 93,
+      "breakGate": 2,
+      "breakUpgrades": 19,
+      "eternityReset": 6,
+      "eternity": 72,
+      "reality": 1
+    },
+    "lastBeatAt": 428199.30000000447,
+    "wall_sec": 427
+  }
+}

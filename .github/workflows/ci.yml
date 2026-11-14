@@ -84,6 +84,8 @@ jobs:
           node scripts/test-r88-executor-clock.mjs
           node scripts/test-r90-early-routine-beat.mjs
           node scripts/test-r87-break-id1-reserve.mjs
+          # R107-01 P1 stage-capped beat: effectiveInterval = min(user config, stage cap)
+          node scripts/test-stage-beat-cap.mjs
       - name: Protect exact Web production deploy source
         run: node scripts/check_deploy_workflow.mjs
       # Source JSON, generated tutorial, and player-visible terminology are

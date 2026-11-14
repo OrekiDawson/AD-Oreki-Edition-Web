@@ -1,0 +1,32 @@
+{
+  "name": "firstInfinity",
+  "wall": 6.3,
+  "state": {
+    "infinities": null,
+    "infinitiesLog10": 0.3,
+    "breakFlag": false,
+    "eternitiesLog10": null,
+    "realities": 0,
+    "maxAMLog10": 100.85,
+    "maxIPLog10": 4.52,
+    "epLog10": null,
+    "stage": "breakInfinity",
+    "goal": "break-infinity",
+    "configuredIntervalSec": 10,
+    "effectiveIntervalSec": 1,
+    "stageCapSec": 1,
+    "storedInterval": null,
+    "storedEnabled": null,
+    "speed": 10000,
+    "dynamicSpeed": true,
+    "fps": null,
+    "served": {
+      "routine": 3,
+      "celestial": 3,
+      "early": 1,
+      "breakGate": 1
+    },
+    "lastBeatAt": 7902.5,
+    "wall_sec": 6.3
+  }
+}
