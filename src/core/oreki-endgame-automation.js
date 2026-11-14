@@ -96,7 +96,7 @@ const LAT_TIER_WINDOW_MS = 250000;
  * 就提前压住现实，让 DS6 买上之后**留得住**，再在同一个现实里起 run、卸符文、买 IU25。
  * 上限 90 s，到点无条件放行；每次现实重置后重新计时，不会永久压死现实。
  */
-const IU25_HOLD_MAX_MS = 90000;
+const IU25_HOLD_MAX_MS = 240000;
 /** 莱特拉／佩勒动作节流（真实毫秒） */
 const SLOW_TICK_MS = 500;
 /** IM 购买节流（真实毫秒）：IM 是指数逼近上限，10 s 粒度完全够用 */
@@ -505,11 +505,28 @@ export const OrekiEndgameAutomation = {
         };
         const ready = ds6 && im >= OREKI_IU25_COST;
         if (!ready) {
+          // [R108-01] tier 8 + IM 已够、但 DS6 未在位时，压住自动现实去「截」DS6 那一帧。
+          //
+          // 事实（reports/R108-01/web/REPORT.md §4.5，默认 10000× 真实跑次 run-fixed3）：
+          //   · tier 8 达成后 realities 仍每 ~190 s 现实一次；runCycle 里 reality 任务（priority 40）
+          //     先于 endgame（priority 70）执行，DS6（TimeStudy.reality）一买上就被同拍/下一拍的
+          //     自动现实清掉；
+          //   · 实测 tier8 之后 385 s 内 laiRuns 恒为 8、iu25 恒 false，而 IM 已 6.83e9 ≥ 5e9
+          //     —— endgame 从未见到「DS6 在位」的一帧。
+          // 修法：IM 已够而 DS6 未在位时用 holdForLaitela 压住现实（最多 IU25_HOLD_MAX_MS），
+          // 让自动化在当前现实里把 EC 链与 DS6 打完；DS6 到手后下一拍即走下面的
+          // 「卸符文 → 进 run → tryUnlock → purchase」真实路径。到期无条件放手，不永久压死现实。
           this._laiHold = false;
-          this._iu25HoldSince = 0;
+          if (!ds6 && im >= OREKI_IU25_COST) {
+            if (!this._iu25HoldSince) this._iu25HoldSince = now;
+            if (now - this._iu25HoldSince < IU25_HOLD_MAX_MS) this._laiHold = true;
+          } else {
+            this._iu25HoldSince = 0;
+          }
           if (Laitela.isRunning) clearCelestialRuns();
           return;
         }
+        this._iu25HoldSince = 0;
         // 「至少 4 个符文槽为空」：先卸符文。卸不干净时补一刀「删除全部未保护符文」
         // （与玩家点同名按钮走的是同一条 `deleteAllUnprotected()`），腾出仓库格再卸。
         if (Glyphs.activeWithoutCompanion.length > 1) {
