@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "httpStatus": 200,
+  "liveBytes": 263,
+  "localBytes": 263,
+  "liveSha256": "a08b16948e0b521b883ca25e1194dd4abee48e8fe7e3c32165b933ad990dbd5a",
+  "localSha256": "a08b16948e0b521b883ca25e1194dd4abee48e8fe7e3c32165b933ad990dbd5a",
+  "path": "src/main.js"
+}
