@@ -24,8 +24,9 @@
 | Enslaved 页签解锁 | **PASS 1719.4 s**（鹿颈长永恒阶段完成即亮）；无名氏 run 按 R33 结论**不进**（无门票，进则自锁） | samples.jsonl |
 | V 天神解锁（VUnlocks.vAchievementUnlock） | **RUNNING** 截止 r=60、2604 s 仍 false（hold 收尾刚开始） | samples.jsonl |
 | Ra / Lai'tela | **NOT RUN**（未到；终局链设计上不依赖 Ra） | — |
-| IU15（理想之构） | **FAIL/阻断**：默认 10000× 下 IM 上限 7.43e8 < 成本 1e9，截止 43 min 未买入 | §4.1 |
-| IU25 / Pelle / gameEnd | **NOT RUN**（被 IU15 阻断；跑次继续观测） | — |
+| IU15（理想之构） | **PASS（修复后）**：旧代码默认 10000× 下 IM 上限 7.43e8 < 成本 1e9 永不买入；OREKI_IM_CAP_MULT=3000 后 run-fixed 880.7s / run-fixed3 892.4s 真实买入 | §4.1/§4.3/§3.6 |
+| 莱特拉 tier 0→8 | **PASS（修复后）**：旧代码 431s 内 0 次 run、tier 恒 0；窗口 30s→300s 后 run-fixed3 在 906→1809.9s 内 8 次真实 run、tier 0→8 | §4.4/§3.6 |
+| IU25 / Pelle / gameEnd | **RUNNING**：tier8 后暴露 DS6 帧竞态（已修，run-fixed4 验证中） | §4.5 |
 | 真实阻断定位 | **PASS**（IM 上限常数 ×300 与默认速度下的 EP 平台不匹配） | §4.1 |
 | Web 侧最小修复 | 已实现并提交（OREKI_IM_CAP_MULT 300→3000，commit 89dcd7d），**回归 RUNNING/NOT RUN** | §4.3 |
 | Android P0-1/P0-2 与 Web 同源对照 | **PASS（源码级）** | §5 |
@@ -101,6 +102,22 @@
 
 realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/20、glyphs 21（装备 5、最高 28 级）、Teresa 已浇满、Effarig stage=4（完成）、Enslaved 页签已亮但 run 未进（按 R33：无 1e40 年 + 5000 级符文门票，进则自锁）、VUnlocks=false、Ra/Laitela/Pelle/gameEnd 均未到。
 
+### 3.6 修复后跑次里程碑（默认设置，真实新档，2 s 只读采样）
+
+| 里程碑 | run-fixed（IM 修复） | run-fixed3（IM+莱特拉窗口修复，仍 RUNNING） |
+| --- | --- | --- |
+| ep4000 | 109.7 s | 131.4 s |
+| 首次 reality | 418.9 s | 434.3 s |
+| IM ≥1e9（im1e9） | 655.5 s | 671.2 s |
+| IU15 买入 / Laitela 解锁 | **880.7 s** | **892.4 s** |
+| ach151（薇页签条件） | 880.7 s | 899.4 s |
+| Teresa 解锁 | 1110.5 s | 1130.9 s |
+| r15 / r20 / r30 / r50 | 947.2 / 1110.5 / — / — | 968.3 / 1130.9 / 1412.4 / 1863.8 s |
+| 莱特拉 tier 1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 | 0 / 0 / 0 / 0 / 0 / 0 / 0 / 0（旧窗口） | 906.4 / 1051.9 / 1274.3 / 1367.9 / 1473.9 / 1594.2 / 1691.1 / **1809.9 s** |
+| Effarig 解锁 / stage2 / stage3+Enslaved 页签 | — | 1499.5 / 1527.3 / 1536.5 s |
+| r60 | — | 2206 s |
+| IU25 / Pelle / doomed / gameEnd | 未达（DS6 帧问题） | 未达，DS6 帧修复后由 run-fixed4 验证（RUNNING） |
+
 ## 4. 真实阻断：IM（虚幻机器）上限常数与默认速度下的 EP 平台不匹配
 
 ### 4.1 阻断链（运行时数字 + 源码公式，逐环可复核）
@@ -130,6 +147,36 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 - 提交：89dcd7ded0e2df139eacc836a4a66685e69b3da4（分支 feat/r108-01-web-reality-chain，未 push）。
 - 状态：**回归 RUNNING / 未完成**——修复在中期收口时写入并提交，真实浏览器回归（默认设置新档跑到 IU15→Laitela→IU25→Pelle→gameEnd）在跑次结束后执行；本轮不虚报 PASS。
 - 未做的备选（留给后续裁决）：下调 IU25 成本、或让动态升档对「长周期低进展」也敏感；两者都会改更多语义，不作为最小修复。
+
+### 4.4 第二阻断：莱特拉 tier 在默认 10000× 下结构性不可达（已修复并验证）
+
+- 运行期证据（run-fixed/，默认设置，2 s 只读采样）：OREKI_IM_CAP_MULT 修复后 Laitela 于 880.7 s 解锁，
+  但到 1312.2 s（431 s）内 `laitelaRunning` 采样为 **0 次**、`entropy>0` **0 次**、tier 恒 0。
+- 根因（源码 + 采样）：原版 tier 判定要求「本次 Laitela 现实在现实开始后 **30 s** 内完成」（game.js，
+  `Time.thisRealityRealTime < 30`）；而现实重置把反物质清零后，AM 指数达到入场线 4e8 的真实时刻是
+  realMs≈130–230 s（run-fixed2 实测 r0 129 s / r5 202 s / r10 200 s），默认速度下现实周期本身 136–226 s。
+  同时 oreki-endgame 的入场窗口 `LAT_RUN_ENTER_MAX_REAL_MS=15000` 只在现实前 15 s 内允许进 run（那时 AM 才 1e5–1e6）。
+  ⇒ 30 s 内不可能「进 run → 熵满 → 完成」⇒ tier 恒 0 ⇒ IU25 要求的 `maxAllowedDimension===0` 永不成立。
+- 修复（commit bc45c18）：新增 `OREKI_LAITELA_TIER_WINDOW_SEC=300`（game.js 三处判定同步引用）、
+  `LAT_RUN_ENTER_MAX_REAL_MS 15000→290000`、`LAT_TIER_WINDOW_MS 28000→250000`。
+  熵公式 / tier 上限 / 奖励 / 解锁语义不变，只把「30 s 窗口」按实测现实周期标定为 300 s。
+- 验证（run-fixed3，默认设置全新档）：tier 0→8 真实推进：
+  tier1 906.4 s → tier2 1051.9 → tier3 1274.3 → tier4 1367.9 → tier5 1473.9 → tier6 1594.2 → tier7 1691.1 → **tier8 1809.9 s**，
+  共 8 次真实 `Laitela.initializeRun`（laiRuns=8），每次完成都发生在 300 s 窗口内。**PASS（Web 单端）**。
+- 双端口径提示：Android 侧同样存在原版 30 s 判定（3.21 基线），若其自动化在默认速度下也依赖 AM 指数入场，
+  需要同样的窗口标定；已写入 §5.4 与共享文档，供 Android 侧核对。
+
+### 4.5 第三阻断：tier 8 后 IU25 的 DS6 帧被自动现实抢走（已修复，回归 RUNNING）
+
+- 运行期证据（run-fixed3）：tier8 于 1809.9 s 达成、IM=6.83e9 ≥ IU25 成本 5e9、glyphs 条件可满足，
+  但到 2224.5 s（415 s）内 `iu25` 恒 false、`laiRuns` 恒 8、`iu25` 从未出现；同期 realities 仍每 ~190 s 增加。
+- 根因（源码顺序 + 采样）：统一调度里 reality 任务（priority 40）先于 endgame（70）执行；DS6（TimeStudy.reality）
+  一买上就满足 `isRealityAvailable()`，同一拍/下一拍被自动现实清掉，endgame 永远看不到「DS6 在位」的那一帧。
+  IM 早已够，缺的只是这一帧。
+- 修复（commit 6988b92）：tier>=8 且 IM 已够、DS6 未在位时，用 `holdForLaitela` 压住自动现实
+  （最多 `IU25_HOLD_MAX_MS` 90 s→240 s），让自动化在当前现实内把 EC 链/DS6 打完；DS6 到手后下一拍走
+  原版真实路径（卸符文 → initializeRun → tryUnlock → purchase）。到期无条件放手，不永久压死现实。
+- 回归：run-fixed4（默认设置，job bash-5d146922a110465c）**RUNNING**；验收 = iu25 → pelleUnlocked → doomed → endState≥1/gameEnd。
 
 ## 5. Android P0-1 / P0-2 与 Web 同源实现对照
 
@@ -194,6 +241,10 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 | reports/R108-01/web/run-default/run.log | 跑次日志 |
 | reports/R108-01/web/analysis.json | 自动汇总（里程碑/间隔/停滞/配置） |
 | reports/R108-01/web/source-head.txt | 跑次时源码 HEAD 与工作区干净度 |
+| reports/R108-01/web/run-fixed/ | 修复 1（IM 上限）后默认设置跑次（截止 1312.2 s，IU15/Laitela 已验证，tier 卡 0） |
+| reports/R108-01/web/run-fixed3/ | 修复 2（莱特拉窗口）后默认设置跑次（tier 0→8 @1809.9 s；IU25 卡 DS6 帧） |
+| reports/R108-01/web/run-fixed4/ | 修复 3（DS6 帧 hold）后默认设置回归（RUNNING，目标 gameEnd） |
+| reports/R108-01/web/run-fixed2/ | 诊断跑次（未改窗口，证明 AM 指数 130–230 s 才到 4e8、入场窗口错过） |
 | web 仓库 reports/R108-01/ | 上述关键文件的仓库镜像（随 commit 提交） |
 
 ## 7. PASS / FAIL / BLOCKED / NOT RUN 与恢复点
@@ -205,11 +256,16 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 - 阻断定位（IM 上限 ×300 vs 默认速度 EP 平台）与最小修复已落盘。
 - Android P0-1/P0-2 与 Web 同源对照（§5）。
 
-**FAIL**
-- IU15 在默认设置 10000× 下买不起（IM 上限 7.43e8 < 成本 1e9）→ 默认设置 gameEnd 不可达；这是本轮 Web 侧的真实阻断（已修复，回归未完成）。
+**FAIL（旧代码，均已被修复，修复后验证状态见下）**
+- 旧代码 IU15 在默认设置 10000× 下买不起（IM 上限 7.43e8 < 成本 1e9）→ gameEnd 不可达（修复 1：89dcd7d）。
+- 旧代码莱特拉 tier 结构性不可达（30 s 窗口 vs AM 指数 130–230 s 才到入场线）→ IU25 阻断（修复 2：bc45c18；run-fixed3 已验证 tier 0→8）。
+- 旧代码 tier8 后 IU25 的 DS6 帧被自动现实抢走 → IU25/Pelle 阻断（修复 3：6988b92；run-fixed4 验证中）。
 
 **BLOCKED**
 - 修复后的完整回归（IU15→Laitela→IU25→Pelle→gameEnd）BLOCKED 于中期收口时间点，**NOT RUN**；需下一段继续。
+
+**RUNNING**
+- run-fixed4（默认设置 + 三项修复）：IU25 → Pelle → doomed → endState≥1/gameEnd 验证中（job bash-5d146922a110465c，产物 reports/R108-01/web/run-fixed4/）。
 
 **NOT RUN（旧代码跑次截止时）**
 - V 天神解锁（截止 r=60 时 vUnl=false，hold 收尾刚开始）；Ra、Lai'tela、IU25、Pelle、doomed、endState、gameEnd。

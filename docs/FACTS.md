@@ -10053,3 +10053,18 @@ r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、che
 - 节奏差异：Teresa 浇注 Web 实测 459.8s（设计约 2.3s），归因 celestial 任务约每 19s 才被调度 + OREKI_MAX_REAL_FRAME_MS=100；
   Android 走原版主循环帧累计真实时间，无此损失。列为双端节奏差异，下一轮评估 Web 调度粒度（不得用加大系数伪造速度）。
 - 证据：reports/R108-01/web/{REPORT.md, run-reality-chain.mjs, analyze-run.py, run-default/, analysis.json}。
+
+### R108-01 Web 后续两项真实阻断与修复（2026-11-14，默认设置真实新档）
+
+- 第二阻断（莱特拉 tier 结构性不可达，commit bc45c18）：OREKI_IM_CAP_MULT 修复后 IU15 于 880.7s 买入、
+  Laitela 解锁，但 431s 内 laitelaRunning/entropy 采样为 0、tier 恒 0。根因：原版 tier 要求现实开始后 30s 内完成，
+  而现实重置后 AM 指数到达入场线 4e8 的真实时刻为 realMs≈130–230s（实测 r0 129s / r5 202s / r10 200s），
+  默认速度现实周期 136–226s，且 oreki-endgame 入场窗口仅 15000ms。修复：OREKI_LAITELA_TIER_WINDOW_SEC=300
+  （game.js 三处判定同步）、LAT_RUN_ENTER_MAX_REAL_MS 15000→290000、LAT_TIER_WINDOW_MS 28000→250000；
+  熵公式/tier 上限/奖励/解锁语义不变。验证（run-fixed3）：tier 0→8，tier1 906.4s → tier8 1809.9s（8 次真实 run）。
+- 第三阻断（tier8 后 IU25 的 DS6 帧竞态，commit 6988b92）：tier8 @1809.9s、IM 6.83e9 ≥ IU25 5e9，
+  但到 2224.5s 内 iu25 恒 false、laiRuns 恒 8。根因：统一调度 reality(priority 40) 先于 endgame(70)，
+  DS6(TimeStudy.reality) 一买上就被自动现实清掉，endgame 看不到该帧。修复：tier>=8 且 IM 已够、DS6 未在位时
+  用 holdForLaitela 压住现实（IU25_HOLD_MAX_MS 90s→240s），DS6 到手后下一拍走原版真实购买路径；到期无条件放手。
+- 回归状态：run-fixed4（默认设置，三项修复）RUNNING，目标 IU25→Pelle→doomed→gameEnd；未完成前不标 PASS。
+- 证据：reports/R108-01/web/{REPORT.md, run-fixed/, run-fixed2/, run-fixed3/, run-fixed4/}。

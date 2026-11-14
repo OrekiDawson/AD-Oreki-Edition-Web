@@ -543,3 +543,11 @@ Android 没有 `ecEntryPending` / IU15 冲刺这两项：前者是 EC 入口等�
 | 5 | IU25 成本 | OREKI_IU25_COST = 5e9 | 本轮同值 5e9 | **一致**；修复后 IM 上限 7.43e9，IU25 占 67% 可攒到 |
 | 6 | 莱特拉熵分母 | laitela.js 已定 2e7（R40-A2），driveLaitela 入场线 4e8 配套 | 本轮补 2e7 | **一致**（Web 运行期仍未到，NOT RUN） |
 | 7 | Teresa vp / pouredAmount 字段 | 直接 Teresa.pouredAmount（普通 number） | 3.21 字段名不同，需反射（vp） | 平台 ABI 差异，语义一致 |
+
+## 21. R108-01 后续修复的双端对照（2026-11-14，Web 默认设置真实新档）
+
+| # | 能力 | Web | Android | 判定 |
+| --- | --- | --- | --- | --- |
+| 1 | 莱特拉 tier 完成窗口 | 原版 30s 在 MOD 默认 10000x 下不可达（AM 指数 130–230s 才到入场线）；已改 OREKI_LAITELA_TIER_WINDOW_SEC=300（game.js 三处）+ endgame 入场/压现实窗口 290000/250000，tier 0→8 实测 1806s 内完成 | 3.21 基线同样有原版 30s 判定；若其自动化也依赖 AM 指数入场，需同源标定 | **Web 已修并运行期验证；Android 待核对/对齐** |
+| 2 | tier8 后 IU25 的 DS6 帧 | reality 任务先于 endgame，DS6 一买上就被自动现实清掉；已加 holdForLaitela（最多 240s）截取该帧后再走原版购买 | Android 调度顺序/DS6 处理不同，本轮未对照 | Web 实现差异（已修，回归中） |
+| 3 | Teresa 浇注节奏 | 真实墙钟但 celestial 任务约每 19s 才被调度 + OREKI_MAX_REAL_FRAME_MS=100 ⇒ 459.8s 才到 1e24（设计约 2.3s） | 原版主循环按帧累计真实时间，无调度器节流 | 双端节奏差异（非语义），下一轮评估 Web 调度粒度 |
