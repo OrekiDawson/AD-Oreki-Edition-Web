@@ -7,7 +7,7 @@ import json, sys, os
 from collections import OrderedDict
 
 OUT = os.path.dirname(os.path.abspath(__file__))
-RUN = os.path.join(OUT, "run-default")
+RUN = os.path.join(OUT, os.environ.get("RUN_DIR", "run-default"))
 S = os.path.join(RUN, "samples.jsonl")
 
 def load():
@@ -141,6 +141,7 @@ if os.path.exists(sp):
 
 out = {
     "source": S,
+    "out": OUT,
     "samples": len(rows),
     "observedWallSec": rows[-1]["wall"],
     "configAudit": {

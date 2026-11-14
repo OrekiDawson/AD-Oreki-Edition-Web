@@ -10068,3 +10068,15 @@ r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、che
   用 holdForLaitela 压住现实（IU25_HOLD_MAX_MS 90s→240s），DS6 到手后下一拍走原版真实购买路径；到期无条件放手。
 - 回归状态：run-fixed4（默认设置，三项修复）RUNNING，目标 IU25→Pelle→doomed→gameEnd；未完成前不标 PASS。
 - 证据：reports/R108-01/web/{REPORT.md, run-fixed/, run-fixed2/, run-fixed3/, run-fixed4/}。
+
+### R108-01 最终回归（Web 三项修复后）：默认设置全新档 gameEnd PASS
+
+- 跑次 run-fixed4（默认设置：interval 10s 未写盘、STAGECAP 生效、speed 10000x 未注入、动态速度默认开；
+  手机视口 412x839；只做真实 UI 关弹窗；不写 player 字段）：**gameEnd @1867.9 s（31.1 min）**，
+  endState=1.0417（>=1）、player.isGameEnd=true、Pelle 阶段反物质峰值 log10=1033.92、pageerror 0，采样 832 条。
+- 里程碑（真实墙钟）：ep4000 109.7 → 首现实 413.8 → im1e9 650.6 → r10 693.7 → IU15+Laitela 857.4 →
+  ach151 859.7 → r15 931.7 → r20/Teresa 1096.1 → r30 1366.8 → Effarig 解锁 1484.4 → tier8 1771.8 →
+  IU25+Pelle+doomed 1826.5 → gameEnd 1867.9 s。
+- 三项修复（均在 feat/r108-01-web-reality-chain）：89dcd7d（IM 上限 300→3000）、bc45c18（莱特拉 tier 窗口
+  30s→300s + 入场/压现实窗口）、6988b92（tier8 后压现实截取 DS6 帧买 IU25）。三项均被运行期验证。
+- 证据：reports/R108-01/web/{REPORT.md, run-fixed4/}；Web 默认设置全新档 180 分钟门禁由 FAIL 转为 PASS（31.1 min）。

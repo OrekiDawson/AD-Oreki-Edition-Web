@@ -11,8 +11,8 @@
 | 项 | 状态 | 证据 |
 | --- | --- | --- |
 | 现场核对（HEAD/分支/工作区/文档） | PASS | §1 |
-| 旧代码真实新档默认设置跑次 | **已停止**（Lead 裁决；截止 2739.6 s / 45.7 min，后续 NOT RUN） | run-default/ + old-run-cutoff.txt |
-| 修复后默认设置回归跑次 | **RUNNING**（run-fixed/，目标 IU15→莱特拉→IU25→佩勒→gameEnd） | run-fixed/ |
+| 旧代码真实新档默认设置跑次 | **已停止**（Lead 裁决；截止 2739.6 s / 45.7 min，IU15 被 IM 上限阻断） | run-default/ + old-run-cutoff.txt |
+| 修复后默认设置回归跑次 | **PASS：gameEnd @1867.9 s（31.1 min）**，pageerror 0 | run-fixed4/summary.json |
 | 首次 reality | **PASS 434.2 s** | milestone-firstReality.json |
 | realities 持续增长 | **PASS** r5 434.2 / r10 709.6 / r15 945.6 / r20 1176.1 / r30 1547.1 / r50 2115.2 / r60 2566.2 s | samples.jsonl |
 | RM 正收益 | **PASS** RM 27.84 → 1e1200（首次 709.6 s；每现实按公式产出） | samples.jsonl |
@@ -26,7 +26,7 @@
 | Ra / Lai'tela | **NOT RUN**（未到；终局链设计上不依赖 Ra） | — |
 | IU15（理想之构） | **PASS（修复后）**：旧代码默认 10000× 下 IM 上限 7.43e8 < 成本 1e9 永不买入；OREKI_IM_CAP_MULT=3000 后 run-fixed 880.7s / run-fixed3 892.4s 真实买入 | §4.1/§4.3/§3.6 |
 | 莱特拉 tier 0→8 | **PASS（修复后）**：旧代码 431s 内 0 次 run、tier 恒 0；窗口 30s→300s 后 run-fixed3 在 906→1809.9s 内 8 次真实 run、tier 0→8 | §4.4/§3.6 |
-| IU25 / Pelle / gameEnd | **RUNNING**：tier8 后暴露 DS6 帧竞态（已修，run-fixed4 验证中） | §4.5 |
+| IU25 / Pelle / gameEnd | **PASS（修复后）**：IU25+doomed 1826.5 s；**gameEnd 1867.9 s**（endState=1.0417），默认设置 180 min 门禁达成 | §3.7/§4.5 |
 | 真实阻断定位 | **PASS**（IM 上限常数 ×300 与默认速度下的 EP 平台不匹配） | §4.1 |
 | Web 侧最小修复 | 已实现并提交（OREKI_IM_CAP_MULT 300→3000，commit 89dcd7d），**回归 RUNNING/NOT RUN** | §4.3 |
 | Android P0-1/P0-2 与 Web 同源对照 | **PASS（源码级）** | §5 |
@@ -118,6 +118,18 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 | r60 | — | 2206 s |
 | IU25 / Pelle / doomed / gameEnd | 未达（DS6 帧问题） | 未达，DS6 帧修复后由 run-fixed4 验证（RUNNING） |
 
+### 3.7 最终回归结果（run-fixed4，默认设置 + 三项修复）：**gameEnd PASS**
+
+- 配置：全新存档、默认设置（interval 10s 未写盘、STAGECAP 生效、speed 10000× 注入关闭、动态速度默认开）、
+  手机视口 412x839、只做真实 UI 关弹窗；pageerror **0**；采样 832 条 / 1867.9 s。
+- 里程碑（真实墙钟）：ep4000 109.7 → 首现实 413.8 → im1e9 650.6 → r10 693.7 → **IU15+Laitela 857.4** →
+  ach151 859.7 → r15 931.7 → r20/Teresa 1096.1 → r30 1366.8 → Effarig 解锁 1484.4（stage2 1598.3 / stage3+Enslaved 1605.3）
+  → **tier8 1771.8** → **IU25+Pelle+doomed 1826.5** → **endState≥1 / gameEnd 1867.9 s（31.1 min）**。
+- 终态：realities=45、IM=1.02e10、tier8、iu15/iu25/pelle/doomed 全真、endState=1.0417、isGameEnd=true、
+  Pelle 阶段反物质峰值 log10=1033.92（>=1000 即 endState>=1）；末段动态速度自然升到 40000×（停滞升档机制生效）。
+- 判据：player.isGameEnd === true 且 GameEnd.endState = 1.0417（>=1），非写字段、非跳过结算。
+- 结论：**Web 默认设置全新档 31.1 分钟真实通关**，远优于 180 分钟目标；三项修复全部被运行期验证。
+
 ## 4. 真实阻断：IM（虚幻机器）上限常数与默认速度下的 EP 平台不匹配
 
 ### 4.1 阻断链（运行时数字 + 源码公式，逐环可复核）
@@ -160,7 +172,7 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 - 修复（commit bc45c18）：新增 `OREKI_LAITELA_TIER_WINDOW_SEC=300`（game.js 三处判定同步引用）、
   `LAT_RUN_ENTER_MAX_REAL_MS 15000→290000`、`LAT_TIER_WINDOW_MS 28000→250000`。
   熵公式 / tier 上限 / 奖励 / 解锁语义不变，只把「30 s 窗口」按实测现实周期标定为 300 s。
-- 验证（run-fixed3，默认设置全新档）：tier 0→8 真实推进：
+- 验证（run-fixed3，默认设置全新档）：tier 0→8 真实推进（run-fixed4 最终回归 tier8=1771.8 s，见 §3.7）：
   tier1 906.4 s → tier2 1051.9 → tier3 1274.3 → tier4 1367.9 → tier5 1473.9 → tier6 1594.2 → tier7 1691.1 → **tier8 1809.9 s**，
   共 8 次真实 `Laitela.initializeRun`（laiRuns=8），每次完成都发生在 300 s 窗口内。**PASS（Web 单端）**。
 - 双端口径提示：Android 侧同样存在原版 30 s 判定（3.21 基线），若其自动化在默认速度下也依赖 AM 指数入场，
@@ -176,7 +188,7 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 - 修复（commit 6988b92）：tier>=8 且 IM 已够、DS6 未在位时，用 `holdForLaitela` 压住自动现实
   （最多 `IU25_HOLD_MAX_MS` 90 s→240 s），让自动化在当前现实内把 EC 链/DS6 打完；DS6 到手后下一拍走
   原版真实路径（卸符文 → initializeRun → tryUnlock → purchase）。到期无条件放手，不永久压死现实。
-- 回归：run-fixed4（默认设置，job bash-5d146922a110465c）**RUNNING**；验收 = iu25 → pelleUnlocked → doomed → endState≥1/gameEnd。
+- 回归：run-fixed4（默认设置）**PASS**：IU25/Pelle/doomed 在 1826.5 s 同时达成（持帧修复生效），endState 0.084 → 0.75 → 0.91 → 1.0417，1867.9 s 达成 gameEnd（§3.7）。
 
 ## 5. Android P0-1 / P0-2 与 Web 同源实现对照
 
@@ -256,16 +268,16 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 - 阻断定位（IM 上限 ×300 vs 默认速度 EP 平台）与最小修复已落盘。
 - Android P0-1/P0-2 与 Web 同源对照（§5）。
 
-**FAIL（旧代码，均已被修复，修复后验证状态见下）**
+**FAIL（旧代码，均已被修复并被 run-fixed4 最终回归验证通过）**
 - 旧代码 IU15 在默认设置 10000× 下买不起（IM 上限 7.43e8 < 成本 1e9）→ gameEnd 不可达（修复 1：89dcd7d）。
-- 旧代码莱特拉 tier 结构性不可达（30 s 窗口 vs AM 指数 130–230 s 才到入场线）→ IU25 阻断（修复 2：bc45c18；run-fixed3 已验证 tier 0→8）。
-- 旧代码 tier8 后 IU25 的 DS6 帧被自动现实抢走 → IU25/Pelle 阻断（修复 3：6988b92；run-fixed4 验证中）。
+- 旧代码莱特拉 tier 结构性不可达（30 s 窗口 vs AM 指数 130–230 s 才到入场线）→ IU25 阻断（修复 2：bc45c18；run-fixed3/run-fixed4 已验证 tier 0→8）。
+- 旧代码 tier8 后 IU25 的 DS6 帧被自动现实抢走 → IU25/Pelle 阻断（修复 3：6988b92；run-fixed4 已验证）。
 
 **BLOCKED**
 - 修复后的完整回归（IU15→Laitela→IU25→Pelle→gameEnd）BLOCKED 于中期收口时间点，**NOT RUN**；需下一段继续。
 
-**RUNNING**
-- run-fixed4（默认设置 + 三项修复）：IU25 → Pelle → doomed → endState≥1/gameEnd 验证中（job bash-5d146922a110465c，产物 reports/R108-01/web/run-fixed4/）。
+**PASS（修复后最终回归）**
+- run-fixed4（默认设置 + 三项修复）：IU15/Laitela 857.4 s → tier8 1771.8 s → IU25+Pelle+doomed 1826.5 s → gameEnd 1867.9 s（31.1 min），endState=1.0417，pageerror 0。产物 reports/R108-01/web/run-fixed4/。
 
 **NOT RUN（旧代码跑次截止时）**
 - V 天神解锁（截止 r=60 时 vUnl=false，hold 收尾刚开始）；Ra、Lai'tela、IU25、Pelle、doomed、endState、gameEnd。
