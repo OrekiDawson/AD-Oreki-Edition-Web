@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   classify:
-    name: 判断是否需要浏览器冒烟测试
+    name: Decide whether PR changes require browser smoke
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -53,7 +53,7 @@ jobs:
           echo "::notice::Mobile Chromium required: $run_browser (main always tests)"
 
   logic:
-    name: Node.js 源码与玩法检查
+    name: Node checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -118,7 +118,7 @@ jobs:
           python3 scripts/check_repository_policy.py --base "$BASE_SHA" --policy web
 
   browser:
-    name: 移动端 Chromium 冒烟测试
+    name: Mobile Chromium smoke
     needs: classify
     if: needs.classify.outputs.run_browser == 'true'
     runs-on: ubuntu-latest
