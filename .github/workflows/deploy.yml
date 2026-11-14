@@ -26,7 +26,7 @@ jobs:
       ci_run_id: ${{ steps.ci.outputs.ci_run_id }}
     steps:
       - name: 验证选定的 main SHA 与实际检出内容
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.approved_sha }}
           persist-credentials: false
