@@ -1,0 +1,11 @@
+{
+  "realities": 0,
+  "antimatter": "3.2641389429578e+159",
+  "storageKeys": [],
+  "gameStartTime": null,
+  "intervalCfg": 10,
+  "effInterval": 1,
+  "speed": 10000,
+  "dynamic": true,
+  "hasGameEnd": true
+}
