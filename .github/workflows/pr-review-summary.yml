@@ -1,0 +1,114 @@
+name: PR 规模与高风险范围自动提示（非阻断）
+
+'on':
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review, edited]
+
+# 始终使用默认分支受信任的工作流，仅访问 GitHub API 元数据。
+# 禁止在 pull_request_target 环境检出或运行未受信任的 PR 代码。
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: oreki-pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: 自动 PR 规模与风险提示
+    if: github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: 汇总 PR 文件元数据，更新机器人评论
+        continue-on-error: true
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr || pr.base.ref !== 'main') return;
+            const owner=context.repo.owner, repo=context.repo.repo;
+            const platform="Web";
+            const marker='<!-- oreki-pr-review:v1 -->';
+            const files=await github.paginate(github.rest.pulls.listFiles,{
+              owner,repo,pull_number:pr.number,per_page:100
+            });
+            function category(path) {
+              if (/^reports\/|^docs\/deobfuscation\/data\/|^test-results\/|^playwright-report\/|\/logcat|\/trace|\.(log|trace|png|jpg|webp|zip|apk|dex|jar)$/i.test(path))
+                return '日志/数据/证据';
+              if (/^reconstructed\//.test(path)) return '实验重建';
+              if (/^\.github\/|^agp\/|^gradle\/|^baseline\/|(^|\/)(build\.gradle(\.kts)?|settings\.gradle(\.kts)?|proguard-rules\.pro)$|^scripts\/(publish_|release_|enforce_agp)/.test(path))
+                return 'CI/构建/发布';
+              if (/^docs\/|^tasks\/|^handoff\/|^(AGENTS|FACTS|README|CHANGELOG|PROJECT_PAUSED|WEB_ANDROID_DIFFERENCES)\.md$/.test(path))
+                return '文档/规则';
+              return '源码/工具/其他';
+            }
+            const stats=new Map();
+            for (const f of files) {
+              const k=category(f.filename);
+              const s=stats.get(k)||{count:0,adds:0,dels:0};
+              s.count++;s.adds+=f.additions||0;s.dels+=f.deletions||0;
+              stats.set(k,s);
+            }
+            const risk=platform==='Android' ? [
+              ['AGP/R8/Gradle', /^(agp|gradle)\/|(^|\/)(build\.gradle(\.kts)?|proguard-rules\.pro)$/],
+              ['CI/签名/正式发布', /^\.github\/workflows\/|^scripts\/(publish_|release_|enforce_agp)/],
+              ['Kotlin 业务与混淆 ABI', /^scripts\/payload\/kotlin\/|^scripts\/build_mod\.py$|\.smali$/],
+              ['存档/基线/版本', /^baseline\/|(^|\/)(save|player|version-config)/i]
+            ] : [
+              ['CI/Pages 部署', /^\.github\/workflows\/|^scripts\/(check_deploy|check_pages|publish)/],
+              ['游戏状态/存档', /^src\/game\.js$|^src\/(game|core|storage)\/|(^|\/)(save|player)/i],
+              ['教程与语言资源', /(^|\/)(tutorial|translation|i18n|locale)/i],
+              ['移动端 UI', /^src\/(components|ui|styles)\/|\.(vue|css|scss)$/i]
+            ];
+            const touched=risk.map(([title,re])=>[title,files.filter(f=>re.test(f.filename)).length])
+              .filter(([,n])=>n>0).map(([t,n])=>t+'（'+n+' 文件）');
+            const warnings=[];
+            if(pr.changed_files>100) warnings.push('超过 100 个文件');
+            if(pr.additions>20000) warnings.push('新增超过 20,000 行');
+            if(files.length<pr.changed_files) warnings.push('GitHub API 返回的文件清单不完整');
+            const candidates=files.filter(f=>f.status!=='removed'&&
+              /\.(json|jsonl|csv|txt|md|log|xml|yaml|yml|kt|kts|py|js|mjs|sh)$/i.test(f.filename))
+              .sort((a,b)=>(b.additions||0)-(a.additions||0)).slice(0,8);
+            let sizeChecked=0;const big=[];
+            for(const f of candidates){
+              try{
+                if(!pr.head.repo) continue;
+                const r=await github.rest.repos.getContent({
+                  owner:pr.head.repo.owner.login,repo:pr.head.repo.name,
+                  path:f.filename,ref:pr.head.sha
+                });
+                if(Array.isArray(r.data)||typeof r.data.size!=='number') continue;
+                sizeChecked++;
+                if(r.data.size>5*1024*1024) big.push(f.filename.replace(/[\r\n\x60*_<>{}\[\]|]/g,'_').slice(0,120)+' ('+(r.data.size/1048576).toFixed(1)+' MiB)');
+              }catch(err){core.info('Cannot read size metadata for '+f.filename.slice(0,100));}
+            }
+            if(big.length) warnings.push('抽样发现超过 5 MiB 的文本文件');
+            const table=['| 类别 | 文件数 | 新增行 | 删除行 |','|---|---:|---:|---:|'];
+            for(const [name,s] of stats) table.push('| '+name+' | '+s.count+' | +'+s.adds+' | -'+s.dels+' |');
+            const body=[
+             marker,
+             '### PR 自动审查摘要（'+platform+'，非阻断）',
+             '',
+             '变更：**'+pr.changed_files+' 个文件，+'+pr.additions+' / -'+pr.deletions+' 行**。',
+             '',
+             ...table,'',
+             '**规模预警**：'+(warnings.length?warnings.join('；')+'。请说明来源、分拆必要性和验证边界。':'未触发已检测的数量阈值。'),
+             '**文件大小抽样**：检查 '+sizeChecked+' 个文本文件元数据（最多 8 个，非全量）；'+
+                (big.length?'大文件：'+big.join('；'):'未在抽样中发现超过 5 MiB 的文本文件')+'。',
+             '**需重点复核**：'+(touched.length?touched.join('；'):'未命中预设高风险路径')+'。',
+             '',
+             '> 本机器人仅检查 GitHub 文件元数据和路径：不理解 Kotlin/JS 业务语义，不构成审查批准；不能替代现有 Required Checks、AVD/Playwright、存档或正式发布验收。',
+             '> 无需外部模型、无需密钥、不检出或执行 PR 代码。跨独立任务和历史轮次的拆分仍需 Lead 自行核对。',
+             '',
+             '依据：AGENTS.md 与 docs/DELIVERY_RULES.md。后续变更只更新此条机器人评论。'
+            ].join('\n');
+            const comments=await github.paginate(github.rest.issues.listComments,{owner,repo,issue_number:pr.number,per_page:100});
+            const previous=comments.find(c=>c.user?.login==='github-actions[bot]'&&c.body?.includes(marker));
+            if(previous){
+              if(previous.body!==body) await github.rest.issues.updateComment({owner,repo,comment_id:previous.id,body});
+            } else {
+              await github.rest.issues.createComment({owner,repo,issue_number:pr.number,body});
+            }
