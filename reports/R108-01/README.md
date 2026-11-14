@@ -6,7 +6,7 @@
 > 生成时刻：2026-11-14 09:11 +08（中期收口；真实新档跑次仍在运行，未达 120 min 上限）
 > 产物目录：reports/R108-01/web/（工作区证据）；web 仓库镜像：reports/R108-01/
 
-## 0. 状态总表（截止 2604.9 s / 43.4 min 真实墙钟）
+## 0. 状态总表（最终：修复后默认设置全新档 gameEnd PASS @1867.9 s / 31.1 min）
 
 | 项 | 状态 | 证据 |
 | --- | --- | --- |
@@ -48,7 +48,7 @@
 - 判据：player.isGameEnd === true（GameEnd.endState >= 1）；endState = (log10(log10(totalAM)+1)-1)/(log10(1001)-1)，endState>=1 等价于 Pelle 阶段反物质 log10(totalAM)>=1000（src/core/celestials/pelle/game-end.js）。
 - 采样探针已知局限（如实记录）：Teresa.pouredAmount / Currency.imaginaryMachines 是普通 number，探针里用了 Decimal 的 log10()，故这两项显示 null；浇注与 IM 的到达用「解锁位/阶段」等真实状态字段判定，不用探针数字。
 
-## 3. 真实跑次结果（截止 2604.9 s / 43.4 min，仍在运行）
+## 3. 真实跑次结果（旧代码跑次截止 2604.9 s；修复后最终回归见 §3.7）
 
 ### 3.1 阶段里程碑（真实墙钟，2 s 采样）
 
@@ -178,7 +178,7 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 - 双端口径提示：Android 侧同样存在原版 30 s 判定（3.21 基线），若其自动化在默认速度下也依赖 AM 指数入场，
   需要同样的窗口标定；已写入 §5.4 与共享文档，供 Android 侧核对。
 
-### 4.5 第三阻断：tier 8 后 IU25 的 DS6 帧被自动现实抢走（已修复，回归 RUNNING）
+### 4.5 第三阻断：tier 8 后 IU25 的 DS6 帧被自动现实抢走（已修复，run-fixed4 验证 PASS）
 
 - 运行期证据（run-fixed3）：tier8 于 1809.9 s 达成、IM=6.83e9 ≥ IU25 成本 5e9、glyphs 条件可满足，
   但到 2224.5 s（415 s）内 `iu25` 恒 false、`laiRuns` 恒 8、`iu25` 从未出现；同期 realities 仍每 ~190 s 增加。
