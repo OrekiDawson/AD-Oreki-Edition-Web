@@ -21,8 +21,28 @@ import { DC } from "./constants.js";
  *     · IU25 5e9 → 需 53%，留 90% 余量，仍是一段真实的「攒 IM」；
  *     · IU20 3e12 / IU22~24 6e14 依然远在上限之外，终局链以外的内容不被打开。
  * 曲线形状、指数、`updateIMCap()` 的真实刷新条件一律未动。
+ *
+ * [R108-01 · Web 默认设置真实新档实测] 300 → **3000**。
+ *
+ * 事实（reports/R108-01/web/REPORT.md §4.1，samples.jsonl 2 s 只读采样）：
+ *   · 默认 10000× 下本作每次现实的 EP 峰值平台实测只有 3.44e6
+ *     （r10 3,427,220 / r15 3,436,298 / r40 3,012,078 / r45 2,252,563），
+ *     对应 log10(uncappedRM) = 3×(3.44e6/4000−1) ≈ **2577**；
+ *   · 代入本公式，×300 时上限只有 (2577−1000)^2 × 300 ≈ **7.43e8** < IU15 成本 1e9，
+ *     而 IM 只会从下方逼近上限（machines.js 的 gainedImaginaryMachines），
+ *     于是 oreki-iu15-sprint 的 canArm 闸（currentIMCap >= 1e9）永不成立
+ *     ⇒ 莱特拉 / IU25 / 佩勒 / gameEnd 全部不可达（R108-01 默认设置跑次实测
+ *     43 min / realities=60 时 iu15 仍为 false）。
+ *   · 动态速度救不了：升档只在「1 s 进度指纹连续 4 s 不变」时触发
+ *     （speed-config.js），而现实循环里 infinities/IP/eternities/maxAM 持续变化，
+ *     全程 speed 恒 10000。
+ * 所以原 300 是按 R50 存档的 log10(uncappedRM)≈6621 标定的，与全新档默认速度差 2.5 倍
+ * 指数、平方后差约一个数量级。×3000 把默认速度下的上限恢复到
+ * (2577−1000)^2 × 3000 ≈ **7.43e9**（IU15 只需 13.5%、IU25 5e9 占 67%），
+ * 与 R50 注释声明的「上限 ≈ e9、IU15 只需 10% 出头」意图一致。
+ * 仍然不改曲线形状/指数/刷新条件，也不发免费 IM —— 只是把上限标定回可达区间。
  */
-export const OREKI_IM_CAP_MULT = 300;
+export const OREKI_IM_CAP_MULT = 3000;
 
 export const MachineHandler = {
   get baseRMCap() { return DC.E1000; },
