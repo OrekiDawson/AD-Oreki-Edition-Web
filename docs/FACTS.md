@@ -10034,3 +10034,22 @@ r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、che
   stage=laitela、gameEnd 未发生。定向验收 49/49 PASS。
 - 边界：完整 180 分钟默认配置跑次 **NOT RUN**；gameEnd 未验证，不能宣称 180min 门禁通过。
   Android 同源门禁修复已落地（30min 26–36 次永恒）；EP 除数窗口（isOrekiBootstrapRun 的 DS6 未买判据）Android 尚未对齐。
+
+## R108-01 Web 默认设置 Reality 后链与 IM 上限阻断（2026-11-14）
+
+- 方法：全新 browser context + 默认设置（调度间隔 10s 不写盘、STAGECAP 生效、游戏速度 10000× 不注入、动态速度默认开）、
+  只做真实 UI 关弹窗、2s 只读采样；不改任何 player 字段、不改游戏时间源。脚本 reports/R108-01/web/run-reality-chain.mjs。
+- 结果（截止 2739.6s / 45.7min，旧代码跑次由 Lead 裁决停止）：首现实 **434.2s**（r=5，单次现实 +5 模拟现实）；
+  r10 709.6 / r15 945.6 / r20 1176.1 / r30 1547.1 / r50 2115.2 / r60 2566.2s；
+  RM 27.84→1e1200；RU 20/20（1176.1s，实测购买扣 RM 27.84→27.825）；glyph 21 枚/最高 28 级；
+  Teresa 解锁 1176.1s，浇注真实到 1e24（1635.9s 解锁鹿颈长）；Effarig stage1-4（1697.9/1719.4/1842s）；Enslaved 页签 1719.4s；
+  截止 r=60 时 V 天神仍未解锁（hold 收尾刚开始）；IU15/莱特拉/IU25/佩勒/gameEnd 未到。
+- **阻断（Web 侧真实）**：默认 10000× 下 EP 峰值平台 3.44e6 ⇒ log10(uncappedRM)≈2577 ⇒ IM 上限 (1577)^2×300 = **7.43e8 < IU15 成本 1e9**；
+  IM 只能从下方逼近上限 ⇒ IU15 冲刺 canArm 永不成立 ⇒ 莱特拉/IU25/佩勒/gameEnd 全断。动态升档只在「进度指纹连续 4s 不变」时触发，
+  现实循环里 IP/eternities/maxAM 持续变化 ⇒ 全程 speed 恒 10000，不会自动救场。反证：R107 100k 探针同代码可达 stage=laitela（r=35）。
+- 修复：src/core/machines.js OREKI_IM_CAP_MULT 300→**3000**（commit 89dcd7d，分支 feat/r108-01-web-reality-chain）⇒ 默认速度上限 7.43e9
+  （IU15 13.5%、IU25 5e9 占 67%），曲线形状/指数/updateIMCap 刷新条件不变，不发免费 IM。**双端统一 3000**（Android OrekiImCapScale.MULT）。
+  修复后默认设置完整回归：**RUNNING**（未完成前不标 PASS）。
+- 节奏差异：Teresa 浇注 Web 实测 459.8s（设计约 2.3s），归因 celestial 任务约每 19s 才被调度 + OREKI_MAX_REAL_FRAME_MS=100；
+  Android 走原版主循环帧累计真实时间，无此损失。列为双端节奏差异，下一轮评估 Web 调度粒度（不得用加大系数伪造速度）。
+- 证据：reports/R108-01/web/{REPORT.md, run-reality-chain.mjs, analyze-run.py, run-default/, analysis.json}。

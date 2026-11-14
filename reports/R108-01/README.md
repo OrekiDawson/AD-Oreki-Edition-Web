@@ -11,7 +11,8 @@
 | 项 | 状态 | 证据 |
 | --- | --- | --- |
 | 现场核对（HEAD/分支/工作区/文档） | PASS | §1 |
-| 真实新档默认设置跑次 | **RUNNING**（未结束，后续里程碑 NOT RUN） | run-default/ |
+| 旧代码真实新档默认设置跑次 | **已停止**（Lead 裁决；截止 2739.6 s / 45.7 min，后续 NOT RUN） | run-default/ + old-run-cutoff.txt |
+| 修复后默认设置回归跑次 | **RUNNING**（run-fixed/，目标 IU15→莱特拉→IU25→佩勒→gameEnd） | run-fixed/ |
 | 首次 reality | **PASS 434.2 s** | milestone-firstReality.json |
 | realities 持续增长 | **PASS** r5 434.2 / r10 709.6 / r15 945.6 / r20 1176.1 / r30 1547.1 / r50 2115.2 / r60 2566.2 s | samples.jsonl |
 | RM 正收益 | **PASS** RM 27.84 → 1e1200（首次 709.6 s；每现实按公式产出） | samples.jsonl |
@@ -160,6 +161,16 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 | 调用频率 | 每帧 runCycle 任务（game.js:1149）+ 模块内 1 s/2 s 时间窗 | OrekiStageAuto 每拍一次（STAGECAP 1–5 s） | **节奏差异**：Web 购买/复检频率上限显著更高 |
 | 总开关/毁灭态 | active 检查 autobuyersOn 与 Pelle.isDoomed（:50-60） | 永恒层门禁内调度；毁灭态整体停摆（P0-4 未实现） | 等价（阶段范围不同） |
 
+### 5.4 双端节奏差异（R108-01 实测数值）
+
+| 机制 | Web（本轮实测） | Android（本轮 Lead 提供） | 判定 |
+| --- | --- | --- | --- |
+| Teresa 浇注 | 真实墙钟 + 10 倍手感系数；但 celestial 任务约每 19 s 才被统一调度器服务一次，且 OREKI_MAX_REAL_FRAME_MS=100 只累计 100 ms/次 ⇒ 解锁到 1e24 实测 **459.8 s**（设计约 2.3 s） | 走原版主循环按帧累计真实时间（无调度器节流），理论约 2.3 s | **双端节奏差异（非语义差异）**；Web 调度粒度损失列入下一轮评估，禁止用加大系数伪造速度 |
+| P0-2 一次性 RU | 一次调用可买多个（cost 升序）、tryUnlock 约 1 s 一次（Web 原生行为） | 本轮已对齐：每拍最多 8 个、tryUnlock 每拍 | **已对齐（Web 无需改）** |
+| IM 上限倍率 | OREKI_IM_CAP_MULT=3000（本轮修复 commit 89dcd7d） | OrekiImCapScale.MULT=3000（本轮同步，构建中） | **双端统一 3000**；数值理由与证据写入 docs/SHARED_GAMEPLAY_STANDARD.md 平台专属章节、WEB_ANDROID_DIFFERENCES.md 第 20 节、docs/FACTS.md R108-01 节 |
+| IU25 成本 / 莱特拉熵分母 | 5e9 / 2e7（laitela.js R40-A2） | 本轮同值 | 一致；Web 运行期仍 NOT RUN（IU15 未到先） |
+| Teresa vp 字段 | 直接 Teresa.pouredAmount（普通 number） | 3.21 字段名不同需反射（vp） | 平台 ABI 差异，语义一致 |
+
 **结论**：P0-1 与 Web 逐条同源（2% 门控、DS1 10 s、8 s/15 s、hardcap 5 s 兜底、bootstrap 不变）；P0-2 动作全部走原版 purchase()（真实扣 RM、真实写购买位），差异集中在节奏（Android 每拍最多 1 个一次性 RU、tryUnlock 每 10 拍）。若要双端里程碑对齐，Android 侧建议把一次性 RU 的 1 个/拍 放开到「买得起就继续」，或把 tryUnlock 提到每拍/每 2 拍；否则 25 个一次性 RU 至少需要 25 拍。
 
 ### 5.3 对 Lead 提出的四个 Web 同源项的运行期/源码核对
@@ -200,8 +211,9 @@ realities=60、RM=1e1200（hardcap 经 IU6 两次抬升）、ruBits popcount=20/
 **BLOCKED**
 - 修复后的完整回归（IU15→Laitela→IU25→Pelle→gameEnd）BLOCKED 于中期收口时间点，**NOT RUN**；需下一段继续。
 
-**NOT RUN**
+**NOT RUN（旧代码跑次截止时）**
 - V 天神解锁（截止 r=60 时 vUnl=false，hold 收尾刚开始）；Ra、Lai'tela、IU25、Pelle、doomed、endState、gameEnd。
+- **修复后回归（run-fixed/，默认设置 + OREKI_IM_CAP_MULT=3000）：RUNNING**；里程碑落盘于 reports/R108-01/web/run-fixed/milestone-*.json（每到一个里程碑立即写 json + 截图，不等 gameEnd 收口）。
 - Android AVD（Lead 独占，本轮不跑）。
 
 **恢复点（环境/命令/产物）**

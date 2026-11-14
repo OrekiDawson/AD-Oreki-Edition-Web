@@ -350,6 +350,16 @@ Android 的有效改进与测试结论，Web 也必须评估是否值得吸收�
 - 唯一注入点：`src/game.js:449-451` 的 `realDiff`。
 - 「游戏内时间」累计器：`records.totalInGameTime` / `thisX.inGameTime`，读取器 `src/core/time.js` 的 `inGameTimeOf()`。
 - 自动化测试：`_tools/run-all.sh`（16 组套件）。
+- **虚幻机器上限（IM cap）倍率：双端统一为 3000**（2026-11-14 R108-01 裁决；Web 侧常量 OREKI_IM_CAP_MULT=3000，Android 侧 OrekiImCapScale.MULT=3000）。
+  原值 300 是按 R50 存档 log10(uncappedRM)≈6621 标定的；R108-01 默认 10000× 真实新档实测每次现实的 EP 峰值平台只有 3.44e6
+  ⇒ log10(uncappedRM)≈2577，×300 时 IM 上限仅 7.43e8 < IU15 成本 1e9，IU15 冲刺 canArm 永不成立 ⇒ 莱特拉/IU25/佩勒/gameEnd 全断；
+  ×3000 后默认速度上限 7.43e9（IU15 占 13.5%、IU25 5e9 占 67%），曲线形状/指数/刷新条件不变。
+  证据：Web 仓库 reports/R108-01/web/REPORT.md §4.1；Android 同源证据见 Android 仓库 reports/R108-01/。
+- **Teresa 浇注时间语义**：必须用真实墙钟增量（Teresa.pourRM(真实秒)，Web 再乘 10 倍手感系数）；不得用 gameLoop 的放大 diff。
+  **已知双端节奏差异**：Android 走原版主循环按帧累计真实时间（无调度器节流，理论≈2.3s 到 1e24）；
+  Web 的 celestial 任务被统一节拍约每 19s 服务一次，且 OREKI_MAX_REAL_FRAME_MS=100 只累计 100ms/次
+  ⇒ 默认设置实测从解锁到 1e24 用 **459.8s**（设计约 2.3s）。这是节流粒度差异、不是数值语义差异；
+  是否修 Web 调度粒度列入下一轮评估（禁止用「加大系数」伪造速度）。
 
 ### Android 版
 
@@ -365,6 +375,7 @@ Android 的有效改进与测试结论，Web 也必须评估是否值得吸收�
 - 字段登记与证据：`docs/时间语义全量审计_2026-10-26.md`、`docs/提速分析_2026-10-26.md`、
   `reports/time_fields_inventory_2026-10-26.csv`。
 - 自动化测试：`scripts/run-all.sh`（静态门禁 + `--device` 追加 AVD 实测），失败返回非零。
+- **虚幻机器上限倍率：OrekiImCapScale.MULT = 3000**（2026-11-14 R108-01，与 Web 的 OREKI_IM_CAP_MULT=3000 双端统一；数值理由与实测证据见上方 Web 小节与 Web 仓库 reports/R108-01/web/REPORT.md §4.1）。
 - 已知未验证：离线结算是否应用 F、EC12 与 F 叠加顺序、Enslaved 8h 钳制、释放帧、Laitela 时效、黑洞/符文组合。
 - **`realDiff` 含义与 Web 不同**：Android 的 `realDiff` 是**纯墙钟**（F 只乘 `diff`），
   因此 §3 表中 `Σ realDiff / F` 的写法**只适用于 Web**；Android 侧为 `Σ realDiff`（k=1）。
