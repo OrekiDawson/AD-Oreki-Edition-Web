@@ -94,3 +94,11 @@
 - **证据分层**：不把完整 Playwright Trace、浏览器录屏、重复 screenshots、原始 Console 或可再生打包输出无差别批量入 Git。报告保留关键复现、浏览器/视口、源 SHA、测试 Run ID、必要片段和 `PASS / FAIL / BLOCKED / NOT RUN`；大量原始资料用受控归档或短期 Actions Artifacts，长期唯一证据必须另做持久且可校验的备份，不能仅依赖会过期的附件。
 - **历史及安全**：禁止为减小 PR 丢失唯一证据、强推或重写历史；涉敏内容、Token、私人存档不得进入公开或私有仓库。Android 已合并 PR #43 不追溯改写；本规则仅约束今后的变更，不改变正在执行的 /goal、基线冻结、Web 部署或 DeepSeek 峰谷规则。
 - **落实**：Lead 自主完成 PR 规模检查与说明；小 PR 无额外人工审核。具体执行见 `docs/DELIVERY_RULES.md` 第 6 节。
+
+
+## 12. Worktree 与目录治理（强制，R110-01 起）
+
+- 本仓所有 Git worktree 必须位于 /home/oreki/AD-Oreki-Unified/worktrees/web/，使用语义化目录名；禁止在仓库根或 /home/oreki 下新建 _wt_* 或其他平级工作目录。
+- 新建 worktree 使用 git worktree add 到上述目录，并在 /home/oreki/AD-Oreki-Unified/docs/WORKTREE_MAPPING.md 登记。
+- 本仓保持独立 Git 仓库与独立部署链：不转 Git Submodule、不与其他仓库合并历史；根目录轻量项目管理仓库只引用本仓文本，不改变 Web CI、部署与冻结上游基线。
+- 目录整理/迁移类改动不得中断页面部署或 Playwright 验收：移动前确认无进程占用，保留分支、HEAD、未提交与未跟踪文件，移动后校验并记录 PASS/FAIL/BLOCKED。
