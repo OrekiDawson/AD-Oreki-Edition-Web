@@ -107,3 +107,12 @@
 
 - **强制读取并执行 [Git Main 与 CI/CD 同步协作规范](docs/GIT_MAIN_CICD_SYNC.md)**。每轮开发前和关键提交/推送前核对 `origin/main` 与工作分支，保护未提交内容、隔离并行 Agent 的工作树；禁止强推及绕过 Required Checks。
 - 该同步只针对本仓 MOD `main`，不是解冻上游原版；CI/CD 不负责自动更新 Agent 本地工作树。发布仍遵守现行构建、真实验收及多渠道门禁；DeepSeek 高峰期全员停工规则优先。
+## 14. CI/CD 自主管理与故障自愈（强制，2026-11-14）
+
+- **角色与授权**：DeepSeek Lead 负责 Web / Pages CI/CD 日常管理、失败诊断、最小修复与故障自愈；GitHub Actions 是独立执行与验证系统；Ruleset、Required Checks、受保护 Environment 与分支保护不可绕过。Lead 可自主检查 Actions 状态/失败日志、修复工作流/构建/测试/缓存/依赖问题、创建修复分支与中文 Commit、Push、PR，并在门禁通过后按权限合并。
+- **范围**：Web 与 Pages（Android 另有其规则）；操作前读取最新 origin/main、AGENTS.md、本规则、相关 Issue/PR、Actions 状态与已有工作树/分支。
+- **自愈闭环**：真实失败日志 → 根因 → 最小修改 → PR → CI → 合规合并 → 复核 Run；区分源码/环境/平台/密钥/业务回归；禁止删测试、吞异常、改断言制造 PASS；禁止重复无新证据尝试；局部 BLOCKED 继续其他工作。
+- **Web 门禁**：Node 构建与必要单测、Playwright/移动 Chromium（默认 Android Chrome 手机视口）、存档/核心机制/受影响 GUI 的定向验收；核对源码 SHA 与产物一致。不得用「本地可打开」替代部署成功。
+- **Pages 门禁**：只经现有受控工作流验证已批准的 Web main SHA 与对应成功 CI Run 后部署 oreki.net；核对部署 Artifact 来源与线上 SHA，部署后验证 Android Chrome 默认视口行为；禁止直接修改 Pages 生产内容或绕过发布工作流。
+- **禁止**：关闭/削弱 Ruleset、跳过 Required Checks、强制合并失败 PR、强推或覆写其他 Agent 工作、签名密钥/Token/密码入仓库或日志、伪造 CI/部署/验收结果、手动覆盖 Pages；不得在 CI 工作流中加入 DeepSeek API 自动诊断/审查；保留现有 Codex PR 审查与确定性测试。
+- **峰谷**：遵守 DeepSeek 峰谷全员停工与收尾窗口；谷时继续同一轮、不重复 /goal。每次允许时段主动检查 Web CI、Playwright、Pages 部署与线上版本、阻塞 PR/Issue、失败频率/缓存命中；无需为检查反复触发构建，已明确问题优先修复。
