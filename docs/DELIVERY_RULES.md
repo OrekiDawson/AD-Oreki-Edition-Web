@@ -24,7 +24,7 @@
 
 ## 4. GitHub、CI/CD 和交付
 
-- GitHub 源码仓 `OrekiDawson/AD-Oreki-Edition-Web` 与 Pages 仓 `OrekiDawson/OrekiDawson.github.io` 职责独立；`web/_deploy/site/` 不能变成第二份功能源码。ChatGPT 管理 Pages 与 CI/CD，Agent 每轮根据实际改动核对 Actions 与部署证据。
+- GitHub 源码仓 `OrekiDawson/AD-Oreki-Edition-Web` 与 Pages 仓 `OrekiDawson/OrekiDawson.github.io` 职责独立；`web/_deploy/site/` 不能变成第二份功能源码。**DeepSeek Lead 统一管理 Web/Pages CI/CD 与 oreki.net 的正式部署协调**，在有效授权与审批内操作；每轮根据实际改动核对 Actions 与部署证据。
 - Web main 上的 Node/Playwright CI 与生产部署分离：正式部署必须具备实际移动端验收、教程源/生成物一致、受信任主干 SHA、受控发布 Token 和线上加载核验。CI 绿灯不能自动代表生产已上线，Deploy 失败不等于 Web 版本已发布。
 - 成果无论成功或失败均以中文 Commit/Push 保存；普通已验证改动可推 main，高风险、CI/CD、生产部署或未过门禁的改动走分支/PR，CI 合格再合并。禁止强推/丢改动，Push ≠ 生产发布。
 - 两小时至少交付一个**合格**稳定版为节奏目标，服从真实验收门禁和现行 DeepSeek 峰谷安全规则；未合格时如实标记超期及阻碍，不能伪报 PASS。Web 验收合格即可部署 oreki.net，无需等待 Android 四渠道。
@@ -129,6 +129,6 @@
 
 ### 7.2 发布权限与平台隔离
 
-- Web 保持与 Android AGP/AVD/四渠道完全独立的测试和发布决策。受保护 Pages 工作流只能部署已经批准的 Web `main` SHA、对应成功的 CI Run 与不可变 Artifact；部署后核对 `deployment.json`、线上资源、实际移动浏览器行为。Pages 生产管理由 ChatGPT 负责，DeepSeek 负责能被授予的诊断、修复与 PR，不得取代审批或直接写生产。
+- Web 保持与 Android AGP/AVD/四渠道完全独立的测试和发布决策。受保护 Pages 工作流只能部署已经批准的 Web `main` SHA、对应成功的 CI Run 与不可变 Artifact；部署后核对 `deployment.json`、线上资源、实际移动浏览器行为。**Pages 生产管理由 DeepSeek Lead 负责**，包括获授权的部署触发、线上验收、故障修复与必要回滚；不能取代既有批准、Required Checks 或受保护工作流，也不得直接手工覆盖生产。
 - 仅在已经存在的发布授权、Required Checks、关键审查、需要的人工/环境批准和线上安全门禁全部满足时才能自动合并/发布。不得关闭 Ruleset、强推、泄露 Token、绕过 Web CI/Pages Deploy、直接手工覆盖 oreki.net 或未经用户授权改变冻结上游基线。
 - 遵守既有 DeepSeek 高峰全员停工和同轮次 `/goal` 状态，不凭这份长期规则自行启动常驻后台 Agent；未执行明确 `NOT RUN`，被真实权限/环境阻塞明确 `BLOCKED`。交付记录至少含 Web SHA/Run、Playwright 结果、Pages 发布 Run/线上 SHA（如果实际部署）、具体问题和下一步。
