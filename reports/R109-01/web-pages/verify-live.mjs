@@ -206,10 +206,7 @@ try {
   if (optionsVisible) {
     clickedText = (await optionsTab.innerText().catch(() => "")).trim().replace(/\s+/g, " ");
     await dismissDialogs("before-tab");
-    await optionsTab.click({ timeout: 12000 }).catch(async (e) => {
-      log("options tab click fallback:", String(e).slice(0, 120));
-      await page.evaluate(() => { const el = [...document.querySelectorAll(".o-tab-btn--modern-tabs")].find(e => e.textContent.includes("选项")); el?.click(); });
-    });
+    await optionsTab.click({ timeout: 12000 });
     await sleep(1800);
     const st = await page.evaluate(() => {
       const d = document.querySelector(".c-modern-sidebar--drawer");
@@ -233,16 +230,19 @@ try {
     });
     await shot("live-after-nav.png");
     // 返回「维度」页签
-    await page.locator(".c-oreki-nav__toggle").first().click({ timeout: 10000 }).catch(() => {});
+    await page.locator(".c-oreki-nav__toggle").first().click({ timeout: 10000 });
     await sleep(900);
     const dimensionTab = page.locator(".o-tab-btn--modern-tabs").filter({ hasText: "维度" }).first();
-    if (await dimensionTab.isVisible().catch(() => false)) {
-      await dimensionTab.click({ timeout: 10000 }).catch(() => {});
-      await sleep(1200);
-    }
+    await dimensionTab.click({ timeout: 10000 });
+    await sleep(1200);
     const backActive = await activeTab();
     const backDrawer = await drawerState();
-    nav.returnNav = { status: backActive && backActive.includes("维度") ? "PASS" : "FAIL", activeAfterReturn: backActive, drawer: backDrawer };
+    nav.returnNav = {
+      status: backActive?.includes("维度") && backDrawer && !backDrawer.opened ? "PASS" : "FAIL",
+      activeAfterReturn: backActive,
+      drawer: backDrawer,
+    };
+    if (nav.returnNav.status !== "PASS") nav.status = "FAIL";
   } else {
     Object.assign(nav, { status: "FAIL", reason: "选项页签不可见", drawerBefore, drawerOpen, activeBefore });
   }
