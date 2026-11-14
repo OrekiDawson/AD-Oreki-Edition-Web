@@ -1,0 +1,154 @@
+{
+  "startedAt": "2026-11-14T04:30:41.811Z",
+  "expected": {
+    "sha": "8914ea5b842aad34a36116b5947b3b03f6df6955",
+    "ciRun": 43551150141
+  },
+  "deployment": {
+    "status": "PASS",
+    "observed": {
+      "web_sha": "8914ea5b842aad34a36116b5947b3b03f6df6955",
+      "web_ci_run_id": 43551150141
+    }
+  },
+  "sourceIntegrity": {
+    "status": "PASS",
+    "httpStatus": 200,
+    "liveBytes": 263,
+    "localBytes": 263,
+    "liveSha256": "a08b16948e0b521b883ca25e1194dd4abee48e8fe7e3c32165b933ad990dbd5a",
+    "localSha256": "a08b16948e0b521b883ca25e1194dd4abee48e8fe7e3c32165b933ad990dbd5a",
+    "path": "src/main.js"
+  },
+  "browser": {
+    "status": "PASS",
+    "httpStatus": 200,
+    "viewport": {
+      "width": 412,
+      "height": 839,
+      "dpr": 2.625,
+      "isMobile": true,
+      "hasTouch": true,
+      "locale": "zh-CN"
+    },
+    "url": "https://oreki.net/",
+    "observed": {
+      "before": {
+        "antimatter": "4.08299530145433e+54",
+        "totalTimeMs": 6110000,
+        "realTimeMs": 611,
+        "uiTextLen": 680,
+        "uiDisplay": "flex",
+        "activeTabs": [
+          "维度\n       "
+        ],
+        "bodyTextSample": "你拥有 4.08e54 反物质。\n你每秒获得 3.87e53 反物质。\n\n\n每个计数频率使反物质维度的生产效率 ×1.125\n计数频率：397.130 / 秒\n\n买到 10 个\n维度献祭（×19.24）\n购买最大数量（M）\n购买10个维度的加成倍数：×2.00 | 献祭加成：×1.00\n计数频率价格: 1e54\n 购买"
+      },
+      "after": {
+        "antimatter": "5.19877933189735e+191",
+        "totalTimeMs": 66360000,
+        "realTimeMs": 6636,
+        "uiTextLen": 735,
+        "uiDisplay": "flex",
+        "activeTabs": [
+          "维度\n       "
+        ],
+        "bodyTextSample": "你拥有 5.20e191 反物质。\n你每秒获得 1.95e84 反物质。\n\n\n每个计数频率使反物质维度的生产效率 ×1.145\n计数频率：3.369 / 秒\n\n你拥有 9 无限点数。\n你现在在反物质宇宙中 (没有正在进行的挑战)。\n买到 10 个\n维度献祭（×79.19）\n购买最大数量（M）\n购买10个维度的加成倍数："
+      }
+    }
+  },
+  "console": {
+    "pageErrors": [],
+    "consoleErrors": [],
+    "expectedCspErrors": [
+      "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+    ],
+    "badResponses": [
+      {
+        "status": "failed",
+        "url": "https://oreki.net/public/images/stars-bg.webm",
+        "err": "net::ERR_ABORTED"
+      }
+    ]
+  },
+  "screenshots": [
+    "/home/oreki/AD-Oreki-Unified/reports/R109-01/web-pages/live/live-initial.png",
+    "/home/oreki/AD-Oreki-Unified/reports/R109-01/web-pages/live/live-after-nav.png",
+    "/home/oreki/AD-Oreki-Unified/reports/R109-01/web-pages/live/live-final.png"
+  ],
+  "checks": {
+    "boot": {
+      "status": "PASS",
+      "uiTextLen": 735,
+      "uiDisplay": "flex",
+      "bootMs": 2446
+    },
+    "amTick": {
+      "status": "PASS",
+      "before": "4.08299530145433e+54",
+      "after": "5.19877933189735e+191",
+      "comparator": true
+    },
+    "gameTime": {
+      "status": "PASS",
+      "before": {
+        "totalTimeMs": 6110000,
+        "realTimeMs": 611
+      },
+      "after": {
+        "totalTimeMs": 66360000,
+        "realTimeMs": 6636
+      }
+    },
+    "navigation": {
+      "status": "PASS",
+      "clickedText": "选项",
+      "toggleClicked": true,
+      "drawerBefore": {
+        "x": -224,
+        "w": 220,
+        "opened": false
+      },
+      "drawerOpen": {
+        "x": 0,
+        "w": 220,
+        "opened": true
+      },
+      "drawerClosedAfterClick": true,
+      "activeBefore": "维度 Ω 反物质",
+      "activeAfter": "选项 存档 视觉",
+      "optionsTextShown": true,
+      "optionsSample": "你拥有 3.01e279 反物质。\n你每秒获得 3.97e101 反物质。\n\n\n每个计数频率使反物质维度的生产效率 ×1.165\n计数频率：1.839 / 秒\n\n你拥有 9 无限点数。\n你现在在反物质宇宙中 (没有正在进行的挑战)。\n导出存档\n导入存档\n重置游戏\n保存游戏\n选择存档\n自动存档：30 秒\n以文件形式导出\n导入存档文件\n显示距上次存档的时间： 开启\n打开自动备份存档菜单\n存档名称：\n\n按住 ? 键以打开快捷键列表。",
+      "returnNav": {
+        "status": "PASS",
+        "activeAfterReturn": "维度 Ω 反物质",
+        "drawer": {
+          "x": -224,
+          "w": 220,
+          "opened": false
+        }
+      }
+    }
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "badResponses": [
+        {
+          "status": "failed",
+          "url": "https://oreki.net/public/images/stars-bg.webm",
+          "err": "net::ERR_ABORTED"
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "expectedCspErrors": [
+        "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked."
+      ],
+      "httpStatus": 200,
+      "boot": true,
+      "bootMs": 2446
+    }
+  ],
+  "finishedAt": "2026-11-14T04:31:00.432Z"
+}

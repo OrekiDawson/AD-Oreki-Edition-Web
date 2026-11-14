@@ -1,0 +1,12 @@
+[
+  {
+    "status": "failed",
+    "url": "https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer",
+    "err": "csp"
+  },
+  {
+    "status": "failed",
+    "url": "https://oreki.net/public/images/stars-bg.webm",
+    "err": "net::ERR_ABORTED"
+  }
+]
