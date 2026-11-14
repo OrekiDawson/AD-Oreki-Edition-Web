@@ -1,4 +1,4 @@
-name: Request approved Web Pages deployment
+name: 申请已批准的 Web Pages 部署
 
 'on':
   workflow_dispatch:
@@ -18,19 +18,19 @@ concurrency:
 
 jobs:
   gate:
-    name: Reuse successful Web CI for the exact source commit
+    name: 复用精确源码 commit 的成功 Web CI
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
       ci_run_id: ${{ steps.ci.outputs.ci_run_id }}
     steps:
-      - name: Verify selected main SHA and actual checkout
-        uses: actions/checkout@v4
+      - name: 验证选定的 main SHA 与实际检出内容
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.approved_sha }}
           persist-credentials: false
-      - name: Check approved SHA against the source
+      - name: 对照源码检查已批准 SHA
         env:
           APPROVED_SHA: ${{ inputs.approved_sha }}
         run: |
@@ -38,10 +38,10 @@ jobs:
           [[ "$APPROVED_SHA" =~ ^[0-9a-f]{40}$ ]] || exit 1
           actual="$(git rev-parse HEAD)"
           [[ "$actual" == "$APPROVED_SHA" && "$actual" == "$GITHUB_SHA" ]] || {
-            echo "::error::Selected revision differs from the current main SHA"
+            echo "::error::FAIL：选定源码版本与当前 main SHA 不一致"
             exit 1
           }
-      - name: Require successful push CI with both Node and mobile Chromium
+      - name: 要求 Node.js 与移动端 Chromium CI 均成功
         id: ci
         env:
           GH_TOKEN: ${{ github.token }}
@@ -50,7 +50,7 @@ jobs:
           runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&event=push&per_page=100")"
           ci_run="$(echo "$runs" | jq -r --arg sha "$GITHUB_SHA" \
             '[.workflow_runs[] | select(.head_sha == $sha and .head_branch == "main" and .status == "completed" and .conclusion == "success")] | first | .id // empty')"
-          [[ "$ci_run" =~ ^[0-9]+$ ]] || { echo "::error::Missing successful push CI for exact SHA"; exit 1; }
+          [[ "$ci_run" =~ ^[0-9]+$ ]] || { echo "::error::FAIL：找不到精确 SHA 对应的成功 Push CI"; exit 1; }
           jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$ci_run/jobs?per_page=100")"
           echo "$jobs" | jq -e '[.jobs[] | select(.name=="Node checks" and .conclusion=="success")] | length == 1' >/dev/null
           echo "$jobs" | jq -e '[.jobs[] | select(.name=="Mobile Chromium smoke" and .conclusion=="success")] | length == 1' >/dev/null
@@ -58,21 +58,21 @@ jobs:
           echo "::notice::Reusing CI $ci_run for Web $GITHUB_SHA; no duplicate Playwright run"
 
   dispatch:
-    name: Send immutable Web source to the official Pages artifact workflow
+    name: 将不可变 Web 源码发送至官方 Pages Artifact 工作流
     needs: gate
     runs-on: ubuntu-latest
     environment: web-production
     timeout-minutes: 10
     steps:
-      - name: Require scoped Pages Actions permission
+      - name: 检查 Pages Actions 权限范围
         env:
           PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
         run: |
           test -n "$PAGES_DEPLOY_TOKEN" || {
-            echo "::error::Set PAGES_DEPLOY_TOKEN (Pages repository Actions:write) in web-production environment"
+            echo "::error::BLOCKED：请在 web-production 环境设置 Pages Actions:write 凭据"
             exit 1
           }
-      - name: Dispatch verified Web commit, not a moving branch
+      - name: 触发已验证 Web commit，不使用浮动分支
         env:
           GH_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
           APPROVED_SHA: ${{ inputs.approved_sha }}
@@ -84,5 +84,5 @@ jobs:
             -f ref=main \
             -f "inputs[approved_sha]=$APPROVED_SHA" \
             -f "inputs[web_ci_run_id]=$CI_RUN"
-          echo "::notice::Pages deployment requested for Web SHA $APPROVED_SHA / CI $CI_RUN"
-          echo "::notice::This workflow only requests deployment; official Pages workflow must independently PASS."
+          echo "::notice::PASS：已为 Web SHA $APPROVED_SHA / CI $CI_RUN 请求 Pages 部署"
+          echo "::notice::NOT RUN：本工作流仅发起请求，官方 Pages 工作流仍需独立通过"
