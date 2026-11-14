@@ -139,12 +139,9 @@ jobs:
         with:
           path: ~/.npm
           key: npm-playwright-${{ runner.os }}-${{ runner.arch }}-node26-${{ hashFiles('package-lock.json') }}-1.65.0-v1
-      - name: 缓存锁定版本的 Playwright 测试模块
-        id: playwright-modules
-        uses: actions/cache@v6
-        with:
-          path: node_modules
-          key: web-playwright-modules-${{ runner.os }}-${{ runner.arch }}-node26-${{ hashFiles('package-lock.json') }}-v1
+      # 说明（R111 CI-1）：这里不再缓存 node_modules。后续步骤固定执行 `npm ci --ignore-scripts`，
+      # 而 npm ci 会先删除 node_modules 再从 lockfile 安装——缓存 node_modules 只会带来下载与解压开销，
+      # 命中也不会减少安装时间。保留 ~/.npm 下载缓存（加速安装）与精确 Chromium 缓存（避免重复下载浏览器）。
       - name: 安装锁定版本的 Playwright 测试运行器
         run: npm ci --ignore-scripts
       - name: 拒绝过期或错误的 Playwright 缓存模块
