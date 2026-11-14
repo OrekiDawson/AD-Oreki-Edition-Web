@@ -70,7 +70,7 @@
 
 - **强制读取 [Web 移动端开发与交付长期规则](docs/DELIVERY_RULES.md)**。本节补充现有 Web Playwright、DeepSeek 峰谷、原版结算和真实存档规则，不重新启用旧归档。
 - Web 保持 ACTIVE，独立 Node + Playwright CI；必须以真实移动 Chromium/必要 Android Chrome 验收本次业务变更，浏览器冒烟或静态 PASS 不代替实际玩法 PASS。源码/生成教程数据必须同步，部署严格 fail-closed。
-- ChatGPT 管理 GitHub Pages 和 oreki.net；两小时至少一份**合格稳定版**为节奏目标，不因 Android 构建 BLOCKED 而停工，也不绕过 Web 自身发布门禁。
+- **DeepSeek Lead 统一管理 GitHub Pages 与 oreki.net**（用户 2026-11-14 最新授权）；两小时至少一份**合格稳定版**为节奏目标，不因 Android 构建 BLOCKED 而停工，也不绕过 Web 自身发布门禁。
 - 当轮已完成成果中文 Commit/Push，普通已验收改动可推 main，高风险与 CI/CD/生产部署走 PR，禁止强推；只在真实完成部署并验证线上资源后报告 DEPLOY PASS。
 - /goal、180 分钟真实通关、双端等价、阶段门禁、智能购买器、实时 GUI、教程附录 F、测试存档、最小必要原版对照和 Goal 收口的完整约束见上述增量规则。
 
@@ -111,7 +111,7 @@
 ## 14. DeepSeek Lead CI/CD 自主管理与故障自愈（长期强制，2026-11-14）
 
 - **职责**：在已授权轮次且非 DeepSeek 高峰时段，Lead 主动维护 Web 的 Node、Playwright/移动 Chromium、教程一致性与正式部署前 CI；读取 Actions Run/Job/源码 SHA，分类定位故障，最小修复并通过分支、中文 Commit、PR、Required Checks 合规合并，不需逐次询问普通修复。详见 [Web 长期交付规则第 7 节](docs/DELIVERY_RULES.md)。
-- **独立性**：Web CI 与 Android AGP、APK、AVD 独立；Android 阻塞不自动阻止已验证 Web 工作。Pages 发布仓仅接收获批准的 Web `main` SHA 和已验证产物；Lead 可维护跨仓 CI 契约和故障修复，但 Pages 正式部署管理保留用户指定的 ChatGPT 职责及受保护的批准流程。
+- **独立性**：Web CI 与 Android AGP、APK、AVD 独立；Android 阻塞不自动阻止已验证 Web 工作。Pages 发布仓仅接收获批准的 Web `main` SHA 和已验证产物；Lead 可维护跨仓 CI 契约和故障修复，**Pages 正式部署管理也归 DeepSeek Lead**；在既有授权范围内负责部署协调、触发、验收和故障恢复，仍必须遵守受保护的批准流程，不能自行豁免人工或环境审批。
 - **自愈要求**：真实失败 → 精确日志/根因 → 最小修复 → PR/CI → 验证恢复；对平台偶发故障允许有限重试，不能删掉测试、忽略浏览器错误、伪造 UI/游戏结果。静态 Node PASS 不等于 Playwright、线上游戏或部署 PASS。
 - **安全界限**：不恢复 CI 内 DeepSeek API 自动诊断/审查，保留现有 Codex PR 审查；不得绕过 Ruleset/Required Checks、人工或环境审批、生产受控工作流，不得手动覆盖 oreki.net、泄露 Token、强推或自动改变冻结 Web 上游基线。合格生产发布仅在原有授权与真实移动验收、精确 SHA、受保护部署门禁全部通过时进行。
 - **时段与记录**：服从第 7 节峰谷停工、现行 /goal/工作树隔离、P0/P1 优先；未授权独立后台运行不能仅凭规则文本视为已启用。记录 Commit/PR、Actions、Node/Playwright、线上 SHA/部署、`PASS / FAIL / BLOCKED / NOT RUN`。
