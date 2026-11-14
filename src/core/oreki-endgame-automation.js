@@ -45,7 +45,7 @@ import { OREKI_IU25_COST } from "./secret-formula/reality/imaginary-upgrades.js"
 import { MachineHandler } from "./machines.js";
 
 /** 进莱特拉 run 时本现实真实时间的上限（毫秒）。见上方 ② 的 30 s 判定。 */
-const LAT_RUN_ENTER_MAX_REAL_MS = 15000;
+const LAT_RUN_ENTER_MAX_REAL_MS = 290000;
 /**
  * [Oreki R38-A] 进莱特拉 run 的反物质指数下限（原版熵公式见 laitela.js:74）。
  *
@@ -75,7 +75,7 @@ const LAT_RUN_ABORT_MS = 8000;
  * `game.js:1104` 的 `difficultyTier++` 只在 `thisRealityRealTime.totalSeconds < 30` 时发生，
  * 所以压现实最多压到 28 s 就必须放手（留 2 s 给熵结算那一帧）。
  */
-const LAT_TIER_WINDOW_MS = 28000;
+const LAT_TIER_WINDOW_MS = 250000;
 /**
  * [Oreki R40] tier 8 之后「护住 DS6」的压现实上限（真实毫秒）。
  *

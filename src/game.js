@@ -1380,7 +1380,7 @@ function laitelaRealityTick(realDiff) {
     laitelaInfo.thisCompletion = Time.thisRealityRealTime.totalSeconds;
     laitelaInfo.fastestCompletion = Math.min(laitelaInfo.thisCompletion, laitelaInfo.fastestCompletion);
     clearCelestialRuns();
-    if (Time.thisRealityRealTime.totalSeconds < 30) {
+    if (Time.thisRealityRealTime.totalSeconds < OREKI_LAITELA_TIER_WINDOW_SEC) {
       laitelaInfo.difficultyTier++;
       laitelaInfo.fastestCompletion = 300;
       completionText += laitelaBeatText(Laitela.maxAllowedDimension + 1);
@@ -1393,14 +1393,14 @@ function laitelaRealityTick(realDiff) {
     if (Laitela.realityReward > oldInfo.realityReward) {
       completionText += `<br><br>暗物质倍率：${formatX(oldInfo.realityReward, 2, 2)} ➜ ${formatX(Laitela.realityReward, 2, 2)}`;
       if (oldInfo.fastestCompletion === 3600 || oldInfo.fastestCompletion === 300 && oldInfo.difficultyTier > 0) {
-        if (Time.thisRealityRealTime.totalSeconds < 30) {
+        if (Time.thisRealityRealTime.totalSeconds < OREKI_LAITELA_TIER_WINDOW_SEC) {
           // First attempt - destabilising
           completionText += `<br>最佳完成时间：无 ➜ 已达到不稳定<br>可用的最高维度：${formatInt(8 - oldInfo.difficultyTier)} ➜ ${formatInt(8 - laitelaInfo.difficultyTier)}`;
         } else {
           // First attempt - not destabilising
           completionText += `<br>最佳完成时间：无 ➜ ${TimeSpan.fromSeconds(laitelaInfo.fastestCompletion).toStringShort()}<br>可用的最高维度：${formatInt(8 - laitelaInfo.difficultyTier)}`;
         }
-      } else if (Time.thisRealityRealTime.totalSeconds < 30) {
+      } else if (Time.thisRealityRealTime.totalSeconds < OREKI_LAITELA_TIER_WINDOW_SEC) {
         // Second+ attempt - destabilising
         completionText += `<br>最佳完成时间：${TimeSpan.fromSeconds(oldInfo.fastestCompletion).toStringShort()} ➜ 已达到不稳定<br>可用的最高维度：${formatInt(8 - oldInfo.difficultyTier)} ➜ ${formatInt(8 - laitelaInfo.difficultyTier)}`;
       } else {
