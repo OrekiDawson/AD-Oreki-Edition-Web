@@ -116,3 +116,19 @@
 - 大 PR 不自动拒绝，也不把静态 Node PASS 当作真实 Playwright 或 Pages DEPLOY PASS；继续按 Required Checks、受保护分支和部署门禁执行，不关闭规则或跳过真实浏览器测试。
 - 历史 PR #43 与其他已合并数据不强推、不重写；任何清理都必须先核对证据引用、长期备份可取回与回滚路径，然后通过独立可追溯变更实施。
 - Lead 在后续授权轮次自主管理规模和证据，保持快速迭代。本次仅提交长期规则，不修改现有 /goal/计时、Web 冻结上游、教程、构建或 Pages 生产部署。
+
+## 7. DeepSeek Lead 自主管理 Web/Pages CI/CD（2026-11-14，长期强制）
+
+> 细化 [AGENTS.md](../AGENTS.md) 第 14 节。本条为既有轮次的持续授权，不等于已经配置无人值守监控、自动部署或为 GitHub Actions 新增 AI 服务。
+
+### 7.1 负责范围与修复闭环
+
+- 在非峰时和当前开发授权范围内，Lead 主动检查 Web Node、Playwright/Android Chrome 默认视口、教程生成一致性、受保护 Pages 发布依赖的 Web CI。每轮定位具体仓库、源码 SHA、Actions Run/Job、失败日志，分类为业务错误、构建依赖、网络平台、权限或部署验证问题。
+- 采取“发现 → 复现与根因 → 最小修复 → 中文提交 → PR → Required Checks → 合规合并 → 新 SHA 复验”的闭环。不删测试、不屏蔽未知 console/pageerror、不改预期制造 PASS；偶发平台故障可做有上限的重试，确定性失败应修复源码/工作流。静态 Node 成功不能替代真实 Chromium/Playwright 或线上发布验收。
+- Lead 可维护和优化缓存、依赖、工作流与失败重试策略，但不能让 CI 内自动调用 DeepSeek API 审查/诊断；现有 Codex PR 审查机制及确定性检查继续保留。变更遵守独立分支、PR、工作树与发布环境互斥，不能覆盖其他 Agent 进展。
+
+### 7.2 发布权限与平台隔离
+
+- Web 保持与 Android AGP/AVD/四渠道完全独立的测试和发布决策。受保护 Pages 工作流只能部署已经批准的 Web `main` SHA、对应成功的 CI Run 与不可变 Artifact；部署后核对 `deployment.json`、线上资源、实际移动浏览器行为。Pages 生产管理由 ChatGPT 负责，DeepSeek 负责能被授予的诊断、修复与 PR，不得取代审批或直接写生产。
+- 仅在已经存在的发布授权、Required Checks、关键审查、需要的人工/环境批准和线上安全门禁全部满足时才能自动合并/发布。不得关闭 Ruleset、强推、泄露 Token、绕过 Web CI/Pages Deploy、直接手工覆盖 oreki.net 或未经用户授权改变冻结上游基线。
+- 遵守既有 DeepSeek 高峰全员停工和同轮次 `/goal` 状态，不凭这份长期规则自行启动常驻后台 Agent；未执行明确 `NOT RUN`，被真实权限/环境阻塞明确 `BLOCKED`。交付记录至少含 Web SHA/Run、Playwright 结果、Pages 发布 Run/线上 SHA（如果实际部署）、具体问题和下一步。
