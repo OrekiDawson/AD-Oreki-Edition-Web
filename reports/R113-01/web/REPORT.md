@@ -27,7 +27,7 @@ R112-01 只修了手机（≤900px）的通知条遮挡，并明确把桌面记�
 
 ## 3. 复现（修复前，真实 Chromium）
 
-脚本：`.tmp-r113/probe-toast.mjs`（本机临时证据，未入库）；流程：启动新档 → 冻结主循环 → 清空启动通知 →
+脚本：`.tmp/r113-web/scripts/probe-toast.mjs`（本机工作区证据，未入库）；流程：启动新档 → 冻结主循环 → 清空启动通知 →
 `GameUI.notify.success` 造 4 条 120s 长寿命通知 → `elementFromPoint` 命中测试 → **真实鼠标点击**「?」。
 
 ### 3.1 修复前（1280×800 / 1024×768）
@@ -91,7 +91,7 @@ vs `evidence/toast-ab/after-1280-4toast-noClick.png`（右侧 20×20 图标露�
 
 ### 6.2 手机视口回归（本次改动相关路径 + 关键路径，360×800 与 392×676）
 
-脚本：`.tmp-r113/regress-mobile.mjs`；Android Chrome UA + `isMobile`/`hasTouch` + DPR 3 / 2.625，全新 context、真实触控。
+脚本：`.tmp/r113-web/scripts/regress-mobile.mjs`；Android Chrome UA + `isMobile`/`hasTouch` + DPR 3 / 2.625，全新 context、真实触控。
 
 | 检查 | pixel5 360×800 | narrow 392×676 |
 | --- | --- | --- |
@@ -127,10 +127,10 @@ vs `evidence/toast-ab/after-1280-4toast-noClick.png`（右侧 20×20 图标露�
 
 本机原始证据（不入库，可再生）：
 
-- `.tmp/r113-web/toast/toast-desktop.json`、`.tmp/r113-web/toast-after2/toast-desktop.json`
-- `.tmp/r113-web/scan1/`（360/392 全页控件遮挡/横向溢出扫描，修复前基线：主界面与各页签 0 遮挡）
-- `.tmp/r113-web/h2p/h2p-result.json`（392×676 教程弹窗渲染检查：18 章、0 横向溢出）
-- `worktrees/web/r113-web-p1/.tmp-r113/*.mjs`（复现/回归脚本）
+- `/home/oreki/AD-Oreki-Unified/.tmp/r113-web/toast/toast-desktop.json`、`.../toast-after2/toast-desktop.json`
+- `/home/oreki/AD-Oreki-Unified/.tmp/r113-web/scan1/`（360/392 全页控件遮挡/横向溢出扫描，修复前基线：主界面与各页签 0 遮挡）
+- `/home/oreki/AD-Oreki-Unified/.tmp/r113-web/h2p/h2p-result.json`（392×676 教程弹窗渲染检查：18 章、0 横向溢出）
+- `/home/oreki/AD-Oreki-Unified/.tmp/r113-web/scripts/{probe-toast,regress-mobile,toast-shot}.mjs`（复现/回归脚本）
 
 ## 9. 复现命令
 
