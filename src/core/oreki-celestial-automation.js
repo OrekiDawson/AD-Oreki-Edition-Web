@@ -418,10 +418,13 @@ export const OrekiCelestialAutomation = {
           //   真的按成功（`eternity` 没返回 false）才记数。
           const willGainTp = Player.canEternity &&
             getTP(player.records.thisEternity.maxAM, true).gt(Currency.tachyonParticles.value);
-          if (willGainTp && eternity(false, true) !== false) {
+          // [R114-03] 真实永恒必须过单一 autoEternity 门禁（与 EC/膨胀入口同源）。
+          if (willGainTp && OrekiEternityAutomation.realEternityAllowed() &&
+            eternity(false, true) !== false) {
             this._dilationTpSeeds++;
           }
-        } else if (startDilatedEternity(true) === true) {
+        } else if (OrekiEternityAutomation.realEternityAllowed() &&
+          startDilatedEternity(true) === true) {
           this._dilationStarts++;
           this._lastDilationStartOkMs = now;
           return true;
@@ -441,13 +444,20 @@ export const OrekiCelestialAutomation = {
         // 停在膨胀态里空转。这里用**原版「退出膨胀」按钮的同一条路径**
         // （dilation.js:23 `animateAndUndilate` → `eternity(false,false,{switchingDilation:true})`）
         // 收尾，不伪造任何状态。
-        if (active && player.records.thisReality.maxDT.gte(OREKI_V_UNLOCK_DILATED_TIME)) {
+        // [R114-03] 退出膨胀走的是 eternity(..., { switchingDilation: true })；
+        // canEternity 为真时这是一次**真实结算**（giveEternityRewards），因此同样过门禁。
+        // 默认不豁免（与 Android 一致）：玩家关掉自动永恒后 MOD 不得替他真实永恒。
+        // 边界：门禁拦住时膨胀态会保持到下一次现实（reality 重置会清 active，见 reality 重置路径），
+        // 已在 PR 说明中登记为已知风险。
+        if (active && player.records.thisReality.maxDT.gte(OREKI_V_UNLOCK_DILATED_TIME) &&
+          OrekiEternityAutomation.realEternityAllowed()) {
           eternity(false, false, { switchingDilation: true });
         }
         return false;
       }
       if (player.records.thisReality.maxDT.gte(OREKI_V_UNLOCK_DILATED_TIME)) return false;
-      if (!active && startDilatedEternity(true) === true) {
+      if (!active && OrekiEternityAutomation.realEternityAllowed() &&
+        startDilatedEternity(true) === true) {
         this._dilationStarts++;
         this._lastDilationStartOkMs = now;
         return true;

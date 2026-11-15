@@ -692,12 +692,8 @@ export const OrekiEternityAutomation = {
       // 因此 autoEternity 关闭且此刻 canEternity 为真时，自动进入 EC == 自动永恒。
       // 该窗口内不自动进入；canEternity 为假时 EC 进入不会结算，自动化照常推进。
       // Android 同源门禁：OrekiAutoEternityGate.challengeAutoStartAllowed()。
-      try {
-        if (player.auto.eternity.isActive !== true &&
-            !this._eternityBootstrapActive() && Player.canEternity) return false;
-      } catch (e) {
-        return false;
-      }
+      // [R114-03] 统一走单一门禁 realEternityAllowed()（与 dilation/celestial 的 5 处同源）。
+      if (!this.realEternityAllowed()) return false;
       return challenge.start(true) === true;
     } catch (e) {
       this._err("buyEcStudiesAndStart", e);
@@ -1022,6 +1018,42 @@ export const OrekiEternityAutomation = {
     return false;
   },
 
+  /**
+   * [R114-03] **单一门禁**：MOD 是否允许发起一次「真实永恒（含真实结算）」。
+   *
+   * 为什么需要：本模块之外的 4 条 MOD 链路也会触发真实永恒或等价结算，
+   * 历史上各自只判 autobuyersOn / Pelle，**完全不看** autoEternity 单项开关
+   * ⇒ 玩家手动关掉自动永恒后仍可能被真实结算（与 Android PR #97 同类缺陷）：
+   *   · 自动进入 EC：原版 eternity-challenge.js:209 在 Player.canEternity 真时先 eternity() 结算；
+   *   · 进入膨胀 startDilatedEternity()：原版 dilation.js:43-52 内部调 eternity()；
+   *   · 膨胀中永恒播种 TP（eternity(false, true)）；
+   *   · 退出膨胀 switchingDilation（eternity(false, false, { switchingDilation: true })）。
+   *
+   * 语义（逐条对齐 Android OrekiAutoEternityGate.challengeAutoStartAllowed()）：
+   *   1. autoEternity 单项开关真实开着 ⇒ 允许；
+   *   2. 否则处于 R104 新档引导 / R114 已接管（adopted）窗口 ⇒ 允许（未解锁时玩家无法表达意愿）；
+   *   3. 否则 Player.canEternity 为假 ⇒ 允许：此时原版 eternity() 会直接 return false，
+   *      或仅做一次**无奖励**的膨胀切换重置（eternity.js:74-78 里 switchingDilation 在
+   *      !canEternity 时被置 force=true，不进 giveEternityRewards）——那是原版
+   *      「进入/退出膨胀」的固有行为，不是结算；
+   *   4. 其余（玩家关掉开关且此刻会真实结算）⇒ 阻止。
+   *
+   * 读不到开关/资格 ⇒ fail-closed（宁可少自动一次，也不误结算）。
+   *
+   * @returns {boolean} true = 允许发起真实永恒/结算
+   */
+  realEternityAllowed() {
+    try {
+      if (player.auto.eternity.isActive === true) return true;
+      if (this._eternityBootstrapActive()) return true;
+      // 只有**明确** read 到 canEternity=false 才放行（此时原版 eternity() 不会发奖励）；
+      // 读不到 / 非布尔 ⇒ fail-closed（宁可少自动一次，也不误结算）。
+      const canEternity = Player.canEternity;
+      return canEternity === false;
+    } catch (e) {
+      return false;
+    }
+  },
   _adoptEternityAutobuyerIfNeeded() {
     try {
       // [R114-01] 归属判定必须**先**观察真实值（adopted / userClosed / 本现实已启用）。
