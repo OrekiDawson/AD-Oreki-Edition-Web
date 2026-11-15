@@ -1,0 +1,210 @@
+[
+  {
+    "viewport": {
+      "name": "pixel5-360x800",
+      "width": 360,
+      "height": 800,
+      "dpr": 3
+    },
+    "checks": [
+      {
+        "name": "boot: #ui 可见 + GameUI.initialized",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "GUI 实时更新：4s 内反物质变化",
+        "ok": true,
+        "detail": {
+          "before": "3.30178968914959e+53",
+          "after": "1.66783693504493e+69"
+        }
+      },
+      {
+        "name": "启动信息弹窗可关闭",
+        "ok": true,
+        "detail": {
+          "dismissMethod": "real-click",
+          "modalBtnCount": 1
+        }
+      },
+      {
+        "name": "手机端「?」中心命中按钮自身",
+        "ok": true,
+        "detail": {
+          "hitClass": "o-tab-btn l-help-me",
+          "self": true
+        }
+      },
+      {
+        "name": "手机端「i」中心命中按钮自身",
+        "ok": true,
+        "detail": {
+          "hitClass": "o-tab-btn l-information l-help-me",
+          "self": true
+        }
+      },
+      {
+        "name": "手机端通知容器 right=80px（R112 窄屏规则未变）",
+        "ok": true,
+        "detail": "80px"
+      },
+      {
+        "name": "点「?」打开玩法说明",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "玩法说明可关闭",
+        "ok": true,
+        "detail": {
+          "closeCount": 1
+        }
+      },
+      {
+        "name": "抽屉导航可打开",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "点「选项」后抽屉收起且内容出现",
+        "ok": true,
+        "detail": {
+          "drawerExpanded": "false",
+          "hasExport": true,
+          "scrollWidth": 360,
+          "innerWidth": 360
+        }
+      },
+      {
+        "name": "返回维度页签且无横向溢出",
+        "ok": true,
+        "detail": {
+          "hasDimensions": true,
+          "scrollWidth": 360,
+          "innerWidth": 360
+        }
+      },
+      {
+        "name": "pageerror 为 0",
+        "ok": true,
+        "detail": []
+      },
+      {
+        "name": "非预期 console error 为 0",
+        "ok": true,
+        "detail": []
+      }
+    ],
+    "pageErrors": [],
+    "consoleErrors": [
+      "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". "
+    ],
+    "passed": 13,
+    "total": 13
+  },
+  {
+    "viewport": {
+      "name": "narrow-392x676",
+      "width": 392,
+      "height": 676,
+      "dpr": 2.625
+    },
+    "checks": [
+      {
+        "name": "boot: #ui 可见 + GameUI.initialized",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "GUI 实时更新：4s 内反物质变化",
+        "ok": true,
+        "detail": {
+          "before": "5.83313994862957e+54",
+          "after": "8.30877921712179e+98"
+        }
+      },
+      {
+        "name": "启动信息弹窗可关闭",
+        "ok": true,
+        "detail": {
+          "dismissMethod": "real-click",
+          "modalBtnCount": 1
+        }
+      },
+      {
+        "name": "手机端「?」中心命中按钮自身",
+        "ok": true,
+        "detail": {
+          "hitClass": "o-tab-btn l-help-me",
+          "self": true
+        }
+      },
+      {
+        "name": "手机端「i」中心命中按钮自身",
+        "ok": true,
+        "detail": {
+          "hitClass": "o-tab-btn l-information l-help-me",
+          "self": true
+        }
+      },
+      {
+        "name": "手机端通知容器 right=80px（R112 窄屏规则未变）",
+        "ok": true,
+        "detail": "80px"
+      },
+      {
+        "name": "点「?」打开玩法说明",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "玩法说明可关闭",
+        "ok": true,
+        "detail": {
+          "closeCount": 1
+        }
+      },
+      {
+        "name": "抽屉导航可打开",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "name": "点「选项」后抽屉收起且内容出现",
+        "ok": true,
+        "detail": {
+          "drawerExpanded": "false",
+          "hasExport": true,
+          "scrollWidth": 392,
+          "innerWidth": 392
+        }
+      },
+      {
+        "name": "返回维度页签且无横向溢出",
+        "ok": true,
+        "detail": {
+          "hasDimensions": true,
+          "scrollWidth": 392,
+          "innerWidth": 392
+        }
+      },
+      {
+        "name": "pageerror 为 0",
+        "ok": true,
+        "detail": []
+      },
+      {
+        "name": "非预期 console error 为 0",
+        "ok": true,
+        "detail": []
+      }
+    ],
+    "pageErrors": [],
+    "consoleErrors": [
+      "Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". "
+    ],
+    "passed": 13,
+    "total": 13
+  }
+]

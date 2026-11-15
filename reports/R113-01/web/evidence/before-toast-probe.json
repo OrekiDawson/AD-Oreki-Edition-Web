@@ -1,0 +1,231 @@
+{
+  "desktop1280": {
+    "data": {
+      "viewport": [
+        1280,
+        800
+      ],
+      "notifCount": 4,
+      "container": {
+        "rect": [
+          1144,
+          5,
+          126,
+          162
+        ],
+        "right": "0px",
+        "top": "0px",
+        "maxWidth": "none",
+        "zIndex": "1000"
+      },
+      "firstToast": [
+        1144,
+        130,
+        126,
+        38
+      ],
+      "help": {
+        "rect": [
+          1240,
+          45,
+          20,
+          20
+        ],
+        "center": [
+          1250,
+          55
+        ],
+        "hit": "DIV.o-notification.o-notification--success [遮挡回归通知 3]",
+        "hitIsSelf": false
+      },
+      "info": {
+        "rect": [
+          1240,
+          69,
+          20,
+          20
+        ],
+        "center": [
+          1250,
+          79
+        ],
+        "hit": "DIV.o-notification.o-notification--success [遮挡回归通知 3]",
+        "hitIsSelf": false
+      },
+      "helpCS": {
+        "right": "20px",
+        "width": "20px",
+        "height": "20px"
+      }
+    },
+    "before": {
+      "notifs": 4,
+      "modal": false
+    },
+    "after": {
+      "notifs": 3,
+      "notifChildren": [
+        "o-notification o-notification--success",
+        "o-notification o-notification--success",
+        "o-notification o-notification--success"
+      ],
+      "modal": false,
+      "h2pTabCount": 0
+    },
+    "errs": [],
+    "shot": "desktop1280-toast4.png"
+  },
+  "tablet1024": {
+    "data": {
+      "viewport": [
+        1024,
+        768
+      ],
+      "notifCount": 4,
+      "container": {
+        "rect": [
+          888,
+          5,
+          126,
+          162
+        ],
+        "right": "0px",
+        "top": "0px",
+        "maxWidth": "none",
+        "zIndex": "1000"
+      },
+      "firstToast": [
+        888,
+        130,
+        126,
+        38
+      ],
+      "help": {
+        "rect": [
+          984,
+          45,
+          20,
+          20
+        ],
+        "center": [
+          994,
+          55
+        ],
+        "hit": "DIV.o-notification.o-notification--success [遮挡回归通知 3]",
+        "hitIsSelf": false
+      },
+      "info": {
+        "rect": [
+          984,
+          69,
+          20,
+          20
+        ],
+        "center": [
+          994,
+          79
+        ],
+        "hit": "DIV.o-notification.o-notification--success [遮挡回归通知 3]",
+        "hitIsSelf": false
+      },
+      "helpCS": {
+        "right": "20px",
+        "width": "20px",
+        "height": "20px"
+      }
+    },
+    "before": {
+      "notifs": 4,
+      "modal": false
+    },
+    "after": {
+      "notifs": 3,
+      "notifChildren": [
+        "o-notification o-notification--success",
+        "o-notification o-notification--success",
+        "o-notification o-notification--success"
+      ],
+      "modal": false,
+      "h2pTabCount": 0
+    },
+    "errs": [],
+    "shot": "tablet1024-toast4.png"
+  },
+  "phone412": {
+    "data": {
+      "viewport": [
+        412,
+        915
+      ],
+      "notifCount": 4,
+      "container": {
+        "rect": [
+          232,
+          5,
+          100,
+          138
+        ],
+        "right": "80px",
+        "top": "0px",
+        "maxWidth": "322px",
+        "zIndex": "1000"
+      },
+      "firstToast": [
+        232,
+        113,
+        100,
+        31
+      ],
+      "help": {
+        "rect": [
+          344,
+          45,
+          48,
+          48
+        ],
+        "center": [
+          368,
+          69
+        ],
+        "hit": "DIV.o-tab-btn.l-help-me [?]",
+        "hitIsSelf": true
+      },
+      "info": {
+        "rect": [
+          344,
+          96,
+          48,
+          48
+        ],
+        "center": [
+          368,
+          120
+        ],
+        "hit": "DIV.o-tab-btn.l-information.l-help-me [i]",
+        "hitIsSelf": true
+      },
+      "helpCS": {
+        "right": "20px",
+        "width": "48px",
+        "height": "48px"
+      }
+    },
+    "before": {
+      "notifs": 4,
+      "modal": false
+    },
+    "after": {
+      "notifs": 4,
+      "notifChildren": [
+        "o-notification o-notification--success",
+        "o-notification o-notification--success",
+        "o-notification o-notification--success",
+        "o-notification o-notification--success"
+      ],
+      "modal": true,
+      "h2pTabCount": 16
+    },
+    "errs": [],
+    "shot": "phone412-toast4.png"
+  }
+}

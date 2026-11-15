@@ -1,0 +1,22 @@
+{
+  "containerRight": "0px",
+  "containerRect": [
+    1144,
+    5,
+    126,
+    162
+  ],
+  "helpRect": [
+    1240,
+    45,
+    20,
+    20
+  ],
+  "infoRect": [
+    1240,
+    69,
+    20,
+    20
+  ],
+  "helpCenterHit": "o-notification o-notification--success"
+}
