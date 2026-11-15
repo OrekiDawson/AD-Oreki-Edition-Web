@@ -904,13 +904,16 @@ export const OrekiEternityAutomation = {
   //          本会话不再强行打开；
   //   4. 门禁：未解锁（界面上没有这个开关）时允许「已接管 / 本会话全新档」驱动；
   //      已解锁只认原版开关真实值 —— 绝不每帧无条件把开关置 true；
-  //   5. 关闭 MOD 总开关或原版总开关 autobuyersOn=false ⇒ 不写、不驱动。
+  //   5. 关闭 MOD 总开关或原版总开关 autobuyersOn=false ⇒ 不写、不驱动；
+  //   6. [R114-02] 托管状态绑定**存档身份**（player.records.gameCreatedTime）：
+  //      导入/切换存档后上一个存档的归属状态一律失效（对齐 Android
+  //      OrekiAutoEternityAdoption.bindSave()），绝不把新存档里玩家关闭的开关写成 true。
   //
   // 为什么 Web 不需要额外持久化（用户裁决：不改存档格式、不写 player.json 字段）：
   //   adopted 的判定源就是**存档里已落盘的 isActive 真实值** —— 读档时开关为 true 即视为
   //   「MOD 已接管」，reality 复位后补回 true 正是玩家上一次的真实意愿；读档时为 false
   //   则 adopted=false ⇒ 依旧严格尊重玩家关闭（R101 P0 不回退）。userClosed / enabledAt
-  //   只是会话内的归属推断，不需要跨会话存活。
+  //   只是会话内的归属推断，不需要跨会话存活；跨存档隔离靠第 6 条的存档身份绑定完成。
   _realitiesValue() {
     try {
       const v = player?.realities;
@@ -931,8 +934,43 @@ export const OrekiEternityAutomation = {
     return null;
   },
 
+  /** 存档身份：Web 真实字段 records.gameCreatedTime（player.js:275 / storage.js:434）。 */
+  _saveIdentity() {
+    try {
+      const v = player?.records?.gameCreatedTime;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
+  // [R114-02] 对齐 Android OrekiAutoEternityAdoption.bindSave()：托管状态必须绑定存档身份。
+  // 导入/切换存档后，上一个存档的 adopted / userClosed / enabledAt 基线 / 新档会话采样
+  // 一律失效，重新按新存档的真实开关观察。否则实测会串味：A 档 adopted 后导入 B 档，
+  // B 档里玩家关闭的 isActive 被写成 true；A 档的「全新档」窗口也会串到已有进度档。
+  // 读不到身份（存档尚未就绪）⇒ fail-closed：不改任何状态，等下次调用再判定。
+  _bindSaveIdentity() {
+    const id = this._saveIdentity();
+    if (id === null) return;
+    const previous = this._eternityAutoSaveId;
+    if (previous === id) return;
+    this._eternityAutoSaveId = id;
+    // 首次记录身份（本会话还没有上一个存档）：内存态本来就属于当前存档，不清空。
+    // 只有「已知上一个存档 → 身份变化」才是导入/切换存档，此时才让旧状态失效。
+    if (previous === undefined || previous === null) return;
+    this._eternityAutobuyerAdopted = undefined;
+    this._eternityAutoUserClosed = false;
+    this._eternityAutoEnabledAtRealities = null;
+    this._eternityAutoEnabledAtRealTime = null;
+    this._eternityAutoLastSeenActive = undefined;
+    // 新档会话判定与 R107 的一次性结算模式配置同样按存档身份重来，不得串档。
+    delete this._freshSessionBootstrap;
+    this._eternityAutobuyerConfigured = false;
+  },
+
   _observeEternityAutobuyerSwitch() {
     try {
+      // 先做存档身份绑定（换档即清空上一个存档的归属状态）。
+      this._bindSaveIdentity();
       if (typeof player === "undefined" || !player || !player.auto || !player.auto.eternity) return;
       const active = player.auto.eternity.isActive === true;
       const realities = this._realitiesValue();
@@ -964,6 +1002,9 @@ export const OrekiEternityAutomation = {
   },
 
   _eternityBootstrapActive() {
+    // 门禁可先于 tickEternity 被 EC 入口调用：这里也要绑定存档身份，
+    // 否则换档后的第一次门禁仍会读到上一个存档的 adopted / 新档采样。
+    this._bindSaveIdentity();
     // 「本会话是否全新档」必须无条件 latch（即使本次不解锁也采样），
     // 与 R104 引入该窗口时一致：首次调用时的 eternities 决定整会话结论。
     const freshSession = this._sampleFreshSession();
