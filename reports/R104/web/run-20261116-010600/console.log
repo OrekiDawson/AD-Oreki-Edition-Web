@@ -1,0 +1,1298 @@
+[2026-11-15T17:06:01.378Z][error] Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+[2026-11-15T17:06:01.390Z][requestfailed] requestfailed https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer :: csp
+[2026-11-15T17:06:01.390Z][log] 🌌 Antimatter Dimensions: Reality Update 🌌
+[2026-11-15T17:06:01.496Z][info] [OREKI_CRUNCH_DEC] allow=true reason=pre-infinity
+[2026-11-15T17:06:01.496Z][info] [OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)
+[2026-11-15T17:06:02.243Z][requestfailed] requestfailed http://127.0.0.1:32937/public/images/stars-bg.webm :: net::ERR_ABORTED
+[2026-11-15T17:06:02.243Z][requestfailed] requestfailed http://127.0.0.1:32937/public/images/realityanimbg.webm :: net::ERR_ABORTED
+[2026-11-15T17:06:02.785Z][error] Loading the script 'https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer' violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+[2026-11-15T17:06:02.791Z][requestfailed] requestfailed https://www.googletagmanager.com/gtag/js?id=UA-77268961-1&l=dataLayer :: csp
+[2026-11-15T17:06:02.791Z][log] 🌌 Antimatter Dimensions: Reality Update 🌌
+[2026-11-15T17:06:02.875Z][info] [OREKI_CRUNCH_DEC] allow=true reason=pre-infinity
+[2026-11-15T17:06:02.875Z][info] [OrekiCrunchInterval] managed interval 1 -> 60 (resume:pre-infinity)
+[2026-11-15T17:06:07.003Z][info] [OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip
+[2026-11-15T17:06:14.177Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:06:14.177Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)
+[2026-11-15T17:06:16.353Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:06:16.353Z][info] [OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)
+[2026-11-15T17:06:17.842Z][requestfailed] requestfailed http://127.0.0.1:32937/public/images/stars-bg.webm :: net::ERR_ABORTED
+[2026-11-15T17:06:17.849Z][requestfailed] requestfailed http://127.0.0.1:32937/public/images/realityanimbg.webm :: net::ERR_ABORTED
+[2026-11-15T17:06:19.275Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:06:19.285Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:06:24.064Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:06:24.065Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:06:27.461Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:06:27.473Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:06:31.553Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:06:31.564Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:06:37.432Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:06:37.442Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:06:43.334Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:06:43.344Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:06:49.312Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:06:49.316Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:06:55.450Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:06:55.452Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:00.193Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:00.203Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:09.907Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:09.907Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:20.000Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:20.004Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:id-peak-reached)
+[2026-11-15T17:07:20.655Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:20.668Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:21.683Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:21.688Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:21.689Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:21.707Z][info] [OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)
+[2026-11-15T17:07:21.786Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:21.786Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:21.786Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:21.787Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:id-peak-reached)
+[2026-11-15T17:07:22.809Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:22.809Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:24.427Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:24.428Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:25.771Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:25.771Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:25.773Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:25.774Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:25.778Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:25.779Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:25.780Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:25.806Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:25.806Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:25.878Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:25.879Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:26.173Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:26.173Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:27.225Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:27.231Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:29.405Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:29.408Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:07:29.860Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:29.861Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:29.868Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:29.868Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:29.868Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:29.871Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:29.872Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:29.877Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:29.879Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:29.879Z][info] [OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)
+[2026-11-15T17:07:29.896Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:29.897Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:29.937Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:29.940Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:30.162Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:07:30.163Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:07:30.456Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ready
+[2026-11-15T17:07:30.467Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ready)
+[2026-11-15T17:07:30.922Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:30.922Z][info] [OREKI_MANAGED_AUTO] key=ipmult nowMs=88683.4 event=player-disable-recorded
+[2026-11-15T17:07:30.947Z][info] [OREKI_MANAGED_AUTO] key=ipmult nowMs=88712.4 event=restore-due
+[2026-11-15T17:07:30.947Z][info] [OREKI_MANAGED_AUTO] key=ipmult nowMs=88712.4 event=isActive-reenabled
+[2026-11-15T17:07:31.854Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:31.854Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:32.381Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:32.381Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:32.648Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:32.649Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:33.832Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:33.832Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:33.833Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:33.833Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:34.983Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:35.001Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:35.029Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:35.029Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:35.153Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:35.153Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:35.251Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:35.251Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:35.283Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:35.283Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:35.385Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:35.385Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:35.450Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:35.450Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:35.611Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:35.619Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:35.649Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:35.649Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:36.003Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:36.009Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:36.047Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:36.047Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:36.462Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:36.469Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:36.501Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:36.501Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:36.990Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:37.005Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:37.523Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:37.524Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:38.376Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:38.388Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:38.422Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:38.422Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:39.087Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.091Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.092Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.096Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.097Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.099Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.113Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.118Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.127Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.127Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.138Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.140Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.143Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.144Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.166Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.168Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.168Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.169Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.173Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.174Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.199Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.200Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.202Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.203Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.207Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.209Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.232Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.233Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.235Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.236Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.241Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.242Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:39.266Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.276Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:39.298Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.299Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.331Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.332Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.369Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.369Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.437Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.438Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.537Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.537Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.665Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.666Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.810Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.810Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:39.937Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:39.938Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:40.097Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:40.106Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:40.260Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:40.263Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:40.291Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:40.304Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:40.372Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:40.372Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:40.389Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:40.389Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:40.398Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:40.401Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:40.698Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:40.701Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:40.728Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:40.733Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:41.059Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:41.066Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:41.414Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:41.420Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:41.788Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:41.789Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:41.809Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:41.811Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:41.819Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:41.821Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:42.316Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:42.316Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:42.335Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:42.336Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:42.339Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:42.356Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:42.779Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:42.782Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:42.801Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:42.802Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:42.804Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:42.817Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:43.160Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.167Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.167Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.167Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.168Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.168Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.174Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.174Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.194Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.198Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.203Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.203Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.203Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.203Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.204Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.209Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.228Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.229Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.230Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.231Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.236Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.237Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.243Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.243Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.262Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.262Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.263Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.264Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.270Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.270Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.276Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.279Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.293Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.297Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.298Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.298Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.299Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.303Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.305Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.305Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.312Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.312Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:43.329Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.336Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.343Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.344Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:43.358Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.362Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.369Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.376Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.399Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.401Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.429Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.429Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.461Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.461Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.498Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.502Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.541Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.541Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.684Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.684Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.684Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.684Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.733Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.737Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.825Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.828Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:43.928Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:43.929Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:44.032Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:44.033Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:44.053Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:44.058Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:44.058Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:44.070Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:44.166Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:44.167Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:44.183Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:44.196Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:48.278Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.279Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.280Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.280Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.288Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.288Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.288Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.288Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.307Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.315Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.316Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.316Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.317Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.318Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.324Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.324Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.327Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.327Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:48.344Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.345Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.346Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.350Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.350Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.354Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.356Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.364Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:48.378Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.378Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.379Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.380Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.381Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.382Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.386Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.387Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.390Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.390Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.408Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.408Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.409Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.415Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.416Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.416Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.417Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.419Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.425Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.426Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:48.441Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.444Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.446Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.448Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.452Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.457Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:48.473Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.477Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.480Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.484Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.485Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.487Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.510Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.511Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.519Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.519Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.552Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.552Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.573Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.577Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.606Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.609Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.642Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.642Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.676Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.677Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.711Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.712Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.750Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.750Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.814Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.814Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.876Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.877Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:48.948Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:48.949Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.041Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.041Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.113Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.114Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.202Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.215Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.300Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.305Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.306Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.316Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.333Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.339Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.339Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.341Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.347Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.352Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.365Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.372Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.373Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.373Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.381Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.381Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.399Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.402Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.403Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.407Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.410Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.411Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.431Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.433Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.436Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.436Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.437Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.448Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.449Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.452Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.465Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.471Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.471Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.472Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.479Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.482Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.497Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.497Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.506Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.511Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.562Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.565Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.642Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.642Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.739Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.739Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.841Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.841Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:49.997Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:49.998Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:50.192Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:50.193Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:50.428Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:50.428Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:50.832Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:50.833Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:50.848Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:50.852Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:50.858Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:50.865Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:51.347Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:51.348Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.369Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.379Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.380Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.385Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.386Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.386Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.388Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.393Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.400Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.407Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.408Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.412Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.412Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.413Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.419Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.419Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.422Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.423Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:52.438Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.438Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.440Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.443Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.444Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.446Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.447Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.453Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.456Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.457Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:52.468Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.470Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.473Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.480Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.481Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.482Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.486Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.488Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.498Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.502Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.503Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.507Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.515Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.517Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.531Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.536Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.536Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.552Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.568Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.573Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.580Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.581Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.599Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.601Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.633Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.633Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.668Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.669Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.706Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.708Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.743Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.750Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.801Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.803Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.872Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.874Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.941Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:52.944Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:52.964Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:52.980Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:53.062Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:53.064Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:53.162Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:53.166Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:53.271Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:53.272Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:55.438Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:55.440Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:56.458Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:56.468Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:56.468Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:56.471Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:56.472Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:56.474Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:56.476Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:56.478Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:56.492Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:56.497Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:56.500Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-15T17:07:56.500Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-15T17:07:56.511Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:56.549Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:56.610Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:56.634Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:57.264Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:57.299Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:57.494Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:57.527Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:57.560Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:57.592Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:57.756Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:57.792Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:07:58.515Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:07:58.552Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:00.596Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:00.634Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:00.673Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:00.695Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:04.791Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:04.828Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:05.667Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:05.668Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:05.674Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:05.675Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:05.675Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:05.680Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:05.680Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:05.683Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:05.698Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:05.720Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:05.882Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:05.916Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:08.755Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:08.788Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:12.881Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:12.909Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:17.795Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:17.830Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:17.915Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:17.937Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:17.969Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:19.245Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:19.278Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:21.000Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:21.030Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:21.924Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:21.964Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:22.035Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:22.060Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:25.087Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:25.115Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:25.165Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:25.195Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:27.263Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:27.300Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:31.145Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:33.010Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:33.042Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:34.230Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:34.260Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:35.284Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:35.318Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:36.257Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:36.936Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:36.968Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:37.726Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:37.757Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:39.345Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:39.377Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:41.523Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:41.561Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:08:49.556Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:08:52.643Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:08:52.681Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:06.916Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:09:07.262Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:07.297Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:08.388Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:08.424Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:11.945Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:11.982Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:12.676Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:12.708Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:24.274Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:09:24.623Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:24.654Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:25.745Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:25.784Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:27.366Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:27.396Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:29.604Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:29.636Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:41.634Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:09:45.876Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:45.914Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:46.566Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:46.605Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:51.866Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:09:51.886Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:51.922Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:52.216Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:52.247Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:52.775Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:52.803Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:53.762Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:09:53.800Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:09:59.982Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:00.007Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:00.038Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:00.336Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:00.367Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:00.686Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:00.724Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:01.427Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:01.453Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:02.113Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:02.146Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:02.678Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:02.710Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:08.168Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:08.184Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:08.216Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:08.514Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:08.545Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:08.809Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:08.842Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:10.235Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:10.265Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:16.352Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:16.367Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:16.403Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:16.700Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:16.731Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:17.432Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:17.470Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:18.393Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:18.394Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:18.396Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:18.399Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:18.401Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:18.405Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:18.409Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:18.410Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:10:18.454Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:18.484Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:19.533Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:19.573Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:19.863Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:19.897Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:26.595Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:26.687Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:26.715Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:30.675Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:30.768Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:30.802Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:30.869Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:30.901Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:30.932Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:30.970Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:31.559Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:31.587Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:34.763Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:34.860Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:34.889Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:35.054Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:35.094Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:35.339Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:35.372Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:38.862Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:38.957Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:38.988Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:39.062Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:39.093Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:42.951Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:43.049Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:43.085Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:43.254Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:43.299Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:44.948Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:44.979Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:47.038Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:47.130Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:47.154Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:51.127Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:51.211Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:51.247Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:54.325Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:54.364Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:55.191Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:55.284Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:55.318Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:58.702Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:58.741Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:59.294Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:10:59.405Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:59.445Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:59.638Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:59.671Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:10:59.702Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:10:59.736Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:00.588Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:00.612Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:00.688Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:00.720Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:02.637Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:02.672Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:03.365Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:03.460Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:03.495Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:03.923Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:03.954Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:07.472Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:07.566Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:07.607Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:07.659Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:07.684Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:10.724Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:10.760Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:11.573Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:11.723Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:11.767Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:11.843Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:11.879Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:12.770Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:12.807Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:15.652Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:15.752Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:15.788Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:17.390Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:17.426Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:19.747Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:19.841Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:19.861Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:19.927Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:19.959Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:20.205Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:20.234Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:23.839Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:23.919Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:23.949Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:24.027Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:24.059Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:24.088Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:24.152Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:27.928Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:28.014Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:28.043Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:28.109Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:28.141Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:28.176Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:28.209Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:29.131Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:29.166Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:29.429Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:29.465Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:31.179Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:31.212Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:31.541Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:31.576Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:32.026Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:32.123Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:32.149Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:32.172Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:32.201Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:34.020Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:34.049Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:35.274Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:35.307Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:35.631Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:35.667Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:36.112Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:36.193Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:36.230Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:36.294Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:36.329Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:36.365Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:36.388Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:38.372Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:38.408Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:39.261Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:39.306Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:39.381Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:39.413Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:39.472Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:39.535Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:40.203Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:40.289Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:40.321Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:42.143Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:42.178Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:43.486Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:43.529Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:44.306Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:44.410Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:44.450Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:44.520Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:44.550Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:45.749Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:45.784Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:47.465Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:47.502Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:47.602Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:47.680Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:48.341Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:48.435Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:48.477Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:49.040Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:49.075Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:51.533Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:51.575Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:51.707Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:51.776Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:52.430Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:52.560Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:52.594Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:55.620Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:55.654Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:55.770Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:55.852Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:56.507Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:11:56.639Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:56.674Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:56.995Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:57.024Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:57.345Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:57.379Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:57.735Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:57.771Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:59.692Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:59.722Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:11:59.826Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:11:59.893Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:00.248Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:00.282Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:00.596Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:12:00.678Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:00.712Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:00.779Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:00.810Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:00.846Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:00.875Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:01.470Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:01.505Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:03.782Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:03.812Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:03.914Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:03.979Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:04.692Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:12:04.774Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:04.807Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:04.871Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:04.907Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:04.937Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:04.970Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:08.779Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:12:08.779Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:12:08.833Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:11.965Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:12.000Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:12.096Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:12.163Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:12.393Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:12.428Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:12.525Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:12.559Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:12.874Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:12:12.874Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:12:12.924Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:13.845Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:13.878Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:16.072Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:16.101Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:16.190Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:16.259Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:16.885Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:16.918Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:16.965Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:12:16.965Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:12:17.015Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:21.055Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:12:21.055Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:12:21.112Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:22.126Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:22.161Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:25.145Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:12:25.145Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:12:25.195Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:26.491Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:26.520Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:28.333Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:28.369Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:28.463Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:28.497Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:29.426Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:29.459Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:29.850Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:29.888Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:34.674Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:34.705Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:35.132Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:35.166Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:35.692Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:35.727Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:12:36.750Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:12:36.787Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:13:16.173Z][info] [OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip
+[2026-11-15T17:13:30.272Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:30.272Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)
+[2026-11-15T17:13:30.409Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:30.409Z][info] [OrekiCrunchInterval] managed interval 5 -> 3600 (pause:id-peak-wait)
+[2026-11-15T17:13:30.618Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:30.636Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:30.916Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:30.935Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:31.284Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:31.296Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:31.743Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:31.762Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:32.267Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:32.281Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:33.827Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:33.833Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:35.567Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:35.584Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:37.448Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:37.465Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:39.427Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:39.450Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:41.352Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:41.355Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:42.333Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:42.348Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:44.345Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:44.359Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:46.762Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:46.772Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:49.625Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:49.642Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:52.397Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:52.411Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:13:57.059Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:13:57.066Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:02.395Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:02.415Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:05.961Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:05.974Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:10.423Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:10.427Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:13.782Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:13.794Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:18.379Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:18.382Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:22.594Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:22.614Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:27.920Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:27.923Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:33.285Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:33.305Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:37.150Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:37.159Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:37.163Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:37.163Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:id-peak-reached)
+[2026-11-15T17:14:40.744Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:40.762Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:42.758Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:42.758Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:42.762Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:42.943Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:42.945Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:43.130Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:43.134Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:43.337Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:43.338Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:43.567Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:43.567Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:43.816Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:43.822Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:44.074Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:44.076Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:44.344Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:44.344Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:44.684Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:44.686Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:45.041Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:45.043Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:45.435Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:45.436Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:45.891Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:45.895Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:46.429Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:46.434Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:46.946Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:46.949Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:47.450Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:47.453Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:47.941Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:47.942Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:48.531Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:48.534Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:48.794Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:48.796Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-15T17:14:50.821Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-15T17:14:50.821Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:14:50.824Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ready
+[2026-11-15T17:14:52.865Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:14:53.077Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:14:53.114Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:14:53.178Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:14:53.213Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:14:53.863Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:14:53.902Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:14:56.106Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:14:56.167Z][info] [OrekiCrunchInterval] managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-15T17:15:00.967Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:15:02.328Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:15:03.119Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:15:27.222Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:27.303Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:27.393Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:27.469Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:27.536Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:27.598Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:27.663Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:27.735Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:27.818Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:27.907Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:28.007Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:28.117Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:28.220Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:28.221Z][info] [OrekiCrunchInterval] managed interval 5 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:15:28.251Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:15:28.353Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:28.353Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:15:28.378Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:15:28.514Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:28.630Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:28.860Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:29.083Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:29.311Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:29.603Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:29.892Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:30.165Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:30.178Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:30.476Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:30.766Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:31.048Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:31.373Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:31.659Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:31.936Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:31.937Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:15:31.978Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:15:32.395Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:32.814Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:33.281Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:33.717Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:34.171Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:34.503Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:34.879Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:35.232Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:37.318Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:37.533Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:37.705Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:37.925Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:38.139Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:38.356Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:38.579Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:38.805Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:38.826Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:39.060Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:39.477Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:39.816Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:40.216Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:40.216Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:15:40.245Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:15:40.633Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:41.110Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:41.552Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:42.013Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:42.513Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:43.039Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:43.503Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:43.503Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:15:43.535Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:15:44.035Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:44.517Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:45.030Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:45.367Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.383Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.387Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.390Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.394Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.395Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.400Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.413Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.574Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.782Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:47.974Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:48.213Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:48.443Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:48.676Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:48.676Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:15:48.709Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:15:48.894Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:49.168Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:49.494Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:49.812Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:50.147Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:50.463Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:50.785Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:51.101Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:51.101Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:15:51.144Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:15:51.451Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:51.786Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:52.202Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:52.602Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:53.027Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:15:53.446Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:01.497Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:03.532Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:03.539Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:03.546Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:03.552Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:03.556Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:03.565Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:03.565Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:16:03.608Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:16:09.549Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:11.563Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:11.567Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:11.573Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:11.576Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:11.581Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:11.581Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:16:11.614Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:16:17.601Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:19.612Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:19.617Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:19.622Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:19.625Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:19.631Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:19.632Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:16:19.674Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:16:25.653Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:27.664Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:33.706Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:35.728Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:41.757Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:43.793Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:49.875Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:51.899Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:57.932Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:16:59.945Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:17:06.026Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:17:08.036Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:17:08.036Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:17:08.137Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:17:16.095Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:02.467Z][log] [R38-IU15] 封锁已生效：原版要求锁 + ID1~ID8 购买禁用 + ID 自动购买器关闭 + EC7 跳过
+[2026-11-15T17:18:02.468Z][log] [R38-IU15] 封锁开始（原版要求锁 + ID 全禁买 + 跳过 EC7），目标 amE>=1.0e+8 imCap=1.49e+9；等待下一次现实重置后开始计时
+[2026-11-15T17:18:20.592Z][log] [R38-IU15] 干净现实开始：realities=10 amE=1e9.55e+4
+[2026-11-15T17:18:56.630Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:56.775Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:56.919Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:57.054Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:57.220Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:57.440Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:57.687Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:57.837Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:58.003Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:58.161Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:58.357Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:58.551Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:58.786Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:59.014Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:59.268Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:59.542Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:18:59.878Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:19:00.256Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:19:00.588Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:19:00.959Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:19:01.384Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:19:01.749Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:19:02.179Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:19:02.660Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-15T17:19:03.148Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:03.181Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:19:09.056Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:09.090Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:19:09.188Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:09.222Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:19:09.319Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:09.354Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:19:10.181Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:10.212Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:19:18.135Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:18.166Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:19:24.572Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:24.608Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:19:27.418Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:27.454Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:19:35.813Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:35.846Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:19:46.680Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:46.713Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:19:54.167Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:54.210Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:19:55.446Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:19:55.474Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:20:03.294Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:03.332Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:20:15.810Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:15.848Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:20:16.757Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:16.789Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:20:18.324Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:18.357Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:20:19.515Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:19.551Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:20:25.684Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:25.720Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:20:29.240Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:29.275Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:20:31.921Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:31.951Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:20:32.941Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:32.975Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:20:44.263Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:44.292Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:20:46.943Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:46.976Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:20:47.933Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:47.974Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:20:50.928Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:50.960Z][info] [OrekiCrunchInterval] managed interval 3600 -> 5 (resume:eternity-ip-jump)
+[2026-11-15T17:20:51.760Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:20:51.793Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:21:00.592Z][log] [R38-IU15] 封锁已解除（iu15-bought）
+[2026-11-15T17:22:01.110Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:22:01.165Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:24:59.237Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:24:59.308Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:32:12.879Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:32:12.915Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:32:13.882Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:32:13.924Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:32:14.909Z][info] [OrekiCrunchInterval] managed interval 60 -> 3600 (pause:ep-high-grow)
+[2026-11-15T17:32:14.954Z][info] [OrekiCrunchInterval] managed interval 3600 -> 60 (pause:eternity-grow)
+[2026-11-15T17:37:27.858Z][log] [R38-IU25] 已买入（tier=8 im=1.33e+10 符文=0）
+[2026-11-15T17:37:27.923Z][info] [OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip
+[2026-11-15T17:38:07.345Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-15T17:38:07.345Z][info] [OrekiCrunchInterval] managed interval 60 -> 5 (resume:ip-jump)
+[2026-11-15T17:41:13.873Z][runner] 日志限流：省略 190469 条重复/超量 console 行（前缀计数见 summary）
+[2026-11-15T17:41:13.873Z][runner] 日志限流：省略 190469 条重复/超量 console 行（前缀计数见 summary）
