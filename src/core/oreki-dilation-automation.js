@@ -456,6 +456,13 @@ export const OrekiDilationAutomation = {
     if (!st) { this._step = "no-study"; return null; }
 
     if (st.isBought) {
+      // [R114-03] 进入 EC 在 Player.canEternity 为真时等同一次真实永恒
+      // （eternity-challenge.js:209 eternity(false, auto, { enteringEC: true })），
+      // 必须过与主链同一个 autoEternity 单一门禁（对齐 Android PR #97 / OrekiEcAutomation）。
+      if (!OrekiEternityAutomation.realEternityAllowed()) {
+        this._step = "gate:eternity-off";
+        return null;
+      }
       if (EternityChallenge(target).start(true) === true) {
         this._actions++;
         this._lastStart = target;

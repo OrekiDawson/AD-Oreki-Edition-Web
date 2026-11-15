@@ -561,6 +561,109 @@ try {
     src.includes("if (id === 1 || id === 4) return false;"));
 }
 
+// ---------------- ⑭ [R114-03] 真实永恒单一门禁（EC / 膨胀 / TP 播种 / 退出膨胀） ----------------
+//
+// 背景：主链（tickEternity）与 EC 自动进入早就有 autoEternity 门禁，但另有 5 条 MOD 链路
+// 会触发真实永恒却完全不看该开关（dilation 深层 EC 直启、celestial 的 eternity /
+// startDilatedEternity / switchingDilation）—— 与 Android PR #97 同类缺陷。
+// 本组锁死：单一门禁 realEternityAllowed() 的语义 + 5 处调用点都实际 consult 它。
+{
+  const gateCase = ({ autoEternity, canEternity, freshSession = false, adopted = false,
+    unlocked = true, userClosed = false }) => {
+    reset();
+    player.auto.eternity.isActive = autoEternity;
+    env.canEternity = canEternity;
+    A._freshSessionBootstrap = freshSession;
+    if (adopted) A._eternityAutobuyerAdopted = true;
+    A._eternityAutoUserClosed = userClosed;
+    A._eternityAutoLastSeenActive = autoEternity;
+    A.holdForRealityUpgrade10 = () => false;
+    A.ecEntryPending = () => false;
+    globalThis.EternityMilestone = { autobuyerEternity: { isReached: unlocked } };
+    const allowed = A.realEternityAllowed();
+    delete globalThis.EternityMilestone;
+    return allowed;
+  };
+
+  check("门禁：autoEternity 开 ⇒ 允许真实永恒",
+    gateCase({ autoEternity: true, canEternity: true }) === true);
+  check("门禁：autoEternity 关 + canEternity 真 + 已解锁（无窗口）⇒ 阻止",
+    gateCase({ autoEternity: false, canEternity: true, unlocked: true }) === false);
+  check("门禁：autoEternity 关 + canEternity 假 ⇒ 允许（此时原版 eternity 不结算）",
+    gateCase({ autoEternity: false, canEternity: false }) === true);
+  check("门禁：autoEternity 关 + R104 新档引导窗口 + 未解锁 ⇒ 允许",
+    gateCase({ autoEternity: false, canEternity: true, freshSession: true, unlocked: false }) === true);
+  check("门禁：autoEternity 关 + R114 已接管 + 未解锁 ⇒ 允许（玩家此时无 UI 开关）",
+    gateCase({ autoEternity: false, canEternity: true, adopted: true, unlocked: false }) === true);
+  check("门禁：autoEternity 关 + 已接管但已解锁 + canEternity 真 ⇒ 阻止（只认真实开关）",
+    gateCase({ autoEternity: false, canEternity: true, adopted: true, unlocked: true }) === false);
+  check("门禁：玩家手动关闭（userClosed）+ canEternity 真 ⇒ 阻止",
+    gateCase({ autoEternity: false, canEternity: true, userClosed: true, unlocked: true }) === false);
+  check("门禁：canEternity 读不到（非布尔）⇒ fail-closed 阻止",
+    (() => {
+      reset();
+      player.auto.eternity.isActive = false;
+      A._freshSessionBootstrap = false;
+      globalThis.EternityMilestone = { autobuyerEternity: { isReached: true } };
+      const savedPlayer = globalThis.Player;
+      globalThis.Player = { canEternity: undefined };
+      try {
+        return A.realEternityAllowed() === false;
+      } finally {
+        globalThis.Player = savedPlayer;
+        delete globalThis.EternityMilestone;
+      }
+    })());
+
+  const autoSrc2 = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
+  const dilSrc2 = readFileSync(path.join(ROOT, "src/core/oreki-dilation-automation.js"), "utf8");
+  const celSrc2 = readFileSync(path.join(ROOT, "src/core/oreki-celestial-automation.js"), "utf8");
+
+  check("单一门禁定义在 oreki-eternity-automation.js（realEternityAllowed）",
+    autoSrc2.includes("realEternityAllowed() {"));
+  check("EC 主链调用点使用同一门禁（buyEcStudiesAndStart）",
+    autoSrc2.includes("if (!this.realEternityAllowed()) return false;"));
+
+  // marker 的每次出现，都必须在前 400 字符内出现 realEternityAllowed 判据
+  const gatedBefore = (src, marker) => {
+    let from = 0;
+    let found = 0;
+    while (true) {
+      const idx = src.indexOf(marker, from);
+      if (idx < 0) break;
+      found += 1;
+      const gateIdx = src.lastIndexOf("realEternityAllowed", idx);
+      if (gateIdx < 0 || idx - gateIdx > 400) return { ok: false, found };
+      from = idx + marker.length;
+    }
+    return { ok: found > 0, found };
+  };
+
+  const ecStart = gatedBefore(dilSrc2, "EternityChallenge(target).start(true)");
+  check("dilation 深层 EC 直启（EternityChallenge.start）前有单一门禁",
+    ecStart.ok === true, "found=" + ecStart.found);
+
+  // 注释里也出现过同名函数文本，因此这两项按「调用点精确片段」断言，而不是全文扫描。
+  check("celestial TP 播种：eternity(false, true) 前置单一门禁",
+    celSrc2.includes("willGainTp && OrekiEternityAutomation.realEternityAllowed() &&") &&
+    celSrc2.includes("eternity(false, true) !== false)"));
+
+  check("celestial 进入膨胀：startDilatedEternity(true) 两处均前置单一门禁",
+    celSrc2.includes("} else if (OrekiEternityAutomation.realEternityAllowed() &&\n          startDilatedEternity(true) === true)") &&
+    celSrc2.includes("if (!active && OrekiEternityAutomation.realEternityAllowed() &&\n        startDilatedEternity(true) === true)"));
+
+  const switchDil = gatedBefore(celSrc2, "eternity(false, false, { switchingDilation: true })");
+  check("celestial 退出膨胀 switchingDilation 前有单一门禁（默认不豁免）",
+    switchDil.ok === true, "found=" + switchDil.found);
+
+  check("celestial 至少 4 处引用单一门禁",
+    celSrc2.split("realEternityAllowed").length - 1 >= 4,
+    "count=" + (celSrc2.split("realEternityAllowed").length - 1));
+  check("dilation 至少 1 处引用单一门禁",
+    dilSrc2.split("realEternityAllowed").length - 1 >= 1,
+    "count=" + (dilSrc2.split("realEternityAllowed").length - 1));
+}
+
 // ---------------- 汇总 ----------------
 console.log(`\n网页版自动永恒闸门回归：${checks} 项检查，失败 ${failures.length} 项`);
 if (failures.length) {
