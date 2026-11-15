@@ -891,26 +891,112 @@ export const OrekiEternityAutomation = {
     return !this._eternitiesLt(100);
   },
 
+  // ------------------------------------------------------- [R114-01] 开关归属判定
+  //
+  // 与 Android 定稿 OrekiAutoEternityAdoption.kt 同语义的 Web 最小实现：
+  //   1. 原版 Reality 复位把 auto.eternity.isActive 置 false 是**原版设计**
+  //      （autobuyers/eternity-autobuyer.js:105-109：未达 autobuyerEternity 里程碑即关）；
+  //   2. 每帧观察开关真实值：为 true → 记 adopted=true、清 userClosed（玩家手动开 ⇒ 重新接管）；
+  //   3. 观察到 true→false 时区分归属：
+  //        · realities 增加 / thisReality 计时回退（reality.js:666-668 复位）⇒ 原版复位，
+  //          不是玩家的关闭决定，随后由本模块补回 true；
+  //        · 同现实内被关（两个信号都可用且都没回退）⇒ 判玩家手动关闭，userClosed 粘滞，
+  //          本会话不再强行打开；
+  //   4. 门禁：未解锁（界面上没有这个开关）时允许「已接管 / 本会话全新档」驱动；
+  //      已解锁只认原版开关真实值 —— 绝不每帧无条件把开关置 true；
+  //   5. 关闭 MOD 总开关或原版总开关 autobuyersOn=false ⇒ 不写、不驱动。
+  //
+  // 为什么 Web 不需要额外持久化（用户裁决：不改存档格式、不写 player.json 字段）：
+  //   adopted 的判定源就是**存档里已落盘的 isActive 真实值** —— 读档时开关为 true 即视为
+  //   「MOD 已接管」，reality 复位后补回 true 正是玩家上一次的真实意愿；读档时为 false
+  //   则 adopted=false ⇒ 依旧严格尊重玩家关闭（R101 P0 不回退）。userClosed / enabledAt
+  //   只是会话内的归属推断，不需要跨会话存活。
+  _realitiesValue() {
+    try {
+      const v = player?.realities;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+      if (v && typeof v.toNumber === "function") {
+        const n = v.toNumber();
+        return Number.isFinite(n) ? n : null;
+      }
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
+  _thisRealityRealTime() {
+    try {
+      const v = player?.records?.thisReality?.realTime;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
+  _observeEternityAutobuyerSwitch() {
+    try {
+      if (typeof player === "undefined" || !player || !player.auto || !player.auto.eternity) return;
+      const active = player.auto.eternity.isActive === true;
+      const realities = this._realitiesValue();
+      const realTime = this._thisRealityRealTime();
+      if (active) {
+        // 玩家（或上一会话）真实开着 ⇒ 本会话视为已接管，恢复链路成立。
+        this._eternityAutobuyerAdopted = true;
+        this._eternityAutoUserClosed = false;
+        this._eternityAutoEnabledAtRealities = realities;
+        this._eternityAutoEnabledAtRealTime = realTime;
+        this._eternityAutoLastSeenActive = true;
+        return;
+      }
+      if (this._eternityAutoLastSeenActive === true) {
+        const realitiesReset = this._eternityAutoEnabledAtRealities !== null &&
+          realities !== null && realities > this._eternityAutoEnabledAtRealities;
+        const realTimeReset = this._eternityAutoEnabledAtRealTime !== null &&
+          realTime !== null && realTime < this._eternityAutoEnabledAtRealTime;
+        if (realitiesReset || realTimeReset) {
+          // 原版 Reality 复位：不判玩家关闭，交给接管逻辑补回 true。
+          this._eternityAutoUserClosed = false;
+        } else if (realities !== null && realTime !== null) {
+          // 同现实内被关：判玩家手动关闭（粘滞，尊重）。
+          this._eternityAutoUserClosed = true;
+        }
+      }
+      this._eternityAutoLastSeenActive = false;
+    } catch (e) { /* 观察失败不改变既有行为 */ }
+  },
+
   _eternityBootstrapActive() {
-    if (!this._sampleFreshSession()) return false;
-    if (this._eternitiesLt(1)) return true;
-    return !this._eternityAutobuyerUnlocked();
+    // 「本会话是否全新档」必须无条件 latch（即使本次不解锁也采样），
+    // 与 R104 引入该窗口时一致：首次调用时的 eternities 决定整会话结论。
+    const freshSession = this._sampleFreshSession();
+    // 本会话玩家手动关闭过 ⇒ 一律不放行（与 Android userClosed 同语义）。
+    if (this._eternityAutoUserClosed === true) return false;
+    const unlocked = this._eternityAutobuyerUnlocked();
+    // 未解锁：界面上没有这个开关（components/tabs/autobuyers/AutobuyerBox.js:138
+    // 未解锁不渲染）⇒ 不存在玩家的关闭决定。已接管过 / 本会话全新档都允许驱动：
+    //   · adopted 条款对齐 Android OrekiAutoEternityGate.bootstrapActive()；
+    //   · 全新档窗口是 R104 P0 的既有修复。
+    if (!unlocked) {
+      return this._eternityAutobuyerAdopted === true || freshSession === true;
+    }
+    // 已解锁：只认原版开关真实值（Android 定稿语义），这里绝不绕过。
+    return false;
   },
 
   _adoptEternityAutobuyerIfNeeded() {
     try {
-      // [R104 P0] 会话内一旦接管过，就要持续维持：reality 重置会把 isActive 写回 false，
-      // 而 buyEcStudiesAndStart 的 R101 护栏要求「autoEternity 开 或 引导窗口」才允许进 EC；
-      // 若此时 isActive=false 且 canEternity=true，EC 链会永久停住（pass5 实测 realities=5 冻结）。
-      // 载入已有进度的存档从未接管过（adopted 不为 true），因此不会走到这里 —— R101 P0 不变。
-      if (!this._sampleFreshSession() && this._eternityAutobuyerAdopted !== true) return;
-      // [R104 P0] 幂等接管：原版在 reality/eternity 重置路径会把 isActive 写回 false
-      // （pass4 实测：reality 重置后 eUnl=true 但 eAct=false），一次性短路会让永恒入口
-      // 再次被门禁挡住。本会话是新档引导会话时，只要原版总开关没被玩家关闭、
-      // 自动器已解锁，就把开关补回 true。载入已有进度存档不会走到这里（R101 P0 不变）。
+      // [R114-01] 归属判定必须**先**观察真实值（adopted / userClosed / 本现实已启用）。
+      // 与 Android OrekiAutoEternityAdoption.kt 同语义：只在「原版复位/重启/读档」时补回，
+      // 玩家主动关闭（同现实内被关）粘滞尊重，绝不每帧无条件置 true。
+      this._observeEternityAutobuyerSwitch();
+      // 关闭 MOD 总开关或原版总开关 ⇒ 不写、不驱动（玩家意愿优先）。
       if (player.auto.autobuyersOn === false) return;
       if (player.auto.eternity.isActive === true) return;
+      // 本会话玩家手动关闭过 ⇒ 尊重，绝不重开（直到玩家自己再打开）。
+      if (this._eternityAutoUserClosed === true) return;
+      // 未解锁：界面上没有这个开关（写了玩家也看不见），由 R104 引导窗口/门禁放行即可。
       if (!this._eternityAutobuyerUnlocked()) return;
+      // 未接管过且本会话不是全新档 ⇒ 不动（R101 P0：载入已有进度时严格按玩家开关）。
+      // 接管来源（R114-01）：本会话观察到开关真实值为 true（该值由存档持久化）。
+      if (this._eternityAutobuyerAdopted !== true && this._sampleFreshSession() !== true) return;
       // [R107 P0] 接管原版「自动永恒」时，必须同时把结算门槛从默认
       // 「AMOUNT = 1（任何 canEternity 为真的时刻立刻结算）」改成「X_HIGHEST ×10」。
       //
@@ -942,11 +1028,18 @@ export const OrekiEternityAutomation = {
       }
       player.auto.eternity.isActive = true;
       this._eternityAutobuyerAdopted = true;
+      // 写入后同步观察基线：下一次 true→false 才不会被误判成「原版复位」。
+      this._eternityAutoUserClosed = false;
+      this._eternityAutoLastSeenActive = true;
+      this._eternityAutoEnabledAtRealities = this._realitiesValue();
+      this._eternityAutoEnabledAtRealTime = this._thisRealityRealTime();
     } catch (e) { /* ignore */ }
   },
 
   tickEternity() {
     try {
+      // [R114-01] 先观察开关归属（即使本帧因 active=false 不驱动，也不要漏掉玩家的关闭/复位）。
+      this._observeEternityAutobuyerSwitch();
       if (!this.active) return false;
       this._adoptEternityAutobuyerIfNeeded();
       // [R101 P0 对齐 Android] 原版「自动永恒」单项开关关闭时，MOD 不得主动永恒。
