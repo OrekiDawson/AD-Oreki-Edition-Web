@@ -1,0 +1,177 @@
+# Oreki Audit —— 独立 GitHub App 自动审查（无评论触发、无 Webhook 服务）
+#
+# 为什么不用官方 Action 直接跑：上游 reviewbot/triggers.py 的 build_review_request()
+# 只接受 issue_comment / pull_request_review_comment，且要求评论以 mention 开头；
+# 在 pull_request_target / schedule 下直接调用官方 Action 会被**跳过**。
+# 因此本工作流调用 scripts/audit/oreki_auto_runner.py：直接构造 ReviewRequest 并调用
+# 上游真实引擎 prepare_review()/publish_review()，不伪造任何评论事件。
+#
+# 安全边界（不可放宽）：
+# - 只在默认分支运行受信任工作流；**绝不 checkout/执行 PR head**，不跑 PR 里的脚本/构建。
+# - Diff 与元数据全部经 GitHub API 读取。
+# - 评论与 Check 使用 GitHub App installation token（作者是 App Bot，不是 github-actions[bot]）。
+# - 模型调用前必须通过 scripts/audit/preflight.py：北京高峰窗口、CNY 余额≥¥10、Diff 上限、信任、幂等。
+# - 任何未执行/被阻断/被截断/判决缺失：发布 failure，绝不用 success/neutral/skipped 冒充。
+#
+# 启用前置（docs/audit-bot.md）：App 已注册并安装、仓库变量 OREKI_AUDIT_ENABLED=true、
+# 变量：OREKI_AUDIT_APP_ID / OREKI_AUDIT_ENABLED；Secrets：OREKI_AUDIT_APP_PRIVATE_KEY / OREKI_AUDIT_LLM_KEY。
+name: Oreki Audit
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+  schedule:
+    - cron: "15 4 * * *"
+    - cron: "15 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: oreki-audit-${{ github.event.pull_request.number || github.run_id }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    if: vars.OREKI_AUDIT_ENABLED == 'true'
+    # checks:write 只属于这一个作业；GitHub 无 step 级权限，故放作业级最小化暴露面。
+    permissions:
+      contents: read
+      pull-requests: read
+      checks: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout default branch (never PR head)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned review engine (reviewbot @ Serge SHA)
+        run: |
+          pip install --disable-pip-version-check \
+            "reviewbot @ git+https://github.com/huggingface/serge@6668325d7a4a2e9c3fe814f95f249df0ec347cfd"
+
+      - name: Check audit prerequisites (App ID + private key present)
+        id: prereq
+        env:
+          APP_ID: ${{ vars.OREKI_AUDIT_APP_ID }}
+          APP_KEY: ${{ secrets.OREKI_AUDIT_APP_PRIVATE_KEY }}
+          LLM_KEY: ${{ secrets.OREKI_AUDIT_LLM_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -n "$APP_ID" ] && [ -n "$APP_KEY" ] && [ -n "$LLM_KEY" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "audit prerequisites present"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            missing=""
+            [ -n "$APP_ID" ] || missing="$missing App ID"
+            [ -n "$APP_KEY" ] || missing="$missing 私钥"
+            [ -n "$LLM_KEY" ] || missing="$missing LLM Key"
+            echo "missing=${missing# }" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Oreki Audit::App ID / private key / LLM key 未全部配置，跳过本次审查（不发布 Check，不判失败）"
+          fi
+
+      - name: Publish neutral check when prerequisites missing
+        # 只有 prereq 步骤本身成功但没有就绪时才发兜底；prereq 报错/被跳过要如实失败，
+        # 不能用一个中性 Check 把真实配置故障藏起来。
+        if: steps.prereq.outcome == 'success' && steps.prereq.outputs.ready != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          MISSING: ${{ steps.prereq.outputs.missing }}
+        run: |
+          set -uo pipefail
+          if [ -z "${HEAD_SHA:-}" ]; then
+            echo "no pull_request head (schedule/dispatch) — nothing to publish"
+            exit 0
+          fi
+          MISSING="${MISSING:-}"
+          TITLE="审查未启用（缺少 ${MISSING:-App ID / 私钥 / LLM Key}）"
+          # 兜底发布不能把 job 弄红：token 可能缺少 checks:write（例如 fork 事件），
+          # 失败时只告警，让前置问题在 warning 与日志中可见。
+          if gh api -X POST "repos/${{ github.repository }}/check-runs" \
+            -f name="Oreki Audit / review" \
+            -f head_sha="$HEAD_SHA" \
+            -f status=completed \
+            -f conclusion=neutral \
+            -f external_id="prereq-missing:${PR_NUMBER}:${HEAD_SHA}" \
+            -f "output[title]=$TITLE" \
+            -f "output[summary]=App ID / 私钥 / LLM Key 未全部配置，本次未审查；配置完成后新 Commit 会自动重审。"
+          then
+            echo "neutral check published for $HEAD_SHA"
+          else
+            echo "::warning title=Oreki Audit::兜底 neutral Check 发布失败（token 可能缺少 checks:write），不判失败"
+          fi
+
+      - name: Verify preflight guards before any model call
+        # 模型调用前的硬性守卫必须是真实可执行的，而不是注释里的承诺：
+        # 这里先校验 preflight.py 仍强制北京高峰窗口、CNY 余额 ≥ ¥10 与信任门禁；
+        # runner 在真正调用模型前还会带 PR 上下文再执行一次 preflight.decide()。
+        # 守卫被删除/弱化时本步骤 fail-closed，不会进入模型调用。
+        if: steps.prereq.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import sys
+          from datetime import datetime
+          from decimal import Decimal
+          from pathlib import Path
+
+          preflight_path = Path("scripts/audit/preflight.py").resolve()
+          assert preflight_path.is_file(), "缺少 preflight 守卫"
+          sys.path.insert(0, str(preflight_path.parent))
+          import preflight
+
+          assert preflight.MIN_BALANCE_CNY >= Decimal("10.00"), "CNY 余额守卫被弱化"
+          assert preflight.balance_allows(Decimal("10.00"))
+          assert not preflight.balance_allows(Decimal("9.99"))
+          for hour in (9, 14):
+              assert preflight.is_peak(datetime(2026, 11, 16, hour, 0, tzinfo=preflight.BEIJING)), "高峰守卫被弱化"
+          for hour in (12, 18):
+              assert not preflight.is_peak(datetime(2026, 11, 16, hour, 0, tzinfo=preflight.BEIJING))
+          ok, _ = preflight.trust_gate(trigger="issue_comment", head_repo="o/r", base_repo="o/r",
+                                       author_is_bot=False, base_ref="main", default_branch="main")
+          assert not ok, "信任门禁被弱化"
+          print("preflight guards ok")
+          PY
+
+      - name: Mint GitHub App installation token
+        if: steps.prereq.outputs.ready == 'true'
+        id: bot
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
+        with:
+          app-id: ${{ vars.OREKI_AUDIT_APP_ID }}
+          private-key: ${{ secrets.OREKI_AUDIT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
+      - name: Run Oreki Audit (auto-trigger)
+        if: steps.prereq.outputs.ready == 'true'
+        id: audit
+        env:
+          GITHUB_TOKEN: ${{ steps.bot.outputs.token }}
+          OREKI_AUDIT_LLM_KEY: ${{ secrets.OREKI_AUDIT_LLM_KEY }}
+          OREKI_AUDIT_EVENT_NAME: ${{ github.event_name }}
+          OREKI_AUDIT_REPORT: oreki-audit-report.json
+          LLM_API_BASE: https://api.deepseek.com/v1
+          LLM_MODEL: deepseek-chat
+          LLM_MAX_TOKENS: "8192"
+          MAX_DIFF_CHARS: "180000"
+          TOOL_MAX_ITERATIONS: "4"
+          REVIEW_RULES_PATH: .ai/review-rules.md
+        run: |
+          set +e
+          python3 scripts/audit/oreki_auto_runner.py
+          echo "runner_rc=$?"
+          cat oreki-audit-report.json 2>/dev/null || true
