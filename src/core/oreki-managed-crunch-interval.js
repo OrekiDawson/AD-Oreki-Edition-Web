@@ -82,16 +82,23 @@ function readCrunchMarker() {
     if (!records) return null;
     const realTime = Number(records.realTime);
     let maxAMLog = null;
+    let maxAMIsZero = false;
     try {
-      if (records.maxAM && typeof records.maxAM.log10 === "function") {
-        const log = records.maxAM.log10();
-        // maxAM 归零时 log10 = -Infinity，必须保留；否则 maxAM 分支永远不命中。
-        if (typeof log === "number" && !Number.isNaN(log)) maxAMLog = log;
+      if (records.maxAM) {
+        if (typeof records.maxAM.eq === "function" && records.maxAM.eq(0) === true) {
+          maxAMIsZero = true;
+        }
+        if (typeof records.maxAM.log10 === "function") {
+          const log = records.maxAM.log10();
+          if (log === -Infinity) maxAMIsZero = true;
+          else if (typeof log === "number" && !Number.isNaN(log)) maxAMLog = log;
+        }
       }
     } catch (e) { /* ignore */ }
     return {
       realTime: Number.isFinite(realTime) ? realTime : null,
-      maxAMLog: maxAMLog === null ? null : maxAMLog,
+      maxAMLog,
+      maxAMIsZero,
     };
   } catch (e) {
     return null;
@@ -104,10 +111,15 @@ function crunchConsumedSince(start, now) {
   if (start.realTime !== null && now.realTime !== null && now.realTime < start.realTime - 1e-9) {
     return true;
   }
+  if (now.maxAMIsZero === true && start.maxAMIsZero !== true) return true;
   if (start.maxAMLog !== null && now.maxAMLog !== null && now.maxAMLog < start.maxAMLog - 1e-9) {
     return true;
   }
   return false;
+}
+
+function markerReadable(marker) {
+  return Boolean(marker && marker.realTime !== null);
 }
 
 function readSaveId() {
@@ -234,21 +246,24 @@ export class OrekiManagedCrunchInterval {
         ? explicitInterval
         : hostingIntervalMs();
       const holdMs = Math.max(2000, holdBase * 2);
-      STATE.releaseUntilMs = now + holdMs;
-      STATE.releaseSeconds =
-        typeof player !== "undefined" && player.break
-          ? CRUNCH_POST_BREAK_SECONDS
-          : CRUNCH_PRE_BREAK_SECONDS;
-      STATE.releaseStartMarker = readCrunchMarker();
-      console.info(
-        `[OrekiCrunchInterval] pending release reason=${decision.reason} ` +
-          `holdMs=${holdMs} tickIntervalMs=${holdBase}`
-      );
+      const marker = readCrunchMarker();
+      if (markerReadable(marker)) {
+        STATE.releaseUntilMs = now + holdMs;
+        STATE.releaseSeconds =
+          typeof player !== "undefined" && player.break
+            ? CRUNCH_POST_BREAK_SECONDS
+            : CRUNCH_PRE_BREAK_SECONDS;
+        STATE.releaseStartMarker = marker;
+        console.info(
+          `[OrekiCrunchInterval] pending release reason=${decision.reason} ` +
+            `holdMs=${holdMs} tickIntervalMs=${holdBase}`
+        );
+      }
     }
     if (!allow && STATE.releaseUntilMs > 0 && STATE.releaseStartMarker !== null) {
       const marker = readCrunchMarker();
-      if (crunchConsumedSince(STATE.releaseStartMarker, marker)) {
-        // 原生大坍缩已消费这次 release。
+      if (!markerReadable(marker) || crunchConsumedSince(STATE.releaseStartMarker, marker)) {
+        // 标记不可读时无法验证是否已消费；或原生大坍缩已消费 → 停止强制 5s。
         STATE.releaseUntilMs = 0;
         STATE.releaseSeconds = null;
         STATE.releaseStartMarker = null;

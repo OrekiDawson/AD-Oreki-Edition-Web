@@ -211,6 +211,18 @@ check("仅 realTime 重置也识别真实大坍缩消费（maxAMLog 不变）", 
   assert.strictEqual(M.hasPendingRelease(), false);
 });
 
+check("标记不可读时不继续强制 5s（fail-safe 清 release）", () => {
+  reset({ time: 30 });
+  globalThis.OrekiSmartExecutor.hostingIntervalMs = 1000;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 1);
+  M.applyFromPolicy({ allow: true, reason: "eternity-cycle" }, 1);
+  player.records.thisInfinity.realTime = undefined; // 读档瞬间：标记不可读
+  fakeNow += 250;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 2);
+  assert.strictEqual(M.hasPendingRelease(), false);
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
+});
+
 check("release 超时未被消费 ⇒ 不永久保留（回到暂停目标）", () => {
   reset({ time: 30 });
   globalThis.OrekiSmartExecutor.hostingIntervalMs = 1000;
@@ -299,6 +311,51 @@ check("5s 托管 Tick：调用方显式传入 intervalMs 时保留窗口覆盖�
       assert.strictEqual(postMicro.allow, false, "坍缩后不得继续复用旧 allow");
       assert.strictEqual(postMicro.reason, "eternity-grow");
       assert.strictEqual(microCalls, 2, "必须重新 evaluate");
+    });
+
+    // 同帧内 release 被真实坍缩消费：缓存与 pendingRelease 必须在同帧清掉
+    P.resetForTest();
+    player.records.gameCreatedTime = 111;
+    player.records.thisInfinity.realTime = 100;
+    maxAMLog = 100;
+    let releaseCalls = 0;
+    P.evaluate = () => {
+      releaseCalls += 1;
+      return releaseCalls === 1
+        ? { allow: true, reason: "eternity-cycle" }
+        : { allow: false, reason: "eternity-grow" };
+    };
+    P.beginFrame();
+    const releaseAllow = P.decide();
+    player.records.thisInfinity.realTime = 0;
+    maxAMLog = -Infinity;
+    const releaseAfterCrunch = P.decide(); // 同一帧，不调用 beginFrame
+    check("同帧内 release 被消费后立即返回 deny 并清 pendingRelease", () => {
+      assert.strictEqual(releaseAllow.allow, true);
+      assert.strictEqual(releaseAfterCrunch.allow, false);
+      assert.strictEqual(releaseAfterCrunch.reason, "eternity-grow");
+      assert.strictEqual(releaseCalls, 2);
+    });
+
+    // 标记不可读：不得静默复用坍缩前 allow
+    P.resetForTest();
+    player.records.thisInfinity.realTime = 100;
+    maxAMLog = 100;
+    let unreadableCalls = 0;
+    P.evaluate = () => {
+      unreadableCalls += 1;
+      return unreadableCalls === 1
+        ? { allow: true, reason: "ip-jump" }
+        : { allow: false, reason: "eternity-grow" };
+    };
+    P.beginFrame();
+    const readableAllow = P.decide();
+    player.records.thisInfinity.realTime = undefined; // 标记不可读
+    const unreadableDeny = P.decide();
+    check("标记不可读时同帧缓存失效，不复用坍缩前 allow", () => {
+      assert.strictEqual(readableAllow.allow, true);
+      assert.strictEqual(unreadableDeny.allow, false);
+      assert.strictEqual(unreadableCalls, 2);
     });
 
     // 换存档：上一档 pendingRelease 不得让新档被迫坍缩

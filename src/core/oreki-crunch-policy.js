@@ -157,17 +157,24 @@ function readCrunchMarker() {
     if (!records) return null;
     const realTime = Number(records.realTime);
     let maxAMLog = null;
+    let maxAMIsZero = false;
     try {
-      if (records.maxAM && typeof records.maxAM.log10 === "function") {
-        const log = records.maxAM.log10();
-        // 注意：maxAM 归零时 log10 是 -Infinity，必须保留（不能按 finite 过滤），
-        // 否则真实大坍缩后 maxAM 分支永远检测不到“已消费”。
-        if (typeof log === "number" && !Number.isNaN(log)) maxAMLog = log;
+      if (records.maxAM) {
+        if (typeof records.maxAM.eq === "function" && records.maxAM.eq(0) === true) {
+          maxAMIsZero = true;
+        }
+        if (typeof records.maxAM.log10 === "function") {
+          const log = records.maxAM.log10();
+          // maxAM 归零时 log10 = -Infinity；既不能按 finite 过滤，也要显式标记零。
+          if (log === -Infinity) maxAMIsZero = true;
+          else if (typeof log === "number" && !Number.isNaN(log)) maxAMLog = log;
+        }
       }
     } catch (e) { /* ignore */ }
     return {
       realTime: Number.isFinite(realTime) ? realTime : null,
       maxAMLog,
+      maxAMIsZero,
     };
   } catch (e) {
     return null;
@@ -190,10 +197,16 @@ function crunchConsumedSince(start, now) {
   if (start.realTime !== null && now.realTime !== null && now.realTime < start.realTime - 1e-9) {
     return true;
   }
+  if (now.maxAMIsZero === true && start.maxAMIsZero !== true) return true;
   if (start.maxAMLog !== null && now.maxAMLog !== null && now.maxAMLog < start.maxAMLog - 1e-9) {
     return true;
   }
   return false;
+}
+
+/** 标记是否可读（realTime 是主判据；读档瞬间可能缺失）。 */
+function markerReadable(marker) {
+  return Boolean(marker && marker.realTime !== null);
 }
 
 function isOneShotReason(reason) {
@@ -242,8 +255,12 @@ export class OrekiCrunchPolicy {
     }
     // 同帧内 Autobuyers.tick() 可能跑多个微步；若其中一次微步已真实坍缩，
     // thisInfinity 标记被重置，本帧后续微步不得继续复用坍缩前的 allow。
-    if (frameDecision && frameDecisionMarker !== null
-      && crunchConsumedSince(frameDecisionMarker, currentMarker)) {
+    // 标记不可读时无法证明“未坍缩”，fail-safe 失效缓存，避免复用坍缩前 allow。
+    if (frameDecision && (!markerReadable(currentMarker) || !markerReadable(frameDecisionMarker))) {
+      frameDecision = null;
+      frameDecisionAt = 0;
+      frameDecisionMarker = null;
+    } else if (frameDecision && crunchConsumedSince(frameDecisionMarker, currentMarker)) {
       frameDecision = null;
       frameDecisionAt = 0;
       frameDecisionMarker = null;
@@ -263,7 +280,10 @@ export class OrekiCrunchPolicy {
         pendingRelease = null;
       } else {
         const marker = readCrunchMarker();
-        if (crunchConsumedSince(pendingRelease.marker, marker)) {
+        if (!markerReadable(marker)) {
+          // 标记不可读时无法验证是否已消费；停止强制 allow，交回策略重新判断。
+          pendingRelease = null;
+        } else if (crunchConsumedSince(pendingRelease.marker, marker)) {
           pendingRelease = null;
         } else {
           const decision = {
@@ -292,12 +312,15 @@ export class OrekiCrunchPolicy {
     // 一次性 allow（周期结算/等待上限）保留到原生自动器能消费为止。缓存只覆盖同帧，
     // 若下一帧已回到 deny，没有这个窗口就会错过唯一结算机会。
     if (decision.allow && isOneShotReason(decision.reason)) {
-      pendingRelease = {
-        until: now + RELEASE_HOLD_MS,
-        marker: readCrunchMarker(),
-        reason: decision.reason,
-        saveId,
-      };
+      const marker = readCrunchMarker();
+      if (markerReadable(marker)) {
+        pendingRelease = {
+          until: now + RELEASE_HOLD_MS,
+          marker,
+          reason: decision.reason,
+          saveId,
+        };
+      }
     }
 
     frameDecision = decision;
