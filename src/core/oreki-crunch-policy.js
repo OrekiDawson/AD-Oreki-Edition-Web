@@ -110,6 +110,8 @@ let lastEternityCycleAt = null;
  */
 let frameDecision = null;
 let frameDecisionAt = 0;
+/** 缓存决策所属存档身份；换档后旧决策必须失效。 */
+let frameDecisionSaveId = null;
 const FRAME_CACHE_TTL_MS = 50;
 
 /**
@@ -155,13 +157,26 @@ function readCrunchMarker() {
     let maxAMLog = null;
     try {
       if (records.maxAM && typeof records.maxAM.log10 === "function") {
-        maxAMLog = records.maxAM.log10();
+        const log = records.maxAM.log10();
+        // 注意：maxAM 归零时 log10 是 -Infinity，必须保留（不能按 finite 过滤），
+        // 否则真实大坍缩后 maxAM 分支永远检测不到“已消费”。
+        if (typeof log === "number" && !Number.isNaN(log)) maxAMLog = log;
       }
     } catch (e) { /* ignore */ }
     return {
       realTime: Number.isFinite(realTime) ? realTime : null,
-      maxAMLog: Number.isFinite(maxAMLog) ? maxAMLog : null,
+      maxAMLog,
     };
+  } catch (e) {
+    return null;
+  }
+}
+
+/** 存档身份：用于让 pendingRelease / 同帧缓存不跨存档泄漏。 */
+function readSaveId() {
+  try {
+    const value = player && player.records && player.records.gameCreatedTime;
+    return typeof value === "number" && Number.isFinite(value) ? value : null;
   } catch (e) {
     return null;
   }
@@ -210,7 +225,15 @@ export class OrekiCrunchPolicy {
 
   static decide() {
     const now = monotonicNowMs();
+    const saveId = readSaveId();
+
     // 同帧缓存：原生自动器先调用，game.js 托管层后调用，必须看到同一份决策。
+    // 换存档后旧缓存立即失效，避免把上一档的 allow/deny 套到新档。
+    if (frameDecision && saveId !== null && frameDecisionSaveId !== null
+      && saveId !== frameDecisionSaveId) {
+      frameDecision = null;
+      frameDecisionAt = 0;
+    }
     if (frameDecision && now - frameDecisionAt <= FRAME_CACHE_TTL_MS) {
       return frameDecision;
     }
@@ -218,7 +241,11 @@ export class OrekiCrunchPolicy {
     // pending release：一次性 allow 的保留窗口。只有「上一无限运行被重置」
     // （真实大坍缩/永恒）才视为已消费；Currency.infinities 的被动增长不算。
     if (pendingRelease) {
-      if (now >= pendingRelease.until) {
+      if (saveId !== null && pendingRelease.saveId !== null
+        && saveId !== pendingRelease.saveId) {
+        // 换存档：上一档的 release 不得让新档被迫坍缩。
+        pendingRelease = null;
+      } else if (now >= pendingRelease.until) {
         pendingRelease = null;
       } else {
         const marker = readCrunchMarker();
@@ -231,6 +258,7 @@ export class OrekiCrunchPolicy {
           };
           frameDecision = decision;
           frameDecisionAt = now;
+          frameDecisionSaveId = saveId;
           throttleLog(decision);
           return decision;
         }
@@ -253,11 +281,13 @@ export class OrekiCrunchPolicy {
         until: now + RELEASE_HOLD_MS,
         marker: readCrunchMarker(),
         reason: decision.reason,
+        saveId,
       };
     }
 
     frameDecision = decision;
     frameDecisionAt = now;
+    frameDecisionSaveId = saveId;
     throttleLog(decision);
     return decision;
   }
@@ -266,6 +296,7 @@ export class OrekiCrunchPolicy {
   static resetForTest() {
     frameDecision = null;
     frameDecisionAt = 0;
+    frameDecisionSaveId = null;
     pendingRelease = null;
     lastKey = null;
   }

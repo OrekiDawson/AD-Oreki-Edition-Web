@@ -84,12 +84,14 @@ function readCrunchMarker() {
     let maxAMLog = null;
     try {
       if (records.maxAM && typeof records.maxAM.log10 === "function") {
-        maxAMLog = records.maxAM.log10();
+        const log = records.maxAM.log10();
+        // maxAM 归零时 log10 = -Infinity，必须保留；否则 maxAM 分支永远不命中。
+        if (typeof log === "number" && !Number.isNaN(log)) maxAMLog = log;
       }
     } catch (e) { /* ignore */ }
     return {
       realTime: Number.isFinite(realTime) ? realTime : null,
-      maxAMLog: Number.isFinite(maxAMLog) ? maxAMLog : null,
+      maxAMLog: maxAMLog === null ? null : maxAMLog,
     };
   } catch (e) {
     return null;

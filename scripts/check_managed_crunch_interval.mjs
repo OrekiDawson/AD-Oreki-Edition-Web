@@ -189,9 +189,9 @@ check("原生大坍缩消费 release 后 ⇒ 下一 Tick 回到暂停目标", ()
   fakeNow += 250;
   M.applyFromPolicy({ allow: false, reason: "no-target" }, 3);
   assert.strictEqual(bigCrunch.time, 5, "被动 infinities 增长不得清除 release");
-  // 真实大坍缩：thisInfinity 计数归零
-  player.records.thisInfinity.realTime = 0;
-  maxAMLog = 0;
+  // 真实大坍缩：maxAM 归零（log10 = -Infinity）；realTime 故意保持 100，
+  // 以证明 maxAM 分支本身能识别消费，而不是只靠 realTime。
+  maxAMLog = -Infinity;
   fakeNow += 250;
   M.applyFromPolicy({ allow: false, reason: "no-target" }, 4);
   assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
@@ -256,15 +256,37 @@ check("5s 托管 Tick：调用方显式传入 intervalMs 时保留窗口覆盖�
       assert.strictEqual(passive.allow, true);
       assert.ok(String(passive.reason).startsWith("release-pending:"));
     });
-    // 真实大坍缩：thisInfinity 重置
-    player.records.thisInfinity.realTime = 0;
-    maxAMLog = 0;
+    // 真实大坍缩：maxAM 归零（-Infinity），realTime 不变，验证 maxAM 分支
+    maxAMLog = -Infinity;
     P.beginFrame();
     const consumed = P.decide();
     check("真实大坍缩后才清除 release 并回到 deny", () => {
       assert.strictEqual(consumed.allow, false);
       assert.strictEqual(consumed.reason, "eternity-grow");
       assert.strictEqual(evalCalls, 2);
+    });
+    // 换存档：上一档 pendingRelease 不得让新档被迫坍缩
+    P.resetForTest();
+    player.records.gameCreatedTime = 111;
+    player.records.thisInfinity.realTime = 100;
+    maxAMLog = 100;
+    evalCalls = 0;
+    P.evaluate = () => {
+      evalCalls += 1;
+      return evalCalls === 1
+        ? { allow: true, reason: "eternity-cycle" }
+        : { allow: false, reason: "eternity-grow" };
+    };
+    P.beginFrame();
+    const beforeSwitch = P.decide();
+    P.beginFrame();
+    player.records.gameCreatedTime = 222; // 换存档，标记不重置
+    const afterSwitch = P.decide();
+    check("换存档后 pendingRelease 立即失效（不跨档 allow）", () => {
+      assert.strictEqual(beforeSwitch.allow, true);
+      assert.strictEqual(afterSwitch.allow, false, "新档不得继承上一档 release");
+      assert.strictEqual(afterSwitch.reason, "eternity-grow");
+      assert.strictEqual(evalCalls, 2, "换档后必须重新 evaluate");
     });
   } finally {
     P.evaluate = origEvaluate;
