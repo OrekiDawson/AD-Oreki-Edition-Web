@@ -101,6 +101,26 @@ let waitStartedAt = null;
 let lastEternityCycleAt = null;
 
 /**
+ * [PR #57 review] 同一帧决策缓存。
+ *
+ * 原生 BigCrunchAutobuyerState.willInfinity() 与 game.js 托管层都会在同一帧调用
+ * decide()；若第二次调用重新 evaluate()，一次性 eternity-cycle 的 allow 会被
+ * 第二次 deny 覆盖，导致原生自动器不坍缩。beginFrame() 在每帧 gameLoop 开头清空，
+ * 同一帧内所有调用返回同一份决策。50ms TTL 仅用于 gameLoop 之外的探针调用兜底。
+ */
+let frameDecision = null;
+let frameDecisionAt = 0;
+const FRAME_CACHE_TTL_MS = 50;
+
+/**
+ * [PR #57 review] 一次性 release 保留：
+ * eternity-cycle / stall-* 的 allow 只出现一次；缓存只在同帧有效，下一帧仍可能
+ * 回到 deny。保留一个短窗口，让原生自动器在 interval 被接管后真正结算。
+ */
+let pendingRelease = null;
+const RELEASE_HOLD_MS = 15000;
+
+/**
  * [R104 P1] 「EP 高位但无法永恒」时强制压住坍缩的窗口状态。
  *
  * 真实事故（pass8，72 分钟真实新档）：第一次现实后 EP 指数已 3682.7（realities=5），
@@ -126,6 +146,43 @@ const EP_HIGH_GROW_MAX_MS = 120000;
 /** 反物质峰值至少需要新长出的数量级。 */
 const EP_HIGH_GROW_MIN_ORDERS = 10;
 
+/** 读「本次无限运行」的标记：真实大坍缩会把 realTime/time/maxAM 归零。 */
+function readCrunchMarker() {
+  try {
+    const records = player && player.records && player.records.thisInfinity;
+    if (!records) return null;
+    const realTime = Number(records.realTime);
+    let maxAMLog = null;
+    try {
+      if (records.maxAM && typeof records.maxAM.log10 === "function") {
+        maxAMLog = records.maxAM.log10();
+      }
+    } catch (e) { /* ignore */ }
+    return {
+      realTime: Number.isFinite(realTime) ? realTime : null,
+      maxAMLog: Number.isFinite(maxAMLog) ? maxAMLog : null,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+/** 标记是否显示「上一无限运行已被重置」= 发生真实大坍缩/永恒。 */
+function crunchConsumedSince(start, now) {
+  if (!start || !now) return false;
+  if (start.realTime !== null && now.realTime !== null && now.realTime < start.realTime - 1e-9) {
+    return true;
+  }
+  if (start.maxAMLog !== null && now.maxAMLog !== null && now.maxAMLog < start.maxAMLog - 1e-9) {
+    return true;
+  }
+  return false;
+}
+
+function isOneShotReason(reason) {
+  return reason === "eternity-cycle" || reason.startsWith("stall-");
+}
+
 function throttleLog(decision) {
   const key = `${decision.allow}:${decision.reason}`;
   if (key === lastKey) return;
@@ -145,7 +202,41 @@ function monotonicNowMs() {
 }
 
 export class OrekiCrunchPolicy {
+  /** 每帧 gameLoop 开头调用一次：清空同帧决策缓存（不触碰 pending release）。 */
+  static beginFrame() {
+    frameDecision = null;
+    frameDecisionAt = 0;
+  }
+
   static decide() {
+    const now = monotonicNowMs();
+    // 同帧缓存：原生自动器先调用，game.js 托管层后调用，必须看到同一份决策。
+    if (frameDecision && now - frameDecisionAt <= FRAME_CACHE_TTL_MS) {
+      return frameDecision;
+    }
+
+    // pending release：一次性 allow 的保留窗口。只有「上一无限运行被重置」
+    // （真实大坍缩/永恒）才视为已消费；Currency.infinities 的被动增长不算。
+    if (pendingRelease) {
+      if (now >= pendingRelease.until) {
+        pendingRelease = null;
+      } else {
+        const marker = readCrunchMarker();
+        if (crunchConsumedSince(pendingRelease.marker, marker)) {
+          pendingRelease = null;
+        } else {
+          const decision = {
+            allow: true,
+            reason: `release-pending:${pendingRelease.reason}`,
+          };
+          frameDecision = decision;
+          frameDecisionAt = now;
+          throttleLog(decision);
+          return decision;
+        }
+      }
+    }
+
     let decision;
     try {
       decision = this.evaluate();
@@ -154,8 +245,29 @@ export class OrekiCrunchPolicy {
     }
     // 只要放行，就结束本轮连续等待（与 Android 各放行分支的 waitStartedAt = 0 同义）。
     if (decision.allow) waitStartedAt = null;
+
+    // 一次性 allow（周期结算/等待上限）保留到原生自动器能消费为止。缓存只覆盖同帧，
+    // 若下一帧已回到 deny，没有这个窗口就会错过唯一结算机会。
+    if (decision.allow && isOneShotReason(decision.reason)) {
+      pendingRelease = {
+        until: now + RELEASE_HOLD_MS,
+        marker: readCrunchMarker(),
+        reason: decision.reason,
+      };
+    }
+
+    frameDecision = decision;
+    frameDecisionAt = now;
     throttleLog(decision);
     return decision;
+  }
+
+  /** 仅供自检/测试复位（不改游戏状态）。 */
+  static resetForTest() {
+    frameDecision = null;
+    frameDecisionAt = 0;
+    pendingRelease = null;
+    lastKey = null;
   }
 
   static evaluate() {

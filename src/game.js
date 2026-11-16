@@ -887,6 +887,14 @@ export function gameLoop(passDiff, options = {}) {
   PerformanceStats.start("Frame Time");
   PerformanceStats.start("Game Update");
 
+  // [PR #57 review] 每帧重置大坍缩决策缓存：原生自动器与本文件的托管层在同一帧
+  // 各自调用 decide()，必须共享同一份决策（一次性 release 不能被第二次调用覆盖）。
+  try {
+    OrekiCrunchPolicy.beginFrame();
+  } catch (e) {
+    // 决策缓存异常不阻断主循环
+  }
+
   EventHub.dispatch(GAME_EVENT.GAME_TICK_BEFORE);
 
   // 开启离线进度且游戏处于暂停时，从离线状态恢复会把这期间的离线时间当作"上一次更新"，
@@ -1109,8 +1117,20 @@ export function gameLoop(passDiff, options = {}) {
   } catch (e) {
     orekiHostingTick = null;
   }
+  // release 保留窗口需要「本次 Tick 的实际间隔」；直接由执行器传入，避免依赖
+  // 模块内部回退值（5s/1~60s 长 Tick 下回退 2000ms 会提前过期）。
+  let orekiHostingIntervalMs = null;
   try {
-    OrekiManagedCrunchInterval.applyFromPolicy(orekiCrunchDecision, orekiHostingTick);
+    orekiHostingIntervalMs = OrekiSmartExecutor.hostingIntervalMs;
+  } catch (e) {
+    orekiHostingIntervalMs = null;
+  }
+  try {
+    OrekiManagedCrunchInterval.applyFromPolicy(
+      orekiCrunchDecision,
+      orekiHostingTick,
+      orekiHostingIntervalMs
+    );
   } catch (e) {
     // 不能让配置优化异常打断主循环
   }

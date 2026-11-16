@@ -31,7 +31,15 @@ function check(name, fn) {
 let fakeNow = 1_000_000;
 globalThis.performance = { now: () => fakeNow };
 const bigCrunch = { mode: 1, time: 30, amount: 1, xHighest: 1 };
-globalThis.player = { break: true, auto: { bigCrunch } };
+let maxAMLog = 100;
+globalThis.player = {
+  break: true,
+  auto: { bigCrunch },
+  records: {
+    gameCreatedTime: 111,
+    thisInfinity: { realTime: 100, maxAM: { log10: () => maxAMLog } },
+  },
+};
 globalThis.OrekiSmartExecutor = { enabled: true, hostingIntervalMs: 1000 };
 let infinitiesToken = 0;
 globalThis.Currency = { infinities: { value: { toNumber: () => infinitiesToken } } };
@@ -48,6 +56,8 @@ function reset({ time = 30, enabled = true } = {}) {
   bigCrunch.xHighest = 1;
   globalThis.OrekiSmartExecutor.enabled = enabled;
   infinitiesToken = 0;
+  maxAMLog = 100;
+  player.records.thisInfinity.realTime = 100;
 }
 
 // ---------------------------------------------------------------- 1. 基线
@@ -174,9 +184,16 @@ check("一次性 eternity-cycle release 落在 tick 之间 ⇒ 下一 Tick 写 5
 });
 
 check("原生大坍缩消费 release 后 ⇒ 下一 Tick 回到暂停目标", () => {
-  infinitiesToken = 1; // 原生自动器已真实坍缩
-  fakeNow += 500;
+  // 被动无限产生：Currency.infinities 增加但上一无限运行未重置
+  infinitiesToken = 1;
+  fakeNow += 250;
   M.applyFromPolicy({ allow: false, reason: "no-target" }, 3);
+  assert.strictEqual(bigCrunch.time, 5, "被动 infinities 增长不得清除 release");
+  // 真实大坍缩：thisInfinity 计数归零
+  player.records.thisInfinity.realTime = 0;
+  maxAMLog = 0;
+  fakeNow += 250;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 4);
   assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
   assert.strictEqual(M.describe().releasePending, false);
   assert.strictEqual(M.hasPendingRelease(), false);
@@ -192,15 +209,68 @@ check("release 超时未被消费 ⇒ 不永久保留（回到暂停目标）", 
   assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS, "超时后必须回到暂停");
 });
 
-check("5s 托管 Tick：release 保留窗口覆盖到下一 Tick", () => {
+check("5s 托管 Tick：调用方显式传入 intervalMs 时保留窗口覆盖到下一 Tick", () => {
   reset({ time: 30 });
-  globalThis.OrekiSmartExecutor.hostingIntervalMs = 5000;
-  M.applyFromPolicy({ allow: false, reason: "no-target" }, 1);
-  M.applyFromPolicy({ allow: true, reason: "eternity-cycle" }, 1);
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 1, 5000);
+  M.applyFromPolicy({ allow: true, reason: "eternity-cycle" }, 1, 5000);
   fakeNow += 4000; // 尚在 10s 保留窗口内、还未到下一 Tick
-  M.applyFromPolicy({ allow: false, reason: "no-target" }, 2);
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 2, 5000);
   assert.strictEqual(bigCrunch.time, 5, "5s Tick 下仍要保留释放窗口");
 });
+
+// ------------------------------------- 11. 同帧 decide 缓存与 release 消费（PR #57 review）
+{
+  const { OrekiCrunchPolicy: P } = await import("../src/core/oreki-crunch-policy.js");
+  const origEvaluate = P.evaluate;
+  let evalCalls = 0;
+  try {
+    P.resetForTest();
+    P.beginFrame();
+    P.evaluate = () => {
+      evalCalls += 1;
+      return evalCalls === 1
+        ? { allow: true, reason: "eternity-cycle" }
+        : { allow: false, reason: "eternity-grow" };
+    };
+    player.records.thisInfinity.realTime = 100;
+    maxAMLog = 100;
+    const first = P.decide();
+    const second = P.decide();
+    check("同帧第二次 decide 返回同一 allow（缓存，不重新 evaluate）", () => {
+      assert.strictEqual(first.allow, true);
+      assert.strictEqual(second, first, "必须返回同一决策对象");
+      assert.strictEqual(evalCalls, 1, "同帧只 evaluate 一次");
+    });
+    P.beginFrame();
+    const pending = P.decide();
+    check("下一帧 deny 时保留一次性 release", () => {
+      assert.strictEqual(pending.allow, true);
+      assert.ok(String(pending.reason).startsWith("release-pending:"));
+      assert.strictEqual(evalCalls, 1, "pending 期间不重新 evaluate");
+    });
+    // 被动无限产生：Currency.infinities 增加但未重置 thisInfinity
+    infinitiesToken += 5;
+    P.beginFrame();
+    const passive = P.decide();
+    check("被动 infinities 增长不清除 pending release", () => {
+      assert.strictEqual(passive.allow, true);
+      assert.ok(String(passive.reason).startsWith("release-pending:"));
+    });
+    // 真实大坍缩：thisInfinity 重置
+    player.records.thisInfinity.realTime = 0;
+    maxAMLog = 0;
+    P.beginFrame();
+    const consumed = P.decide();
+    check("真实大坍缩后才清除 release 并回到 deny", () => {
+      assert.strictEqual(consumed.allow, false);
+      assert.strictEqual(consumed.reason, "eternity-grow");
+      assert.strictEqual(evalCalls, 2);
+    });
+  } finally {
+    P.evaluate = origEvaluate;
+    P.resetForTest();
+  }
+}
 
 console.log(`\nR116-02 受管大坍缩节拍夹具：${checks} 项检查，失败 ${fails.length} 项`);
 if (fails.length) {

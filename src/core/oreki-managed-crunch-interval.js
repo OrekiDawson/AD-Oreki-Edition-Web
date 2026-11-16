@@ -36,8 +36,8 @@ const STATE = {
   releaseUntilMs: 0,
   /** release 期间应写入的间隔（5/60 秒）。 */
   releaseSeconds: null,
-  /** release 起始时的无限次数令牌；原生大坍缩发生后据此提前解除保留。 */
-  releaseStartInfinities: null,
+  /** release 起始时的「上一无限运行」标记；真实大坍缩重置后据此解除保留。 */
+  releaseStartMarker: null,
   /** 存档身份；换档时清 release 状态。 */
   saveId: null,
 };
@@ -70,17 +70,42 @@ function writeActualInterval(seconds) {
   player.auto.bigCrunch.time = seconds;
 }
 
-/** 无限次数令牌：用于识别原生大坍缩已经发生，提前结束 release 保留。 */
-function readInfinitiesToken() {
+/**
+ * 读「本次无限运行」的标记：真实大坍缩会把 realTime/time/maxAM 归零。
+ *
+ * 不能用 Currency.infinities 当令牌：被动无限产生（infinitiedGen / RU11 / Effarig）
+ * 也会增加它，而它在每次永恒时清零；两者都会误判 release 已消费。
+ */
+function readCrunchMarker() {
   try {
-    const value = Currency && Currency.infinities && Currency.infinities.value;
-    if (typeof value === "number" && Number.isFinite(value)) return value;
-    if (value && typeof value.toNumber === "function") {
-      const num = value.toNumber();
-      return Number.isFinite(num) ? num : null;
-    }
-  } catch (e) { /* ignore */ }
-  return null;
+    const records = player && player.records && player.records.thisInfinity;
+    if (!records) return null;
+    const realTime = Number(records.realTime);
+    let maxAMLog = null;
+    try {
+      if (records.maxAM && typeof records.maxAM.log10 === "function") {
+        maxAMLog = records.maxAM.log10();
+      }
+    } catch (e) { /* ignore */ }
+    return {
+      realTime: Number.isFinite(realTime) ? realTime : null,
+      maxAMLog: Number.isFinite(maxAMLog) ? maxAMLog : null,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+/** 标记是否显示「上一无限运行已被重置」= 发生真实大坍缩/永恒。 */
+function crunchConsumedSince(start, now) {
+  if (!start || !now) return false;
+  if (start.realTime !== null && now.realTime !== null && now.realTime < start.realTime - 1e-9) {
+    return true;
+  }
+  if (start.maxAMLog !== null && now.maxAMLog !== null && now.maxAMLog < start.maxAMLog - 1e-9) {
+    return true;
+  }
+  return false;
 }
 
 function readSaveId() {
@@ -170,7 +195,7 @@ export class OrekiManagedCrunchInterval {
    *   不允许坍缩 → 永恒层等待用自适应窗口、其余用 1 小时硬暂停；
    *   允许坍缩   → Break 前 60 秒收割、Break 后 5 秒下限。
    */
-  static applyFromPolicy(decision = null, tick = null) {
+  static applyFromPolicy(decision = null, tick = null, intervalMs = null) {
     // [R97] 允许调用方传入本帧**唯一**一次 OrekiCrunchPolicy.decide() 的结果：
     // decide() 内部会推进坍缩等待计时，同一帧重复调用可能得出不同结论。
     if (!decision) {
@@ -188,7 +213,7 @@ export class OrekiManagedCrunchInterval {
     if (STATE.saveId !== null && saveId !== null && saveId !== STATE.saveId) {
       STATE.releaseUntilMs = 0;
       STATE.releaseSeconds = null;
-      STATE.releaseStartInfinities = null;
+      STATE.releaseStartMarker = null;
       STATE.lastDecisionAllow = null;
     }
     STATE.saveId = saveId;
@@ -201,24 +226,30 @@ export class OrekiManagedCrunchInterval {
     // 写回 3600 秒，原生自动器就错过了唯一的结算机会。这里保留 deny→allow 的释放窗口
     //（至少覆盖两个托管 Tick），在窗口内按 5/60 秒写入，直到原生大坍缩发生或超时。
     if (allow && STATE.lastDecisionAllow !== true) {
-      const holdMs = Math.max(2000, hostingIntervalMs() * 2);
+      // 调用方传入本次实际 Tick 间隔；缺省才回退到执行器读取值。
+      const explicitInterval = Number(intervalMs);
+      const holdBase = Number.isFinite(explicitInterval) && explicitInterval > 0
+        ? explicitInterval
+        : hostingIntervalMs();
+      const holdMs = Math.max(2000, holdBase * 2);
       STATE.releaseUntilMs = now + holdMs;
       STATE.releaseSeconds =
         typeof player !== "undefined" && player.break
           ? CRUNCH_POST_BREAK_SECONDS
           : CRUNCH_PRE_BREAK_SECONDS;
-      STATE.releaseStartInfinities = readInfinitiesToken();
+      STATE.releaseStartMarker = readCrunchMarker();
       console.info(
-        `[OrekiCrunchInterval] pending release reason=${decision.reason} holdMs=${holdMs}`
+        `[OrekiCrunchInterval] pending release reason=${decision.reason} ` +
+          `holdMs=${holdMs} tickIntervalMs=${holdBase}`
       );
     }
-    if (!allow && STATE.releaseUntilMs > 0 && STATE.releaseStartInfinities !== null) {
-      const token = readInfinitiesToken();
-      if (token !== null && token > STATE.releaseStartInfinities) {
+    if (!allow && STATE.releaseUntilMs > 0 && STATE.releaseStartMarker !== null) {
+      const marker = readCrunchMarker();
+      if (crunchConsumedSince(STATE.releaseStartMarker, marker)) {
         // 原生大坍缩已消费这次 release。
         STATE.releaseUntilMs = 0;
         STATE.releaseSeconds = null;
-        STATE.releaseStartInfinities = null;
+        STATE.releaseStartMarker = null;
       }
     }
     STATE.lastDecisionAllow = allow;
@@ -270,7 +301,7 @@ export class OrekiManagedCrunchInterval {
     STATE.lastDecisionAllow = null;
     STATE.releaseUntilMs = 0;
     STATE.releaseSeconds = null;
-    STATE.releaseStartInfinities = null;
+    STATE.releaseStartMarker = null;
     STATE.saveId = null;
   }
 }
