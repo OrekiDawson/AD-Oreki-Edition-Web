@@ -7,7 +7,7 @@
 //   2. 玩家手动改动启停/模式/阈值后，下一次有效 Tick 按当前目标恢复。
 //   3. 策略要求关闭（大坍缩暂停）时目标为关，玩家手动打开也在下一 Tick 收回。
 //   4. 两个总开关关闭 → 不写、不消费 Tick；重新开启后恢复托管。
-//   5. IU15 冲刺 / Pelle 毁灭态让路；未解锁项 fail-closed。
+//   5. IU15 冲刺整体让路；Pelle 只让大坍缩，其余项仍对账；未解锁项 fail-closed。
 //   6. 只写配置，不调用购买/tick 接口（配置恢复 ≠ 真实购买）。
 //
 // 运行：node scripts/check_managed_autobuyer_state.mjs
@@ -94,18 +94,6 @@ const apply = (tick, extra = {}) => Managed.applyAll({
 // ---------------------------------------------------------------------------
 // 0. 目标配置计算
 // ---------------------------------------------------------------------------
-test("目标配置：允许坍缩 = X_HIGHEST / 阈值 10；暂停 = TIME", () => {
-  const modes = { AMOUNT: 0, TIME: 1, X_HIGHEST: 2 };
-  globalThis.AUTO_CRUNCH_MODE = modes;
-  const on = Managed.computeConfigTargets({ wantCrunch: true });
-  assert.equal(on.bigCrunch.mode, modes.X_HIGHEST);
-  assert.equal(Number(on.bigCrunch.xHighest), 10);
-  const off = Managed.computeConfigTargets({ wantCrunch: false });
-  assert.equal(off.bigCrunch.mode, modes.TIME);
-  const unknown = Managed.computeConfigTargets({ wantCrunch: null });
-  assert.equal(unknown.bigCrunch, null, "决策未知时不得猜测目标");
-});
-
 // ---------------------------------------------------------------------------
 // 1. 同一 Tick 不重复处理
 // ---------------------------------------------------------------------------
@@ -113,7 +101,6 @@ test("首 Tick：全部已是目标态 ⇒ 0 写入", () => {
   const result = apply(1);
   assert.equal(result.applied, true);
   assert.equal(result.wrote, 0);
-  assert.equal(result.configWrote, 0);
   assert.equal(Managed.debugState().ticks, 1);
 });
 
@@ -147,15 +134,13 @@ test("玩家关闭维度组/计数频率/大坍缩 ⇒ 下一 Tick 恢复开启"
   assert.deepEqual([...result.restored].sort(), ["crunch", "dim1", "tickspeed"]);
 });
 
-test("策略要求暂停时目标为关：玩家手动打开也在下一 Tick 收回", () => {
+test("wantCrunch=false ⇒ 不主动关闭大坍缩（保留原生一次性结算机会）", () => {
   apply(1, { wantCrunch: false });
-  assert.equal(bigCrunch.isActive, false, "暂停目标必须关闭大坍缩");
-  bigCrunch.isActive = true; // 玩家手动打开
+  assert.equal(bigCrunch.isActive, true, "暂停目标也不得把原生自动器关掉");
+  bigCrunch.isActive = false; // 玩家/终局模块关闭
   apply(2, { wantCrunch: false });
-  assert.equal(bigCrunch.isActive, false, "下一 Tick 必须收回");
-});
-
-test("决策未知（null）⇒ 不碰大坍缩，也不改模式", () => {
+  assert.equal(bigCrunch.isActive, false, "暂停期间不得擅自重新开启");
+});test("决策未知（null）⇒ 不碰大坍缩，也不改模式", () => {
   apply(1);
   bigCrunch.isActive = false;
   bigCrunch.mode = 0;
@@ -168,28 +153,14 @@ test("决策未知（null）⇒ 不碰大坍缩，也不改模式", () => {
 // ---------------------------------------------------------------------------
 // 3. 手动改模式/阈值 → 下一 Tick 恢复
 // ---------------------------------------------------------------------------
-test("玩家改模式/阈值 ⇒ 同一 Tick 保留，下一 Tick 恢复目标", () => {
+test("不强制大坍缩 mode/xHighest：玩家选择保持，单一所有者只托管 interval", () => {
   apply(1);
-  bigCrunch.mode = 0; // AMOUNT
+  bigCrunch.mode = 0;
   bigCrunch.xHighest = new FakeDecimal(99);
-  const same = apply(1);
-  assert.equal(same.reason, "tick-wait");
-  assert.equal(bigCrunch.mode, 0);
-  const result = apply(2);
-  assert.equal(result.configWrote, 2);
-  assert.equal(bigCrunch.mode, 2, "模式必须恢复 X_HIGHEST");
-  assert.equal(Number(bigCrunch.xHighest), 10, "阈值必须恢复 10");
-  assert.equal(Managed.debugState().lastConfigRestored.includes("bigCrunch.mode"), true);
-});
-
-test("模式已是目标值 ⇒ 不重复写（幂等）", () => {
-  apply(1);
-  const result = apply(2);
-  assert.equal(result.configWrote, 0);
-  assert.equal(Managed.debugState().configWrites, 0);
-});
-
-// ---------------------------------------------------------------------------
+  apply(2);
+  assert.equal(bigCrunch.mode, 0, "托管层不得改写 mode");
+  assert.equal(Number(bigCrunch.xHighest), 99, "托管层不得改写 xHighest");
+});// ---------------------------------------------------------------------------
 // 4. 总开关 / 特殊阶段
 // ---------------------------------------------------------------------------
 test("MOD 总开关关闭 ⇒ 不写、不消费 Tick；重开后同 Tick 恢复", () => {
@@ -217,19 +188,21 @@ test("原版自动购买器总开关关闭 ⇒ 整体让路，不写", () => {
   assert.equal(registry.antimatterDimension.isActive, false);
 });
 
-test("IU15 冲刺 / Pelle 毁灭态 ⇒ 整体让路", () => {
+test("IU15 冲刺整体让路；Pelle 只让大坍缩，其余 13 项仍对账", () => {
   apply(1);
   registry.antimatterDimension.isActive = false;
   globalThis.OrekiIu15Sprint = { active: true };
   assert.equal(apply(2).reason, "iu15-sprint");
-  assert.equal(registry.antimatterDimension.isActive, false);
+  assert.equal(registry.antimatterDimension.isActive, false, "冲刺期间整体让路");
   delete globalThis.OrekiIu15Sprint;
   globalThis.Pelle = { isDoomed: true };
-  assert.equal(apply(2).reason, "pelle-doomed");
-  assert.equal(registry.antimatterDimension.isActive, false);
-});
-
-test("未解锁/未购买项 ⇒ fail-closed 跳过，不写", () => {
+  const result = apply(2);
+  assert.equal(result.applied, true, "Pelle 不应整体跳过");
+  assert.equal(registry.antimatterDimension.isActive, true, "其余受管自动器仍应恢复");
+  bigCrunch.isActive = false;
+  apply(3);
+  assert.equal(bigCrunch.isActive, false, "Pelle 下大坍缩保持关闭");
+});test("未解锁/未购买项 ⇒ fail-closed 跳过，不写", () => {
   apply(1);
   registry.galaxy.isUnlocked = false;
   registry.galaxy.isBought = false;

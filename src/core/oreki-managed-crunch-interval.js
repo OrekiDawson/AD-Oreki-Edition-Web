@@ -30,6 +30,16 @@ const STATE = {
   skips: 0,
   lastReason: "",
   lastValue: null,
+  /** 上一帧策略是否 allow；用于识别 deny→allow 的一次性 release。 */
+  lastDecisionAllow: null,
+  /** 一次性 release 的保留截止时刻（ms）；0 = 无。 */
+  releaseUntilMs: 0,
+  /** release 期间应写入的间隔（5/60 秒）。 */
+  releaseSeconds: null,
+  /** release 起始时的无限次数令牌；原生大坍缩发生后据此提前解除保留。 */
+  releaseStartInfinities: null,
+  /** 存档身份；换档时清 release 状态。 */
+  saveId: null,
 };
 
 function monotonicNow() {
@@ -58,6 +68,46 @@ function readActualInterval() {
 
 function writeActualInterval(seconds) {
   player.auto.bigCrunch.time = seconds;
+}
+
+/** 无限次数令牌：用于识别原生大坍缩已经发生，提前结束 release 保留。 */
+function readInfinitiesToken() {
+  try {
+    const value = Currency && Currency.infinities && Currency.infinities.value;
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (value && typeof value.toNumber === "function") {
+      const num = value.toNumber();
+      return Number.isFinite(num) ? num : null;
+    }
+  } catch (e) { /* ignore */ }
+  return null;
+}
+
+function readSaveId() {
+  try {
+    const value = player && player.records && player.records.gameCreatedTime;
+    return typeof value === "number" && Number.isFinite(value) ? value : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function hostingIntervalMs() {
+  try {
+    const value = globalThis.OrekiSmartExecutor && globalThis.OrekiSmartExecutor.hostingIntervalMs;
+    const num = Number(value);
+    return Number.isFinite(num) && num > 0 ? num : 1000;
+  } catch (e) {
+    return 1000;
+  }
+}
+
+function isPelleDoomed() {
+  try {
+    return typeof Pelle !== "undefined" && Pelle && Pelle.isDoomed === true;
+  } catch (e) {
+    return false;
+  }
 }
 
 /** 解析当前托管 Tick：优先显式注入（测试/调用方），其次调度器。 */
@@ -131,18 +181,72 @@ export class OrekiManagedCrunchInterval {
       }
     }
     if (!decision) return false;
-    if (!decision.allow) {
-      const seconds =
-        decision.reason === "eternity-grow"
-          ? eternityWaitMs() / 1000
-          : CRUNCH_PAUSE_SECONDS;
-      return OrekiManagedCrunchInterval.apply(seconds, `pause:${decision.reason}`, tick);
+
+    const now = monotonicNow();
+    const allow = decision.allow === true;
+    const saveId = readSaveId();
+    if (STATE.saveId !== null && saveId !== null && saveId !== STATE.saveId) {
+      STATE.releaseUntilMs = 0;
+      STATE.releaseSeconds = null;
+      STATE.releaseStartInfinities = null;
+      STATE.lastDecisionAllow = null;
     }
+    STATE.saveId = saveId;
+
+    // 佩勒毁灭态：终局模块有意停止大坍缩，interval 托管整体让路（Android 同序）。
+    if (isPelleDoomed()) return false;
+
+    // [PR #57 review] 策略的 eternity-cycle / stall-* 等 allow 可能只在**一次** evaluate 中出现，
+    // 且会在下一帧立刻回到 eternity-grow。托管 Tick 可能晚于这次 release，若直接按当帧 deny
+    // 写回 3600 秒，原生自动器就错过了唯一的结算机会。这里保留 deny→allow 的释放窗口
+    //（至少覆盖两个托管 Tick），在窗口内按 5/60 秒写入，直到原生大坍缩发生或超时。
+    if (allow && STATE.lastDecisionAllow !== true) {
+      const holdMs = Math.max(2000, hostingIntervalMs() * 2);
+      STATE.releaseUntilMs = now + holdMs;
+      STATE.releaseSeconds =
+        typeof player !== "undefined" && player.break
+          ? CRUNCH_POST_BREAK_SECONDS
+          : CRUNCH_PRE_BREAK_SECONDS;
+      STATE.releaseStartInfinities = readInfinitiesToken();
+      console.info(
+        `[OrekiCrunchInterval] pending release reason=${decision.reason} holdMs=${holdMs}`
+      );
+    }
+    if (!allow && STATE.releaseUntilMs > 0 && STATE.releaseStartInfinities !== null) {
+      const token = readInfinitiesToken();
+      if (token !== null && token > STATE.releaseStartInfinities) {
+        // 原生大坍缩已消费这次 release。
+        STATE.releaseUntilMs = 0;
+        STATE.releaseSeconds = null;
+        STATE.releaseStartInfinities = null;
+      }
+    }
+    STATE.lastDecisionAllow = allow;
+
+    const releaseActive = allow || (STATE.releaseUntilMs > 0 && now < STATE.releaseUntilMs);
+    if (releaseActive) {
+      const seconds = allow
+        ? (typeof player !== "undefined" && player.break
+          ? CRUNCH_POST_BREAK_SECONDS
+          : CRUNCH_PRE_BREAK_SECONDS)
+        : STATE.releaseSeconds;
+      return OrekiManagedCrunchInterval.apply(
+        seconds,
+        allow ? `resume:${decision.reason}` : `release-pending:${decision.reason}`,
+        tick
+      );
+    }
+
     const seconds =
-      typeof player !== "undefined" && player.break
-        ? CRUNCH_POST_BREAK_SECONDS
-        : CRUNCH_PRE_BREAK_SECONDS;
-    return OrekiManagedCrunchInterval.apply(seconds, `resume:${decision.reason}`, tick);
+      decision.reason === "eternity-grow"
+        ? eternityWaitMs() / 1000
+        : CRUNCH_PAUSE_SECONDS;
+    return OrekiManagedCrunchInterval.apply(seconds, `pause:${decision.reason}`, tick);
+  }
+
+  /** 是否有尚未被原生大坍缩消费的一次性 release（供启用状态托管同 Tick 恢复大坍缩）。 */
+  static hasPendingRelease() {
+    return STATE.releaseUntilMs > 0 && monotonicNow() < STATE.releaseUntilMs;
   }
 
   static describe() {
@@ -152,6 +256,7 @@ export class OrekiManagedCrunchInterval {
       writes: STATE.writes,
       skips: STATE.skips,
       lastReason: STATE.lastReason,
+      releasePending: STATE.releaseUntilMs > 0 && monotonicNow() < STATE.releaseUntilMs,
       nowMs: monotonicNow(),
     };
   }
@@ -162,6 +267,11 @@ export class OrekiManagedCrunchInterval {
     STATE.skips = 0;
     STATE.lastReason = "";
     STATE.lastValue = null;
+    STATE.lastDecisionAllow = null;
+    STATE.releaseUntilMs = 0;
+    STATE.releaseSeconds = null;
+    STATE.releaseStartInfinities = null;
+    STATE.saveId = null;
   }
 }
 

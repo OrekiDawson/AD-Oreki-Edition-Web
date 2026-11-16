@@ -32,7 +32,9 @@ let fakeNow = 1_000_000;
 globalThis.performance = { now: () => fakeNow };
 const bigCrunch = { mode: 1, time: 30, amount: 1, xHighest: 1 };
 globalThis.player = { break: true, auto: { bigCrunch } };
-globalThis.OrekiSmartExecutor = { enabled: true };
+globalThis.OrekiSmartExecutor = { enabled: true, hostingIntervalMs: 1000 };
+let infinitiesToken = 0;
+globalThis.Currency = { infinities: { value: { toNumber: () => infinitiesToken } } };
 
 const { OrekiManagedCrunchInterval, CRUNCH_ETERNITY_GROW_SECONDS, CRUNCH_PAUSE_SECONDS } =
   await import("../src/core/oreki-managed-crunch-interval.js");
@@ -45,6 +47,7 @@ function reset({ time = 30, enabled = true } = {}) {
   bigCrunch.amount = 1;
   bigCrunch.xHighest = 1;
   globalThis.OrekiSmartExecutor.enabled = enabled;
+  infinitiesToken = 0;
 }
 
 // ---------------------------------------------------------------- 1. 基线
@@ -152,6 +155,51 @@ check("applyFromPolicy：永恒层等待 ⇒ 自适应成长窗口（>=60 秒）
   assert.strictEqual(wrote, true);
   assert.ok(bigCrunch.time >= CRUNCH_ETERNITY_GROW_SECONDS,
     `成长窗口应 >= ${CRUNCH_ETERNITY_GROW_SECONDS}，实际 ${bigCrunch.time}`);
+});
+
+// ------------------------------------- 10. 一次性 release 保留（PR #57 review）
+check("一次性 eternity-cycle release 落在 tick 之间 ⇒ 下一 Tick 写 5 秒而非暂停", () => {
+  reset({ time: 30 });
+  globalThis.OrekiSmartExecutor.hostingIntervalMs = 1000;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 1);
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
+  // allow 只在两 tick 之间出现一次（同一 tick 内不写）
+  M.applyFromPolicy({ allow: true, reason: "eternity-cycle" }, 1);
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS, "同一 Tick 不应写");
+  fakeNow += 500;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 2);
+  assert.strictEqual(bigCrunch.time, 5, "下一 Tick 必须保留释放窗口，写 5 秒");
+  assert.strictEqual(M.describe().releasePending, true);
+  assert.strictEqual(M.hasPendingRelease(), true, "启用状态托管据此恢复大坍缩");
+});
+
+check("原生大坍缩消费 release 后 ⇒ 下一 Tick 回到暂停目标", () => {
+  infinitiesToken = 1; // 原生自动器已真实坍缩
+  fakeNow += 500;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 3);
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
+  assert.strictEqual(M.describe().releasePending, false);
+  assert.strictEqual(M.hasPendingRelease(), false);
+});
+
+check("release 超时未被消费 ⇒ 不永久保留（回到暂停目标）", () => {
+  reset({ time: 30 });
+  globalThis.OrekiSmartExecutor.hostingIntervalMs = 1000;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 1);
+  M.applyFromPolicy({ allow: true, reason: "eternity-cycle" }, 1);
+  fakeNow += 3000; // 超过 max(2000, 2*tick)=2000ms
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 2);
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS, "超时后必须回到暂停");
+});
+
+check("5s 托管 Tick：release 保留窗口覆盖到下一 Tick", () => {
+  reset({ time: 30 });
+  globalThis.OrekiSmartExecutor.hostingIntervalMs = 5000;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 1);
+  M.applyFromPolicy({ allow: true, reason: "eternity-cycle" }, 1);
+  fakeNow += 4000; // 尚在 10s 保留窗口内、还未到下一 Tick
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 2);
+  assert.strictEqual(bigCrunch.time, 5, "5s Tick 下仍要保留释放窗口");
 });
 
 console.log(`\nR116-02 受管大坍缩节拍夹具：${checks} 项检查，失败 ${fails.length} 项`);

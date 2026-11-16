@@ -1114,10 +1114,22 @@ export function gameLoop(passDiff, options = {}) {
   } catch (e) {
     // 不能让配置优化异常打断主循环
   }
+  // 一次性 release（eternity-cycle / stall-* 等）可能在两个 Tick 之间出现；
+  // 若大坍缩自动器此前被关闭，本 Tick 需要借 release 窗口恢复开启，原生结算才能消费它。
+  let orekiCrunchReleasePending = false;
+  try {
+    orekiCrunchReleasePending =
+      OrekiManagedCrunchInterval.hasPendingRelease() === true;
+  } catch (e) {
+    orekiCrunchReleasePending = false;
+  }
   try {
     OrekiManagedAutobuyerState.applyAll({
-      // 决策未知时传 null：不猜测大坍缩目标，保持现状（fail-safe）。
-      wantCrunch: orekiCrunchDecision ? orekiCrunchDecision.allow === true : null,
+      // 决策未知时传 null：不猜测大坍缩目标，保持现状（fail-safe）；
+      // release 窗口内即使当帧 decision 已回到 deny，也恢复大坍缩以消费一次性机会。
+      wantCrunch: orekiCrunchDecision
+        ? (orekiCrunchDecision.allow === true || orekiCrunchReleasePending)
+        : (orekiCrunchReleasePending ? true : null),
       autobuyers: Autobuyer,
       tick: orekiHostingTick,
     });
