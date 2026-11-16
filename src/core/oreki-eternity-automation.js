@@ -81,6 +81,16 @@ const TT_REWARD_MULTIPLIER = 500;
 const TT_REWARD_MAX_DELTA_PER_TICK = 1e8;
 
 /**
+ * [R116-01 P0] 首次永恒自动结算前的驻留窗口（毫秒）。
+ *
+ * 与 Android r115-01/p0-first-eternity-dwell 的
+ * `OrekiAutoEternityGate.FIRST_ETERNITY_DWELL_MS = 180_000L` 同一玩家可见语义：
+ * 只延迟「自动化替玩家按首次永恒」，不改变任何游戏机制（详见
+ * `firstEternityDwellRemainingMs()` 的语义说明）。
+ */
+const FIRST_ETERNITY_DWELL_MS = 180_000;
+
+/**
  * 普通时间研究 id 列表：直接从数据库取，不再手写区间。
  *
  * [Oreki R25] 原来手写的是「11~73 + 每组 x01~x03」，漏掉了所有 x04：214 / 224 / 234
@@ -110,6 +120,12 @@ export const OrekiEternityAutomation = {
   /** [R104 P0] 研究/EC 的真实时间节流（毫秒）；不再用被服务次数放大后的 _frame 取模。 */
   _lastStudyTickAt: 0,
   _lastEcTickAt: 0,
+  /** [R116-01 P0] 首次永恒驻留计时起点（单调时钟毫秒）；null = 尚未开始/已重置。 */
+  _firstEternityDwellStartedAt: null,
+  /** [R116-01 P0] 驻留计时所属存档身份（records.gameCreatedTime）；换档即重置。 */
+  _firstEternityDwellSaveId: null,
+  /** [R116-01 P0] 本会话是否已确认「本存档曾经永恒过」（latch；换档才清）。 */
+  _firstEternityEverSeen: false,
   /** [Oreki R40-A] 「满级关换关 respec」的次数与上次快照，仅用于观测与防抖 */
   _respecCount: 0,
   _fullEcRespec: null,
@@ -958,6 +974,8 @@ export const OrekiEternityAutomation = {
     this._eternityAutoEnabledAtRealities = null;
     this._eternityAutoEnabledAtRealTime = null;
     this._eternityAutoLastSeenActive = undefined;
+    // [R116-01] 首次永恒驻留的「曾永恒」latch 同样按存档身份失效。
+    this._firstEternityEverSeen = false;
     // 新档会话判定与 R107 的一次性结算模式配置同样按存档身份重来，不得串档。
     delete this._freshSessionBootstrap;
     this._eternityAutobuyerConfigured = false;
@@ -1018,6 +1036,115 @@ export const OrekiEternityAutomation = {
     return false;
   },
 
+  // ------------------------------------------------- [R116-01 P0] 首次永恒驻留窗口
+  //
+  // 玩家可见缺陷（Android R115-01 真 APK + 独占 AVD 实测，报告 reports/R115-01/）：
+  //   打破无限后约 25 秒，一次坍缩把 IP 推过 1.797e308，canEternity 首次为真；
+  //   同一秒内 R104 新档引导窗口就发起**真实永恒结算**，玩家没有经历无限层。
+  //   Web 冻结上游是同一份 R104 引导窗口（_eternityBootstrapActive()），缺陷同源
+  //   （R115-01 报告 §16 已用读码确认 Web `grep dwell` = 0，本轮补齐）。
+  //
+  // 语义（只约束「自动化替玩家按首次永恒」，不改变任何游戏机制；逐条对齐 Android
+  // OrekiAutoEternityGate.firstEternityDwellRemainingMs()）：
+  //   · 只作用于**首次永恒**（本存档尚未永恒过）且玩家**没有亲自开启**原版自动永恒开关的引导/托管窗口；
+  //   · 玩家手动点永恒走原版 UI（eternity.js 的 eternityResetRequest() → eternity()），
+  //     不经过本模块，随时可用（手动优先）；
+  //   · 玩家一旦打开「自动永恒」开关，立即按原语义执行，不再驻留；
+  //   · 已永恒过的存档完全不受影响（自动化长跑节奏不变）；
+  //   · 资格消失（例如玩家花掉 IP）即重置计时；换存档（records.gameCreatedTime 变化）
+  //     与冷启动（本模块内存态归零）都会重新计时，不跨档继承旧计时；
+  //   · 计时用单调时钟（performance.now），与 Android SystemClock.elapsedRealtime 同语义：
+  //     系统墙钟跳变既不会缩短驻留，也不会把驻留拖成永久；
+  //   · 驻留结束仍由原版 canEternity + 自动永恒**真实结算**，不伪造任何资源/次数。
+  //
+  // 平台字段差异：Android 首次判据读 eternities 与 bigEternities；Web 冻结上游
+  // **没有** bigEternities 字段（全仓 0 处），因此 Web 的等价判据是 eternities < 1。
+  /** 单调时钟（毫秒）：优先 performance.now（不受系统墙钟跳变影响），缺失时退回 Date.now。 */
+  _monotonicNowMs() {
+    try {
+      const perf = globalThis.performance;
+      if (perf && typeof perf.now === "function") return perf.now();
+    } catch (e) { /* 回退到墙钟 */ }
+    return Date.now();
+  },
+
+  /**
+   * 本存档是否曾经永恒过。
+   *
+   * Android 有持久字段 `bigEternities`；Web 冻结上游**没有**该字段，reality 重置还会把
+   * `eternities` 清零（reality.js:643 `Currency.eternities.reset()`）。因此 Web 的等价判据是：
+   *   · `eternities > 0` ⇒ 已永恒过；
+   *   · `realities > 0` ⇒ 本存档必然推进过永恒层（Reality 需要 EC/时间研究链），已永恒过；
+   *   · 本会话一旦观察到上述任一信号就 latch，即使之后 eternities 被永恒升级花到 0 也不回退；
+   *   · 换存档（gameCreatedTime 变化）清 latch，不把上一个存档的结论带进新档。
+   * 读不到 eternities 时按「非首次」处理（与 Android neverEternitied() 的 fail-open 一致）。
+   */
+  _everEternitied() {
+    if (this._firstEternityEverSeen === true) return true;
+    try {
+      if (this._eternitiesLt(1) !== true) {
+        this._firstEternityEverSeen = true;
+        return true;
+      }
+      const realities = this._realitiesValue();
+      if (realities !== null && realities > 0) {
+        this._firstEternityEverSeen = true;
+        return true;
+      }
+    } catch (e) { /* 读不到按未永恒处理 */ }
+    return false;
+  },
+
+  /** 是否从未永恒过（首次永恒驻留的唯一前提）。 */
+  _neverEternitied() {
+    return !this._everEternitied();
+  },
+
+  /**
+   * 首次永恒自动结算前的剩余驻留时间（毫秒）；0 = 不驻留、可立即自动结算。
+   *
+   * 计时从「本存档里本模块首次观测到 canEternity 为真」开始；资格消失即重置，
+   * 换存档（gameCreatedTime 变化）也重置，避免跨档继承旧计时。
+   */
+  firstEternityDwellRemainingMs() {
+    try {
+      // 先按存档身份失效上一个存档的「曾永恒」latch / 驻留计时（与 _eternityBootstrapActive
+      // 同口径），否则换档后的第一次判定仍会读到旧存档的结论。
+      this._bindSaveIdentity();
+      // 玩家亲自打开原版「自动永恒」开关 = 明确授权自动结算，不驻留（手动优先）。
+      if (player.auto.eternity.isActive === true) return 0;
+      // 非首次永恒：既有自动化节奏完全不受影响。
+      if (!this._neverEternitied()) return 0;
+      // 资格消失：重置计时，下次重新具备资格时重新计满 180 s。
+      if (!Player.canEternity) {
+        this._firstEternityDwellStartedAt = null;
+        return 0;
+      }
+      // 换存档即重置：不跨档继承旧计时（与 Android dwellSaveId 同语义）。
+      const saveId = this._saveIdentity();
+      if (saveId !== this._firstEternityDwellSaveId) {
+        this._firstEternityDwellSaveId = saveId;
+        this._firstEternityDwellStartedAt = null;
+        // 换存档：不继承上一个存档的「曾永恒」结论（导入无进度新档仍需引导窗口）。
+        this._firstEternityEverSeen = false;
+      }
+      const now = this._monotonicNowMs();
+      if (this._firstEternityDwellStartedAt === null
+        || this._firstEternityDwellStartedAt === undefined) {
+        this._firstEternityDwellStartedAt = now;
+        return FIRST_ETERNITY_DWELL_MS;
+      }
+      const elapsed = now - this._firstEternityDwellStartedAt;
+      if (elapsed >= FIRST_ETERNITY_DWELL_MS) return 0;
+      // 时钟回退（理论不可发生）时按满窗口处理，绝不把驻留变成负数或永久。
+      return elapsed < 0 ? FIRST_ETERNITY_DWELL_MS : FIRST_ETERNITY_DWELL_MS - elapsed;
+    } catch (e) {
+      // fail-open：驻留只是节奏保护，绝不能像 R104 那样把首次永恒永久卡死。
+      this._err("firstEternityDwellRemainingMs", e);
+      return 0;
+    }
+  },
+
   /**
    * [R114-03] **单一门禁**：MOD 是否允许发起一次「真实永恒（含真实结算）」。
    *
@@ -1031,8 +1158,9 @@ export const OrekiEternityAutomation = {
    *
    * 语义（逐条对齐 Android OrekiAutoEternityGate.challengeAutoStartAllowed()）：
    *   1. autoEternity 单项开关真实开着 ⇒ 允许；
-   *   2. 否则处于 R104 新档引导 / R114 已接管（adopted）窗口 ⇒ 允许（未解锁时玩家无法表达意愿）；
-   *   3. 否则 Player.canEternity 为假 ⇒ 允许：此时原版 eternity() 会直接 return false，
+   *   2. [R116-01] 首次永恒驻留窗口内 ⇒ 阻止（含「自动进 EC 顺带真实永恒」的旁路）；
+   *   3. 否则处于 R104 新档引导 / R114 已接管（adopted）窗口 ⇒ 允许（未解锁时玩家无法表达意愿）；
+   *   4. 否则 Player.canEternity 为假 ⇒ 允许：此时原版 eternity() 会直接 return false，
    *      或仅做一次**无奖励**的膨胀切换重置（eternity.js:74-78 里 switchingDilation 在
    *      !canEternity 时被置 force=true，不进 giveEternityRewards）——那是原版
    *      「进入/退出膨胀」的固有行为，不是结算；
@@ -1045,6 +1173,10 @@ export const OrekiEternityAutomation = {
   realEternityAllowed() {
     try {
       if (player.auto.eternity.isActive === true) return true;
+      // [R116-01 P0] 首次永恒驻留期间不放行任何 MOD 发起的真实结算。
+      // 与 Android challengeAutoStartAllowed() 的 dwell 首条判据同语义；dwell 为 0 时
+      // （非首次永恒 / 玩家已开自动永恒 / 资格未成立）本行不改变既有行为。
+      if (this.firstEternityDwellRemainingMs() > 0) return false;
       if (this._eternityBootstrapActive()) return true;
       // 只有**明确** read 到 canEternity=false 才放行（此时原版 eternity() 不会发奖励）；
       // 读不到 / 非布尔 ⇒ fail-closed（宁可少自动一次，也不误结算）。
@@ -1114,6 +1246,10 @@ export const OrekiEternityAutomation = {
       // [R114-01] 先观察开关归属（即使本帧因 active=false 不驱动，也不要漏掉玩家的关闭/复位）。
       this._observeEternityAutobuyerSwitch();
       if (!this.active) return false;
+      // [R116-01 P0] 首次永恒驻留：玩家未亲自开启自动永恒时，MOD 不得在 canEternity
+      // 出现的首个合法帧就替玩家结算首次永恒。必须放在 _adoptEternityAutobuyerIfNeeded()
+      // 之前，否则「同帧接管并打开开关」会把驻留旁路掉（dwell 在开关已开时返回 0）。
+      if (this.firstEternityDwellRemainingMs() > 0) return false;
       this._adoptEternityAutobuyerIfNeeded();
       // [R101 P0 对齐 Android] 原版「自动永恒」单项开关关闭时，MOD 不得主动永恒。
       //
