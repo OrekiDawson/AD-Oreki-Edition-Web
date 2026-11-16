@@ -1108,9 +1108,20 @@ export const OrekiEternityAutomation = {
    */
   firstEternityDwellRemainingMs() {
     try {
-      // 先按存档身份失效上一个存档的「曾永恒」latch / 驻留计时（与 _eternityBootstrapActive
-      // 同口径），否则换档后的第一次判定仍会读到旧存档的结论。
+      // 先按存档身份失效上一个存档的「曾永恒」latch（与 _eternityBootstrapActive 同口径）。
       this._bindSaveIdentity();
+      // [PR #49 review fix] 换存档即重置计时，且必须放在所有 early return **之前**：
+      // A(新档驻留中) → B(已永恒 / 玩家开自动) → A 时，B 会命中下面两个 early return；
+      // 若把 saveId 比较留在其后，B 不更新 _firstEternityDwellSaveId / 计时起点，
+      // 回到 A 会复用 A 的旧计时并把在 B 停留的时间算进去（驻留被截断甚至直接归零，
+      // 首次永恒被自动化立即结算）。与 Android dwellSaveId 同语义：每次调用先绑定当前存档。
+      const saveId = this._saveIdentity();
+      if (saveId !== this._firstEternityDwellSaveId) {
+        this._firstEternityDwellSaveId = saveId;
+        this._firstEternityDwellStartedAt = null;
+        // 换存档：不继承上一个存档的「曾永恒」结论（导入无进度新档仍需引导窗口）。
+        this._firstEternityEverSeen = false;
+      }
       // 玩家亲自打开原版「自动永恒」开关 = 明确授权自动结算，不驻留（手动优先）。
       if (player.auto.eternity.isActive === true) return 0;
       // 非首次永恒：既有自动化节奏完全不受影响。
@@ -1119,14 +1130,6 @@ export const OrekiEternityAutomation = {
       if (!Player.canEternity) {
         this._firstEternityDwellStartedAt = null;
         return 0;
-      }
-      // 换存档即重置：不跨档继承旧计时（与 Android dwellSaveId 同语义）。
-      const saveId = this._saveIdentity();
-      if (saveId !== this._firstEternityDwellSaveId) {
-        this._firstEternityDwellSaveId = saveId;
-        this._firstEternityDwellStartedAt = null;
-        // 换存档：不继承上一个存档的「曾永恒」结论（导入无进度新档仍需引导窗口）。
-        this._firstEternityEverSeen = false;
       }
       const now = this._monotonicNowMs();
       if (this._firstEternityDwellStartedAt === null
@@ -1246,9 +1249,16 @@ export const OrekiEternityAutomation = {
       // [R114-01] 先观察开关归属（即使本帧因 active=false 不驱动，也不要漏掉玩家的关闭/复位）。
       this._observeEternityAutobuyerSwitch();
       if (!this.active) return false;
+      // [PR #49 review fix] 先采样 R104「本会话是否全新档」latch，再判驻留。
+      // _sampleFreshSession() 只在首次调用时固化结论；它的两个下游调用点
+      // （_eternityBootstrapActive / _adoptEternityAutobuyerIfNeeded）都在 dwell gate 之后。
+      // 冷启动时存档已在 canEternity（例如破无限后刷新页面）不会在窗口内被采样；
+      // 玩家在窗口内手动永恒后 eternities>=1，latch 会被读成"非新档"，
+      // bootstrap 窗口永久关闭 ⇒ R101 门禁阻断之后所有 MOD 自动永恒。
+      this._sampleFreshSession();
       // [R116-01 P0] 首次永恒驻留：玩家未亲自开启自动永恒时，MOD 不得在 canEternity
-      // 出现的首个合法帧就替玩家结算首次永恒。必须放在 _adoptEternityAutobuyerIfNeeded()
-      // 之前，否则「同帧接管并打开开关」会把驻留旁路掉（dwell 在开关已开时返回 0）。
+      // 出现的首个合法帧就替玩家结算首次永恒。驻留仍必须在
+      // _adoptEternityAutobuyerIfNeeded() 之前，否则「同帧接管并打开开关」会把驻留旁路。
       if (this.firstEternityDwellRemainingMs() > 0) return false;
       this._adoptEternityAutobuyerIfNeeded();
       // [R101 P0 对齐 Android] 原版「自动永恒」单项开关关闭时，MOD 不得主动永恒。

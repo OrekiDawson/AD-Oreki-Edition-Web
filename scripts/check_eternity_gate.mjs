@@ -862,6 +862,91 @@ try {
     }
   }
 
+  // ⑧ [PR #49 review fix] 换档重置必须在 early returns 之前
+  //
+  // 审查线程 PRRT_kwDOVavSJM635fOj / PRRT_kwDOVavSJM635sNZ：dwell 的 saveId 比较位于
+  // isActive / 已永恒两个 early return 之后。A(新档驻留中)→B(已永恒或玩家开自动)→A
+  // 时 B 不更新 dwellSaveId，回到 A 复用旧计时，甚至把在 B 的时间算入 → 剩余 0，
+  // 首次永恒立即被自动化结算。这里锁死 A→B→A 必须重新计满 180 s。
+  const roundTrip = ({ bIsActive = false, bEternities = 13 } = {}) => {
+    setup({ eternities: 0, isActive: false, canEternity: true, saveId: 111, unlocked: false });
+    const start = A.firstEternityDwellRemainingMs();      // A：开始 180 s
+    dwellClock += 60_000;
+    player.records.gameCreatedTime = 222;                 // 切到 B
+    player.eternities = mkE(bEternities);
+    player.auto.eternity.isActive = bIsActive;
+    const inB = A.firstEternityDwellRemainingMs();        // B：命中 early return
+    dwellClock += 130_000;                                // 在 B 停留 130 s（A 累计 190 s）
+    player.records.gameCreatedTime = 111;                 // 回到 A
+    player.eternities = mkE(0);
+    player.auto.eternity.isActive = false;
+    const backA = A.firstEternityDwellRemainingMs();
+    return { start, inB, backA };
+  };
+  {
+    const r = roundTrip({ bIsActive: false, bEternities: 13 });
+    check("[R116 review] A→B(已永恒)→A：B 内驻留为 0", r.inB === 0, "inB=" + r.inB);
+    check("[R116 review] A→B(已永恒)→A：回切 A 重新计满 180 s（不复用旧计时）",
+      r.backA === 180_000, "backA=" + r.backA);
+  }
+  {
+    const r = roundTrip({ bIsActive: true, bEternities: 0 });
+    check("[R116 review] A→B(玩家开自动)→A：B 内驻留为 0", r.inB === 0, "inB=" + r.inB);
+    check("[R116 review] A→B(玩家开自动)→A：回切 A 重新计满 180 s",
+      r.backA === 180_000, "backA=" + r.backA);
+  }
+
+  // ⑨ [PR #49 review fix] 冷启动即 canEternity：驻留 gate 前必须采样 fresh-session latch
+  //
+  // 审查线程 PRRT_kwDOVavSJM635sW8：dwell gate 放在 _adoptEternityAutobuyerIfNeeded() 之前，
+  // 而 _sampleFreshSession() 只在下游被调用。冷启动时存档已在 canEternity，驻留窗口内不会被采样；
+  // 玩家在窗口内手动永恒后 eternities>=1，latch 被读成"非新档"，bootstrap 永久关闭，
+  // R101 门禁会阻断之后所有 MOD 自动永恒。
+  {
+    setup({ eternities: 0, isActive: false, canEternity: true, saveId: 111, unlocked: false });
+    // 模拟冷启动：模块内存态全清（reset 已清 dwell/latch；freshSession 也要清）。
+    delete A._freshSessionBootstrap;
+    A._firstEternityDwellStartedAt = null;
+    A._firstEternityDwellSaveId = null;
+    A._firstEternityEverSeen = false;
+    check("[R116 review] 冷启动驻留期首帧 tick 被拒绝", A.tickEternity() === false);
+    check("[R116 review] 冷启动驻留期首帧已采样 fresh-session latch（修复前为 undefined）",
+      A._freshSessionBootstrap === true, "latch=" + String(A._freshSessionBootstrap));
+    // 玩家在窗口内手动永恒：eternities 0→1；随后重新获得资格。
+    player.eternities = mkE(1);
+    env.canEternity = false;
+    env.canEternity = true;
+    dwellClock += 180_000;
+    env.eternityCalls = [];
+    check("[R116 review] 窗口内手动永恒后，驻留结束 MOD 自动永恒仍可用（bootstrap 未被误关）",
+      A.tickEternity() === true);
+    check("[R116 review] 该次 MOD 永恒恰好真实发起 1 次", env.eternityCalls.length === 1,
+      "calls=" + env.eternityCalls.length);
+  }
+
+  // ⑩ 源码静态守卫：两条 review 修复的接线顺序
+  {
+    const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
+    const saveIdx = src.indexOf("const saveId = this._saveIdentity();");
+    const activeIdx = src.indexOf("if (player.auto.eternity.isActive === true) return 0;");
+    const neverIdx = src.indexOf("if (!this._neverEternitied()) return 0;");
+    check("[R116 review] 换档重置在 isActive / 已永恒 early return 之前",
+      saveIdx >= 0 && activeIdx > saveIdx && neverIdx > saveIdx,
+      "save=" + saveIdx + " active=" + activeIdx + " never=" + neverIdx);
+    {
+      const tickBody = src.split("tickEternity() {")[1]?.split('this._err("tickEternity"')[0] || "";
+      const sampleIdx = tickBody.indexOf("this._sampleFreshSession()");
+      const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
+      const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
+      check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
+        sampleIdx >= 0 && dwellIdx > sampleIdx,
+        "sample=" + sampleIdx + " dwell=" + dwellIdx);
+      check("[R116 review] dwell gate 仍在接管开关之前",
+        dwellIdx >= 0 && adoptIdx > dwellIdx,
+        "dwell=" + dwellIdx + " adopt=" + adoptIdx);
+    }
+  }
+
   globalThis.player = savedPlayer;
   player.records = savedRecords;
   if (savedRealities === undefined) delete player.realities;
