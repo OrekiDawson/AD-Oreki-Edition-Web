@@ -887,6 +887,14 @@ export function gameLoop(passDiff, options = {}) {
   PerformanceStats.start("Frame Time");
   PerformanceStats.start("Game Update");
 
+  // [PR #57 review] 每帧重置大坍缩决策缓存：原生自动器与本文件的托管层在同一帧
+  // 各自调用 decide()，必须共享同一份决策（一次性 release 不能被第二次调用覆盖）。
+  try {
+    OrekiCrunchPolicy.beginFrame();
+  } catch (e) {
+    // 决策缓存异常不阻断主循环
+  }
+
   EventHub.dispatch(GAME_EVENT.GAME_TICK_BEFORE);
 
   // 开启离线进度且游戏处于暂停时，从离线状态恢复会把这期间的离线时间当作"上一次更新"，
@@ -1087,31 +1095,63 @@ export function gameLoop(passDiff, options = {}) {
   // 边界：只调尝试顺序，不放宽间隔、不多放动作；窗口一结束立即回落到默认顺序。
   // 判定全部读原版真实状态（已 Break / 未解锁永恒 / ID1 仍锁定 / IP 已达门槛），
   // 与 `InfinityDimension(1).canUnlock` 的 IP 分支同源，不写死数字、不改存档。
-  // ── [R96 第三十四轮] 大坍缩「受管节拍」配置优化（**不**进 runCycle）───────────────
-  // 归属 §80.2 / §81：这是目标驱动型智能自动购买器的受管参数，必须独立于
-  // MOD 全局 1～60 秒行动节拍；原版 `Autobuyers.tick()` 仍按自身间隔自行购买/坍缩。
-  // 每帧调用一次即可：内部读实际值、相等不写、玩家手改则让路并在下一策略 tick 恢复。
-  //
-  // ── [R97] 受托管原版自动器「启用状态」统一管理（同样**不**进 runCycle）───────────
-  // 与受管间隔同属目标驱动型智能自动购买器的配置优化路径：每帧读真实 isActive，
-  // 玩家刚关只登记、下一策略 tick 恢复一次；两个总开关任一关闭即整体不接管。
+  // ── [R96/R97 → R116-02] 受管自动购买器统一由调度器托管 Tick 管理（**不**进 runCycle）──
+  // 归属 §80.2 / §81 + R116-02 §28：这是目标驱动型智能自动购买器的配置优化路径，
+  // 不占用 runCycle 的动作名额，也不单独计时；但**只在调度器的托管 Tick 上处理一次**，
+  // 与 1s / 5s / 玩家 1～60s / 阶段上限同步（OrekiSmartExecutor.hostingTick()）。
+  //   · 大坍缩间隔：同 Tick 读真实值，玩家手改后下一次有效 Tick 写回最新策略目标；
+  //   · 自动器启停/模式/阈值：同 Tick 按当前阶段目标恢复，总开关关闭即整体让路。
   // `OrekiCrunchPolicy.decide()` 内部会推进等待计时，**本帧只算一次**并同时喂给
-  // 受管间隔与受管启用状态，避免 R96 已记录的 same-tick resume/pause 互相覆盖。
+  // 受管间隔与受管配置，避免 R96 已记录的 same-tick resume/pause 互相覆盖。
   let orekiCrunchDecision = null;
   try {
     orekiCrunchDecision = OrekiCrunchPolicy.decide();
   } catch (e) {
     orekiCrunchDecision = null;
   }
+  // [R116-02] 本帧只推进/读取一次托管 Tick，两个受管模块共用同一序号：
+  // 同一 Tick 只处理一次，1s/5s/动态配置与阶段上限自动同步。
+  let orekiHostingTick = null;
   try {
-    OrekiManagedCrunchInterval.applyFromPolicy(orekiCrunchDecision);
+    orekiHostingTick = OrekiSmartExecutor.hostingTick();
+  } catch (e) {
+    orekiHostingTick = null;
+  }
+  // release 保留窗口需要「本次 Tick 的实际间隔」；直接由执行器传入，避免依赖
+  // 模块内部回退值（5s/1~60s 长 Tick 下回退 2000ms 会提前过期）。
+  let orekiHostingIntervalMs = null;
+  try {
+    orekiHostingIntervalMs = OrekiSmartExecutor.hostingIntervalMs;
+  } catch (e) {
+    orekiHostingIntervalMs = null;
+  }
+  try {
+    OrekiManagedCrunchInterval.applyFromPolicy(
+      orekiCrunchDecision,
+      orekiHostingTick,
+      orekiHostingIntervalMs
+    );
   } catch (e) {
     // 不能让配置优化异常打断主循环
   }
+  // 一次性 release（eternity-cycle / stall-* 等）可能在两个 Tick 之间出现；
+  // 若大坍缩自动器此前被关闭，本 Tick 需要借 release 窗口恢复开启，原生结算才能消费它。
+  let orekiCrunchReleasePending = false;
+  try {
+    orekiCrunchReleasePending =
+      OrekiManagedCrunchInterval.hasPendingRelease() === true;
+  } catch (e) {
+    orekiCrunchReleasePending = false;
+  }
   try {
     OrekiManagedAutobuyerState.applyAll({
-      wantCrunch: orekiCrunchDecision ? orekiCrunchDecision.allow === true : false,
+      // 决策未知时传 null：不猜测大坍缩目标，保持现状（fail-safe）；
+      // release 窗口内即使当帧 decision 已回到 deny，也恢复大坍缩以消费一次性机会。
+      wantCrunch: orekiCrunchDecision
+        ? (orekiCrunchDecision.allow === true || orekiCrunchReleasePending)
+        : (orekiCrunchReleasePending ? true : null),
       autobuyers: Autobuyer,
+      tick: orekiHostingTick,
     });
   } catch (e) {
     // 同上：自动器启用状态维护失败时保持原状，不影响主循环

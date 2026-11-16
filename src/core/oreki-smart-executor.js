@@ -924,6 +924,42 @@ function effectiveBeatMs() {
   return Math.min(STATE.intervalSec, stageBeatCapSec()) * 1000;
 }
 
+// ---------------------------------------------------------------------------
+// [R116-02] 托管 Tick —— 受管自动购买器的统一调度机会时钟
+//
+// 与 lastBeatAt 的区别：
+//   · lastBeatAt 只在**真的执行了一个动作**时推进，用于限制动作频率；
+//   · 本 Tick 是**调度机会**：每跨过一个 effectiveBeatMs() 就前进一次，
+//     即使这一拍没有动作也照常前进，供「配置恢复/托管检查」使用。
+// 两者共用同一个 intervalSec 与阶段上限，所以 1s / 5s / 动态配置自动同步；
+// 它不是独立计时器（不 setInterval、不自己算玩家间隔），只是同一节拍的序号。
+// 受管模块必须在**同一个 tick 序号**上只处理一次，避免逐帧重复写配置。
+// ---------------------------------------------------------------------------
+let hostingTickSeq = 0;
+let hostingTickAnchorAt = 0;
+
+/**
+ * 推进/读取托管 Tick 序号（每帧由 game.js 调用一次）。
+ *
+ * @param {number} [now] 单调时钟毫秒；测试可注入
+ * @returns {number} 当前 Tick 序号（>=1；模块关闭时保持当前值）
+ */
+function hostingTick(now = nowMs()) {
+  if (!STATE.enabled) return hostingTickSeq;
+  if (!hostingTickAnchorAt) {
+    hostingTickAnchorAt = now;
+    hostingTickSeq = 1;
+    return hostingTickSeq;
+  }
+  // 不累计补跑：长时间未调用（后台标签页/暂停）恢复后只前进一拍，
+  // 避免「突发补跑」把多次配置恢复/检查堆到同一帧。
+  if (now - hostingTickAnchorAt >= effectiveBeatMs()) {
+    hostingTickAnchorAt = now;
+    hostingTickSeq += 1;
+  }
+  return hostingTickSeq;
+}
+
 /**
  * [R78] 某个任务此刻是否已过自己的间隔闸（共用**实际生效**的 `effectiveBeatMs()`）。
  *
@@ -1359,6 +1395,11 @@ function debugState() {
     effectiveIntervalSec: Math.min(STATE.intervalSec, stageBeatCapSec()),
     stageCapSec: stageBeatCapSec(),
     strictGlobal: STATE.strictGlobal,
+    hosting: {
+      tick: hostingTickSeq,
+      intervalMs: effectiveBeatMs(),
+      anchorAt: hostingTickAnchorAt,
+    },
     beat: {
       lastAt: STATE.lastBeatAt,
       nextInMs: STATE.lastBeatAt
@@ -1461,6 +1502,12 @@ export const OrekiSmartExecutor = {
   },
   get strictGlobal() {
     return STATE.strictGlobal;
+  },
+  /** [R116-02] 托管 Tick：受管自动购买器配置恢复的唯一调度机会。 */
+  hostingTick,
+  /** [R116-02] 当前托管 Tick 的实际间隔（毫秒，含阶段上限），只读。 */
+  get hostingIntervalMs() {
+    return effectiveBeatMs();
   },
 };
 

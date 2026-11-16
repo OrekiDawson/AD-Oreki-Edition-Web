@@ -1,8 +1,15 @@
+#!/usr/bin/env node
 // ---------------------------------------------------------------------------
-// [R97] `oreki-managed-autobuyer-state.js` 纯逻辑自检（不依赖浏览器 / 游戏循环）
+// [R116-02] 调度器托管自动购买器 —— 纯逻辑自检（不启动浏览器）
 //
-// 覆盖用户第 1～9 条语义的关键分支，含**反向断言**（不该写时绝不写）与
-// 「严格晚于登记时刻」的等值边界（now === recordedAt 必须不恢复）。
+// 验收目标：
+//   1. 只在托管 Tick 上处理一次；同一 Tick 不重复写（逐帧调用也不会刷写）。
+//   2. 玩家手动改动启停后，下一次有效 Tick 恢复；大坍缩 mode/xHighest 不托管
+//      （单一所有者，避免强写 mode 使受管 interval 失效）。
+//   3. 大坍缩暂停/未知时不强制关闭，保留原生一次性 release；只在允许时恢复开启。
+//   4. 两个总开关关闭 → 不写、不消费 Tick；重新开启后恢复托管。
+//   5. IU15 冲刺整体让路；Pelle 只让大坍缩，其余项仍对账；未解锁项 fail-closed。
+//   6. 只写配置，不调用购买/tick 接口（配置恢复 ≠ 真实购买）。
 //
 // 运行：node scripts/check_managed_autobuyer_state.mjs
 // ---------------------------------------------------------------------------
@@ -12,9 +19,9 @@ import * as Managed from "../src/core/oreki-managed-autobuyer-state.js";
 
 let passed = 0;
 let failed = 0;
-
 function test(name, fn) {
   Managed.resetForTest();
+  resetFakes();
   try {
     fn();
     passed += 1;
@@ -25,279 +32,222 @@ function test(name, fn) {
   }
 }
 
-/** 假自动器：只实现本模块读取的 isUnlocked / isBought / isActive。 */
+/** 最小 Decimal 替身：只实现本模块比较/显示需要的 eq/toNumber。 */
+class FakeDecimal {
+  constructor(value) { this.value = Number(value); }
+  eq(other) { return this.value === Number(other && other.value !== undefined ? other.value : other); }
+  toNumber() { return this.value; }
+  toString() { return String(this.value); }
+}
+
 function makeItem({ active = true, unlocked = true, bought = false } = {}) {
   return {
     _active: active,
     isUnlocked: unlocked,
     isBought: bought,
+    tickCalls: 0,
     get isActive() { return this._active; },
     set isActive(value) { this._active = value; },
+    tick() { this.tickCalls += 1; return true; },
   };
 }
 
-/** 假注册表：与真实 `Autobuyer` 相同的访问形状（维度访问器为函数）。 */
-function makeRegistry(items = {}) {
-  const dims = [];
-  for (let tier = 1; tier <= 8; tier += 1) {
-    dims.push(items[`dim${tier}`] || makeItem());
-  }
-  const accessor = tier => dims[tier - 1];
-  return {
-    antimatterDimension: accessor,
-    tickspeed: items.tickspeed || makeItem(),
-    dimboost: items.dimboost || makeItem(),
-    galaxy: items.galaxy || makeItem(),
-    sacrifice: items.sacrifice || makeItem(),
-    bigCrunch: items.crunch || makeItem(),
-    ipMult: items.ipmult || makeItem(),
-    // 非受管项：用于验证「只碰受管键」。
-    eternity: items.eternity || makeItem({ active: false }),
+let dims;
+let registry;
+let bigCrunch;
+
+function resetFakes() {
+  globalThis.Decimal = FakeDecimal;
+  globalThis.AUTO_CRUNCH_MODE = { AMOUNT: 0, TIME: 1, X_HIGHEST: 2 };
+  globalThis.player = {
+    auto: { autobuyersOn: true },
+    records: { gameCreatedTime: 111 },
+    realities: 0,
+  };
+  globalThis.OrekiSmartExecutor = { enabled: true };
+  delete globalThis.OrekiIu15Sprint;
+  delete globalThis.Pelle;
+
+  dims = Array.from({ length: 8 }, () => makeItem({ active: true }));
+  const dimAccessor = tier => dims[tier - 1];
+  dimAccessor.isActive = true; // 组级开关（原版 UI 的唯一可见 checkbox）
+  bigCrunch = makeItem({ active: true });
+  bigCrunch.mode = 2; // X_HIGHEST
+  bigCrunch.xHighest = new FakeDecimal(10);
+  registry = {
+    antimatterDimension: dimAccessor,
+    tickspeed: makeItem({ active: true }),
+    dimboost: makeItem({ active: true }),
+    galaxy: makeItem({ active: true }),
+    sacrifice: makeItem({ active: true }),
+    bigCrunch,
+    ipMult: makeItem({ active: true }),
   };
 }
 
-function setMasters({ mod = true, vanilla = true } = {}) {
-  globalThis.OrekiSmartExecutor = { enabled: mod };
-  globalThis.player = { auto: { autobuyersOn: vanilla } };
-  globalThis.OrekiIu15Sprint = undefined;
-  globalThis.Pelle = undefined;
-}
-
-// ---------------------------------------------------------------------------
-// 0. 状态机本身
-// ---------------------------------------------------------------------------
-test("状态机：同一 key 只登记一次，重复登记不刷新时间戳", () => {
-  assert.equal(Managed.noteManagedActiveDisabled("dim1", 1000), true);
-  assert.equal(Managed.noteManagedActiveDisabled("dim1", 1500), false, "重复登记必须返回 false");
-  assert.equal(Managed.isManagedActivePending("dim1"), true);
-  assert.equal(Managed.describeManagedActive().includes("pending=[dim1]"), true);
-  assert.equal(Managed.debugState().defers, 1, "重复登记不得增加计数");
-});
-
-test("状态机：now === recordedAt 不恢复（严格晚于）", () => {
-  Managed.noteManagedActiveDisabled("dim1", 2000);
-  assert.equal(Managed.consumeManagedActiveRestoreDue("dim1", 2000), false, "等值边界必须 false");
-  assert.equal(Managed.isManagedActivePending("dim1"), true, "未到点不得消费");
-  assert.equal(Managed.consumeManagedActiveRestoreDue("dim1", 2000.001), true, "严格晚于才恢复");
-  assert.equal(Managed.consumeManagedActiveRestoreDue("dim1", 3000), false, "只能恢复一次");
-  assert.equal(Managed.isManagedActivePending("dim1"), false);
-});
-
-test("状态机：clear 清登记并返回是否真的清掉", () => {
-  Managed.noteManagedActiveDisabled("galaxy", 100);
-  assert.equal(Managed.clearManagedActivePending("galaxy"), true);
-  assert.equal(Managed.clearManagedActivePending("galaxy"), false);
-  assert.equal(Managed.isManagedActivePending("galaxy"), false);
+const apply = (tick, extra = {}) => Managed.applyAll({
+  wantCrunch: true,
+  autobuyers: registry,
+  tick,
+  ...extra,
 });
 
 // ---------------------------------------------------------------------------
-// 1. 已在期望状态 → 不写、不登记（幂等）
+// 0. 目标配置计算
 // ---------------------------------------------------------------------------
-test("已在期望态：applyAll 全程 0 写入、0 登记", () => {
-  setMasters();
-  const registry = makeRegistry();
-  const result = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 1000 });
+// ---------------------------------------------------------------------------
+// 1. 同一 Tick 不重复处理
+// ---------------------------------------------------------------------------
+test("首 Tick：全部已是目标态 ⇒ 0 写入", () => {
+  const result = apply(1);
   assert.equal(result.applied, true);
   assert.equal(result.wrote, 0);
-  assert.equal(Managed.debugState().writes, 0);
-  assert.equal(Managed.debugState().defers, 0);
-  assert.deepEqual(Managed.debugState().pending, []);
+  assert.equal(Managed.debugState().ticks, 1);
+});
+
+test("同一 Tick 多次调用 ⇒ tick-wait，不写配置", () => {
+  apply(1);
+  registry.antimatterDimension.isActive = false;
+  const same = apply(1);
+  assert.equal(same.applied, false);
+  assert.equal(same.reason, "tick-wait");
+  assert.equal(registry.antimatterDimension.isActive, false, "同一 Tick 内必须保留玩家操作");
+  const state = Managed.debugState();
+  const writesBefore = state.writes;
+  for (let i = 0; i < 20; i += 1) apply(1);
+  assert.equal(Managed.debugState().writes, writesBefore, "逐帧调用不得刷写");
 });
 
 // ---------------------------------------------------------------------------
-// 2. 玩家手动关闭 → 本帧只登记，不抢写
+// 2. 手动关闭 → 下一 Tick 恢复
 // ---------------------------------------------------------------------------
-test("玩家关闭：本帧只登记、绝不写", () => {
-  setMasters();
-  const dim3 = makeItem({ active: false });
-  const registry = makeRegistry({ dim3 });
-  const result = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 2000 });
-  assert.equal(result.wrote, 0, "登记帧不得写入");
-  assert.equal(dim3.isActive, false, "本帧必须保持玩家关闭状态");
-  assert.equal(Managed.isManagedActivePending("dim3"), true);
-  assert.equal(Managed.debugState().defers, 1);
+test("玩家关闭维度组/计数频率/大坍缩 ⇒ 下一 Tick 恢复开启", () => {
+  apply(1);
+  registry.antimatterDimension.isActive = false;
+  registry.tickspeed.isActive = false;
+  bigCrunch.isActive = false;
+  const result = apply(2);
+  assert.equal(result.applied, true);
+  assert.equal(registry.antimatterDimension.isActive, true, "维度组必须恢复");
+  assert.equal(registry.tickspeed.isActive, true);
+  assert.equal(bigCrunch.isActive, true);
+  assert.equal(result.wrote, 3);
+  assert.deepEqual([...result.restored].sort(), ["crunch", "dim1", "tickspeed"]);
+});
+
+test("wantCrunch=false ⇒ 不主动关闭大坍缩（保留原生一次性结算机会）", () => {
+  apply(1, { wantCrunch: false });
+  assert.equal(bigCrunch.isActive, true, "暂停目标也不得把原生自动器关掉");
+  bigCrunch.isActive = false; // 玩家/终局模块关闭
+  apply(2, { wantCrunch: false });
+  assert.equal(bigCrunch.isActive, false, "暂停期间不得擅自重新开启");
+});test("决策未知（null）⇒ 不碰大坍缩，也不改模式", () => {
+  apply(1);
+  bigCrunch.isActive = false;
+  bigCrunch.mode = 0;
+  const result = apply(2, { wantCrunch: null });
+  assert.equal(result.applied, true);
+  assert.equal(bigCrunch.isActive, false, "未知状态不得改启停");
+  assert.equal(bigCrunch.mode, 0, "未知状态不得改模式");
 });
 
 // ---------------------------------------------------------------------------
-// 3. 严格晚于登记时刻恢复，且只恢复一次
+// 3. 手动改模式/阈值 → 下一 Tick 恢复
 // ---------------------------------------------------------------------------
-test("恢复时机：等值帧不写，下一帧写一次，之后不再写", () => {
-  setMasters();
-  const dim3 = makeItem({ active: false });
-  const registry = makeRegistry({ dim3 });
-  Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 2000 });
-  // 同一时刻再来一帧：now === recordedAt → 不得写。
-  const sameFrame = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 2000 });
-  assert.equal(sameFrame.wrote, 0, "等值帧不得写入");
-  assert.equal(dim3.isActive, false);
-  // 严格晚于登记时刻 → 恢复一次。
-  const due = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 2001 });
-  assert.equal(due.wrote, 1, "到点必须恰好写一次");
-  assert.equal(dim3.isActive, true);
-  assert.equal(Managed.debugState().restores, 1);
-  assert.equal(Managed.debugState().writes, 1);
-  // 之后 100 帧：已在期望态，不再写。
-  for (let i = 0; i < 100; i += 1) {
-    Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 2002 + i });
-  }
-  assert.equal(Managed.debugState().writes, 1, "恢复后不得重复写");
-  assert.equal(Managed.debugState().defers, 1, "不得重复登记");
+test("不强制大坍缩 mode/xHighest：玩家选择保持，单一所有者只托管 interval", () => {
+  apply(1);
+  bigCrunch.mode = 0;
+  bigCrunch.xHighest = new FakeDecimal(99);
+  apply(2);
+  assert.equal(bigCrunch.mode, 0, "托管层不得改写 mode");
+  assert.equal(Number(bigCrunch.xHighest), 99, "托管层不得改写 xHighest");
+});// ---------------------------------------------------------------------------
+// 4. 总开关 / 特殊阶段
+// ---------------------------------------------------------------------------
+test("MOD 总开关关闭 ⇒ 不写、不消费 Tick；重开后同 Tick 恢复", () => {
+  apply(1);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  registry.antimatterDimension.isActive = false;
+  const off = apply(2);
+  assert.equal(off.applied, false);
+  assert.equal(off.reason, "mod-off");
+  assert.equal(registry.antimatterDimension.isActive, false);
+  assert.equal(Managed.debugState().lastTick, 1, "关闭时不得消费 Tick");
+  globalThis.OrekiSmartExecutor.enabled = true;
+  const on = apply(2);
+  assert.equal(on.applied, true);
+  assert.equal(registry.antimatterDimension.isActive, true);
 });
 
-// ---------------------------------------------------------------------------
-// 4. 策略要求关闭 → 清登记且永不开启
-// ---------------------------------------------------------------------------
-test("wantOff：清登记且绝不强制开启", () => {
-  setMasters();
-  const crunch = makeItem({ active: false });
-  const registry = makeRegistry({ crunch });
-  Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 3000 });
-  assert.equal(Managed.isManagedActivePending("crunch"), true);
-  const off = Managed.applyAll({ wantCrunch: false, autobuyers: registry, nowMs: 3001 });
-  assert.equal(off.wrote, 0);
-  assert.equal(crunch.isActive, false, "策略要求关闭时不得开启");
-  assert.equal(Managed.isManagedActivePending("crunch"), false, "必须清掉待恢复登记");
-  // 再过很久也不得开启。
-  Managed.applyAll({ wantCrunch: false, autobuyers: registry, nowMs: 9999 });
-  assert.equal(crunch.isActive, false);
-  assert.equal(Managed.debugState().writes, 0);
-});
-
-// ---------------------------------------------------------------------------
-// 5. 两个总开关任一关闭 → 不写、不消费登记
-// ---------------------------------------------------------------------------
-test("总开关关闭：不写、不消费登记；恢复后按原登记恢复一次", () => {
-  setMasters();
-  const dim2 = makeItem({ active: false });
-  const registry = makeRegistry({ dim2 });
-  Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 4000 });
-  assert.equal(Managed.isManagedActivePending("dim2"), true);
-
-  // 原版总开关关闭。
-  setMasters({ mod: true, vanilla: false });
-  const vanillaOff = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 5000 });
-  assert.equal(vanillaOff.applied, false);
-  assert.equal(vanillaOff.reason, "vanilla-off");
-  assert.equal(dim2.isActive, false, "总开关关闭时不得开启");
-  assert.equal(Managed.isManagedActivePending("dim2"), true, "总开关关闭时不得消费登记");
-
-  // MOD 总开关关闭。
-  setMasters({ mod: false, vanilla: true });
-  const modOff = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 5100 });
-  assert.equal(modOff.applied, false);
-  assert.equal(modOff.reason, "mod-off");
-  assert.equal(dim2.isActive, false);
-  assert.equal(Managed.isManagedActivePending("dim2"), true);
-
-  // 两个都恢复 → 到点恢复一次。
-  setMasters();
-  const restored = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 5200 });
-  assert.equal(restored.wrote, 1);
-  assert.equal(dim2.isActive, true);
-  assert.equal(Managed.debugState().writes, 1);
-});
-
-// ---------------------------------------------------------------------------
-// 6. 未解锁 / 不可用项跳过（fail-closed）
-// ---------------------------------------------------------------------------
-test("未解锁跳过：不写、不登记、不误判", () => {
-  setMasters();
-  const locked = makeItem({ active: false, unlocked: false, bought: false });
-  const registry = makeRegistry({ dim5: locked });
-  const result = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 6000 });
-  assert.equal(result.wrote, 0);
-  assert.equal(result.skipped, 1, "锁定的项必须计入 skipped");
-  assert.equal(locked.isActive, false);
-  assert.equal(Managed.isManagedActivePending("dim5"), false);
-});
-
-// ---------------------------------------------------------------------------
-// 7. 只碰受管键
-// ---------------------------------------------------------------------------
-test("只碰受管键：非受管项完全不动", () => {
-  setMasters();
-  const decoy = makeItem({ active: false });
-  const registry = makeRegistry({ eternity: decoy });
-  Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 7000 });
-  assert.equal(decoy.isActive, false, "非受管自动器不得被写");
-  const pendingKeys = Managed.debugState().pending.map(row => row.key);
-  assert.equal(pendingKeys.includes("eternity"), false);
-  // 受管键固定 14 项：8 维度 + 计数频率 + 维度提升 + 星系 + 献祭 + 坍缩 + IP 倍率。
-  assert.equal(Managed.MANAGED_KEYS.length, 14);
-  for (const key of pendingKeys) {
-    assert.equal(Managed.MANAGED_KEYS.includes(key), true, `出现了未登记的键：${key}`);
-  }
-});
-
-// ---------------------------------------------------------------------------
-// 8. IP 倍率共用同一状态机
-// ---------------------------------------------------------------------------
-test("ipmult：与其它项共用同一套延迟状态机", () => {
-  setMasters();
-  const ipMult = makeItem({ active: false });
-  const registry = makeRegistry({ ipmult: ipMult });
-  Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 8000 });
-  assert.equal(ipMult.isActive, false);
-  assert.equal(Managed.isManagedActivePending("ipmult"), true, "ipmult 必须登记在同一张表");
-  assert.equal(Managed.debugState().defers, 1);
-  Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 8001 });
-  assert.equal(ipMult.isActive, true, "下一帧恢复一次");
-  assert.equal(Managed.debugState().restores, 1);
-  assert.equal(Managed.debugState().writes, 1);
-});
-
-// ---------------------------------------------------------------------------
-// 9. 重复 tick 不重复写（幂等）
-// ---------------------------------------------------------------------------
-test("重复 tick：已恢复后 60 帧无任何新写入", () => {
-  setMasters();
-  const dim8 = makeItem({ active: false });
-  const registry = makeRegistry({ dim8 });
-  Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 9000 });
-  Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 9001 });
-  assert.equal(Managed.debugState().writes, 1);
-  for (let i = 0; i < 60; i += 1) {
-    Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 9002 + i });
-  }
-  assert.equal(Managed.debugState().writes, 1, "不得逐帧重复写");
-  assert.equal(Managed.debugState().defers, 1, "不得逐帧重复登记");
-  assert.equal(dim8.isActive, true);
-});
-
-// ---------------------------------------------------------------------------
-// 10. 与其它模块协调：IU15 冲刺封锁期间整体让路
-// ---------------------------------------------------------------------------
-test("IU15 冲刺：整体不接管、不写、不登记", () => {
-  setMasters();
-  globalThis.OrekiIu15Sprint = { active: true };
-  const dim1 = makeItem({ active: false });
-  const registry = makeRegistry({ dim1 });
-  const result = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 10000 });
+test("原版自动购买器总开关关闭 ⇒ 整体让路，不写", () => {
+  apply(1);
+  globalThis.player.auto.autobuyersOn = false;
+  registry.antimatterDimension.isActive = false;
+  const result = apply(2);
   assert.equal(result.applied, false);
-  assert.equal(result.reason, "iu15-sprint");
-  assert.equal(dim1.isActive, false, "冲刺封锁期间不得抢开 ID 自动器");
-  assert.equal(Managed.isManagedActivePending("dim1"), false, "不得登记");
-  assert.equal(Managed.debugState().writes, 0);
+  assert.equal(result.reason, "vanilla-off");
+  assert.equal(registry.antimatterDimension.isActive, false);
 });
 
-// ---------------------------------------------------------------------------
-// 11. 与其它模块协调：佩勒毁灭态里不重开大坍缩
-// ---------------------------------------------------------------------------
-test("Pelle 毁灭态：不重开大坍缩自动器", () => {
-  setMasters();
+test("IU15 冲刺整体让路；Pelle 只让大坍缩，其余 13 项仍对账", () => {
+  apply(1);
+  registry.antimatterDimension.isActive = false;
+  globalThis.OrekiIu15Sprint = { active: true };
+  assert.equal(apply(2).reason, "iu15-sprint");
+  assert.equal(registry.antimatterDimension.isActive, false, "冲刺期间整体让路");
+  delete globalThis.OrekiIu15Sprint;
   globalThis.Pelle = { isDoomed: true };
-  const crunch = makeItem({ active: false });
-  const registry = makeRegistry({ crunch });
-  const result = Managed.applyAll({ wantCrunch: true, autobuyers: registry, nowMs: 11000 });
-  assert.equal(result.applied, true);
-  assert.equal(result.wrote, 0);
-  assert.equal(crunch.isActive, false, "毁灭态必须让终局模块保持关闭");
-  assert.equal(Managed.isManagedActivePending("crunch"), false, "策略要求关闭时只清登记");
-  assert.equal(Managed.debugState().writes, 0);
+  const result = apply(2);
+  assert.equal(result.applied, true, "Pelle 不应整体跳过");
+  assert.equal(registry.antimatterDimension.isActive, true, "其余受管自动器仍应恢复");
+  bigCrunch.isActive = false;
+  apply(3);
+  assert.equal(bigCrunch.isActive, false, "Pelle 下大坍缩保持关闭");
+});test("未解锁/未购买项 ⇒ fail-closed 跳过，不写", () => {
+  apply(1);
+  registry.galaxy.isUnlocked = false;
+  registry.galaxy.isBought = false;
+  registry.galaxy.isActive = false;
+  const result = apply(2);
+  assert.equal(registry.galaxy.isActive, false);
+  assert.equal(result.restored.includes("galaxy"), false);
 });
 
 // ---------------------------------------------------------------------------
-// 汇总
+// 5. 只写配置，不触发购买
 // ---------------------------------------------------------------------------
-console.log(`\n${passed} passed, ${failed} failed, ${passed + failed} total`);
-if (failed > 0) process.exitCode = 1;
+test("只写配置：不调用任何自动器 tick/购买接口", () => {
+  apply(1);
+  dims.forEach(dim => { dim.isActive = false; });
+  bigCrunch.isActive = false;
+  apply(2);
+  const all = [...dims, registry.tickspeed, registry.dimboost, registry.galaxy,
+    registry.sacrifice, registry.bigCrunch, registry.ipMult];
+  all.forEach(item => assert.equal(item.tickCalls, 0, "托管层不得触发购买"));
+});
+
+// ---------------------------------------------------------------------------
+// 6. 换存档 / 无 Tick
+// ---------------------------------------------------------------------------
+test("换存档：下一次 Tick 按新档真实字段重算，不保留旧统计", () => {
+  apply(1);
+  registry.antimatterDimension.isActive = false;
+  globalThis.player.records.gameCreatedTime = 222;
+  const result = apply(2);
+  assert.equal(result.applied, true);
+  assert.equal(registry.antimatterDimension.isActive, true, "新档同一 Tick 也按当前目标恢复");
+  assert.equal(Managed.debugState().saveId, 222);
+});
+
+test("没有调度器 Tick 注入/可读 ⇒ no-tick，不写", () => {
+  globalThis.OrekiSmartExecutor = { enabled: true };
+  registry.antimatterDimension.isActive = false;
+  const result = Managed.applyAll({ wantCrunch: true, autobuyers: registry });
+  assert.equal(result.applied, false);
+  assert.equal(result.reason, "no-tick");
+  assert.equal(registry.antimatterDimension.isActive, false);
+});
+
+console.log(`\nR116-02 托管自动购买器夹具：${passed} PASS / ${failed} FAIL`);
+if (failed) process.exit(1);
+process.exit(0);
