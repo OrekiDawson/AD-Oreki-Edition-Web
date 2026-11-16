@@ -924,6 +924,37 @@ try {
       "calls=" + env.eternityCalls.length);
   }
 
+  // ⑪ [PR #50 review fix] 模块非活动期间也必须采样 fresh-session latch
+  //
+  // 审查线程（PR #50 Kody high）：_sampleFreshSession() 若仍在 !active early return 之后，
+  // 挑战中 / 玩家关闭 MOD 自动购买器总开关 / Pelle 毁灭期间不会采样；玩家在这段非活动期
+  // 手动永恒后 eternities>=1，latch 被读成"非新档"，恢复活动后 bootstrap 关闭，
+  // MOD 自动永恒被永久阻断。与 ⑨ 是同一失败链，差别只在 active=false 的时间窗。
+  {
+    setup({ eternities: 0, isActive: false, canEternity: true, saveId: 111, unlocked: false });
+    delete A._freshSessionBootstrap;
+    A._firstEternityDwellStartedAt = null;
+    A._firstEternityDwellSaveId = null;
+    A._firstEternityEverSeen = false;
+    env.autobuyersOn = false;              // 模块 non-active
+    player.auto.autobuyersOn = false;
+    check("[R116 review] 非活动帧 tick 被拒绝", A.tickEternity() === false);
+    check("[R116 review] 非活动帧也必须采样 fresh-session latch（修复前为 undefined）",
+      A._freshSessionBootstrap === true, "latch=" + String(A._freshSessionBootstrap));
+    // 玩家在非活动期间手动永恒：eternities 0→1。
+    player.eternities = mkE(1);
+    env.autobuyersOn = true;               // 玩家打开 MOD 自动购买器总开关
+    player.auto.autobuyersOn = true;
+    env.canEternity = true;
+    dwellClock += 180_000;
+    env.eternityCalls = [];
+    check("[R116 review] 恢复活动后 MOD 自动永恒仍可用（bootstrap 未被误关）",
+      A.tickEternity() === true);
+    check("[R116 review] 恢复活动后恰好真实发起 1 次", env.eternityCalls.length === 1,
+      "calls=" + env.eternityCalls.length);
+    env.autobuyersOn = true;
+  }
+
   // ⑩ 源码静态守卫：两条 review 修复的接线顺序
   {
     const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
@@ -936,11 +967,15 @@ try {
     {
       const tickBody = src.split("tickEternity() {")[1]?.split('this._err("tickEternity"')[0] || "";
       const sampleIdx = tickBody.indexOf("this._sampleFreshSession()");
+      const activeIdx = tickBody.indexOf("if (!this.active) return false;");
       const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
       const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
         "sample=" + sampleIdx + " dwell=" + dwellIdx);
+      check("[R116 review] latch 采样与 active 解耦（在 !active early return 之前）",
+        sampleIdx >= 0 && activeIdx > sampleIdx,
+        "sample=" + sampleIdx + " active=" + activeIdx);
       check("[R116 review] dwell gate 仍在接管开关之前",
         dwellIdx >= 0 && adoptIdx > dwellIdx,
         "dwell=" + dwellIdx + " adopt=" + adoptIdx);

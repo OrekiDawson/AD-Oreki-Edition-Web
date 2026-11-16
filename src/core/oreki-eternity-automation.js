@@ -1248,14 +1248,14 @@ export const OrekiEternityAutomation = {
     try {
       // [R114-01] 先观察开关归属（即使本帧因 active=false 不驱动，也不要漏掉玩家的关闭/复位）。
       this._observeEternityAutobuyerSwitch();
-      if (!this.active) return false;
-      // [PR #49 review fix] 先采样 R104「本会话是否全新档」latch，再判驻留。
-      // _sampleFreshSession() 只在首次调用时固化结论；它的两个下游调用点
-      // （_eternityBootstrapActive / _adoptEternityAutobuyerIfNeeded）都在 dwell gate 之后。
-      // 冷启动时存档已在 canEternity（例如破无限后刷新页面）不会在窗口内被采样；
-      // 玩家在窗口内手动永恒后 eternities>=1，latch 会被读成"非新档"，
-      // bootstrap 窗口永久关闭 ⇒ R101 门禁阻断之后所有 MOD 自动永恒。
+      // [PR #49/#50 review fix] 采样 R104「本会话是否全新档」latch，且必须与模块是否
+      // active 解耦（放在 !active early return 之前）：挑战进行中、玩家关闭 MOD 自动购买器
+      // 总开关、Pelle 毁灭等都会让 active=false；若此时不采样，玩家在非活动期间手动永恒后
+      // eternities>=1，latch 会被读成"非新档"，bootstrap 窗口永久关闭 ⇒ R101 门禁阻断
+      // 之后所有 MOD 自动永恒。与 _observeEternityAutobuyerSwitch() 同级，按本会话首次
+      // 观测到的存档 eternities 固化结论（换档时 _bindSaveIdentity 会清掉重新采样）。
       this._sampleFreshSession();
+      if (!this.active) return false;
       // [R116-01 P0] 首次永恒驻留：玩家未亲自开启自动永恒时，MOD 不得在 canEternity
       // 出现的首个合法帧就替玩家结算首次永恒。驻留仍必须在
       // _adoptEternityAutobuyerIfNeeded() 之前，否则「同帧接管并打开开关」会把驻留旁路。
