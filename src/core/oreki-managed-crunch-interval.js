@@ -1,23 +1,16 @@
 // ---------------------------------------------------------------------------
-// [R96 第三十四轮] 大坍缩「受管节拍」—— Web 侧
+// [R96 / R116-02] 大坍缩「受管节拍」—— Web 侧（调度器托管 Tick 版）
 //
-// 与 Android `OrekiStageAuto.writeManagedCrunchInterval()` 语义**逐条等价**
-// （改任一侧必须同步另一侧）：
-//   1. 每帧读**实际值**（`player.auto.bigCrunch.time`），按当帧目标算期望值；
-//   2. 实际值既不是「MOD 上次写入值」也不是「策略目标值」⇒ 判定玩家手改；
-//   3. 玩家手改后**本帧不抢写**，只登记「下一次策略 tick 再恢复」（只登记一次）；
-//   4. 到点后按**届时最新**目标写回一次，然后归属交还 MOD；
-//   5. 实际值已等于目标 ⇒ 不写、不持久化（避免逐帧抖动）；
-//   6. 只覆盖这一项受管参数，不碰模式、不碰其他原版设置、不擅自开自动器。
+// 与 Android OrekiStageAuto.writeManagedCrunchInterval() 的玩家可见语义等价：
+//   1. 只在 MOD 调度器的**托管 Tick** 上处理（与 1s / 5s / 玩家 1～60s 同步）；
+//   2. 每个有效 Tick 读一次真实值 player.auto.bigCrunch.time 与当帧策略目标；
+//   3. 玩家手动改间隔后，本 Tick 保留其操作；下一次有效 Tick 写回最新目标一次；
+//   4. 实际值已等于目标 ⇒ 不写、不持久化（幂等，避免逐帧抖动）；
+//   5. 只覆盖这一项受管参数，不碰 mode / amount / 其它原版设置，不擅自开自动器。
 //
-// 归属（§80.2 / §81）：这是**目标驱动型智能自动购买器**的受管参数，
-// **不经过** MOD 全局 1～60 秒行动节拍（不包进 `OrekiSmartExecutor.runCycle`）。
-// 原版 `Autobuyers.tick()` 仍按自身机制、自身间隔执行购买与坍缩。
-//
-// 为什么需要它（玩家实测缺口）：
-//   旧实现只有「要不要坍缩」的目标判定（`OrekiCrunchPolicy.decide()`），
-//   完全没有任何「间隔托管」代码；玩家把间隔手改后既不会被保留记账，
-//   也不会按目标恢复，表现为「间隔一旦被动过就长期偏离策略意图」。
+// 为什么不使用独立计时器：规则要求自动购买器有效周期与调度器 Tick 一致，
+// 不允许叠加 setInterval / 自己算恢复时间。本模块复用 OrekiSmartExecutor 的
+// hostingTick，与启停/模式托管共享同一拍。
 // ---------------------------------------------------------------------------
 
 import { OrekiCrunchPolicy, eternityWaitMs } from "./oreki-crunch-policy.js";
@@ -30,22 +23,16 @@ export const CRUNCH_ETERNITY_GROW_SECONDS = 60;
 export const CRUNCH_PAUSE_SECONDS = 3600;
 
 const STATE = {
-  /** MOD 上次写入（或首观测基线）的间隔；NaN = 尚未观测。 */
-  written: NaN,
-  /** 玩家是否占用中（TRUE 期间 MOD 不写）。 */
-  playerOwned: false,
-  /** 待恢复时间点（ms）；0 = 无。 */
-  restoreAtMs: 0,
-  /** 统计：真正写入次数 / 跳过次数。 */
+  /** 已处理到的托管 Tick 序号；同一 tick 不重复处理。 */
+  lastTick: 0,
+  /** 统计：真正写入次数 / 跳过次数 / 最近原因。 */
   writes: 0,
   skips: 0,
-  /** 最近一次原因，便于面板/日志。 */
   lastReason: "",
-  /** 恢复计数（证明「只恢复一次」）。 */
-  restores: 0,
+  lastValue: null,
 };
 
-function nowMs() {
+function monotonicNow() {
   if (typeof performance !== "undefined" && typeof performance.now === "function") {
     return performance.now();
   }
@@ -73,79 +60,55 @@ function writeActualInterval(seconds) {
   player.auto.bigCrunch.time = seconds;
 }
 
-/** MOD 全局节拍秒数：**只**用来当「下一次 tick」的时长标尺，绝不读改其语义。 */
-function globalIntervalSec() {
+/** 解析当前托管 Tick：优先显式注入（测试/调用方），其次调度器。 */
+function resolveTick(explicit) {
+  if (Number.isInteger(explicit) && explicit > 0) return explicit;
   try {
-    const v = globalThis.OrekiSmartExecutor && globalThis.OrekiSmartExecutor.intervalSec;
-    const n = Number(v);
-    return Number.isInteger(n) && n >= 1 && n <= 60 ? n : 10;
+    const executor = globalThis.OrekiSmartExecutor;
+    const tick = executor && typeof executor.hostingTick === "function"
+      ? executor.hostingTick()
+      : null;
+    return Number.isInteger(tick) && tick > 0 ? tick : null;
   } catch (e) {
-    return 10;
+    return null;
   }
 }
 
 export class OrekiManagedCrunchInterval {
   /**
-   * 每帧调用（配置优化路径，**不要**包进 runCycle）。
+   * 在调度器托管 Tick 上应用一次目标间隔。
    *
    * @param {number} desiredSeconds 当帧策略期望的间隔（秒）
    * @param {string} reason 归因，仅用于日志
-   * @returns {boolean} true = 本次真的写了；false = 跳过（相等/被玩家占用/读不到）
+   * @param {number} [tick] 托管 Tick 序号；缺省从 OrekiSmartExecutor 读取
+   * @returns {boolean} true = 本次真的写了；false = 跳过（未到新 Tick/相等/读不到）
    */
-  static apply(desiredSeconds, reason) {
+  static apply(desiredSeconds, reason, tick = null) {
     if (!Number.isFinite(desiredSeconds)) return false;
+    const resolvedTick = resolveTick(tick);
+    if (resolvedTick === null) return false;
+    if (resolvedTick === STATE.lastTick) return false;
+    // MOD 总开关关闭：立即停止托管，不消费 Tick。
+    try {
+      const executor = globalThis.OrekiSmartExecutor;
+      if (executor && executor.enabled === false) return false;
+    } catch (e) {
+      return false;
+    }
     const actual = readActualInterval();
     if (actual === null) return false;
-
-    // ---- 归属判定（含首观测基线采纳，跨刷新后才认得出玩家改动）----
-    if (Number.isNaN(STATE.written)) {
-      STATE.written = actual;
-    } else if (!sameInterval(actual, STATE.written) && !sameInterval(actual, desiredSeconds)) {
-      if (!STATE.playerOwned) {
-        STATE.playerOwned = true;
-        console.info(
-          `[OrekiCrunchInterval] player changed interval actual=${actual} ` +
-            `modWrote=${STATE.written} target=${desiredSeconds} -> defer to next strategy tick`
-        );
-      }
-    }
-
-    // ---- 恢复时机 ----
-    let restoreDue = false;
-    if (STATE.restoreAtMs !== 0 && nowMs() >= STATE.restoreAtMs) {
-      STATE.restoreAtMs = 0;
-      STATE.playerOwned = false;
-      STATE.restores += 1;
-      restoreDue = true;
-      console.info("[OrekiCrunchInterval] restore due -> apply latest strategy value");
-    }
-
-    // ---- 玩家占用中：不抢写，只登记一次恢复时机 ----
-    if (STATE.playerOwned) {
-      if (STATE.restoreAtMs === 0) {
-        STATE.restoreAtMs = nowMs() + globalIntervalSec() * 1000;
-        console.info(
-          `[OrekiCrunchInterval] defer restore +${globalIntervalSec()}s (actual=${actual})`
-        );
-      }
-      STATE.skips += 1;
-      return false;
-    }
-
-    // ---- 相等则不写、不持久化 ----
+    STATE.lastTick = resolvedTick;
+    // 相等则不写、不持久化（幂等）。
     if (sameInterval(actual, desiredSeconds)) {
-      STATE.written = actual;
       STATE.skips += 1;
       return false;
     }
-
     writeActualInterval(desiredSeconds);
-    STATE.written = desiredSeconds;
     STATE.writes += 1;
     STATE.lastReason = reason;
+    STATE.lastValue = desiredSeconds;
     console.info(
-      `[OrekiCrunchInterval] managed interval ${actual} -> ${desiredSeconds} ` +
-        `(${reason}${restoreDue ? ", restore" : ""})`
+      `[OrekiCrunchInterval] tick=${resolvedTick} managed interval ${actual} -> ${desiredSeconds} (${reason})`
     );
     return true;
   }
@@ -153,14 +116,13 @@ export class OrekiManagedCrunchInterval {
   /**
    * 按当帧策略判定算出期望间隔并托管写入。
    *
-   * 与 Android `applyCrunchPolicy()` 的分支同序：
-   *   不允许坍缩 → 永恒层等待用 30 秒、其余用 1 小时硬暂停；
+   * 与 Android applyCrunchPolicy() 的分支同序：
+   *   不允许坍缩 → 永恒层等待用自适应窗口、其余用 1 小时硬暂停；
    *   允许坍缩   → Break 前 60 秒收割、Break 后 5 秒下限。
    */
-  static applyFromPolicy(decision = null) {
-    // [R97] 允许调用方传入本帧**唯一**一次 `OrekiCrunchPolicy.decide()` 的结果：
-    // `decide()` 内部会推进坍缩等待计时（`waitStartedAt` / `lastEternityCycleAt`），
-    // 同一帧重复调用可能得出不同结论，造成 R96 已记录的 resume/pause 互相覆盖。
+  static applyFromPolicy(decision = null, tick = null) {
+    // [R97] 允许调用方传入本帧**唯一**一次 OrekiCrunchPolicy.decide() 的结果：
+    // decide() 内部会推进坍缩等待计时，同一帧重复调用可能得出不同结论。
     if (!decision) {
       try {
         decision = OrekiCrunchPolicy.decide();
@@ -174,35 +136,32 @@ export class OrekiManagedCrunchInterval {
         decision.reason === "eternity-grow"
           ? eternityWaitMs() / 1000
           : CRUNCH_PAUSE_SECONDS;
-      return OrekiManagedCrunchInterval.apply(seconds, `pause:${decision.reason}`);
+      return OrekiManagedCrunchInterval.apply(seconds, `pause:${decision.reason}`, tick);
     }
     const seconds =
       typeof player !== "undefined" && player.break
         ? CRUNCH_POST_BREAK_SECONDS
         : CRUNCH_PRE_BREAK_SECONDS;
-    return OrekiManagedCrunchInterval.apply(seconds, `resume:${decision.reason}`);
+    return OrekiManagedCrunchInterval.apply(seconds, `resume:${decision.reason}`, tick);
   }
 
   static describe() {
     return {
-      written: STATE.written,
-      playerOwned: STATE.playerOwned,
-      pendingRestore: STATE.restoreAtMs !== 0,
+      lastTick: STATE.lastTick,
+      lastValue: STATE.lastValue,
       writes: STATE.writes,
       skips: STATE.skips,
-      restores: STATE.restores,
       lastReason: STATE.lastReason,
+      nowMs: monotonicNow(),
     };
   }
 
   static resetForTest() {
-    STATE.written = NaN;
-    STATE.playerOwned = false;
-    STATE.restoreAtMs = 0;
+    STATE.lastTick = 0;
     STATE.writes = 0;
     STATE.skips = 0;
-    STATE.restores = 0;
     STATE.lastReason = "";
+    STATE.lastValue = null;
   }
 }
 
