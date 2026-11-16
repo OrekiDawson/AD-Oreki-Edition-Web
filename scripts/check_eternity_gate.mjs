@@ -80,6 +80,12 @@ const { OrekiEternityAutomation: A } = await import(
   "file://" + path.join(ROOT, "src/core/oreki-eternity-automation.js")
 );
 
+// [R116-01 P0] 首次永恒 180 s 驻留用可控单调时钟驱动：不真实等待 180 秒，
+// 也不依赖系统墙钟（生产实现走 performance.now，与 Android elapsedRealtime 同语义）。
+const ORIG_MONOTONIC_NOW = A._monotonicNowMs;
+let dwellClock = 5000;
+A._monotonicNowMs = () => dwellClock;
+
 /** 把自动化强制置为「启用」，并允许逐条覆盖门禁方法。 */
 function arm({ hold = false, ec = false, autoEternity = true } = {}) {
   player.auto.autobuyersOn = env.autobuyersOn;
@@ -103,6 +109,18 @@ function reset() {
   // [R104 P0] 新档引导窗口的会话缓存必须逐例重置，否则用例之间会互相污染。
   delete A._freshSessionBootstrap;
   delete A._eternityAutobuyerAdopted;
+  // [R116-01 P0] 首次永恒驻留计时/存档归属/「曾永恒」latch 同样逐例重置。
+  A._firstEternityDwellStartedAt = null;
+  A._firstEternityDwellSaveId = null;
+  A._firstEternityEverSeen = false;
+  dwellClock = 5000;
+  // [R114-01] 开关归属观察态也必须逐例重置：用例 ⑭ 末例会写入 userClosed=true，
+  // 残留到 ⑮ 会把新档引导窗口误判成"玩家已手动关闭"。
+  A._eternityAutoUserClosed = false;
+  A._eternityAutoLastSeenActive = undefined;
+  A._eternityAutoSaveId = null;
+  A._eternityAutoEnabledAtRealities = null;
+  A._eternityAutoEnabledAtRealTime = null;
 }
 
 // ---------------- ① 自动化关闭 → 一次都不发起 ----------------
@@ -466,9 +484,15 @@ try {
     return A.tickEternity();
   };
 
-  check("新档（eternities=0）+ 开关关闭 → 引导窗口放行首次永恒",
-    runCase({ eternities: 0, isActive: false }) === true);
-  check("新档首次永恒发起的原版 eternity 恰好 1 次", env.eternityCalls.length === 1,
+  // [R116-01 P0] 引导窗口仍然负责"打通"首次永恒，但必须先经过 180 s 玩家可见驻留；
+  // 这里用可控单调时钟跨过驻留，不真实等待。
+  check("新档（eternities=0）+ 开关关闭 + 驻留未过 → 引导窗口也不得立即结算",
+    runCase({ eternities: 0, isActive: false }) === false);
+  check("驻留期内原版 eternity 调用 0 次", env.eternityCalls.length === 0,
+    `calls=${env.eternityCalls.length}`);
+  check("驻留计满 180 s 后同一状态放行首次永恒（引导窗口未被取消）",
+    (() => { dwellClock += 180_000; return A.tickEternity(); })() === true);
+  check("驻留结束后原版 eternity 恰好 1 次", env.eternityCalls.length === 1,
     `calls=${env.eternityCalls.length}`);
 
   check("已有进度（eternities=13）+ 开关关闭 + 自动器未解锁 → 仍拦截（R101 P0 不回退）",
@@ -662,6 +686,189 @@ try {
   check("dilation 至少 1 处引用单一门禁",
     dilSrc2.split("realEternityAllowed").length - 1 >= 1,
     "count=" + (dilSrc2.split("realEternityAllowed").length - 1));
+}
+
+// ---------------- ⑮ [R116-01 P0] 首次永恒 180 s 驻留（对齐 Android r115-01） ----------------
+//
+// 背景：Android R115-01 真 APK + 独占 AVD 实测——打破无限后约 25 秒，一次坍缩把 IP 推过
+// 1.797e308，canEternity 首次为真，R104 新档引导窗口在同一秒内就发起真实永恒结算，
+// 玩家没有经历无限层。Web 冻结上游是同一份引导窗口（缺陷同源），本轮按 Android 定稿
+// `OrekiAutoEternityGate.firstEternityDwellRemainingMs()` 的玩家可见语义补齐：
+//   · 只延迟"自动化替玩家按首次永恒"，玩家手动永恒/已永恒存档/玩家已开自动永恒都不受限；
+//   · 计时用单调时钟，资格消失、换存档、冷启动均重置；驻留结束仍走原版真实结算。
+{
+  const savedPlayer = globalThis.player;
+  const savedRecords = player.records;
+  const savedRealities = player.realities;
+  const mkE = (v) => ({ lt: (n) => v < n, toNumber: () => v });
+  const setup = ({ eternities = 0, isActive = false, canEternity = true,
+    saveId = 111, unlocked = false, realities = 0 } = {}) => {
+    reset();
+    player.eternities = mkE(eternities);
+    player.realities = realities;
+    player.records = { gameCreatedTime: saveId };
+    player.auto.eternity.isActive = isActive;
+    arm({ hold: false, ec: false, autoEternity: isActive });
+    env.canEternity = canEternity;
+    env.ep = 0;
+    env.gained = 1e100;
+    env.eternityCalls = [];
+    globalThis.EternityMilestone = { autobuyerEternity: { isReached: unlocked } };
+  };
+
+  // ① 未永恒 + 自动化引导窗口：先驻留，再合法结算
+  setup({ eternities: 0, isActive: false, unlocked: false });
+  check("[R116] 首次永恒：canEternity 首次为真即开始 180 s 驻留",
+    A.firstEternityDwellRemainingMs() === 180_000,
+    "rem=" + A.firstEternityDwellRemainingMs());
+  check("[R116] 驻留期内 tickEternity 不发起首次永恒", A.tickEternity() === false);
+  check("[R116] 驻留期内原版 eternity 调用 0 次", env.eternityCalls.length === 0,
+    "calls=" + env.eternityCalls.length);
+
+  dwellClock += 60_000;
+  check("[R116] 驻留 60 s 时剩余 120 s", A.firstEternityDwellRemainingMs() === 120_000);
+  check("[R116] 驻留 60 s 时仍不结算",
+    A.tickEternity() === false && env.eternityCalls.length === 0);
+  dwellClock += 119_999;
+  check("[R116] 179.999 s 时仍剩 1 ms", A.firstEternityDwellRemainingMs() === 1);
+  check("[R116] 179.999 s 时仍不结算", A.tickEternity() === false);
+  dwellClock += 1;
+  check("[R116] 计满 180 s 后剩余归零", A.firstEternityDwellRemainingMs() === 0);
+  check("[R116] 计满 180 s 后放行首次永恒（仍走原版真实结算）", A.tickEternity() === true);
+  check("[R116] 放行后原版 eternity 恰好 1 次且实参 (false, true)",
+    env.eternityCalls.length === 1
+    && env.eternityCalls[0][0] === false && env.eternityCalls[0][1] === true,
+    JSON.stringify(env.eternityCalls));
+
+  // ② 玩家亲自开启自动永恒 ⇒ 尊重玩家意图，不驻留
+  setup({ eternities: 0, isActive: true, unlocked: false });
+  check("[R116] 玩家已开自动永恒 ⇒ 驻留为 0", A.firstEternityDwellRemainingMs() === 0);
+  check("[R116] 玩家已开自动永恒 ⇒ 首次永恒立即放行", A.tickEternity() === true);
+  check("[R116] 立即放行时原版 eternity 恰好 1 次", env.eternityCalls.length === 1);
+
+  // ③ 已永恒过的存档 ⇒ 完全不受限
+  setup({ eternities: 13, isActive: true, unlocked: true });
+  check("[R116] 已永恒存档 ⇒ 驻留为 0（不拖慢长跑节奏）",
+    A.firstEternityDwellRemainingMs() === 0);
+  check("[R116] 已永恒存档 + 开关开 ⇒ 自动永恒立即放行", A.tickEternity() === true);
+  setup({ eternities: 13, isActive: false, unlocked: true });
+  check("[R116] 已永恒存档 + 开关关 ⇒ 仍按 R101 门禁拦截（不是驻留造成）",
+    A.firstEternityDwellRemainingMs() === 0 && A.tickEternity() === false);
+
+  // ③-b Reality 重置口径（Web 无 Android 的 bigEternities 持久字段）：
+  // reality.js:643 会把 eternities 清零，不能因此把「已永恒存档」误判成新档再驻留 180 s。
+  setup({ eternities: 0, realities: 5, isActive: false, unlocked: true });
+  check("[R116] Reality 后 eternities=0（realities>0）⇒ 不得重新驻留",
+    A.firstEternityDwellRemainingMs() === 0);
+  check("[R116] Reality 后仍按玩家开关门禁（不是被驻留挡住）",
+    A._neverEternitied() === false);
+  // 同一会话内 eternities 被永恒升级花到 0：latch 必须保持"曾永恒"。
+  setup({ eternities: 0, realities: 0, isActive: false, unlocked: false });
+  A.firstEternityDwellRemainingMs(); // 开始驻留
+  player.eternities = mkE(3);
+  check("[R116] 观察到 eternities>0 ⇒ 结束驻留", A.firstEternityDwellRemainingMs() === 0);
+  player.eternities = mkE(0);
+  check("[R116] 同会话内 eternities 被花回 0 ⇒ latch 生效，不重新驻留",
+    A.firstEternityDwellRemainingMs() === 0);
+  // 换存档：上一个存档的"曾永恒"结论不得串到新档。
+  player.records.gameCreatedTime = 333;
+  check("[R116] 换存档后即使新档 eternities=0 ⇒ 重新驻留（不串档）",
+    A.firstEternityDwellRemainingMs() === 180_000);
+
+  // ④ 手动永恒不受限：驻留只拦 MOD tick，原版 UI 入口不经过本模块
+  setup({ eternities: 0, isActive: false, unlocked: false });
+  A.firstEternityDwellRemainingMs(); // 开始驻留
+  check("[R116] 驻留期内手动永恒（原版入口）照常可用",
+    (() => {
+      const before = env.eternityCalls.length;
+      globalThis.eternity(false, true); // 原版 eternity()，手动/其它入口同函数
+      return env.eternityCalls.length === before + 1;
+    })());
+  {
+    const etSrc = readFileSync(path.join(ROOT, "src/core/eternity.js"), "utf8");
+    check("[R116] 手动永恒入口 eternity.js 不引用本模块/驻留判据（手动优先）",
+      !etSrc.includes("OrekiEternityAutomation") && !etSrc.includes("firstEternityDwell"));
+  }
+
+  // ⑤ 存档恢复 / 冷启动 / 换档 / 资格消失 / 时钟回退
+  setup({ eternities: 0, isActive: false, unlocked: false });
+  check("[R116] 冷启动（内存态归零）⇒ 重新计满 180 s",
+    A.firstEternityDwellRemainingMs() === 180_000);
+  dwellClock += 100_000;
+  check("[R116] 同存档驻留继续计时（剩余 80 s）",
+    A.firstEternityDwellRemainingMs() === 80_000);
+  player.records.gameCreatedTime = 222;
+  check("[R116] 换存档（gameCreatedTime 变化）⇒ 驻留重新计满，不跨档继承",
+    A.firstEternityDwellRemainingMs() === 180_000);
+
+  dwellClock += 100_000;
+  check("[R116] 换档后新计时正常推进（剩余 80 s）",
+    A.firstEternityDwellRemainingMs() === 80_000);
+  A._firstEternityDwellStartedAt = null;
+  A._firstEternityDwellSaveId = null;
+  check("[R116] 冷启动（模块内存态清空）⇒ 重新计满 180 s",
+    A.firstEternityDwellRemainingMs() === 180_000);
+
+  env.canEternity = false;
+  check("[R116] 资格消失（IP 被花掉）⇒ 立即不驻留",
+    A.firstEternityDwellRemainingMs() === 0);
+  env.canEternity = true;
+  check("[R116] 资格恢复 ⇒ 驻留重新计满（不继承旧计时）",
+    A.firstEternityDwellRemainingMs() === 180_000);
+
+  dwellClock -= 10_000;
+  check("[R116] 单调时钟回退 ⇒ 按满窗口处理，不出现负值/永久驻留",
+    A.firstEternityDwellRemainingMs() === 180_000);
+
+  // ⑥ 单一门禁同样拦驻留（含"自动进 EC 顺带真实永恒"旁路）
+  setup({ eternities: 0, isActive: false, unlocked: false });
+  A._freshSessionBootstrap = true; // R104 引导窗口本身是放行的
+  check("[R116] 驻留期内单一门禁阻止（即使新档引导窗口有效）",
+    A.realEternityAllowed() === false);
+  dwellClock += 180_000;
+  check("[R116] 驻留结束后单一门禁恢复放行", A.realEternityAllowed() === true);
+
+  // ⑦ 源码静态守卫：常量/时钟/接线顺序
+  {
+    const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
+    check("[R116] 驻留常量 = 180_000 ms（对齐 Android FIRST_ETERNITY_DWELL_MS）",
+      src.includes("const FIRST_ETERNITY_DWELL_MS = 180_000;"));
+    check("[R116] 计时用单调时钟 performance.now（对齐 Android elapsedRealtime）",
+      src.includes("performance") && src.includes("typeof perf.now === \"function\""));
+    check("[R116] 驻留方法读取玩家真实开关（isActive === true ⇒ 0）",
+      src.includes("if (player.auto.eternity.isActive === true) return 0;"));
+    check("[R116] 已永恒存档短路（eternities < 1 才可能驻留）",
+      src.includes("if (!this._neverEternitied()) return 0;"));
+    check("[R116] Web 无 bigEternities：用 realities>0 识别 Reality 后的已永恒存档",
+      src.includes("if (realities !== null && realities > 0) {")
+      && src.includes("this._firstEternityEverSeen = true;"));
+    check("[R116] 换存档清「曾永恒」latch（导入新档仍需引导驻留）",
+      src.includes("this._firstEternityEverSeen = false;"));
+    {
+      const tickBody = src.split("tickEternity() {")[1]?.split('this._err("tickEternity"')[0] || "";
+      const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
+      const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
+      check("[R116] tickEternity 在接管开关之前判驻留（防止同帧接管旁路）",
+        dwellIdx >= 0 && adoptIdx >= 0 && dwellIdx < adoptIdx,
+        "dwell=" + dwellIdx + " adopt=" + adoptIdx);
+    }
+    {
+      const gateBody = src.split("realEternityAllowed() {")[1]?.split("_adoptEternityAutobuyerIfNeeded")[0] || "";
+      const dwellIdx = gateBody.indexOf("firstEternityDwellRemainingMs");
+      const bootIdx = gateBody.indexOf("_eternityBootstrapActive");
+      check("[R116] 单一门禁在引导窗口放行之前判驻留",
+        dwellIdx >= 0 && bootIdx >= 0 && dwellIdx < bootIdx,
+        "dwell=" + dwellIdx + " bootstrap=" + bootIdx);
+    }
+  }
+
+  globalThis.player = savedPlayer;
+  player.records = savedRecords;
+  if (savedRealities === undefined) delete player.realities;
+  else player.realities = savedRealities;
+  delete globalThis.EternityMilestone;
+  reset();
+  A._monotonicNowMs = ORIG_MONOTONIC_NOW;
 }
 
 // ---------------- 汇总 ----------------
