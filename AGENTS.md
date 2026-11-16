@@ -113,5 +113,5 @@
 - **职责**：在已授权轮次且非 DeepSeek 高峰时段，Lead 主动维护 Web 的 Node、Playwright/移动 Chromium、教程一致性与正式部署前 CI；读取 Actions Run/Job/源码 SHA，分类定位故障，最小修复并通过分支、中文 Commit、PR、Required Checks 合规合并，不需逐次询问普通修复。详见 [Web 长期交付规则第 7 节](docs/DELIVERY_RULES.md)。
 - **独立性**：Web CI 与 Android AGP、APK、AVD 独立；Android 阻塞不自动阻止已验证 Web 工作。Pages 发布仓仅接收获批准的 Web `main` SHA 和已验证产物；Lead 可维护跨仓 CI 契约和故障修复，**Pages 正式部署管理也归 DeepSeek Lead**；在既有授权范围内负责部署协调、触发、验收和故障恢复，仍必须遵守受保护的批准流程，不能自行豁免人工或环境审批。
 - **自愈要求**：真实失败 → 精确日志/根因 → 最小修复 → PR/CI → 验证恢复；对平台偶发故障允许有限重试，不能删掉测试、忽略浏览器错误、伪造 UI/游戏结果。静态 Node PASS 不等于 Playwright、线上游戏或部署 PASS。
-- **安全界限**：不恢复 CI 内 DeepSeek API 自动诊断/审查，保留现有 Codex PR 审查；不得绕过 Ruleset/Required Checks、人工或环境审批、生产受控工作流，不得手动覆盖 oreki.net、泄露 Token、强推或自动改变冻结 Web 上游基线。合格生产发布仅在原有授权与真实移动验收、精确 SHA、受保护部署门禁全部通过时进行。
+- **安全界限**：不恢复普通 CI 内 DeepSeek API 自动诊断/审查，改用已授权的 Kodus Cloud 在线 PR 审查；不得绕过 Ruleset/Required Checks、人工或环境审批、生产受控工作流，不得手动覆盖 oreki.net、泄露 Token、强推或自动改变冻结 Web 上游基线。合格生产发布仅在原有授权与真实移动验收、精确 SHA、受保护部署门禁全部通过时进行。
 - **时段与记录**：服从第 7 节峰谷停工、现行 /goal/工作树隔离、P0/P1 优先；未授权独立后台运行不能仅凭规则文本视为已启用。记录 Commit/PR、Actions、Node/Playwright、线上 SHA/部署、`PASS / FAIL / BLOCKED / NOT RUN`。
