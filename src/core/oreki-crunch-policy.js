@@ -112,6 +112,8 @@ let frameDecision = null;
 let frameDecisionAt = 0;
 /** 缓存决策所属存档身份；换档后旧决策必须失效。 */
 let frameDecisionSaveId = null;
+/** 缓存决策对应的 Infinity run 标记；同帧内微步坍缩重置后必须失效。 */
+let frameDecisionMarker = null;
 const FRAME_CACHE_TTL_MS = 50;
 
 /**
@@ -221,11 +223,14 @@ export class OrekiCrunchPolicy {
   static beginFrame() {
     frameDecision = null;
     frameDecisionAt = 0;
+    frameDecisionSaveId = null;
+    frameDecisionMarker = null;
   }
 
   static decide() {
     const now = monotonicNowMs();
     const saveId = readSaveId();
+    const currentMarker = readCrunchMarker();
 
     // 同帧缓存：原生自动器先调用，game.js 托管层后调用，必须看到同一份决策。
     // 换存档后旧缓存立即失效，避免把上一档的 allow/deny 套到新档。
@@ -233,6 +238,15 @@ export class OrekiCrunchPolicy {
       && saveId !== frameDecisionSaveId) {
       frameDecision = null;
       frameDecisionAt = 0;
+      frameDecisionMarker = null;
+    }
+    // 同帧内 Autobuyers.tick() 可能跑多个微步；若其中一次微步已真实坍缩，
+    // thisInfinity 标记被重置，本帧后续微步不得继续复用坍缩前的 allow。
+    if (frameDecision && frameDecisionMarker !== null
+      && crunchConsumedSince(frameDecisionMarker, currentMarker)) {
+      frameDecision = null;
+      frameDecisionAt = 0;
+      frameDecisionMarker = null;
     }
     if (frameDecision && now - frameDecisionAt <= FRAME_CACHE_TTL_MS) {
       return frameDecision;
@@ -259,6 +273,7 @@ export class OrekiCrunchPolicy {
           frameDecision = decision;
           frameDecisionAt = now;
           frameDecisionSaveId = saveId;
+          frameDecisionMarker = currentMarker;
           throttleLog(decision);
           return decision;
         }
@@ -288,6 +303,7 @@ export class OrekiCrunchPolicy {
     frameDecision = decision;
     frameDecisionAt = now;
     frameDecisionSaveId = saveId;
+    frameDecisionMarker = currentMarker;
     throttleLog(decision);
     return decision;
   }
@@ -297,6 +313,7 @@ export class OrekiCrunchPolicy {
     frameDecision = null;
     frameDecisionAt = 0;
     frameDecisionSaveId = null;
+    frameDecisionMarker = null;
     pendingRelease = null;
     lastKey = null;
   }

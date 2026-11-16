@@ -199,6 +199,18 @@ check("原生大坍缩消费 release 后 ⇒ 下一 Tick 回到暂停目标", ()
   assert.strictEqual(M.hasPendingRelease(), false);
 });
 
+check("仅 realTime 重置也识别真实大坍缩消费（maxAMLog 不变）", () => {
+  reset({ time: 30 });
+  globalThis.OrekiSmartExecutor.hostingIntervalMs = 1000;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 1);
+  M.applyFromPolicy({ allow: true, reason: "eternity-cycle" }, 1);
+  player.records.thisInfinity.realTime = 0; // 仅 realTime 归零，maxAMLog 保持 100
+  fakeNow += 250;
+  M.applyFromPolicy({ allow: false, reason: "no-target" }, 2);
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
+  assert.strictEqual(M.hasPendingRelease(), false);
+});
+
 check("release 超时未被消费 ⇒ 不永久保留（回到暂停目标）", () => {
   reset({ time: 30 });
   globalThis.OrekiSmartExecutor.hostingIntervalMs = 1000;
@@ -265,6 +277,30 @@ check("5s 托管 Tick：调用方显式传入 intervalMs 时保留窗口覆盖�
       assert.strictEqual(consumed.reason, "eternity-grow");
       assert.strictEqual(evalCalls, 2);
     });
+    // 同帧微步：原生自动器在一次 tick 内真实坍缩后，后续微步不得复用旧 allow
+    P.resetForTest();
+    player.records.gameCreatedTime = 111;
+    player.records.thisInfinity.realTime = 100;
+    maxAMLog = 100;
+    let microCalls = 0;
+    P.evaluate = () => {
+      microCalls += 1;
+      return microCalls === 1
+        ? { allow: true, reason: "ip-jump" }
+        : { allow: false, reason: "eternity-grow" };
+    };
+    P.beginFrame();
+    const preMicro = P.decide();
+    player.records.thisInfinity.realTime = 0;
+    maxAMLog = -Infinity;
+    const postMicro = P.decide(); // 同一帧，不调用 beginFrame
+    check("同帧内 Infinity run 重置后决策缓存失效", () => {
+      assert.strictEqual(preMicro.allow, true);
+      assert.strictEqual(postMicro.allow, false, "坍缩后不得继续复用旧 allow");
+      assert.strictEqual(postMicro.reason, "eternity-grow");
+      assert.strictEqual(microCalls, 2, "必须重新 evaluate");
+    });
+
     // 换存档：上一档 pendingRelease 不得让新档被迫坍缩
     P.resetForTest();
     player.records.gameCreatedTime = 111;
