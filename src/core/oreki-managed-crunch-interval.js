@@ -141,6 +141,49 @@ function readSaveId() {
   }
 }
 
+/**
+ * [R117-01-03b] 托管原值的持久化记录（localStorage，不进存档结构）。
+ *
+ * 只靠内存快照时，页面刷新后第一次写入会把“上一会话托管写入的 3600”误当
+ * 玩家原值，关闭总开关仍恢复不了。这里按存档身份记录：
+ *   { saveId, originalTime, writtenTime }
+ * 读取时只有 saveId 相同、且当前值仍等于 writtenTime（说明是托管写出的值）
+ * 才采用 originalTime。
+ */
+const MANAGED_TIME_STORAGE_KEY = "oreki.crunchInterval.managed";
+
+function readPersistedManagedTime() {
+  try {
+    if (typeof localStorage === "undefined" || !localStorage) return null;
+    const raw = localStorage.getItem(MANAGED_TIME_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    const saveId = Number(parsed.saveId);
+    const originalTime = Number(parsed.originalTime);
+    const writtenTime = Number(parsed.writtenTime);
+    if (!Number.isFinite(saveId) || !Number.isFinite(originalTime) ||
+        !Number.isFinite(writtenTime)) return null;
+    return { saveId, originalTime, writtenTime };
+  } catch (e) {
+    return null;
+  }
+}
+
+function writePersistedManagedTime(record) {
+  try {
+    if (typeof localStorage === "undefined" || !localStorage) return;
+    localStorage.setItem(MANAGED_TIME_STORAGE_KEY, JSON.stringify(record));
+  } catch (e) { /* 存储不可用不阻断托管 */ }
+}
+
+function clearPersistedManagedTime() {
+  try {
+    if (typeof localStorage === "undefined" || !localStorage) return;
+    localStorage.removeItem(MANAGED_TIME_STORAGE_KEY);
+  } catch (e) { /* 存储不可用不阻断托管 */ }
+}
+
 function hostingIntervalMs() {
   try {
     const value = globalThis.OrekiSmartExecutor && globalThis.OrekiSmartExecutor.hostingIntervalMs;
@@ -209,13 +252,27 @@ export class OrekiManagedCrunchInterval {
     }
     // 首次写入前记录玩家原值；若玩家在两次托管写入之间手改过，则以最新值为原值。
     if (STATE.originalTime === null || STATE.originalSaveId !== saveId) {
-      STATE.originalTime = actual;
+      // 页面刷新/重开后内存态丢失：只有持久化记录属于同一存档、当前值仍是
+      // 上次托管写出的值、且原值与写出值不同，才复用它，避免把 3600 当原值。
+      const persisted = readPersistedManagedTime();
+      const persistedUsable = persisted !== null && saveId !== null &&
+        persisted.saveId === saveId &&
+        sameInterval(persisted.writtenTime, actual) &&
+        !sameInterval(persisted.originalTime, persisted.writtenTime);
+      STATE.originalTime = persistedUsable ? persisted.originalTime : actual;
       STATE.originalSaveId = saveId;
     } else if (STATE.lastValue !== null && !sameInterval(actual, STATE.lastValue)) {
       STATE.originalTime = actual;
       STATE.originalSaveId = saveId;
     }
     writeActualInterval(desiredSeconds);
+    if (saveId !== null) {
+      writePersistedManagedTime({
+        saveId,
+        originalTime: STATE.originalTime,
+        writtenTime: desiredSeconds,
+      });
+    }
     STATE.writes += 1;
     STATE.lastReason = reason;
     STATE.lastValue = desiredSeconds;
@@ -234,15 +291,25 @@ export class OrekiManagedCrunchInterval {
    * @returns {boolean} true = 本次真的写回了一次
    */
   static releaseToPlayer() {
-    const lastValue = STATE.lastValue;
-    const original = STATE.originalTime;
     const saveId = readSaveId();
-    // 换档后旧档原值不得写进新档。
-    const sameSave = STATE.originalSaveId === null || saveId === null ||
+    const persisted = readPersistedManagedTime();
+    // 内存态优先；页面刷新后内存态丢失，则复用同一存档的持久化记录。
+    const persistedUsable = persisted !== null && saveId !== null &&
+      persisted.saveId === saveId;
+    const inMemorySave = STATE.originalSaveId === null || saveId === null ||
       STATE.originalSaveId === saveId;
+    const lastValue = STATE.lastValue !== null
+      ? STATE.lastValue
+      : (persistedUsable ? persisted.writtenTime : null);
+    const original = inMemorySave && STATE.originalTime !== null
+      ? STATE.originalTime
+      : (persistedUsable ? persisted.originalTime : null);
+    // 换档后旧档原值不得写进新档：内存态已按 saveId 校验，持久化记录也已校验。
+    const sameSave = STATE.originalSaveId === null || saveId === null ||
+      STATE.originalSaveId === saveId || persistedUsable;
     const changed = sameSave && lastValue !== null && original !== null &&
       !sameInterval(lastValue, original);
-    // 无论是否写回都清空托管状态，避免重新开启后沿用旧 tick/原值。
+    // 无论是否写回都清空托管状态与持久化记录，避免重新开启后沿用旧 tick/原值。
     STATE.lastTick = 0;
     STATE.originalTime = null;
     STATE.originalSaveId = null;
@@ -251,11 +318,17 @@ export class OrekiManagedCrunchInterval {
     STATE.releaseSeconds = null;
     STATE.releaseStartMarker = null;
     STATE.lastDecisionAllow = null;
+    clearPersistedManagedTime();
     if (!changed) return false;
     const actual = readActualInterval();
     if (actual === null) return false;
     // 玩家在最后一次托管写入后手改过 ⇒ 尊重玩家，不覆盖。
-    if (!sameInterval(actual, lastValue)) return false;
+    if (!sameInterval(actual, lastValue)) {
+      console.info(
+        `[OrekiCrunchInterval] mod-off restore skipped: player override ${actual} != ${lastValue}`
+      );
+      return false;
+    }
     writeActualInterval(original);
     console.info(
       `[OrekiCrunchInterval] mod-off restore managed interval ${lastValue} -> ${original}`

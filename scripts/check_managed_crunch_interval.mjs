@@ -30,6 +30,13 @@ function check(name, fn) {
 
 let fakeNow = 1_000_000;
 globalThis.performance = { now: () => fakeNow };
+// 持久化记录用内存 localStorage 模拟；生产代码通过 localStorage 跨刷新恢复原值。
+const storage = new Map();
+globalThis.localStorage = {
+  getItem: key => (storage.has(key) ? storage.get(key) : null),
+  setItem: (key, value) => storage.set(key, String(value)),
+  removeItem: key => storage.delete(key),
+};
 const bigCrunch = { mode: 1, time: 30, amount: 1, xHighest: 1 };
 let maxAMLog = 100;
 globalThis.player = {
@@ -50,6 +57,7 @@ const M = OrekiManagedCrunchInterval;
 
 function reset({ time = 30, enabled = true } = {}) {
   M.resetForTest();
+  storage.clear();
   bigCrunch.time = time;
   bigCrunch.mode = 1;
   bigCrunch.amount = 1;
@@ -57,6 +65,7 @@ function reset({ time = 30, enabled = true } = {}) {
   globalThis.OrekiSmartExecutor.enabled = enabled;
   infinitiesToken = 0;
   maxAMLog = 100;
+  player.records.gameCreatedTime = 111;
   player.records.thisInfinity.realTime = 100;
 }
 
@@ -439,6 +448,45 @@ check("apply() 检测到总开关关闭也会写回（不依赖界面按钮）",
   assert.strictEqual(wrote, false, "关闭状态不得继续写策略目标");
   assert.strictEqual(bigCrunch.time, 30, "apply 路径同样写回原值");
   assert.strictEqual(M.describe().lastTick, 0);
+});
+
+check("页面刷新（内存态丢失）后仍按持久化记录写回原值", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1); // 记录 original=30 / written=60
+  M.resetForTest();           // 模拟页面刷新，内存态清空但 localStorage 保留
+  assert.strictEqual(bigCrunch.time, 60);
+  M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 2); // 读取持久化 original=30
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 30, "不得把 3600 当原值");
+});
+
+check("换档后不采用上一档的持久化原值", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1); // saveId=111, original=30
+  M.resetForTest();
+  player.records.gameCreatedTime = 222; // 换档
+  M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 2); // 新档原值应为 60
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 60, "新档不得写回旧档原值 30");
+  player.records.gameCreatedTime = 111;
+});
+
+check("重复释放幂等；释放后重新开启再关闭仍写回基线", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 30);
+  assert.strictEqual(M.releaseToPlayer(), false, "第二次释放不得重复写");
+  globalThis.OrekiSmartExecutor.enabled = true;
+  M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 2);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 30, "重新关闭应回到释放后的基线 30");
 });
 
 console.log(`\nR116-02 受管大坍缩节拍夹具：${checks} 项检查，失败 ${fails.length} 项`);
