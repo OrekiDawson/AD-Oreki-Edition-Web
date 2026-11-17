@@ -489,6 +489,76 @@ check("重复释放幂等；释放后重新开启再关闭仍写回基线", () =
   assert.strictEqual(bigCrunch.time, 30, "重新关闭应回到释放后的基线 30");
 });
 
+check("applyFromPolicy 在总开关关闭时同样写回原值", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  const wrote = M.applyFromPolicy({ allow: false, reason: "id-peak-wait" }, 2, 1000);
+  assert.strictEqual(wrote, false, "关闭状态不得写策略目标");
+  assert.strictEqual(bigCrunch.time, 30, "applyFromPolicy 入口也必须写回");
+});
+
+check("释放后清理 localStorage 记录", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  assert.ok(storage.has("oreki.crunchInterval.managed"), "写入后应有持久化记录");
+  globalThis.OrekiSmartExecutor.enabled = false;
+  M.releaseToPlayer();
+  assert.strictEqual(storage.get("oreki.crunchInterval.managed"), undefined,
+    "释放后不得保留记录");
+});
+
+check("刷新后存档落后一拍（actual 命中历史写出值）仍写回原值", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  M.apply(5, "resume:x", 2);
+  M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 3); // 记录 recent=[60,5,3600]
+  M.resetForTest(); // 模拟刷新，且存档只落盘到上一拍的 5
+  bigCrunch.time = 5;
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 30, "命中历史写出值也应恢复玩家原值");
+});
+
+check("关闭期间重复释放不再读写 localStorage", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  M.releaseToPlayer();
+  let io = 0;
+  const getItem = localStorage.getItem;
+  const setItem = localStorage.setItem;
+  const removeItem = localStorage.removeItem;
+  localStorage.getItem = (...args) => { io += 1; return getItem(...args); };
+  localStorage.setItem = (...args) => { io += 1; return setItem(...args); };
+  localStorage.removeItem = (...args) => { io += 1; return removeItem(...args); };
+  try {
+    for (let i = 0; i < 20; i += 1) M.releaseToPlayer();
+  } finally {
+    localStorage.getItem = getItem;
+    localStorage.setItem = setItem;
+    localStorage.removeItem = removeItem;
+  }
+  assert.strictEqual(io, 0, "已释放后不得每帧读写 localStorage");
+});
+
+check("刷新后玩家已在最后一次写入后手改 ⇒ 跳过覆盖并记录日志", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1); // 持久化 original=30 / written=60
+  M.resetForTest();           // 模拟刷新
+  bigCrunch.time = 500;       // 玩家手改，且不等于任何托管写出值
+  globalThis.OrekiSmartExecutor.enabled = false;
+  const logs = [];
+  const originalInfo = console.info;
+  console.info = (...args) => logs.push(args.join(" "));
+  let released;
+  try { released = M.releaseToPlayer(); } finally { console.info = originalInfo; }
+  assert.strictEqual(released, false);
+  assert.strictEqual(bigCrunch.time, 500, "不得覆盖玩家手改");
+  assert.ok(logs.some(line => line.includes("player override")),
+    "应记录 player override 日志: " + logs.join(" | "));
+});
+
 console.log(`\nR116-02 受管大坍缩节拍夹具：${checks} 项检查，失败 ${fails.length} 项`);
 if (fails.length) {
   for (const f of fails) console.log("  FAIL", f);

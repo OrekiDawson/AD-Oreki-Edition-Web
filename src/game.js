@@ -1104,10 +1104,14 @@ export function gameLoop(passDiff, options = {}) {
   // `OrekiCrunchPolicy.decide()` 内部会推进等待计时，**本帧只算一次**并同时喂给
   // 受管间隔与受管配置，避免 R96 已记录的 same-tick resume/pause 互相覆盖。
   let orekiCrunchDecision = null;
-  try {
-    orekiCrunchDecision = OrekiCrunchPolicy.decide();
-  } catch (e) {
-    orekiCrunchDecision = null;
+  // [R117-01-03b] 关闭时完全让路：策略内部等待计时/一次性 release 窗口不再推进，
+  // 避免重开瞬间继承关闭期间攒下的窗口。
+  if (OrekiSmartExecutor.enabled !== false) {
+    try {
+      orekiCrunchDecision = OrekiCrunchPolicy.decide();
+    } catch (e) {
+      orekiCrunchDecision = null;
+    }
   }
   // [R116-02] 本帧只推进/读取一次托管 Tick，两个受管模块共用同一序号：
   // 同一 Tick 只处理一次，1s/5s/动态配置与阶段上限自动同步。

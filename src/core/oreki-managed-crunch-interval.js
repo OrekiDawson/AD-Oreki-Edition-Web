@@ -50,6 +50,12 @@ const STATE = {
   originalTime: null,
   /** 原值所属存档身份；换档即失效。 */
   originalSaveId: null,
+  /**
+   * [R117-01-03b] 已释放标记：MOD 关闭期间 gameLoop 每帧都会走到 applyFromPolicy，
+   * 若每次都读/清 localStorage 会造成每帧 I/O。释放一次后置真，直到下一次真正
+   * 托管写入才复位。
+   */
+  released: false,
 };
 
 function monotonicNow() {
@@ -161,10 +167,12 @@ function readPersistedManagedTime() {
     if (!parsed || typeof parsed !== "object") return null;
     const saveId = Number(parsed.saveId);
     const originalTime = Number(parsed.originalTime);
-    const writtenTime = Number(parsed.writtenTime);
+    const listed = Array.isArray(parsed.writtenTimes)
+      ? parsed.writtenTimes.map(Number).filter(Number.isFinite)
+      : [Number(parsed.writtenTime)].filter(Number.isFinite);
     if (!Number.isFinite(saveId) || !Number.isFinite(originalTime) ||
-        !Number.isFinite(writtenTime)) return null;
-    return { saveId, originalTime, writtenTime };
+        listed.length === 0) return null;
+    return { saveId, originalTime, writtenTimes: listed };
   } catch (e) {
     return null;
   }
@@ -250,27 +258,39 @@ export class OrekiManagedCrunchInterval {
       STATE.skips += 1;
       return false;
     }
-    // 首次写入前记录玩家原值；若玩家在两次托管写入之间手改过，则以最新值为原值。
-    if (STATE.originalTime === null || STATE.originalSaveId !== saveId) {
+    // 首次写入前记录玩家原值；换档或玩家在两次写入之间手改过时同步刷新。
+    // 合并为一个条件，避免两处重复赋值后续漏改。
+    const originalFresh = STATE.originalTime === null || STATE.originalSaveId !== saveId;
+    const playerEdited = STATE.lastValue !== null && !sameInterval(actual, STATE.lastValue);
+    if (originalFresh || playerEdited) {
       // 页面刷新/重开后内存态丢失：只有持久化记录属于同一存档、当前值仍是
       // 上次托管写出的值、且原值与写出值不同，才复用它，避免把 3600 当原值。
-      const persisted = readPersistedManagedTime();
-      const persistedUsable = persisted !== null && saveId !== null &&
+      const persisted = originalFresh ? readPersistedManagedTime() : null;
+      const persistedUsable = originalFresh && persisted !== null && saveId !== null &&
         persisted.saveId === saveId &&
-        sameInterval(persisted.writtenTime, actual) &&
-        !sameInterval(persisted.originalTime, persisted.writtenTime);
+        persisted.writtenTimes.some(value => sameInterval(value, actual)) &&
+        !persisted.writtenTimes.every(value => sameInterval(value, persisted.originalTime));
       STATE.originalTime = persistedUsable ? persisted.originalTime : actual;
-      STATE.originalSaveId = saveId;
-    } else if (STATE.lastValue !== null && !sameInterval(actual, STATE.lastValue)) {
-      STATE.originalTime = actual;
       STATE.originalSaveId = saveId;
     }
     writeActualInterval(desiredSeconds);
+    STATE.released = false;
     if (saveId !== null) {
+      // 保留最近 3 个写出值：自动存档落盘有 1~3 秒窗口，刷新后存档值可能仍是
+      // 上一拍托管值；actual 命中任一历史写出值都视为“托管值”。
+      const previous = readPersistedManagedTime();
+      const recent = previous !== null && previous.saveId === saveId
+        ? previous.writtenTimes.slice()
+        : [];
+      recent.push(desiredSeconds);
+      const distinct = [];
+      for (const value of recent) {
+        if (!distinct.some(existing => sameInterval(existing, value))) distinct.push(value);
+      }
       writePersistedManagedTime({
         saveId,
         originalTime: STATE.originalTime,
-        writtenTime: desiredSeconds,
+        writtenTimes: distinct.slice(-3),
       });
     }
     STATE.writes += 1;
@@ -291,16 +311,23 @@ export class OrekiManagedCrunchInterval {
    * @returns {boolean} true = 本次真的写回了一次
    */
   static releaseToPlayer() {
+    // MOD 关闭期间每帧都会调用本方法；已释放且期间没有新的托管写入时直接返回，
+    // 避免每帧 getItem + JSON.parse + removeItem。
+    if (STATE.released) return false;
     const saveId = readSaveId();
+    const actual = readActualInterval();
     const persisted = readPersistedManagedTime();
     // 内存态优先；页面刷新后内存态丢失，则复用同一存档的持久化记录。
     const persistedUsable = persisted !== null && saveId !== null &&
       persisted.saveId === saveId;
     const inMemorySave = STATE.originalSaveId === null || saveId === null ||
       STATE.originalSaveId === saveId;
+    // 刷新后 lastValue 丢失：actual 命中最近任一托管写出值，才认为它是托管值。
+    const persistedHit = persistedUsable && actual !== null &&
+      persisted.writtenTimes.some(value => sameInterval(value, actual));
     const lastValue = STATE.lastValue !== null
       ? STATE.lastValue
-      : (persistedUsable ? persisted.writtenTime : null);
+      : (persistedHit ? actual : null);
     const original = inMemorySave && STATE.originalTime !== null
       ? STATE.originalTime
       : (persistedUsable ? persisted.originalTime : null);
@@ -309,7 +336,7 @@ export class OrekiManagedCrunchInterval {
       STATE.originalSaveId === saveId || persistedUsable;
     const changed = sameSave && lastValue !== null && original !== null &&
       !sameInterval(lastValue, original);
-    // 无论是否写回都清空托管状态与持久化记录，避免重新开启后沿用旧 tick/原值。
+    // 无论是否写回都清空托管状态；released 标记阻止关闭期间每帧重复 I/O。
     STATE.lastTick = 0;
     STATE.originalTime = null;
     STATE.originalSaveId = null;
@@ -318,10 +345,19 @@ export class OrekiManagedCrunchInterval {
     STATE.releaseSeconds = null;
     STATE.releaseStartMarker = null;
     STATE.lastDecisionAllow = null;
-    clearPersistedManagedTime();
-    if (!changed) return false;
-    const actual = readActualInterval();
-    if (actual === null) return false;
+    STATE.released = true;
+    // 只清理当前存档的记录；切档时不要把另一个存档的记录一起清掉。
+    if (persisted === null || saveId === null || persistedUsable) {
+      clearPersistedManagedTime();
+    }
+    if (!changed || actual === null) {
+      if (actual !== null && persistedUsable && !persistedHit) {
+        console.info(
+          `[OrekiCrunchInterval] mod-off restore skipped: player override (persisted) ${actual}`
+        );
+      }
+      return false;
+    }
     // 玩家在最后一次托管写入后手改过 ⇒ 尊重玩家，不覆盖。
     if (!sameInterval(actual, lastValue)) {
       console.info(
@@ -375,6 +411,7 @@ export class OrekiManagedCrunchInterval {
       STATE.lastDecisionAllow = null;
       STATE.originalTime = null;
       STATE.originalSaveId = null;
+      STATE.lastValue = null;
     }
     STATE.saveId = saveId;
 
@@ -468,6 +505,7 @@ export class OrekiManagedCrunchInterval {
     STATE.saveId = null;
     STATE.originalTime = null;
     STATE.originalSaveId = null;
+    STATE.released = false;
   }
 }
 
