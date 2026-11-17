@@ -128,6 +128,7 @@
 6. **线程处置**：逐条回复处理结论。阻塞性真实缺陷修复且具备证据后再 resolve；误报或非阻塞建议可在给出证据/理由、必要的后续追踪并向审查线程明确回复后 resolve。不得不看正文批量 resolve、删除意见、伪造验证或以关闭线程替代修复；普通 PR 评论若无可 resolve 的线程，也必须回复结论。**合并前未解决 Review Threads 必须为零**。
 7. **合并核对**：最新 HEAD 的 Kody 审查完成且已读全部意见、有效 Critical 与阻塞性 Medium/P0/P1 归零、每条意见有结论、所有 Review Threads 已解决、适用的必要验证和 Required Checks 通过，并满足 Ruleset/审批/部署/发布约束后才允许合并。文档单改不机械要求全量游戏回归；未运行的检查记 NOT RUN，不得写 PASS。
 8. **记录与权限边界**：PR 或任务记录写明最终 SHA、Kody 审查状态/链接、每个阻塞问题的修复 Commit 与验证、延期 Issue 和剩余风险。本规则约束 Agent 的行为，不代表 GitHub 已配置相应 Required Check；不得宣称“AGENTS.md 已写入”等同平台自动拦截，也不得为合并跳过 Kody、CI 或既有审批。
+9. **`skipping` 的合并判定（2026-11-17 用户新规则）**：Kody 显示 `skipping` 时**不自动等于 BLOCKED，也不自动等于 PASS**，按证据逐案判断。可以合并需**同时**满足：① 未解决 Review Threads 为 0，且此前 Kody 提出的意见均有处置与证据；② Kody 对**实质代码**已完成过审查（`kodus pr reviews <PR>` 能查到 success 记录），且最终 HEAD 相对该已审提交的差异经 `git diff`/补丁哈希比对证明**仅为回应意见的定向修改或仅 main 合并提交**；③ CI 与 Required Checks 全绿；④ skip 原因属 `No changed files`、auto-pause、重复触发等非失败情形（失败、超时、报错、仅审旧 SHA 仍按 BLOCKED）；⑤ 无未解决 P0/P1，验收证据齐全。不满足任一条 → 保持 `BLOCKED` 并记录原因。合并前在 PR 留下覆盖说明（已审 SHA、差异比对方式、线程处置、CI Run），不得伪造覆盖、不得用空提交制造审查，也不因此放宽真实运行验收。
 
 ## 16. 新增文档与代码注释中文化规范（长期强制，2026-11-17）
 
