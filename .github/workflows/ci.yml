@@ -88,9 +88,9 @@ jobs:
           node scripts/test-stage-beat-cap.mjs
           # R116-02 scheduler hosting: managed autobuyers on the scheduler tick,
           # manual config restored on the next tick, 1s/5s dynamic tick semantics.
-          node scripts/check_scheduler_hosting.mjs
+          node "scripts/检查调度器托管Tick.mjs"
           node scripts/check_managed_autobuyer_state.mjs
-          node scripts/check_managed_crunch_interval.mjs
+          node "scripts/检查受管大坍缩节拍.mjs"
       - name: 保护 Web 生产部署精确源码
         run: node scripts/check_deploy_workflow.mjs
       # Source JSON, generated tutorial, and player-visible terminology are

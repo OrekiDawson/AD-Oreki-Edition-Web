@@ -144,7 +144,14 @@ export class BigCrunchAutobuyerState extends UpgradeableAutobuyerState {
     // 而 ID1 的 canUnlock 要求 maxAM ≥ 1e1100 —— 与 IP 无关，所以只补 IP 永远解锁不了。
     // [R96] 目标驱动按需结算（与 Android OrekiCrunchPolicy 等价）：
     // 挑战运行中一律放行；永恒前为「IP 已够、只差反物质峰值」的下一个 ID 保护窗口。
-    if (!OrekiCrunchPolicy.decide().allow) return false;
+    //
+    // [R117-01-03] MOD 总开关关闭时必须完全让路：该闸门属于受托管策略，
+    // 关闭后不得继续拦截玩家自己的大坍缩自动购买器（Android
+    // OrekiStageAuto.applyCrunchPolicy() 在调度器关闭时直接 return，不参与原生判定）。
+    // 取不到执行器（Node 夹具）时按开启处理，保持既有夹具语义。
+    const orekiExecutor = globalThis.OrekiSmartExecutor;
+    if ((!orekiExecutor || orekiExecutor.enabled !== false) &&
+      !OrekiCrunchPolicy.decide().allow) return false;
     // [Oreki AD14 已回退] 曾在这里挂「仅 EC3 时暂停坍缩」的窄保护。
     // 实测证明这条路是死锁：不坍缩就没有 IP → 没有无限维度乘数 → 反物质上不去 →
     // 第八反物质维度根本买不起。加保护后 40~100 秒整局冻结（et 恒 388、AD8 恒 0）。

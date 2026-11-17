@@ -40,6 +40,24 @@ const STATE = {
   releaseStartMarker: null,
   /** 存档身份；换档时清 release 状态。 */
   saveId: null,
+  /**
+   * [R117-01-03b] 托管写入前的玩家原值。
+   *
+   * 关闭 MOD 总开关时必须把被托管的 `time` 写回原值，否则 TIME 模式玩家会
+   * 继承 3600 秒暂停值（最长 1 小时不坍缩）。首次写入前记录；若检测到玩家
+   * 在两次托管写入之间手改过，则以玩家最新值为原值。
+   */
+  originalTime: null,
+  /** 原值所属存档身份；换档即失效。 */
+  originalSaveId: null,
+  /**
+   * [R117-01-03b] 已释放标记：MOD 关闭期间 gameLoop 每帧都会走到 applyFromPolicy，
+   * 若每次都读/清 localStorage 会造成每帧 I/O。释放一次后置真，直到下一次真正
+   * 托管写入才复位。
+   */
+  released: false,
+  /** 已释放所属存档；换档后必须允许对新存档重试。 */
+  releasedSaveId: null,
 };
 
 function monotonicNow() {
@@ -131,6 +149,94 @@ function readSaveId() {
   }
 }
 
+/**
+ * [R117-01-03b] 托管原值的持久化记录（localStorage，不进存档结构）。
+ *
+ * 只靠内存快照时，页面刷新后第一次写入会把“上一会话托管写入的 3600”误当
+ * 玩家原值，关闭总开关仍恢复不了。这里按存档身份记录：
+ *   { saveId, originalTime, writtenTime }
+ * 读取时只有 saveId 相同、且当前值仍等于 writtenTime（说明是托管写出的值）
+ * 才采用 originalTime。
+ */
+const MANAGED_TIME_STORAGE_PREFIX = "oreki.crunchInterval.managed";
+/** 仅用于区分“本会话写入”与“上一次会话遗留”，刷新后必须变化。 */
+function createSessionId() {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+let MANAGED_TIME_SESSION_ID = createSessionId();
+/** 上一拍写出值的匹配窗口：覆盖自动存档 1~3 秒的落盘延迟。 */
+const PREVIOUS_WRITE_MATCH_WINDOW_MS = 15000;
+
+function managedTimeStorageKey(saveId) {
+  return `${MANAGED_TIME_STORAGE_PREFIX}:${saveId}`;
+}
+
+/** 按存档分键读取；saveId 无效返回 null（不跨档读写）。 */
+function readPersistedManagedTime(saveId) {
+  try {
+    if (!Number.isFinite(saveId)) return null;
+    if (typeof localStorage === "undefined" || !localStorage) return null;
+    const raw = localStorage.getItem(managedTimeStorageKey(saveId));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    const originalTime = Number(parsed.originalTime);
+    const writtenTime = Number(parsed.writtenTime);
+    const previousWrittenTime = Number(parsed.previousWrittenTime);
+    const updatedAt = Number(parsed.updatedAt);
+    if (!Number.isFinite(originalTime) || !Number.isFinite(writtenTime)) return null;
+    return {
+      saveId,
+      originalTime,
+      writtenTime,
+      previousWrittenTime: Number.isFinite(previousWrittenTime) ? previousWrittenTime : null,
+      updatedAt: Number.isFinite(updatedAt) ? updatedAt : null,
+      sessionId: typeof parsed.sessionId === "string" ? parsed.sessionId : null,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+function writePersistedManagedTime(record) {
+  try {
+    if (!record || !Number.isFinite(record.saveId)) return;
+    if (typeof localStorage === "undefined" || !localStorage) return;
+    localStorage.setItem(managedTimeStorageKey(record.saveId), JSON.stringify(record));
+  } catch (e) { /* 存储不可用不阻断托管 */ }
+}
+
+function clearPersistedManagedTime(saveId) {
+  try {
+    if (!Number.isFinite(saveId)) return;
+    if (typeof localStorage === "undefined" || !localStorage) return;
+    localStorage.removeItem(managedTimeStorageKey(saveId));
+  } catch (e) { /* 存储不可用不阻断托管 */ }
+}
+
+/** 一次性 release 窗口/决策残留：释放时必须清空，避免重开继承关闭期间的窗口。 */
+function clearReleaseWindow() {
+  STATE.releaseUntilMs = 0;
+  STATE.releaseSeconds = null;
+  STATE.releaseStartMarker = null;
+  STATE.lastDecisionAllow = null;
+}
+
+/**
+ * 当前值是否仍是托管写出值。
+ *
+ * 只认最近一次与紧邻上一次（上一拍仅限 15 秒落盘窗口内）；不把 5/60/3600
+ * 这类玩家可选值长期纳入匹配，避免把玩家手设值误判为托管值。
+ */
+function persistedContainsManagedValue(persisted, seconds, { includePrevious = true, now = Date.now() } = {}) {
+  if (!persisted || !Number.isFinite(seconds)) return false;
+  if (sameInterval(persisted.writtenTime, seconds)) return true;
+  if (!includePrevious || !Number.isFinite(persisted.previousWrittenTime)) return false;
+  if (!Number.isFinite(persisted.updatedAt) ||
+      now - persisted.updatedAt > PREVIOUS_WRITE_MATCH_WINDOW_MS) return false;
+  return sameInterval(persisted.previousWrittenTime, seconds);
+}
+
 function hostingIntervalMs() {
   try {
     const value = globalThis.OrekiSmartExecutor && globalThis.OrekiSmartExecutor.hostingIntervalMs;
@@ -174,30 +280,165 @@ export class OrekiManagedCrunchInterval {
    */
   static apply(desiredSeconds, reason, tick = null) {
     if (!Number.isFinite(desiredSeconds)) return false;
-    const resolvedTick = resolveTick(tick);
-    if (resolvedTick === null) return false;
-    if (resolvedTick === STATE.lastTick) return false;
-    // MOD 总开关关闭：立即停止托管，不消费 Tick。
+    // MOD 总开关关闭：立即停止托管、把托管字段写回玩家原值。
+    // 必须放在 tick 早退之前：关闭后 hostingTick 不再前进，否则永远走不到这里。
     try {
       const executor = globalThis.OrekiSmartExecutor;
-      if (executor && executor.enabled === false) return false;
+      if (executor && executor.enabled === false) {
+        OrekiManagedCrunchInterval.releaseToPlayer();
+        return false;
+      }
     } catch (e) {
       return false;
     }
+    const resolvedTick = resolveTick(tick);
+    if (resolvedTick === null) return false;
+    if (resolvedTick === STATE.lastTick) return false;
     const actual = readActualInterval();
     if (actual === null) return false;
+    const saveId = readSaveId();
     STATE.lastTick = resolvedTick;
     // 相等则不写、不持久化（幂等）。
     if (sameInterval(actual, desiredSeconds)) {
       STATE.skips += 1;
       return false;
     }
+    // 首次写入前记录玩家原值；换档或玩家在两次写入之间手改过时同步刷新。
+    // 合并为一个条件，避免两处重复赋值后续漏改。
+    const originalFresh = STATE.originalTime === null || STATE.originalSaveId !== saveId;
+    const playerEdited = STATE.lastValue !== null && !sameInterval(actual, STATE.lastValue);
+    if (originalFresh || playerEdited) {
+      // 页面刷新/重开后内存态丢失：只有持久化记录来自上一次会话、当前值仍是
+      // 最近/紧邻上一次托管写出值，且原值与写出值不同，才复用它。
+      const persistedBefore = originalFresh ? readPersistedManagedTime(saveId) : null;
+      const persistedUsable = originalFresh && saveId !== null &&
+        persistedBefore !== null &&
+        (persistedBefore.sessionId !== MANAGED_TIME_SESSION_ID ||
+          STATE.originalSaveId !== saveId) &&
+        !sameInterval(persistedBefore.originalTime, persistedBefore.writtenTime) &&
+        persistedContainsManagedValue(persistedBefore, actual);
+      STATE.originalTime = persistedUsable ? persistedBefore.originalTime : actual;
+      STATE.originalSaveId = saveId;
+    }
     writeActualInterval(desiredSeconds);
+    STATE.released = false;
+    STATE.releasedSaveId = null;
+    if (saveId !== null) {
+      // 按存档分键；只保留最近一次与紧邻上一次写出值，上一拍仅用于覆盖自动
+      // 存档落盘窗口，避免把 60/5 等玩家常用值长期当作托管值。
+      const previous = readPersistedManagedTime(saveId);
+      writePersistedManagedTime({
+        saveId,
+        originalTime: STATE.originalTime,
+        writtenTime: desiredSeconds,
+        previousWrittenTime: previous !== null ? previous.writtenTime : null,
+        updatedAt: Date.now(),
+        sessionId: MANAGED_TIME_SESSION_ID,
+      });
+    }
     STATE.writes += 1;
     STATE.lastReason = reason;
     STATE.lastValue = desiredSeconds;
     console.info(
       `[OrekiCrunchInterval] tick=${resolvedTick} managed interval ${actual} -> ${desiredSeconds} (${reason})`
+    );
+    return true;
+  }
+
+  /**
+   * [R117-01-03b] 把受管的 `time` 写回玩家原值（MOD 总开关关闭时调用）。
+   *
+   * 仅当当前值仍等于上一次托管写入值（即玩家在最后一次写入后没有再手改）
+   * 且与原值不同才写；写后清空托管 Tick/原值，重新开启时从新基线开始。
+   *
+   * @returns {boolean} true = 本次真的写回了一次
+   */
+  static releaseToPlayer() {
+    const saveId = readSaveId();
+    // 已释放且仍是同一存档：关闭期间每帧调用直接返回，避免重复 localStorage I/O。
+    // 换档后 releasedSaveId 不匹配，允许对新存档重试一次。
+    if (STATE.released && STATE.releasedSaveId === saveId) return false;
+    // 所有释放出口共用：先清掉一次性 release 窗口/决策残留，避免重开后继承。
+    clearReleaseWindow();
+    const actual = readActualInterval();
+    // 读不到当前值：只清托管 Tick，保留原值与持久化记录，下一帧/下一次关闭重试。
+    if (actual === null) {
+      STATE.lastTick = 0;
+      STATE.released = false;
+      STATE.releasedSaveId = null;
+      return false;
+    }
+    const persisted = readPersistedManagedTime(saveId);
+    const persistedUsable = persisted !== null && saveId !== null &&
+      (persisted.sessionId !== MANAGED_TIME_SESSION_ID ||
+        STATE.originalSaveId !== saveId);
+    const inMemorySave = STATE.originalSaveId === null || saveId === null ||
+      STATE.originalSaveId === saveId;
+    const persistedHit = persistedUsable &&
+      persistedContainsManagedValue(persisted, actual);
+    // 内存 lastValue 只在同一存档内有效；换档后必须用目标档的持久化写出值，
+    // 否则会把上一档的 lastValue 与当前档 actual 比较，误判玩家手改。
+    const lastValue = inMemorySave && STATE.lastValue !== null
+      ? STATE.lastValue
+      : (persistedHit ? actual : null);
+    const original = inMemorySave && STATE.originalTime !== null
+      ? STATE.originalTime
+      : (persistedUsable ? persisted.originalTime : null);
+    const sameSave = inMemorySave || persistedUsable;
+    const changed = sameSave && lastValue !== null && original !== null &&
+      !sameInterval(lastValue, original);
+
+    // 玩家在最后一次托管写入后手改过 ⇒ 尊重玩家，确认无需写回后再清理。
+    if (lastValue !== null && !sameInterval(actual, lastValue)) {
+      STATE.lastTick = 0;
+      STATE.originalTime = null;
+      STATE.originalSaveId = null;
+      STATE.lastValue = null;
+      STATE.released = true;
+      STATE.releasedSaveId = saveId;
+      clearPersistedManagedTime(saveId);
+      console.info(
+        `[OrekiCrunchInterval] mod-off restore skipped: player override ${actual} != ${lastValue}`
+      );
+      return false;
+    }
+
+    if (!changed) {
+      // 没有可写回的原值（从未托管 / 原值等于写出值）：确认后才清记录。
+      const persistedMismatch = persistedUsable && !persistedHit;
+      STATE.lastTick = 0;
+      STATE.originalTime = null;
+      STATE.originalSaveId = null;
+      STATE.lastValue = null;
+      STATE.released = true;
+      STATE.releasedSaveId = saveId;
+      clearPersistedManagedTime(saveId);
+      if (persistedMismatch) {
+        console.info(
+          `[OrekiCrunchInterval] mod-off restore skipped: player override (persisted) ${actual}`
+        );
+      }
+      return false;
+    }
+
+    // 真正写回；写失败时保留原值/记录并允许下一帧重试，绝不先清空。
+    try {
+      writeActualInterval(original);
+    } catch (e) {
+      STATE.lastTick = 0;
+      STATE.released = false;
+      STATE.releasedSaveId = null;
+      return false;
+    }
+    STATE.lastTick = 0;
+    STATE.originalTime = null;
+    STATE.originalSaveId = null;
+    STATE.lastValue = null;
+    STATE.released = true;
+    STATE.releasedSaveId = saveId;
+    clearPersistedManagedTime(saveId);
+    console.info(
+      `[OrekiCrunchInterval] mod-off restore managed interval ${lastValue} -> ${original}`
     );
     return true;
   }
@@ -210,6 +451,16 @@ export class OrekiManagedCrunchInterval {
    *   允许坍缩   → Break 前 60 秒收割、Break 后 5 秒下限。
    */
   static applyFromPolicy(decision = null, tick = null, intervalMs = null) {
+    // [R117-01-03b] 总开关关闭：不再计算/写入托管目标，只负责把原值写回。
+    try {
+      const executor = globalThis.OrekiSmartExecutor;
+      if (executor && executor.enabled === false) {
+        OrekiManagedCrunchInterval.releaseToPlayer();
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
     // [R97] 允许调用方传入本帧**唯一**一次 OrekiCrunchPolicy.decide() 的结果：
     // decide() 内部会推进坍缩等待计时，同一帧重复调用可能得出不同结论。
     if (!decision) {
@@ -225,10 +476,12 @@ export class OrekiManagedCrunchInterval {
     const allow = decision.allow === true;
     const saveId = readSaveId();
     if (STATE.saveId !== null && saveId !== null && saveId !== STATE.saveId) {
-      STATE.releaseUntilMs = 0;
-      STATE.releaseSeconds = null;
-      STATE.releaseStartMarker = null;
-      STATE.lastDecisionAllow = null;
+      clearReleaseWindow();
+      STATE.originalTime = null;
+      STATE.originalSaveId = null;
+      STATE.lastValue = null;
+      STATE.released = false;
+      STATE.releasedSaveId = null;
     }
     STATE.saveId = saveId;
 
@@ -309,17 +562,23 @@ export class OrekiManagedCrunchInterval {
     };
   }
 
+  /** 仅测试：模拟页面刷新后的新会话，使持久化记录被视为“上一次会话”。 */
+  static rotateSessionForTest() {
+    MANAGED_TIME_SESSION_ID = createSessionId();
+  }
+
   static resetForTest() {
     STATE.lastTick = 0;
     STATE.writes = 0;
     STATE.skips = 0;
     STATE.lastReason = "";
     STATE.lastValue = null;
-    STATE.lastDecisionAllow = null;
-    STATE.releaseUntilMs = 0;
-    STATE.releaseSeconds = null;
-    STATE.releaseStartMarker = null;
+    clearReleaseWindow();
     STATE.saveId = null;
+    STATE.originalTime = null;
+    STATE.originalSaveId = null;
+    STATE.released = false;
+    STATE.releasedSaveId = null;
   }
 }
 
