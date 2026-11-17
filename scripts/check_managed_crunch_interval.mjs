@@ -119,18 +119,18 @@ check("只覆盖 crunch 间隔，不改 mode / amount / xHighest", () => {
 });
 
 // ------------------------------------- 7. 总开关
-check("MOD 总开关关闭 ⇒ 不写、不消费 Tick；重开后同 Tick 恢复", () => {
+check("MOD 总开关关闭 ⇒ 不写新目标、清空托管 Tick；重开后恢复托管", () => {
   reset({ time: 30 });
   M.apply(30, "pause:x", 1);
   globalThis.OrekiSmartExecutor.enabled = false;
-  bigCrunch.time = 3600;
+  bigCrunch.time = 3600; // 玩家手改，且此前从未托管写入
   const off = M.apply(30, "pause:x", 2);
   assert.strictEqual(off, false);
-  assert.strictEqual(bigCrunch.time, 3600, "关闭时不得写");
-  assert.strictEqual(M.describe().lastTick, 1, "关闭时不得消费 Tick");
+  assert.strictEqual(bigCrunch.time, 3600, "未被托管过的值不得在关闭时覆盖");
+  assert.strictEqual(M.describe().lastTick, 0, "关闭时必须清空托管 Tick");
   globalThis.OrekiSmartExecutor.enabled = true;
   const on = M.apply(30, "pause:x", 2);
-  assert.strictEqual(on, true, "重开后同一 Tick 恢复");
+  assert.strictEqual(on, true, "重开后恢复托管");
   assert.strictEqual(bigCrunch.time, 30);
 });
 
@@ -386,6 +386,60 @@ check("5s 托管 Tick：调用方显式传入 intervalMs 时保留窗口覆盖�
     P.resetForTest();
   }
 }
+
+// ------------------------- 7. [R117-01-03b] 关闭总开关写回玩家原值
+check("首次托管写入前记录原值；关闭后写回并清空 lastTick", () => {
+  reset({ time: 30 });
+  M.apply(30, "pause:eternity-grow", 1); // 与目标相等，不写
+  const wrote = M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 2);
+  assert.strictEqual(wrote, true, "应写入暂停值 3600");
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  const released = M.releaseToPlayer();
+  assert.strictEqual(released, true, "关闭后应写回原值");
+  assert.strictEqual(bigCrunch.time, 30, "应恢复玩家原值 30");
+  assert.strictEqual(M.describe().lastTick, 0, "必须清空托管 Tick");
+});
+
+check("玩家在两次托管写入之间手改 ⇒ 以玩家最新值为原值", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  assert.strictEqual(bigCrunch.time, 60);
+  bigCrunch.time = 15; // 玩家手改
+  M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 2);
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 15, "应恢复玩家最后一次手改值");
+});
+
+check("玩家在最后一次托管写入后手改 ⇒ 关闭时不覆盖玩家值", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 2);
+  bigCrunch.time = 20; // 关闭前玩家手改
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), false);
+  assert.strictEqual(bigCrunch.time, 20, "不得覆盖玩家最后的手改值");
+});
+
+check("从未托管写入过 ⇒ 关闭时不写任何值", () => {
+  reset({ time: 30 });
+  M.apply(30, "pause:eternity-grow", 1); // 不写
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), false);
+  assert.strictEqual(bigCrunch.time, 30);
+});
+
+check("apply() 检测到总开关关闭也会写回（不依赖界面按钮）", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  const wrote = M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 2);
+  assert.strictEqual(wrote, false, "关闭状态不得继续写策略目标");
+  assert.strictEqual(bigCrunch.time, 30, "apply 路径同样写回原值");
+  assert.strictEqual(M.describe().lastTick, 0);
+});
 
 console.log(`\nR116-02 受管大坍缩节拍夹具：${checks} 项检查，失败 ${fails.length} 项`);
 if (fails.length) {

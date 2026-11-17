@@ -1341,6 +1341,9 @@ function setEnabled(value) {  STATE.enabled = Boolean(value);
     // R85：智能开关与原版总开关都必须释放临时接管。只清调度队列不会
     // 恢复 IU15 对购买入口的封锁；同步释放且不改用户节拍时间戳。
     globalThis.OrekiIu15Sprint?.releaseIfTakenOver?.();
+    // [R117-01-03b] 受管大坍缩间隔必须写回玩家原值，否则 TIME 模式会继承
+    // 3600 秒暂停值；关闭时托管 Tick 不再前进，不能等到下一次 apply。
+    try { globalThis.OrekiManagedCrunchInterval?.releaseToPlayer?.(); } catch (e) { /* 不让配置恢复异常打断关闭流程 */ }
     // ⚠️ 刻意不清：STATE.lastBeatAt / STATE.taskLastAct（间隔判定的唯一依据）
   }
   writeStoredAutomation(STATE.enabled, STATE.intervalSec, STATE.strictGlobal);

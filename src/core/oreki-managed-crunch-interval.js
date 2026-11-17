@@ -40,6 +40,16 @@ const STATE = {
   releaseStartMarker: null,
   /** 存档身份；换档时清 release 状态。 */
   saveId: null,
+  /**
+   * [R117-01-03b] 托管写入前的玩家原值。
+   *
+   * 关闭 MOD 总开关时必须把被托管的 `time` 写回原值，否则 TIME 模式玩家会
+   * 继承 3600 秒暂停值（最长 1 小时不坍缩）。首次写入前记录；若检测到玩家
+   * 在两次托管写入之间手改过，则以玩家最新值为原值。
+   */
+  originalTime: null,
+  /** 原值所属存档身份；换档即失效。 */
+  originalSaveId: null,
 };
 
 function monotonicNow() {
@@ -174,23 +184,36 @@ export class OrekiManagedCrunchInterval {
    */
   static apply(desiredSeconds, reason, tick = null) {
     if (!Number.isFinite(desiredSeconds)) return false;
-    const resolvedTick = resolveTick(tick);
-    if (resolvedTick === null) return false;
-    if (resolvedTick === STATE.lastTick) return false;
-    // MOD 总开关关闭：立即停止托管，不消费 Tick。
+    // MOD 总开关关闭：立即停止托管、把托管字段写回玩家原值。
+    // 必须放在 tick 早退之前：关闭后 hostingTick 不再前进，否则永远走不到这里。
     try {
       const executor = globalThis.OrekiSmartExecutor;
-      if (executor && executor.enabled === false) return false;
+      if (executor && executor.enabled === false) {
+        OrekiManagedCrunchInterval.releaseToPlayer();
+        return false;
+      }
     } catch (e) {
       return false;
     }
+    const resolvedTick = resolveTick(tick);
+    if (resolvedTick === null) return false;
+    if (resolvedTick === STATE.lastTick) return false;
     const actual = readActualInterval();
     if (actual === null) return false;
+    const saveId = readSaveId();
     STATE.lastTick = resolvedTick;
     // 相等则不写、不持久化（幂等）。
     if (sameInterval(actual, desiredSeconds)) {
       STATE.skips += 1;
       return false;
+    }
+    // 首次写入前记录玩家原值；若玩家在两次托管写入之间手改过，则以最新值为原值。
+    if (STATE.originalTime === null || STATE.originalSaveId !== saveId) {
+      STATE.originalTime = actual;
+      STATE.originalSaveId = saveId;
+    } else if (STATE.lastValue !== null && !sameInterval(actual, STATE.lastValue)) {
+      STATE.originalTime = actual;
+      STATE.originalSaveId = saveId;
     }
     writeActualInterval(desiredSeconds);
     STATE.writes += 1;
@@ -203,6 +226,44 @@ export class OrekiManagedCrunchInterval {
   }
 
   /**
+   * [R117-01-03b] 把受管的 `time` 写回玩家原值（MOD 总开关关闭时调用）。
+   *
+   * 仅当当前值仍等于上一次托管写入值（即玩家在最后一次写入后没有再手改）
+   * 且与原值不同才写；写后清空托管 Tick/原值，重新开启时从新基线开始。
+   *
+   * @returns {boolean} true = 本次真的写回了一次
+   */
+  static releaseToPlayer() {
+    const lastValue = STATE.lastValue;
+    const original = STATE.originalTime;
+    const saveId = readSaveId();
+    // 换档后旧档原值不得写进新档。
+    const sameSave = STATE.originalSaveId === null || saveId === null ||
+      STATE.originalSaveId === saveId;
+    const changed = sameSave && lastValue !== null && original !== null &&
+      !sameInterval(lastValue, original);
+    // 无论是否写回都清空托管状态，避免重新开启后沿用旧 tick/原值。
+    STATE.lastTick = 0;
+    STATE.originalTime = null;
+    STATE.originalSaveId = null;
+    STATE.lastValue = null;
+    STATE.releaseUntilMs = 0;
+    STATE.releaseSeconds = null;
+    STATE.releaseStartMarker = null;
+    STATE.lastDecisionAllow = null;
+    if (!changed) return false;
+    const actual = readActualInterval();
+    if (actual === null) return false;
+    // 玩家在最后一次托管写入后手改过 ⇒ 尊重玩家，不覆盖。
+    if (!sameInterval(actual, lastValue)) return false;
+    writeActualInterval(original);
+    console.info(
+      `[OrekiCrunchInterval] mod-off restore managed interval ${lastValue} -> ${original}`
+    );
+    return true;
+  }
+
+  /**
    * 按当帧策略判定算出期望间隔并托管写入。
    *
    * 与 Android applyCrunchPolicy() 的分支同序：
@@ -210,6 +271,16 @@ export class OrekiManagedCrunchInterval {
    *   允许坍缩   → Break 前 60 秒收割、Break 后 5 秒下限。
    */
   static applyFromPolicy(decision = null, tick = null, intervalMs = null) {
+    // [R117-01-03b] 总开关关闭：不再计算/写入托管目标，只负责把原值写回。
+    try {
+      const executor = globalThis.OrekiSmartExecutor;
+      if (executor && executor.enabled === false) {
+        OrekiManagedCrunchInterval.releaseToPlayer();
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
     // [R97] 允许调用方传入本帧**唯一**一次 OrekiCrunchPolicy.decide() 的结果：
     // decide() 内部会推进坍缩等待计时，同一帧重复调用可能得出不同结论。
     if (!decision) {
@@ -229,6 +300,8 @@ export class OrekiManagedCrunchInterval {
       STATE.releaseSeconds = null;
       STATE.releaseStartMarker = null;
       STATE.lastDecisionAllow = null;
+      STATE.originalTime = null;
+      STATE.originalSaveId = null;
     }
     STATE.saveId = saveId;
 
@@ -320,6 +393,8 @@ export class OrekiManagedCrunchInterval {
     STATE.releaseSeconds = null;
     STATE.releaseStartMarker = null;
     STATE.saveId = null;
+    STATE.originalTime = null;
+    STATE.originalSaveId = null;
   }
 }
 
