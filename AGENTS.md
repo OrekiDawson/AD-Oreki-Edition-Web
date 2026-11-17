@@ -152,3 +152,11 @@
 7. **Lead 分派与交接**：Issue/PR 整理、定向修复、复核可委派给不冲突的 Subagent；Lead 用文件下发唯一编号、责任仓库/文件和验收标准，Subagent 用文件回报 Commit、测试和阻塞，Lead 验证后作出合并/复派/继续/收口决定。AVD、正式构建、签名、部署等独占资源不可争抢。
 8. **及时报告与硬约束**：每次有效工作回合简明列出实际处理的 Issue/PR 链接、状态、修复/合并 SHA、Kody 与 CI 结论、遗留阻塞和下一步；没有执行的步骤明确 `NOT RUN`。用户暂停、高峰全员停工、DeepSeek 余额保护、权限与仓库现行安全门禁优先；不得为“主动”在停工时或授权外执行写操作、构建、部署、收费审查。
 9. **仓库特别约束**：优先处理玩法/存档/移动浏览器和 Android 跨端差异；受影响行为必须经 Playwright + Chromium 手机视口验证，Pages 部署仍由受控链执行，不因 Android 局部阻塞停下已授权 Web 工作。
+
+## 18. 默认仅改 Android / Web 双仓（长期强制，2026-11-17）
+
+1. **默认范围**：常规 Goal、Bug 修复、玩法迭代、自动购买器、测试及关联文档，默认只修改 `OrekiDawson/AD-Oreki-Edition-Android` 与 `OrekiDawson/AD-Oreki-Edition-Web` 两个业务仓库。能只修改一个仓库就只动一个，不为双仓数量制造改动。
+2. **其他仓库仅按需触发**：`OrekiDawson/AD-Oreki-Knowledge`、`OrekiDawson/OrekiDawson.github.io`、`OrekiDawson/AD-Oreki-Edition-Workspace` 和 `OrekiDawson/frame-observer` 默认不写入。仅当用户明确指定，或确有 Wiki、Pages、跨仓规则、采集接口、CI/CD、发布及安全故障必须在对应仓处理时，才在最小必要范围纳入，并记录例外原因、关联 Issue/PR 和验证。
+3. **禁止机械六仓同步**：普通开发轮不自动创建六仓分支/PR，不逐仓重写 `AGENTS.md`、FACTS、README 或任务报告；只为当前实际受影响的文件交付。其他仓的 Issues/PRs 可按需读取、排优先级和记录阻塞，但“主动管理”不等于每轮必须修改所有仓库。
+4. **保留独立交付门禁**：实际涉及 Web 正式部署、Pages、Wiki 或 Android 四渠道发行时，仍按既有流程操作必需的仓库和渠道；不得因默认双仓规则跳过 Kody、Required Checks、Ruleset、审批、用户授权、高峰停工或余额保护。
+5. **最小可验证交付**：优先按问题影响决定修改一个或两个业务仓；确需额外仓库时才增加，并在回合报告说明实际触及仓库、例外原因、Commit/PR、验证状态（PASS/FAIL/BLOCKED/NOT RUN）。
