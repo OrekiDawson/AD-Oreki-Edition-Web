@@ -214,6 +214,14 @@ function clearPersistedManagedTime(saveId) {
   } catch (e) { /* 存储不可用不阻断托管 */ }
 }
 
+/** 一次性 release 窗口/决策残留：释放时必须清空，避免重开继承关闭期间的窗口。 */
+function clearReleaseWindow() {
+  STATE.releaseUntilMs = 0;
+  STATE.releaseSeconds = null;
+  STATE.releaseStartMarker = null;
+  STATE.lastDecisionAllow = null;
+}
+
 /**
  * 当前值是否仍是托管写出值。
  *
@@ -350,6 +358,8 @@ export class OrekiManagedCrunchInterval {
     // 已释放且仍是同一存档：关闭期间每帧调用直接返回，避免重复 localStorage I/O。
     // 换档后 releasedSaveId 不匹配，允许对新存档重试一次。
     if (STATE.released && STATE.releasedSaveId === saveId) return false;
+    // 所有释放出口共用：先清掉一次性 release 窗口/决策残留，避免重开后继承。
+    clearReleaseWindow();
     const actual = readActualInterval();
     // 读不到当前值：只清托管 Tick，保留原值与持久化记录，下一帧/下一次关闭重试。
     if (actual === null) {
@@ -366,7 +376,9 @@ export class OrekiManagedCrunchInterval {
       STATE.originalSaveId === saveId;
     const persistedHit = persistedUsable &&
       persistedContainsManagedValue(persisted, actual);
-    const lastValue = STATE.lastValue !== null
+    // 内存 lastValue 只在同一存档内有效；换档后必须用目标档的持久化写出值，
+    // 否则会把上一档的 lastValue 与当前档 actual 比较，误判玩家手改。
+    const lastValue = inMemorySave && STATE.lastValue !== null
       ? STATE.lastValue
       : (persistedHit ? actual : null);
     const original = inMemorySave && STATE.originalTime !== null
@@ -464,10 +476,7 @@ export class OrekiManagedCrunchInterval {
     const allow = decision.allow === true;
     const saveId = readSaveId();
     if (STATE.saveId !== null && saveId !== null && saveId !== STATE.saveId) {
-      STATE.releaseUntilMs = 0;
-      STATE.releaseSeconds = null;
-      STATE.releaseStartMarker = null;
-      STATE.lastDecisionAllow = null;
+      clearReleaseWindow();
       STATE.originalTime = null;
       STATE.originalSaveId = null;
       STATE.lastValue = null;
@@ -564,10 +573,7 @@ export class OrekiManagedCrunchInterval {
     STATE.skips = 0;
     STATE.lastReason = "";
     STATE.lastValue = null;
-    STATE.lastDecisionAllow = null;
-    STATE.releaseUntilMs = 0;
-    STATE.releaseSeconds = null;
-    STATE.releaseStartMarker = null;
+    clearReleaseWindow();
     STATE.saveId = null;
     STATE.originalTime = null;
     STATE.originalSaveId = null;

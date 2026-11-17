@@ -38,7 +38,10 @@ globalThis.localStorage = {
   removeItem: key => storage.delete(key),
 };
 const managedRecordKey = saveId => `oreki.crunchInterval.managed:${saveId}`;
-const bigCrunch = { mode: 1, time: 30, amount: 1, xHighest: 1 };
+// 两个存档各自独立的自动器对象，换档时替换 player.auto.bigCrunch，避免共用同一对象。
+const crunch111 = { mode: 1, time: 30, amount: 1, xHighest: 1 };
+const crunch222 = { mode: 1, time: 50, amount: 1, xHighest: 1 };
+let bigCrunch = crunch111;
 let maxAMLog = 100;
 globalThis.player = {
   break: true,
@@ -59,6 +62,8 @@ const M = OrekiManagedCrunchInterval;
 function reset({ time = 30, enabled = true } = {}) {
   M.resetForTest();
   storage.clear();
+  bigCrunch = crunch111;
+  player.auto.bigCrunch = crunch111;
   bigCrunch.time = time;
   bigCrunch.mode = 1;
   bigCrunch.amount = 1;
@@ -587,6 +592,23 @@ check("写回抛错时保留原值与记录，恢复后可重试", () => {
   }
 });
 
+check("释放清理一次性 release 窗口，重开后按 deny 写 3600 而非 5/60", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  const armed = M.applyFromPolicy({ allow: true, reason: "ip-jump" }, 2, 1000);
+  assert.strictEqual(armed, true, "allow 帧应写入 5 秒并武装窗口");
+  assert.strictEqual(M.hasPendingRelease(), true, "应存在一次性 release 窗口");
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(M.hasPendingRelease(), false, "释放后不得保留窗口");
+  assert.strictEqual(M.describe().releasePending, false);
+  globalThis.OrekiSmartExecutor.enabled = true;
+  const denied = M.applyFromPolicy({ allow: false, reason: "id-peak-wait" }, 3, 1000);
+  assert.strictEqual(denied, true);
+  assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS,
+    "重开 deny 应写 3600，不得继承 5/60");
+});
+
 check("读取当前值失败时保留原值与记录，恢复后可重试", () => {
   reset({ time: 30 });
   M.apply(60, "resume:x", 1);
@@ -602,20 +624,48 @@ check("读取当前值失败时保留原值与记录，恢复后可重试", () =
 
 check("关闭状态下换档：按 saveId 重试且不串原值", () => {
   reset({ time: 30 });
-  M.apply(60, "resume:x", 1); // save111 original=30
+  M.apply(60, "resume:x", 1); // save111 original=30 / written=60
+  // 换到 222：替换成独立对象，模拟真实存档数据
   player.records.gameCreatedTime = 222;
+  bigCrunch = crunch222;
+  player.auto.bigCrunch = crunch222;
   bigCrunch.time = 50;
-  M.apply(5, "resume:x", 2); // save222 original=50
+  M.apply(5, "resume:x", 2); // save222 original=50 / written=5
+  // 切回 111：时间恢复该档真实托管值 60（不是 222 的 5）
   player.records.gameCreatedTime = 111;
+  bigCrunch = crunch111;
+  player.auto.bigCrunch = crunch111;
+  bigCrunch.time = 60;
   globalThis.OrekiSmartExecutor.enabled = false;
   assert.strictEqual(M.releaseToPlayer(), true);
-  assert.strictEqual(bigCrunch.time, 30);
+  assert.strictEqual(bigCrunch.time, 30, "111 应恢复自己的原值");
   // 切回 222：releasedSaveId=111 不应阻止新存档重试
   player.records.gameCreatedTime = 222;
+  bigCrunch = crunch222;
+  player.auto.bigCrunch = crunch222;
   bigCrunch.time = 5;
   assert.strictEqual(M.releaseToPlayer(), true);
   assert.strictEqual(bigCrunch.time, 50, "222 应恢复自己的原值");
   player.records.gameCreatedTime = 111;
+  bigCrunch = crunch111;
+  player.auto.bigCrunch = crunch111;
+});
+
+check("换档后上一档 lastValue 与当前档 actual 不同仍按当前档记录判定", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1); // save111 original=30 / written=60
+  player.records.gameCreatedTime = 222;
+  bigCrunch = crunch222;
+  player.auto.bigCrunch = crunch222;
+  bigCrunch.time = 50;
+  M.apply(5, "resume:x", 2); // save222 lastValue=5
+  player.records.gameCreatedTime = 111;
+  bigCrunch = crunch111;
+  player.auto.bigCrunch = crunch111;
+  bigCrunch.time = 60; // 当前档 actual=60，与上一档 lastValue=5 不同
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 30, "应按 111 档记录恢复原值");
 });
 
 check("刷新后玩家把值改成 60（不在最近两次写出值）⇒ 不覆盖", () => {
