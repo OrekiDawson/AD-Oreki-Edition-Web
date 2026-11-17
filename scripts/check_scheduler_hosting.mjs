@@ -116,7 +116,13 @@ const t6 = EXEC.hostingTick();
 check("空档 60s 只前进一拍（不突发补跑）", t6 === 6, "tick=" + t6);
 
 // --------------------------------------------- 6. 关闭即停 / 重开恢复
+let managedReleaseCalls = 0;
+sandbox.OrekiManagedCrunchInterval = {
+  releaseToPlayer: () => { managedReleaseCalls += 1; return true; },
+};
 EXEC.setEnabled(false);
+check("关闭总开关时通知受管大坍缩间隔写回原值", managedReleaseCalls === 1,
+  "calls=" + managedReleaseCalls);
 monoNow += 30_000;
 check("关闭 MOD 总开关后 Tick 不前进", EXEC.hostingTick() === 6, "tick=" + EXEC.hostingTick());
 EXEC.setEnabled(true);
