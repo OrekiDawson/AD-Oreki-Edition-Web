@@ -9,7 +9,7 @@
  *   · 关闭 MOD 总开关时 Tick 不前进，重新开启后恢复；
  *   · debugState().hosting 暴露真实 tick/interval。
  *
- * 用法：node scripts/check_scheduler_hosting.mjs
+ * 用法：node scripts/检查调度器托管Tick.mjs
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";

@@ -9680,7 +9680,7 @@ return false                        # 列表里一个都没买 → false
 ### 139.3 Web 实现（原生 ESM，行为等价）
 - 新增 `src/core/oreki-managed-crunch-interval.js`（与 Android 逐条等价，常量 60/5/30/3600 同名同值）。
 - `src/game.js` 每帧在 `OrekiSmartExecutor.runCycle` **之外**调用 `applyFromPolicy()`（§80.2/§81 归属）。
-- 新增 `scripts/check_managed_crunch_interval.mjs` 纯逻辑夹具 ⇒ **7/7 PASS**。
+- 新增 `scripts/检查受管大坍缩节拍.mjs`（原 `check_managed_crunch_interval.mjs`，R117-01 中文化改名）纯逻辑夹具 ⇒ **7/7 PASS**。
 
 ### 139.4 已验证事实（真实运行证据）
 - **Android 真机（emulator-5554）logcat**：

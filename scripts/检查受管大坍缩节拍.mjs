@@ -10,7 +10,7 @@
 //   5. MOD 总开关关闭 ⇒ 不写、不消费 Tick；重开后恢复托管。
 //   6. 只覆盖 crunch 间隔，不改 mode / amount / 其它字段。
 //
-// 运行：node scripts/check_managed_crunch_interval.mjs
+// 运行：node "scripts/检查受管大坍缩节拍.mjs"
 // ---------------------------------------------------------------------------
 
 import assert from "node:assert";
@@ -37,6 +37,7 @@ globalThis.localStorage = {
   setItem: (key, value) => storage.set(key, String(value)),
   removeItem: key => storage.delete(key),
 };
+const managedRecordKey = saveId => `oreki.crunchInterval.managed:${saveId}`;
 const bigCrunch = { mode: 1, time: 30, amount: 1, xHighest: 1 };
 let maxAMLog = 100;
 globalThis.player = {
@@ -454,6 +455,7 @@ check("页面刷新（内存态丢失）后仍按持久化记录写回原值", (
   reset({ time: 30 });
   M.apply(60, "resume:x", 1); // 记录 original=30 / written=60
   M.resetForTest();           // 模拟页面刷新，内存态清空但 localStorage 保留
+  M.rotateSessionForTest();
   assert.strictEqual(bigCrunch.time, 60);
   M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 2); // 读取持久化 original=30
   assert.strictEqual(bigCrunch.time, CRUNCH_PAUSE_SECONDS);
@@ -501,10 +503,10 @@ check("applyFromPolicy 在总开关关闭时同样写回原值", () => {
 check("释放后清理 localStorage 记录", () => {
   reset({ time: 30 });
   M.apply(60, "resume:x", 1);
-  assert.ok(storage.has("oreki.crunchInterval.managed"), "写入后应有持久化记录");
+  assert.ok(storage.has(managedRecordKey(111)), "写入后应有持久化记录");
   globalThis.OrekiSmartExecutor.enabled = false;
   M.releaseToPlayer();
-  assert.strictEqual(storage.get("oreki.crunchInterval.managed"), undefined,
+  assert.strictEqual(storage.get(managedRecordKey(111)), undefined,
     "释放后不得保留记录");
 });
 
@@ -514,6 +516,7 @@ check("刷新后存档落后一拍（actual 命中历史写出值）仍写回原
   M.apply(5, "resume:x", 2);
   M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 3); // 记录 recent=[60,5,3600]
   M.resetForTest(); // 模拟刷新，且存档只落盘到上一拍的 5
+  M.rotateSessionForTest();
   bigCrunch.time = 5;
   globalThis.OrekiSmartExecutor.enabled = false;
   assert.strictEqual(M.releaseToPlayer(), true);
@@ -546,6 +549,7 @@ check("刷新后玩家已在最后一次写入后手改 ⇒ 跳过覆盖并记�
   reset({ time: 30 });
   M.apply(60, "resume:x", 1); // 持久化 original=30 / written=60
   M.resetForTest();           // 模拟刷新
+  M.rotateSessionForTest();
   bigCrunch.time = 500;       // 玩家手改，且不等于任何托管写出值
   globalThis.OrekiSmartExecutor.enabled = false;
   const logs = [];
@@ -557,6 +561,80 @@ check("刷新后玩家已在最后一次写入后手改 ⇒ 跳过覆盖并记�
   assert.strictEqual(bigCrunch.time, 500, "不得覆盖玩家手改");
   assert.ok(logs.some(line => line.includes("player override")),
     "应记录 player override 日志: " + logs.join(" | "));
+});
+
+check("写回抛错时保留原值与记录，恢复后可重试", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  const descriptor = Object.getOwnPropertyDescriptor(bigCrunch, "time");
+  let failOnce = true;
+  Object.defineProperty(bigCrunch, "time", {
+    configurable: true,
+    get: () => descriptor.value,
+    set: value => {
+      if (failOnce) { failOnce = false; throw new Error("setter failed"); }
+      descriptor.value = value;
+    },
+  });
+  try {
+    globalThis.OrekiSmartExecutor.enabled = false;
+    assert.strictEqual(M.releaseToPlayer(), false);
+    assert.ok(storage.has(managedRecordKey(111)), "写回失败不得删除持久化记录");
+    assert.strictEqual(M.releaseToPlayer(), true, "第二次应重试成功");
+    assert.strictEqual(bigCrunch.time, 30);
+  } finally {
+    Object.defineProperty(bigCrunch, "time", descriptor);
+  }
+});
+
+check("读取当前值失败时保留原值与记录，恢复后可重试", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  const crunch = player.auto.bigCrunch;
+  delete player.auto.bigCrunch;
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), false);
+  assert.ok(storage.has(managedRecordKey(111)), "失败时不得删除持久化记录");
+  player.auto.bigCrunch = crunch;
+  assert.strictEqual(M.releaseToPlayer(), true, "恢复后应重试成功");
+  assert.strictEqual(bigCrunch.time, 30);
+});
+
+check("关闭状态下换档：按 saveId 重试且不串原值", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1); // save111 original=30
+  player.records.gameCreatedTime = 222;
+  bigCrunch.time = 50;
+  M.apply(5, "resume:x", 2); // save222 original=50
+  player.records.gameCreatedTime = 111;
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 30);
+  // 切回 222：releasedSaveId=111 不应阻止新存档重试
+  player.records.gameCreatedTime = 222;
+  bigCrunch.time = 5;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 50, "222 应恢复自己的原值");
+  player.records.gameCreatedTime = 111;
+});
+
+check("刷新后玩家把值改成 60（不在最近两次写出值）⇒ 不覆盖", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1); // 60
+  M.apply(5, "resume:x", 2);  // prev=60
+  M.apply(CRUNCH_PAUSE_SECONDS, "pause:no-target", 3); // last=3600, prev=5
+  M.resetForTest();
+  M.rotateSessionForTest();
+  bigCrunch.time = 60; // 玩家手设为常用值 60
+  globalThis.OrekiSmartExecutor.enabled = false;
+  const logs = [];
+  const originalInfo = console.info;
+  console.info = (...args) => logs.push(args.join(" "));
+  let released;
+  try { released = M.releaseToPlayer(); } finally { console.info = originalInfo; }
+  assert.strictEqual(released, false);
+  assert.strictEqual(bigCrunch.time, 60, "不得把玩家 60 覆盖成旧原值");
+  assert.ok(logs.some(line => line.includes("player override")), "应记录 player override");
 });
 
 console.log(`\nR116-02 受管大坍缩节拍夹具：${checks} 项检查，失败 ${fails.length} 项`);
