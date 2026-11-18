@@ -830,6 +830,24 @@ export const OrekiEternityAutomation = {
   },
 
   /**
+   * [R118-01 #69] 当前目标 EC 的入口是否依赖「永恒次数/无限次数」且尚未达成。
+   *
+   * EC1 的入口是永恒次数、EC4 是无限次数；tickEternity 的 EP 收益门槛（gainedEP ≥ 当前 EP）
+   * 会把这些入口所需的永恒压死。仅当目标为 EC1/EC4 且入口未达成时豁免该门槛，
+   * 其他 EC 仍走原收益门槛，不改变正常节奏。
+   */
+  _ecEntryNeedsEternity() {
+    try {
+      const id = this.nextUnfinishedEcId();
+      if (id !== 1 && id !== 4) return false;
+      const study = TimeStudy.eternityChallenge(id);
+      return study ? !study.isEntryGoalMet : false;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  /**
    * [R97 P0 对齐 Android] 同帧大坍缩观测：用 `Currency.infinities` 的整数令牌变化
    * 识别「刚刚发生过一次大坍缩」，并只跳过该帧一次。Android 侧对应
    * `detectResetGenerations()` + `crunchSkipFrames`；Web 长期缺失此保护，
@@ -1362,7 +1380,12 @@ export const OrekiEternityAutomation = {
       // 而 EP 是中期唯一引擎燃料：时间维度用 EP 买（TD1=1 / TD2=5 / TD3=100）、
       // 永恒升级首档 5 EP ⇒ EP 卡住 ⇒ 时间维度只有 1 层、永恒升级 0 个 ⇒ 乘数停滞。
       // Android 同口径实机效果（同一存档 6 分钟）：bigE 3→7、EP 2.16→5.4、首个永恒升级买到。
-      if (gainedEternityPoints().lt(Currency.eternityPoints.value.times(1))) return false;
+      // [R118-01 #69] EC1/EC4 的入口资源分别是永恒次数/无限次数；目标是它们且入口
+      // 未达成时，EP 收益门槛不得压住永恒，否则入口永远攒不满（实测修复前存档
+      // 导入后 et 恒 113、maxEP/IP 增长但 EC 数组不动）。与 shouldHoldReset 的
+      // EC1/EC4 例外同源，不改变其他 EC 的收益门槛。
+      if (!this._ecEntryNeedsEternity() &&
+          gainedEternityPoints().lt(Currency.eternityPoints.value.times(1))) return false;
       return eternity(false, true) === true;
     } catch (e) {
       this._err("tickEternity", e);
