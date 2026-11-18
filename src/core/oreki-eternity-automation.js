@@ -1254,6 +1254,10 @@ export const OrekiEternityAutomation = {
       if (!this._eternityAutobuyerUnlocked()) {
         // 只有「全新档 / 已接管」才持久化开关；修复前导出的 et≥1 存档走
         // _lockedLayerDriveAllowed() 的载入例外，只驱动、不写存档原值。
+        //
+        // 注意：原版 ETERNITY_RESET_AFTER 会调用 Autobuyers.reset()，未解锁时
+        // EternityAutobuyerState.reset() 会把 isActive 重新置 false。因此跨读档的可靠
+        // 路径是 _lockedLayerDriveAllowed()；本写入主要保证 mode/X_HIGHEST 配置持久化。
         const freshOrAdopted =
           this._eternityAutobuyerAdopted === true || this._sampleFreshSession() === true;
         if (freshOrAdopted) {
