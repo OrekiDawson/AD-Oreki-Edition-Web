@@ -1030,10 +1030,35 @@ export const OrekiEternityAutomation = {
     //   · adopted 条款对齐 Android OrekiAutoEternityGate.bootstrapActive()；
     //   · 全新档窗口是 R104 P0 的既有修复。
     if (!unlocked) {
-      return this._eternityAutobuyerAdopted === true || freshSession === true;
+      return this._eternityAutobuyerAdopted === true || freshSession === true ||
+        this._lockedLayerDriveAllowed();
     }
     // 已解锁：只认原版开关真实值（Android 定稿语义），这里绝不绕过。
     return false;
+  },
+
+  /**
+   * [R118-01 #69] 自动器未解锁时的载入驱动例外。
+   *
+   * 与 Android PR #183 `lockedLayerDriveAllowed` 同口径：界面在 eternities<100 时
+   * 不渲染该开关（AutobuyerBox.js），玩家无法在此状态表达关闭意图；若存档已永恒过
+   * （et≥1）、MOD 与原版自动购买器总开关均开启、且本会话未观察到玩家手动关闭，
+   * 则允许 MOD 驱动永恒/EC 入口，修复「修复前导出的存档」读档后 EC 链死锁。
+   *
+   * 本例外**不写** player.auto.eternity，保留存档原值；已解锁（et≥100）仍只认
+   * 开关真实值。修复后新存档由 `_adoptEternityAutobuyerIfNeeded()` 持久化开关，
+   * 两条路径互不替代。
+   */
+  _lockedLayerDriveAllowed() {
+    try {
+      if (player.auto.autobuyersOn === false) return false;
+      if (this._eternityAutoUserClosed === true) return false;
+      // 用 _everEternitied() 而不是裸 et≥1：玩家把永恒次数花在永恒升级后 et 可能变 0，
+      // 但 realities>0 / 会话 latch 仍能证明本存档已永恒过（与 Android #183 同口径）。
+      return this._everEternitied() === true;
+    } catch (e) {
+      return false;
+    }
   },
 
   // ------------------------------------------------- [R116-01 P0] 首次永恒驻留窗口
@@ -1200,40 +1225,35 @@ export const OrekiEternityAutomation = {
       if (player.auto.eternity.isActive === true) return;
       // 本会话玩家手动关闭过 ⇒ 尊重，绝不重开（直到玩家自己再打开）。
       if (this._eternityAutoUserClosed === true) return;
-      // 未解锁：界面上没有这个开关（写了玩家也看不见），由 R104 引导窗口/门禁放行即可。
-      if (!this._eternityAutobuyerUnlocked()) return;
+      // [R118-01 #69] 未解锁：界面上没有这个开关，不存在玩家的关闭决定。
+      //
+      // 若本会话由 MOD 引导（全新档或已接管），这里必须把开关真实值持久化为 true：
+      // 否则刷新/导入后 `_eternityBootstrapActive()` 只剩内存 latch（新会话 et≥1 时
+      // `_sampleFreshSession()` 为 false），`tickEternity()` 与 EC 入口的
+      // `realEternityAllowed()` 都会永久拒绝，EC1 需要的永恒次数无法增长，首现实死锁。
+      // 解锁后 `_observeEternityAutobuyerSwitch()` 会按存档真实值接管；玩家解锁后
+      // 手动关闭仍会被识别为 userClosed 并粘滞尊重。
+      if (!this._eternityAutobuyerUnlocked()) {
+        // 只有「全新档 / 已接管」才持久化开关；修复前导出的 et≥1 存档走
+        // _lockedLayerDriveAllowed() 的载入例外，只驱动、不写存档原值。
+        const freshOrAdopted =
+          this._eternityAutobuyerAdopted === true || this._sampleFreshSession() === true;
+        if (freshOrAdopted) {
+          // 同时把解锁后要用的结算门槛配置好，避免解锁瞬间按原版 AMOUNT=1 每帧永恒。
+          this._configureEternityAutobuyerOnce();
+          player.auto.eternity.isActive = true;
+          this._eternityAutobuyerAdopted = true;
+          this._eternityAutoUserClosed = false;
+          this._eternityAutoLastSeenActive = true;
+          this._eternityAutoEnabledAtRealities = this._realitiesValue();
+          this._eternityAutoEnabledAtRealTime = this._thisRealityRealTime();
+        }
+        return;
+      }
       // 未接管过且本会话不是全新档 ⇒ 不动（R101 P0：载入已有进度时严格按玩家开关）。
       // 接管来源（R114-01）：本会话观察到开关真实值为 true（该值由存档持久化）。
       if (this._eternityAutobuyerAdopted !== true && this._sampleFreshSession() !== true) return;
-      // [R107 P0] 接管原版「自动永恒」时，必须同时把结算门槛从默认
-      // 「AMOUNT = 1（任何 canEternity 为真的时刻立刻结算）」改成「X_HIGHEST ×10」。
-      //
-      // 缺陷背景（R107-01 冻结现场逐帧实证，见 reports/R107-01/ep-wall-fix/）：
-      // R104 为打通首次永恒接管该开关后，默认配置会在 Player.canEternity 为真的**每一帧**
-      // 立刻永恒；永恒里程碑带来的被动 IP 增长又让 canEternity 很快恢复为真，形成
-      // 「每帧永恒重置」循环：
-      //   · thisEternity.maxIP 永远停在 SIP2 的起始值 5e130；
-      //   · gainedEP 恒约 1e5.4（EP 除数 30），远小于已到 e3683 的当前 EP；
-      //   · AM/维度/IP 每帧被重置回起始值，dimension 自动购买器 lastTick 恒为 0；
-      //   · EP 冻结、realities 卡在 15、isRealityAvailable() 永假（A/B 主跑冻结 5890 s）。
-      // R50（无接管，由 MOD 自己的 EP ≥ 10× 当前 EP 门槛驱动）不存在该问题。
-      // 这里只在「新档会话首次接管 + 原版配置仍是自动值」时改一次，不覆盖玩家自定义配置。
-      if (this._eternityAutobuyerConfigured !== true) {
-        try {
-          const autoCfg = player.auto.eternity;
-          const amountIsDefault = typeof autoCfg.amount?.eq === "function"
-            ? autoCfg.amount.eq(1)
-            : Number(autoCfg.amount) === 1;
-          const xHighestIsDefault = typeof autoCfg.xHighest?.eq === "function"
-            ? autoCfg.xHighest.eq(1)
-            : Number(autoCfg.xHighest) === 1;
-          if (autoCfg.mode === 0 && amountIsDefault && xHighestIsDefault) {
-            autoCfg.mode = globalThis.AUTO_ETERNITY_MODE?.X_HIGHEST ?? 2;
-            autoCfg.xHighest = new Decimal(10);
-          }
-          this._eternityAutobuyerConfigured = true;
-        } catch (e) { /* 配置失败不阻断原有接管流程 */ }
-      }
+      this._configureEternityAutobuyerOnce();
       player.auto.eternity.isActive = true;
       this._eternityAutobuyerAdopted = true;
       // 写入后同步观察基线：下一次 true→false 才不会被误判成「原版复位」。
@@ -1242,6 +1262,40 @@ export const OrekiEternityAutomation = {
       this._eternityAutoEnabledAtRealities = this._realitiesValue();
       this._eternityAutoEnabledAtRealTime = this._thisRealityRealTime();
     } catch (e) { /* ignore */ }
+  },
+
+  /**
+   * [R107 P0] 接管原版「自动永恒」时，必须同时把结算门槛从默认
+   * 「AMOUNT = 1（任何 canEternity 为真的时刻立刻结算）」改成「X_HIGHEST ×10」。
+   *
+   * 缺陷背景（R107-01 冻结现场逐帧实证，见 reports/R107-01/ep-wall-fix/）：
+   * R104 为打通首次永恒接管该开关后，默认配置会在 Player.canEternity 为真的**每一帧**
+   * 立刻永恒；永恒里程碑带来的被动 IP 增长又让 canEternity 很快恢复为真，形成
+   * 「每帧永恒重置」循环：
+   *   · thisEternity.maxIP 永远停在 SIP2 的起始值 5e130；
+   *   · gainedEP 恒约 1e5.4（EP 除数 30），远小于已到 e3683 的当前 EP；
+   *   · AM/维度/IP 每帧被重置回起始值，dimension 自动购买器 lastTick 恒为 0；
+   *   · EP 冻结、realities 卡在 15，isRealityAvailable() 永假（A/B 主跑冻结 5890 s）。
+   * R50（无接管，由 MOD 自己的 EP ≥ 10× 当前 EP 门槛驱动）不存在该问题。
+   * 这里只在「新档会话首次接管 + 原版配置仍是自动值」时改一次，不覆盖玩家自定义配置。
+   * 解锁前持久化 isActive（#69）时也要先调用本方法，避免解锁瞬间按 AMOUNT=1 每帧永恒。
+   */
+  _configureEternityAutobuyerOnce() {
+    if (this._eternityAutobuyerConfigured === true) return;
+    try {
+      const autoCfg = player.auto.eternity;
+      const amountIsDefault = typeof autoCfg.amount?.eq === "function"
+        ? autoCfg.amount.eq(1)
+        : Number(autoCfg.amount) === 1;
+      const xHighestIsDefault = typeof autoCfg.xHighest?.eq === "function"
+        ? autoCfg.xHighest.eq(1)
+        : Number(autoCfg.xHighest) === 1;
+      if (autoCfg.mode === 0 && amountIsDefault && xHighestIsDefault) {
+        autoCfg.mode = globalThis.AUTO_ETERNITY_MODE?.X_HIGHEST ?? 2;
+        autoCfg.xHighest = new Decimal(10);
+      }
+      this._eternityAutobuyerConfigured = true;
+    } catch (e) { /* 配置失败不阻断原有接管流程 */ }
   },
 
   tickEternity() {
