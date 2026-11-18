@@ -241,20 +241,20 @@ export function applyAll({
     }
   };
 
-  // 反物质维度 ×8：原版 UI 与 canTick 的组闸门是 Autobuyer.antimatterDimension.isActive，
-  // 每层 data.isActive 不是玩家可见开关，因此共用组级读写口。
+  // [R118-01 #69] 反物质维度 ×8：原版 canTick = 组级 static isActive **且** 每层
+  // data.isActive。旧实现只写组级开关；当存档组级=true、个体 data.isActive=false 时
+  // （失败存档实测），8 层永不采购，AD8 永远到不了 EC3 入口 173。
+  // 这里同时保证组级 true，并逐层对账个体 isActive；写入仍走原版 setter。
   const dims = root.antimatterDimension;
-  const dimsGroup = (() => {
-    try {
-      if (dims && typeof dims.isActive === "boolean") {
-        return {
-          read: () => dims.isActive === true,
-          write: value => { dims.isActive = value; },
-        };
-      }
-    } catch (e) { /* 退回每层 */ }
-    return null;
-  })();
+  try {
+    if (dims && dims.isActive !== true) {
+      dims.isActive = true;
+      wrote += 1;
+      STATE.writes += 1;
+      // 组级恢复沿用旧诊断口径，restored 记 dim1（逐层差异仍会各自记录）。
+      restored.push("dim1");
+    }
+  } catch (e) { /* 组级写入失败不阻断逐层 */ }
   for (let tier = 1; tier <= 8; tier += 1) {
     let dim = null;
     try {
@@ -262,7 +262,7 @@ export function applyAll({
     } catch (e) {
       dim = null;
     }
-    each(`dim${tier}`, dim, true, dimsGroup);
+    each(`dim${tier}`, dim, true);
   }
 
   each("tickspeed", root.tickspeed, true);
