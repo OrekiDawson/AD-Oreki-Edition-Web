@@ -468,11 +468,12 @@ try {
 {
   const savedPlayer = globalThis.player;
   const mkEternities = (v) => ({ lt: (n) => v < n, toNumber: () => v });
-  const runCase = ({ eternities, isActive, unlocked }) => {
+  const runCase = ({ eternities, isActive, unlocked, userClosed = false }) => {
     reset();
     player.eternities = mkEternities(eternities);
     player.auto.eternity.isActive = isActive;
     arm({ hold: false, ec: false, autoEternity: isActive });
+    A._eternityAutoUserClosed = userClosed;
     if (unlocked !== undefined) {
       globalThis.EternityMilestone = { autobuyerEternity: { isReached: unlocked } };
     } else {
@@ -495,9 +496,14 @@ try {
   check("驻留结束后原版 eternity 恰好 1 次", env.eternityCalls.length === 1,
     `calls=${env.eternityCalls.length}`);
 
-  check("已有进度（eternities=13）+ 开关关闭 + 自动器未解锁 → 仍拦截（R101 P0 不回退）",
-    runCase({ eternities: 13, isActive: false, unlocked: false }) === false);
-  check("已有进度拦截时 eternity 调用 0 次", env.eternityCalls.length === 0);
+  // [R118-01 #69] 未解锁时界面无开关，玩家无法表达关闭意图；已永恒过的存档
+  // 允许 MOD 载入驱动（与 Android PR #183 lockedLayerDriveAllowed 同口径），
+  // 但不写存档开关。R101 的「玩家关闭」保护由 userClosed 用例保留。
+  check("已有进度（eternities=13）+ 开关关闭 + 自动器未解锁 → 允许载入驱动（#69）",
+    runCase({ eternities: 13, isActive: false, unlocked: false }) === true);
+  check("载入驱动恰好发起 1 次 eternity", env.eternityCalls.length === 1);
+  check("已有进度（eternities=13）+ userClosed=true → 仍拦截（R101 玩家关闭不回退）",
+    runCase({ eternities: 13, isActive: false, unlocked: false, userClosed: true }) === false);
 
   check("已有进度（eternities=50）+ 开关关闭 + 自动器已解锁 → 拦截",
     runCase({ eternities: 50, isActive: false, unlocked: true }) === false);
@@ -664,6 +670,45 @@ try {
         globalThis.Player = savedPlayer;
         delete globalThis.EternityMilestone;
       }
+    })());
+
+  const mkEternitiesLoad = v => ({ lt: n => v < n, toNumber: () => v });
+  const lockedLoadCase = ({ autobuyersOn = true, userClosed = false } = {}) => {
+    reset();
+    globalThis.player.eternities = mkEternitiesLoad(5);
+    player.auto.eternity.isActive = false;
+    player.auto.autobuyersOn = autobuyersOn;
+    A._freshSessionBootstrap = false;
+    A._eternityAutobuyerAdopted = false;
+    A._eternityAutoUserClosed = userClosed;
+    env.canEternity = true;
+    globalThis.EternityMilestone = { autobuyerEternity: { isReached: false } };
+    try {
+      return A.realEternityAllowed();
+    } finally {
+      delete globalThis.EternityMilestone;
+    }
+  };
+  check("门禁：载入 et=5、未解锁、开关关、autobuyersOn、无 userClosed ⇒ 允许（#69 载入例外）",
+    lockedLoadCase() === true);
+  check("门禁：载入 et=5、未解锁、autobuyersOn=false ⇒ 阻止（#69 不越权）",
+    lockedLoadCase({ autobuyersOn: false }) === false);
+  check("门禁：载入 et=5、未解锁、userClosed=true ⇒ 阻止（#69 尊重玩家）",
+    lockedLoadCase({ userClosed: true }) === false);
+  check("载入 et=5 未解锁例外只驱动、不写开关（#69）",
+    (() => {
+      reset();
+      globalThis.player.eternities = mkEternitiesLoad(5);
+      player.auto.eternity.isActive = false;
+      player.auto.autobuyersOn = true;
+      A._freshSessionBootstrap = false;
+      A._eternityAutobuyerAdopted = false;
+      A._eternityAutoUserClosed = false;
+      globalThis.EternityMilestone = { autobuyerEternity: { isReached: false } };
+      A._adoptEternityAutobuyerIfNeeded();
+      const off = player.auto.eternity.isActive === false;
+      delete globalThis.EternityMilestone;
+      return off;
     })());
 
   const autoSrc2 = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");

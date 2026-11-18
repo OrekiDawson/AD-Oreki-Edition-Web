@@ -1030,10 +1030,33 @@ export const OrekiEternityAutomation = {
     //   · adopted 条款对齐 Android OrekiAutoEternityGate.bootstrapActive()；
     //   · 全新档窗口是 R104 P0 的既有修复。
     if (!unlocked) {
-      return this._eternityAutobuyerAdopted === true || freshSession === true;
+      return this._eternityAutobuyerAdopted === true || freshSession === true ||
+        this._lockedLayerDriveAllowed();
     }
     // 已解锁：只认原版开关真实值（Android 定稿语义），这里绝不绕过。
     return false;
+  },
+
+  /**
+   * [R118-01 #69] 自动器未解锁时的载入驱动例外。
+   *
+   * 与 Android PR #183 `lockedLayerDriveAllowed` 同口径：界面在 eternities<100 时
+   * 不渲染该开关（AutobuyerBox.js），玩家无法在此状态表达关闭意图；若存档已永恒过
+   * （et≥1）、MOD 与原版自动购买器总开关均开启、且本会话未观察到玩家手动关闭，
+   * 则允许 MOD 驱动永恒/EC 入口，修复「修复前导出的存档」读档后 EC 链死锁。
+   *
+   * 本例外**不写** player.auto.eternity，保留存档原值；已解锁（et≥100）仍只认
+   * 开关真实值。修复后新存档由 `_adoptEternityAutobuyerIfNeeded()` 持久化开关，
+   * 两条路径互不替代。
+   */
+  _lockedLayerDriveAllowed() {
+    try {
+      if (player.auto.autobuyersOn === false) return false;
+      if (this._eternityAutoUserClosed === true) return false;
+      return this._eternitiesLt(1) === false;
+    } catch (e) {
+      return false;
+    }
   },
 
   // ------------------------------------------------- [R116-01 P0] 首次永恒驻留窗口
@@ -1209,7 +1232,11 @@ export const OrekiEternityAutomation = {
       // 解锁后 `_observeEternityAutobuyerSwitch()` 会按存档真实值接管；玩家解锁后
       // 手动关闭仍会被识别为 userClosed 并粘滞尊重。
       if (!this._eternityAutobuyerUnlocked()) {
-        if (this._eternityBootstrapActive() === true) {
+        // 只有「全新档 / 已接管」才持久化开关；修复前导出的 et≥1 存档走
+        // _lockedLayerDriveAllowed() 的载入例外，只驱动、不写存档原值。
+        const freshOrAdopted =
+          this._eternityAutobuyerAdopted === true || this._sampleFreshSession() === true;
+        if (freshOrAdopted) {
           // 同时把解锁后要用的结算门槛配置好，避免解锁瞬间按原版 AMOUNT=1 每帧永恒。
           this._configureEternityAutobuyerOnce();
           player.auto.eternity.isActive = true;
