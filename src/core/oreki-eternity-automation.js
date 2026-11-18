@@ -1053,7 +1053,9 @@ export const OrekiEternityAutomation = {
     try {
       if (player.auto.autobuyersOn === false) return false;
       if (this._eternityAutoUserClosed === true) return false;
-      return this._eternitiesLt(1) === false;
+      // 用 _everEternitied() 而不是裸 et≥1：玩家把永恒次数花在永恒升级后 et 可能变 0，
+      // 但 realities>0 / 会话 latch 仍能证明本存档已永恒过（与 Android #183 同口径）。
+      return this._everEternitied() === true;
     } catch (e) {
       return false;
     }

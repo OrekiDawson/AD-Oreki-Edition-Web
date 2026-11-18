@@ -673,9 +673,15 @@ try {
     })());
 
   const mkEternitiesLoad = v => ({ lt: n => v < n, toNumber: () => v });
-  const lockedLoadCase = ({ autobuyersOn = true, userClosed = false } = {}) => {
+  const lockedLoadCase = ({
+    autobuyersOn = true,
+    userClosed = false,
+    eternities = 5,
+    realities = 0,
+  } = {}) => {
     reset();
-    globalThis.player.eternities = mkEternitiesLoad(5);
+    globalThis.player.eternities = mkEternitiesLoad(eternities);
+    globalThis.player.realities = realities;
     player.auto.eternity.isActive = false;
     player.auto.autobuyersOn = autobuyersOn;
     A._freshSessionBootstrap = false;
@@ -695,6 +701,10 @@ try {
     lockedLoadCase({ autobuyersOn: false }) === false);
   check("门禁：载入 et=5、未解锁、userClosed=true ⇒ 阻止（#69 尊重玩家）",
     lockedLoadCase({ userClosed: true }) === false);
+  check("门禁：载入 et=0 但 realities>0、未解锁 ⇒ 允许（#69 已永恒过）",
+    lockedLoadCase({ eternities: 0, realities: 1 }) === true);
+  check("门禁：载入 et=0、realities=0、未解锁 ⇒ 阻止（从未永恒）",
+    lockedLoadCase({ eternities: 0, realities: 0 }) === false);
   check("载入 et=5 未解锁例外只驱动、不写开关（#69）",
     (() => {
       reset();
