@@ -1,5 +1,4 @@
 import VTooltip from "../../modules/v-tooltip.js";
-import VueGtag from "../../modules/vue-gtag.js";
 
 import { DEV } from "../env.js";
 
@@ -184,9 +183,8 @@ Vue.use(VTooltip);
 
 useLongPress(Vue);
 useRepeatingClick(Vue);
-Vue.use(VueGtag, {
-  config: { id: "UA-77268961-1" }
-});
+// MOD 页面 CSP 明确禁止外部脚本；原版 VueGtag 接线在当前站点只会产生错误并泄露外部请求。
+// 这里不替换为其他跟踪服务，保持 MOD 的移动端与隐私边界。
 
 export const ui = new Vue({
   el: "#ui",
