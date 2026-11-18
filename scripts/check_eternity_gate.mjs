@@ -616,6 +616,10 @@ try {
     !src.includes("if (this._frame % 20 === 0) ec = this.buyEcStudiesAndStart();"));
   check("EC1 入口资源=永恒次数，不得压永恒（与 EC4 同型例外）",
     src.includes("if (id === 1 || id === 4) return false;"));
+  check("EC1/EC4 入口未达成时突破 EP 收益门槛（#69）",
+    src.includes("if (!this._ecEntryNeedsEternity() &&"));
+  check("_ecEntryNeedsEternity 只认 EC1/EC4",
+    src.includes("if (id !== 1 && id !== 4) return false;"));
 }
 
 // ---------------- ⑭ [R114-03] 真实永恒单一门禁（EC / 膨胀 / TP 播种 / 退出膨胀） ----------------
