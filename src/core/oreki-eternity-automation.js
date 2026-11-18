@@ -1210,6 +1210,8 @@ export const OrekiEternityAutomation = {
       // 手动关闭仍会被识别为 userClosed 并粘滞尊重。
       if (!this._eternityAutobuyerUnlocked()) {
         if (this._eternityBootstrapActive() === true) {
+          // 同时把解锁后要用的结算门槛配置好，避免解锁瞬间按原版 AMOUNT=1 每帧永恒。
+          this._configureEternityAutobuyerOnce();
           player.auto.eternity.isActive = true;
           this._eternityAutobuyerAdopted = true;
           this._eternityAutoUserClosed = false;
@@ -1222,35 +1224,7 @@ export const OrekiEternityAutomation = {
       // 未接管过且本会话不是全新档 ⇒ 不动（R101 P0：载入已有进度时严格按玩家开关）。
       // 接管来源（R114-01）：本会话观察到开关真实值为 true（该值由存档持久化）。
       if (this._eternityAutobuyerAdopted !== true && this._sampleFreshSession() !== true) return;
-      // [R107 P0] 接管原版「自动永恒」时，必须同时把结算门槛从默认
-      // 「AMOUNT = 1（任何 canEternity 为真的时刻立刻结算）」改成「X_HIGHEST ×10」。
-      //
-      // 缺陷背景（R107-01 冻结现场逐帧实证，见 reports/R107-01/ep-wall-fix/）：
-      // R104 为打通首次永恒接管该开关后，默认配置会在 Player.canEternity 为真的**每一帧**
-      // 立刻永恒；永恒里程碑带来的被动 IP 增长又让 canEternity 很快恢复为真，形成
-      // 「每帧永恒重置」循环：
-      //   · thisEternity.maxIP 永远停在 SIP2 的起始值 5e130；
-      //   · gainedEP 恒约 1e5.4（EP 除数 30），远小于已到 e3683 的当前 EP；
-      //   · AM/维度/IP 每帧被重置回起始值，dimension 自动购买器 lastTick 恒为 0；
-      //   · EP 冻结、realities 卡在 15、isRealityAvailable() 永假（A/B 主跑冻结 5890 s）。
-      // R50（无接管，由 MOD 自己的 EP ≥ 10× 当前 EP 门槛驱动）不存在该问题。
-      // 这里只在「新档会话首次接管 + 原版配置仍是自动值」时改一次，不覆盖玩家自定义配置。
-      if (this._eternityAutobuyerConfigured !== true) {
-        try {
-          const autoCfg = player.auto.eternity;
-          const amountIsDefault = typeof autoCfg.amount?.eq === "function"
-            ? autoCfg.amount.eq(1)
-            : Number(autoCfg.amount) === 1;
-          const xHighestIsDefault = typeof autoCfg.xHighest?.eq === "function"
-            ? autoCfg.xHighest.eq(1)
-            : Number(autoCfg.xHighest) === 1;
-          if (autoCfg.mode === 0 && amountIsDefault && xHighestIsDefault) {
-            autoCfg.mode = globalThis.AUTO_ETERNITY_MODE?.X_HIGHEST ?? 2;
-            autoCfg.xHighest = new Decimal(10);
-          }
-          this._eternityAutobuyerConfigured = true;
-        } catch (e) { /* 配置失败不阻断原有接管流程 */ }
-      }
+      this._configureEternityAutobuyerOnce();
       player.auto.eternity.isActive = true;
       this._eternityAutobuyerAdopted = true;
       // 写入后同步观察基线：下一次 true→false 才不会被误判成「原版复位」。
@@ -1259,6 +1233,40 @@ export const OrekiEternityAutomation = {
       this._eternityAutoEnabledAtRealities = this._realitiesValue();
       this._eternityAutoEnabledAtRealTime = this._thisRealityRealTime();
     } catch (e) { /* ignore */ }
+  },
+
+  /**
+   * [R107 P0] 接管原版「自动永恒」时，必须同时把结算门槛从默认
+   * 「AMOUNT = 1（任何 canEternity 为真的时刻立刻结算）」改成「X_HIGHEST ×10」。
+   *
+   * 缺陷背景（R107-01 冻结现场逐帧实证，见 reports/R107-01/ep-wall-fix/）：
+   * R104 为打通首次永恒接管该开关后，默认配置会在 Player.canEternity 为真的**每一帧**
+   * 立刻永恒；永恒里程碑带来的被动 IP 增长又让 canEternity 很快恢复为真，形成
+   * 「每帧永恒重置」循环：
+   *   · thisEternity.maxIP 永远停在 SIP2 的起始值 5e130；
+   *   · gainedEP 恒约 1e5.4（EP 除数 30），远小于已到 e3683 的当前 EP；
+   *   · AM/维度/IP 每帧被重置回起始值，dimension 自动购买器 lastTick 恒为 0；
+   *   · EP 冻结、realities 卡在 15，isRealityAvailable() 永假（A/B 主跑冻结 5890 s）。
+   * R50（无接管，由 MOD 自己的 EP ≥ 10× 当前 EP 门槛驱动）不存在该问题。
+   * 这里只在「新档会话首次接管 + 原版配置仍是自动值」时改一次，不覆盖玩家自定义配置。
+   * 解锁前持久化 isActive（#69）时也要先调用本方法，避免解锁瞬间按 AMOUNT=1 每帧永恒。
+   */
+  _configureEternityAutobuyerOnce() {
+    if (this._eternityAutobuyerConfigured === true) return;
+    try {
+      const autoCfg = player.auto.eternity;
+      const amountIsDefault = typeof autoCfg.amount?.eq === "function"
+        ? autoCfg.amount.eq(1)
+        : Number(autoCfg.amount) === 1;
+      const xHighestIsDefault = typeof autoCfg.xHighest?.eq === "function"
+        ? autoCfg.xHighest.eq(1)
+        : Number(autoCfg.xHighest) === 1;
+      if (autoCfg.mode === 0 && amountIsDefault && xHighestIsDefault) {
+        autoCfg.mode = globalThis.AUTO_ETERNITY_MODE?.X_HIGHEST ?? 2;
+        autoCfg.xHighest = new Decimal(10);
+      }
+      this._eternityAutobuyerConfigured = true;
+    } catch (e) { /* 配置失败不阻断原有接管流程 */ }
   },
 
   tickEternity() {
