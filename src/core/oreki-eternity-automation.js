@@ -724,6 +724,10 @@ export const OrekiEternityAutomation = {
       // [Oreki R37-A] 这里原先读死变量 `_ecTarget`（恒 1）→ 只保护 EC1。改读真实目标。
       const id = this.nextUnfinishedEcId();
       if (!id || id > 12) return false;
+      // [R118-01 #69] 与 ecEntryPending() 的 EC1/EC4 例外同源：EC1 入口是永恒次数、
+      // EC4 是无限次数，暂停大坍缩会断掉入口资源积累（实测 et=113 停滞、
+      // shouldHoldReset=true、eternityReset 持续返回 false）。不得 hold。
+      if (id === 1 || id === 4) return false;
       const challenge = EternityChallenge(id);
       if (!challenge) return false;
       if (challenge.completions >= challenge.maxCompletions) return false;

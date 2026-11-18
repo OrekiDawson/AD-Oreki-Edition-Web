@@ -620,6 +620,8 @@ try {
     src.includes("if (!this._ecEntryNeedsEternity() &&"));
   check("_ecEntryNeedsEternity 只认 EC1/EC4",
     src.includes("if (id !== 1 && id !== 4) return false;"));
+  check("shouldHoldReset 与 ecEntryPending 均排除 EC1/EC4（#69）",
+    (src.match(/if \(id === 1 \|\| id === 4\) return false;/g) || []).length >= 2);
 }
 
 // ---------------- ⑭ [R114-03] 真实永恒单一门禁（EC / 膨胀 / TP 播种 / 退出膨胀） ----------------
