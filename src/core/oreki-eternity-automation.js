@@ -830,6 +830,51 @@ export const OrekiEternityAutomation = {
   },
 
   /**
+   * [R118-01 #69] EC 入口等待期间临时抬高原版自动永恒的 X_HIGHEST 阈值。
+   *
+   * 原版 EternityAutobuyer 每帧在 Oreki tick 之前执行，不经过 `tickEternity` 的
+   * `ecEntryPending()` 门禁；保持 X_HIGHEST ×10 时会持续永恒并重置维度，导致
+   * EC3 等入口资源（AD8 totalAmount）永远攒不满（实测 et=21560→23127、AD8=0、
+   * EC3 current=0/173、maxEP 停滞）。
+   *
+   * 这里只改 X_HIGHEST 阈值，不关开关、不动 userClosed，避免触发玩家关闭语义；
+   * 入口达成后恢复原配置。配置读取/写入失败不阻断 tick。
+   */
+  _manageEternityHoldForEcEntry() {
+    try {
+      const pending = this.ecEntryPending();
+      const cfg = player?.auto?.eternity;
+      if (!cfg) return;
+      if (pending && this._ecEntryEternityHoldActive !== true) {
+        this._ecEntryEternityHoldSaved = {
+          mode: cfg.mode,
+          amount: cfg.amount,
+          xHighest: cfg.xHighest,
+          time: cfg.time,
+          increaseWithMult: cfg.increaseWithMult,
+        };
+        cfg.mode = globalThis.AUTO_ETERNITY_MODE?.X_HIGHEST ?? 2;
+        // 用足够大的阈值覆盖高倍率存档（xHighest 是 Decimal，可安全承载大指数）。
+        cfg.xHighest = new Decimal("1e1000000");
+        this._ecEntryEternityHoldActive = true;
+      } else if (!pending && this._ecEntryEternityHoldActive === true) {
+        const saved = this._ecEntryEternityHoldSaved;
+        if (saved) {
+          cfg.mode = saved.mode;
+          cfg.amount = saved.amount;
+          cfg.xHighest = saved.xHighest;
+          cfg.time = saved.time;
+          cfg.increaseWithMult = saved.increaseWithMult;
+        }
+        this._ecEntryEternityHoldActive = false;
+        this._ecEntryEternityHoldSaved = null;
+      }
+    } catch (e) {
+      // 配置读写失败不阻断 tick
+    }
+  },
+
+  /**
    * [R97 P0 对齐 Android] 同帧大坍缩观测：用 `Currency.infinities` 的整数令牌变化
    * 识别「刚刚发生过一次大坍缩」，并只跳过该帧一次。Android 侧对应
    * `detectResetGenerations()` + `crunchSkipFrames`；Web 长期缺失此保护，
@@ -1290,6 +1335,8 @@ export const OrekiEternityAutomation = {
    * 解锁前持久化 isActive（#69）时也要先调用本方法，避免解锁瞬间按 AMOUNT=1 每帧永恒。
    */
   _configureEternityAutobuyerOnce() {
+    // EC 入口 hold 期间不要覆盖临时抬高的阈值；hold 结束后再由下一次 _adopt 配置。
+    if (this._ecEntryEternityHoldActive === true) return;
     if (this._eternityAutobuyerConfigured === true) return;
     try {
       const autoCfg = player.auto.eternity;
@@ -1575,6 +1622,8 @@ export const OrekiEternityAutomation = {
     this.settleTimeTheoremReward();
 
     if (!this.active) return { dims: false, tt: false, studies: 0, dilation: 0, ec: false };
+    // [R118-01 #69] EC 入口等待期间压住原版 EternityAutobuyer（它不经过 tickEternity 门禁）。
+    this._manageEternityHoldForEcEntry();
     // [R96] 顺序修正：TD1 已买时**先买永恒升级**（乘数优先），再考虑时间维度；
     // TD1 尚未存在时只能先播种它（升级商店前置）。旧顺序先放行全部 TD，
     // 会把刚够升级的 EP 花掉（审查指出的 P1）。

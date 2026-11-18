@@ -1111,6 +1111,25 @@ try {
   reset();
 }
 
+// ---------------- [R118-01 #69] EC 入口等待期间的永恒阈值 hold ----------------
+{
+  reset();
+  player.auto.eternity.mode = 2;
+  player.auto.eternity.xHighest = new Decimal(10);
+  player.auto.eternity.amount = new Decimal(1);
+  A.ecEntryPending = () => true;
+  A._ecEntryEternityHoldActive = false;
+  A._manageEternityHoldForEcEntry();
+  const held = A._ecEntryEternityHoldActive === true &&
+    player.auto.eternity.xHighest.eq(new Decimal("1e1000000"));
+  A.ecEntryPending = () => false;
+  A._manageEternityHoldForEcEntry();
+  const restored = A._ecEntryEternityHoldActive === false &&
+    player.auto.eternity.xHighest.eq(10);
+  check("EC 入口等待时抬高 X_HIGHEST，达成后恢复（#69）", held && restored);
+  reset();
+}
+
 // ---------------- 汇总 ----------------
 console.log(`\n网页版自动永恒闸门回归：${checks} 项检查，失败 ${failures.length} 项`);
 if (failures.length) {
