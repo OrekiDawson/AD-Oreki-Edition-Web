@@ -549,6 +549,33 @@ try {
       delete globalThis.EternityMilestone;
       return r === false && stillOff;
     })());
+  check("新档会话在自动器未解锁时持久化开启，供读档后重建（#69）",
+    (() => {
+      reset();
+      A._freshSessionBootstrap = true;
+      A._eternityAutobuyerAdopted = false;
+      globalThis.player.eternities = mkEternities(5);
+      player.auto.eternity.isActive = false;
+      globalThis.EternityMilestone = { autobuyerEternity: { isReached: false } };
+      A._adoptEternityAutobuyerIfNeeded();
+      const on = player.auto.eternity.isActive === true;
+      const adopted = A._eternityAutobuyerAdopted === true;
+      delete globalThis.EternityMilestone;
+      return on && adopted;
+    })());
+  check("载入已有进度且未接管、自动器未解锁 → 不写开关（#69 不越权）",
+    (() => {
+      reset();
+      A._freshSessionBootstrap = false;
+      A._eternityAutobuyerAdopted = false;
+      globalThis.player.eternities = mkEternities(5);
+      player.auto.eternity.isActive = false;
+      globalThis.EternityMilestone = { autobuyerEternity: { isReached: false } };
+      A._adoptEternityAutobuyerIfNeeded();
+      const off = player.auto.eternity.isActive === false;
+      delete globalThis.EternityMilestone;
+      return off;
+    })());
   check("接管过的会话在 reality 重置后继续维持 isActive（EC 链不再自锁）",
     (() => {
       reset();

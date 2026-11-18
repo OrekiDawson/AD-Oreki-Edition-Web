@@ -1200,8 +1200,25 @@ export const OrekiEternityAutomation = {
       if (player.auto.eternity.isActive === true) return;
       // 本会话玩家手动关闭过 ⇒ 尊重，绝不重开（直到玩家自己再打开）。
       if (this._eternityAutoUserClosed === true) return;
-      // 未解锁：界面上没有这个开关（写了玩家也看不见），由 R104 引导窗口/门禁放行即可。
-      if (!this._eternityAutobuyerUnlocked()) return;
+      // [R118-01 #69] 未解锁：界面上没有这个开关，不存在玩家的关闭决定。
+      //
+      // 若本会话由 MOD 引导（全新档或已接管），这里必须把开关真实值持久化为 true：
+      // 否则刷新/导入后 `_eternityBootstrapActive()` 只剩内存 latch（新会话 et≥1 时
+      // `_sampleFreshSession()` 为 false），`tickEternity()` 与 EC 入口的
+      // `realEternityAllowed()` 都会永久拒绝，EC1 需要的永恒次数无法增长，首现实死锁。
+      // 解锁后 `_observeEternityAutobuyerSwitch()` 会按存档真实值接管；玩家解锁后
+      // 手动关闭仍会被识别为 userClosed 并粘滞尊重。
+      if (!this._eternityAutobuyerUnlocked()) {
+        if (this._eternityBootstrapActive() === true) {
+          player.auto.eternity.isActive = true;
+          this._eternityAutobuyerAdopted = true;
+          this._eternityAutoUserClosed = false;
+          this._eternityAutoLastSeenActive = true;
+          this._eternityAutoEnabledAtRealities = this._realitiesValue();
+          this._eternityAutoEnabledAtRealTime = this._thisRealityRealTime();
+        }
+        return;
+      }
       // 未接管过且本会话不是全新档 ⇒ 不动（R101 P0：载入已有进度时严格按玩家开关）。
       // 接管来源（R114-01）：本会话观察到开关真实值为 true（该值由存档持久化）。
       if (this._eternityAutobuyerAdopted !== true && this._sampleFreshSession() !== true) return;
