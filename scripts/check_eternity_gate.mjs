@@ -1121,7 +1121,7 @@ try {
   A._ecEntryEternityHoldActive = false;
   A._manageEternityHoldForEcEntry();
   const held = A._ecEntryEternityHoldActive === true &&
-    player.auto.eternity.xHighest.eq(new Decimal("1e100"));
+    player.auto.eternity.xHighest.eq(new Decimal("1e1000000"));
   A.ecEntryPending = () => false;
   A._manageEternityHoldForEcEntry();
   const restored = A._ecEntryEternityHoldActive === false &&

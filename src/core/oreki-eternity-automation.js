@@ -854,7 +854,8 @@ export const OrekiEternityAutomation = {
           increaseWithMult: cfg.increaseWithMult,
         };
         cfg.mode = globalThis.AUTO_ETERNITY_MODE?.X_HIGHEST ?? 2;
-        cfg.xHighest = new Decimal("1e100");
+        // 用足够大的阈值覆盖高倍率存档（xHighest 是 Decimal，可安全承载大指数）。
+        cfg.xHighest = new Decimal("1e1000000");
         this._ecEntryEternityHoldActive = true;
       } else if (!pending && this._ecEntryEternityHoldActive === true) {
         const saved = this._ecEntryEternityHoldSaved;
