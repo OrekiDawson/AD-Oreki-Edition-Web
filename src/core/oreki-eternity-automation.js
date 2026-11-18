@@ -999,16 +999,25 @@ export const OrekiEternityAutomation = {
         return;
       }
       if (this._eternityAutoLastSeenActive === true) {
-        const realitiesReset = this._eternityAutoEnabledAtRealities !== null &&
-          realities !== null && realities > this._eternityAutoEnabledAtRealities;
-        const realTimeReset = this._eternityAutoEnabledAtRealTime !== null &&
-          realTime !== null && realTime < this._eternityAutoEnabledAtRealTime;
-        if (realitiesReset || realTimeReset) {
-          // 原版 Reality 复位：不判玩家关闭，交给接管逻辑补回 true。
+        // [R118-01 #69 hotfix] 自动器未解锁时界面不渲染该开关（AutobuyerBox.js），
+        // 玩家无法在此状态手动关闭；true→false 只可能是原版
+        // ETERNITY_RESET_AFTER → Autobuyers.reset()（未解锁置 false）。
+        // 若不排除，PR #70 的持久化写入会被误判为玩家关闭并置 userClosed，
+        // 使新档首永恒后 bootstrap 永久关闭（实测 et=5 恒停、maxEP=39、EC 不推进）。
+        if (!this._eternityAutobuyerUnlocked()) {
           this._eternityAutoUserClosed = false;
-        } else if (realities !== null && realTime !== null) {
-          // 同现实内被关：判玩家手动关闭（粘滞，尊重）。
-          this._eternityAutoUserClosed = true;
+        } else {
+          const realitiesReset = this._eternityAutoEnabledAtRealities !== null &&
+            realities !== null && realities > this._eternityAutoEnabledAtRealities;
+          const realTimeReset = this._eternityAutoEnabledAtRealTime !== null &&
+            realTime !== null && realTime < this._eternityAutoEnabledAtRealTime;
+          if (realitiesReset || realTimeReset) {
+            // 原版 Reality 复位：不判玩家关闭，交给接管逻辑补回 true。
+            this._eternityAutoUserClosed = false;
+          } else if (realities !== null && realTime !== null) {
+            // 同现实内被关：判玩家手动关闭（粘滞，尊重）。
+            this._eternityAutoUserClosed = true;
+          }
         }
       }
       this._eternityAutoLastSeenActive = false;

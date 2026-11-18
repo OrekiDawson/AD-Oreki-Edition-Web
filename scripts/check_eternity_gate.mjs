@@ -1073,6 +1073,44 @@ try {
   A._monotonicNowMs = ORIG_MONOTONIC_NOW;
 }
 
+// ---------------- [R118-01 #69 hotfix] 未解锁 true→false 不得判玩家关闭 ----------------
+{
+  const savedPlayer = globalThis.player;
+  const savedRecords = player.records;
+  const savedRealities = player.realities;
+  reset();
+  player.records = { gameCreatedTime: 1, thisReality: { realTime: 100 } };
+  player.realities = 0;
+  player.auto.eternity.isActive = false;
+  player.auto.autobuyersOn = true;
+  A._eternityAutoLastSeenActive = true;
+  A._eternityAutoEnabledAtRealities = 0;
+  A._eternityAutoEnabledAtRealTime = 100;
+  A._eternityAutoUserClosed = false;
+  A._eternityAutobuyerAdopted = true;
+  globalThis.EternityMilestone = { autobuyerEternity: { isReached: false } };
+  A._observeEternityAutobuyerSwitch();
+  check("未解锁时 true→false 是原版 reset，不判玩家关闭（#69 hotfix）",
+    A._eternityAutoUserClosed === false);
+  check("未解锁 reset 后 bootstrap 仍可用（#69 hotfix）",
+    A._eternityBootstrapActive() === true);
+  globalThis.EternityMilestone = { autobuyerEternity: { isReached: true } };
+  A._eternityAutoLastSeenActive = true;
+  A._eternityAutoEnabledAtRealities = 0;
+  A._eternityAutoEnabledAtRealTime = 100;
+  A._eternityAutoUserClosed = false;
+  A._eternityAutobuyerAdopted = true;
+  A._observeEternityAutobuyerSwitch();
+  check("已解锁时同现实 true→false 仍判玩家关闭（R101 不回退）",
+    A._eternityAutoUserClosed === true);
+  delete globalThis.EternityMilestone;
+  globalThis.player = savedPlayer;
+  player.records = savedRecords;
+  if (savedRealities === undefined) delete player.realities;
+  else player.realities = savedRealities;
+  reset();
+}
+
 // ---------------- 汇总 ----------------
 console.log(`\n网页版自动永恒闸门回归：${checks} 项检查，失败 ${failures.length} 项`);
 if (failures.length) {
