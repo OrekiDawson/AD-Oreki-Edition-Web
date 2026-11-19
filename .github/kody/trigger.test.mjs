@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   TRIGGER_BODY,
+  assertPaginationComplete,
   budgetDecision,
   countTriggersSince,
   dailyCommentsPath,
@@ -58,7 +59,7 @@ test("PAT 身份必须严格等于 OrekiDawson", () => {
   assert.equal(validateTriggerIdentity("oreki-bot").allowed, false);
 });
 
-test("同一 Head 只由成功 Check Run 精确去重，不依赖提交时间", () => {
+test("同一 Head 由成功、中性或进行中 Check Run 保守去重，不依赖提交时间", () => {
   const head = "a".repeat(40);
   const identity = triggerIdentity(repository, 7, head);
   assert.ok(findTriggerReservation([
@@ -120,4 +121,10 @@ test("每日预算只读取当前仓库，另一仓库不阻断", () => {
   const path = dailyCommentsPath(repository, new Date("2026-11-20T16:00:00Z"));
   assert.match(path, new RegExp(`^/repos/${repository}/issues/comments`));
   assert.doesNotMatch(path, /AD-Oreki-Edition-Android/);
+});
+
+test("分页仍有下一页且达到上限时拒绝使用不完整数据", () => {
+  assert.doesNotThrow(() => assertPaginationComplete(false, 10, 10));
+  assert.doesNotThrow(() => assertPaginationComplete(true, 9, 10));
+  assert.throws(() => assertPaginationComplete(true, 10, 10), /incomplete/);
 });

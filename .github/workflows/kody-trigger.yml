@@ -75,6 +75,7 @@ jobs:
     concurrency:
       # 串行段仅覆盖预算检查与评论写入；稳定等待已在上一 Job 完成。
       group: kody-trigger-budget-${{ github.repository }}
+      queue: max
       cancel-in-progress: false
     permissions:
       checks: write

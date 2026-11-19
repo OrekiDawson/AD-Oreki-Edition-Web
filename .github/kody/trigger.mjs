@@ -82,6 +82,12 @@ export function dailyCommentsPath(repository, since) {
   return `/repos/${repository}/issues/comments?since=${encodeURIComponent(since.toISOString())}&per_page=100`;
 }
 
+export function assertPaginationComplete(hasNextPage, pagesRead, maxPages) {
+  if (hasNextPage && pagesRead >= maxPages) {
+    throw new Error("GitHub API pagination exceeded; refusing an incomplete budget or dedupe view");
+  }
+}
+
 export function budgetDecision(repoTriggerCount, perRepoLimit) {
   if (!Number.isInteger(perRepoLimit) || perRepoLimit < 1) {
     throw new Error("per-repo trigger limit must be a positive integer");
@@ -162,6 +168,7 @@ async function listAllPages(path, token, maxPages = 10) {
     items.push(...await response.json());
     const link = response.headers.get("link") ?? "";
     const match = link.match(/<([^>]+)>;\s*rel="next"/);
+    assertPaginationComplete(Boolean(match), page + 1, maxPages);
     next = match ? match[1].replace("https://api.github.com", "") : "";
   }
   return items;
@@ -174,45 +181,33 @@ async function getPullRequest(repository, number, token) {
 
 async function findTriggerCheck(repository, headSha, externalId, token) {
   const response = await requestJson(
-    `/repos/${repository}/commits/${headSha}/check-runs?check_name=${encodeURIComponent(CHECK_NAME)}&filter=latest&per_page=100`,
+    `/repos/${repository}/commits/${headSha}/check-runs?check_name=${encodeURIComponent(CHECK_NAME)}&filter=all&per_page=100`,
     { token },
   );
   const payload = await response.json();
   return findTriggerReservation(payload.check_runs ?? [], externalId);
 }
 
-async function createTriggerCheck(repository, prNumber, headSha, externalId, token) {
-  return (await (await requestJson(`/repos/${repository}/check-runs`, {
+async function createCompletedTriggerCheck(
+  repository,
+  prNumber,
+  headSha,
+  externalId,
+  commentUrl,
+  token,
+) {
+  await requestJson(`/repos/${repository}/check-runs`, {
     method: "POST",
     token,
     body: {
       name: CHECK_NAME,
       head_sha: headSha,
       external_id: externalId,
-      status: "in_progress",
-      output: {
-        title: "Kody 审查触发中",
-        summary: `PR #${prNumber}，Head \`${headSha}\`。`,
-      },
-    },
-  })).json()).id;
-}
-
-async function completeTriggerCheck(repository, checkRunId, conclusion, summary, token) {
-  const titles = {
-    success: "Kody 审查触发已发送",
-    neutral: "触发已发送，状态记录未完成",
-    failure: "Kody 审查触发失败",
-  };
-  await requestJson(`/repos/${repository}/check-runs/${checkRunId}`, {
-    method: "PATCH",
-    token,
-    body: {
       status: "completed",
-      conclusion,
+      conclusion: "success",
       output: {
-        title: titles[conclusion] ?? "Kody 审查触发状态未知",
-        summary,
+        title: "Kody 审查触发已发送",
+        summary: `已以 OrekiDawson 身份发送触发评论。PR #${prNumber}，Head \`${headSha}\`，评论 ${commentUrl}。Kody 审查结果仍需独立核验。`,
       },
     },
   });
@@ -305,88 +300,52 @@ export async function main() {
     return;
   }
 
-  const checkRunId = await createTriggerCheck(
-    repository,
-    prNumber,
+  const created = await (await requestJson(
+    `/repos/${repository}/issues/${prNumber}/comments`,
+    {
+      method: "POST",
+      token,
+      body: { body: TRIGGER_BODY },
+    },
+  )).json();
+
+  writeOutput("kody_review_state", "trigger_posted");
+  writeOutput("head_sha", headSha);
+  writeOutput("comment_id", created.id);
+  writeOutput("comment_url", created.html_url);
+  writeSummary({
+    status: "trigger_posted",
+    reason: "comment_created",
+    pr,
     headSha,
-    externalId,
-    checkToken,
-  );
-  let created = null;
-  let finalCheckState = null;
-  try {
+    commentUrl: created.html_url,
+    budgetCount: repoTriggerCount + 1,
+  });
+
+  let checkError = null;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
     try {
-      created = await (await requestJson(
-        `/repos/${repository}/issues/${prNumber}/comments`,
-        {
-          method: "POST",
-          token,
-          body: { body: TRIGGER_BODY },
-        },
-      )).json();
-    } catch (error) {
-      await completeTriggerCheck(
+      await createCompletedTriggerCheck(
         repository,
-        checkRunId,
-        "failure",
-        `触发评论发送失败；未宣称 Kody 已开始。PR #${prNumber}，Head \`${headSha}\`。`,
+        prNumber,
+        headSha,
+        externalId,
+        created.html_url,
         checkToken,
       );
-      finalCheckState = "failure";
-      throw error;
-    }
-
-    writeOutput("kody_review_state", "trigger_posted");
-    writeOutput("head_sha", headSha);
-    writeOutput("comment_id", created.id);
-    writeOutput("comment_url", created.html_url);
-    writeSummary({
-      status: "trigger_posted",
-      reason: "comment_created",
-      pr,
-      headSha,
-      commentUrl: created.html_url,
-      budgetCount: repoTriggerCount + 1,
-    });
-
-    const summary =
-      `已以 OrekiDawson 身份发送触发评论。PR #${prNumber}，Head \`${headSha}\`，评论 ${created.html_url}。Kody 审查结果仍需独立核验。`;
-    try {
-      await completeTriggerCheck(repository, checkRunId, "success", summary, checkToken);
-      finalCheckState = "success";
+      checkError = null;
+      break;
     } catch (error) {
-      console.error(`Kody trigger Check Run success update failed: ${error.message}`);
-      try {
-        await completeTriggerCheck(
-          repository,
-          checkRunId,
-          "neutral",
-          `${summary} Check Run 成功回写失败，已保留保守预占以避免重复审查。`,
-          checkToken,
-        );
-        finalCheckState = "neutral";
-      } catch (neutralError) {
-        console.error(`Kody trigger Check Run neutral fallback failed: ${neutralError.message}`);
-      }
-    }
-    console.log(`Kody trigger posted for ${repository}#${prNumber} at ${headSha}`);
-  } finally {
-    if (finalCheckState == null) {
-      try {
-        await completeTriggerCheck(
-          repository,
-          checkRunId,
-          created ? "neutral" : "failure",
-          created
-            ? `触发评论已发送，但作业收尾前中断；保留保守预占以避免重复审查。PR #${prNumber}，Head \`${headSha}\`。`
-            : `触发评论未确认发送。PR #${prNumber}，Head \`${headSha}\`。`,
-          checkToken,
-        );
-      } catch (error) {
-        console.error(`Kody trigger Check Run finalization failed: ${error.message}`);
-      }
+      checkError = error;
+      if (attempt < 3) await sleep(attempt * 2);
     }
   }
+  if (checkError) {
+    writeOutput("check_record_state", "failed_after_comment");
+    throw new Error(`trigger comment posted but Check Run creation failed: ${checkError.message}`);
+  }
+  writeOutput("check_record_state", "success");
+  console.log(`Kody trigger posted for ${repository}#${prNumber} at ${headSha}`);
 }
 
 const isDirectRun = process.argv[1] &&
