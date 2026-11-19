@@ -125,7 +125,7 @@
 
 - 在非峰时和当前开发授权范围内，Lead 主动检查 Web Node、Playwright/Android Chrome 默认视口、教程生成一致性、受保护 Pages 发布依赖的 Web CI。每轮定位具体仓库、源码 SHA、Actions Run/Job、失败日志，分类为业务错误、构建依赖、网络平台、权限或部署验证问题。
 - 采取“发现 → 复现与根因 → 最小修复 → 中文提交 → PR → Required Checks → 合规合并 → 新 SHA 复验”的闭环。不删测试、不屏蔽未知 console/pageerror、不改预期制造 PASS；偶发平台故障可做有上限的重试，确定性失败应修复源码/工作流。静态 Node 成功不能替代真实 Chromium/Playwright 或线上发布验收。
-- Lead 可维护和优化缓存、依赖、工作流与失败重试策略，但不能让 CI 内自动调用 DeepSeek API 审查/诊断；现有 Codex PR 审查机制及确定性检查继续保留。变更遵守独立分支、PR、工作树与发布环境互斥，不能覆盖其他 Agent 进展。
+- Lead 可维护和优化缓存、依赖、工作流与失败重试策略。普通 CI 仍不得自动调用 DeepSeek；唯一例外是内部 PR 专用、只读、非阻断、单次去重的 `codex-deepseek-review.yml`，固定使用 `deepseek-flash` 与可信 Action SHA。变更遵守独立分支、PR、工作树与发布环境互斥，不能覆盖其他 Agent 进展。
 
 ### 7.2 发布权限与平台隔离
 

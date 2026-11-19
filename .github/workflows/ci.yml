@@ -100,7 +100,7 @@ jobs:
 
       - name: 测试增量仓库策略
         run: python3 -m unittest discover -s scripts/tests -p 'test_repository_policy.py' -v
-      - name: 确认 DeepSeek AI 审查和失败分诊保持禁用
+      - name: 校验受限的 Codex DeepSeek PR 审查策略
         run: python3 -m unittest discover -s scripts/tests -p 'test_no_deepseek_ci.py' -v
       - name: 检查 DeepSeek 低峰计费日历和时间边界
         run: python3 -m unittest discover -s scripts/tests -p 'test_deepseek_pricing.py' -v

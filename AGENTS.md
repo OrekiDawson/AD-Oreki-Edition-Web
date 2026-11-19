@@ -17,6 +17,7 @@
 - 使用受保护分支、PR、Required Checks、签名/发布审批。不得强推、关闭 Ruleset、跳过 CI/人工审批或伪造验证。真实 Critical/P0/P1、阻塞性 Medium 必须修复或证据充分地判定误报；非阻塞意见记录合理处置。
 - **审查信息读取**：合并前同时检查 PR 普通评论、Reviews、Review Threads、最新 HEAD SHA、Checks；所有需解决的线程归零。Kody 无可用 Provider 出现 `Skipped` / `BYOK Configuration Required` 表示 **KODY NOT RUN**，不是 PASS；不因缺密钥自行重接 Provider，也不制造空 Commit 或重复触发收费审查。
 - **Kody 付费审查暂停（用户决定，2026-11-19，R118-01）**：暂停 Kody 付费初审与复审，不恢复付费 Provider、不主动触发收费审查、不使用 Heavy。已有真实审查意见仍须逐条处理；`KODY NOT RUN` / `Skipped` 如实记录为 NOT RUN，不得冒充 PASS。
+- **Codex + DeepSeek PR 审查（2026-11-19 授权）**：仅 `codex-deepseek-review.yml` 可在内部 PR 上调用 `deepseek-flash`；固定可信 Action SHA、只读沙箱、Diff/时间/峰时限制、同 Head SHA 去重、单一 App 评论，禁止写源码、自动合并或发布。Fork PR 不接收 Secrets；Kody 暂停结论不变。
 - **替代合并门禁**：业务 PR 按工作区 `AGENTS.md` 执行：Required Checks、Ruleset、审批与分支保护全部通过；需解决 Review Threads 归零且普通评论逐条有结论；变更范围对应的真实运行验证（Web Playwright/Chromium 手机视口；未运行记 `NOT RUN`）；高风险改动（阶段门禁、存档、自动购买器、构建/部署链）完成独立定向复核。
 - **过渡边界**：工作区规则 PR 已合并后按替代门禁执行；不得借本节绕过真实 P0/P1、Ruleset、Required Checks 或既有审批。用户**明确逐次授权**的纯文档维护按其批准范围处理审查缺失，但必须保留记录，不得推广为业务/生产 PR 的常规豁免。
 - 只有授权开发会话内才主动处理 Issues/PR；不轮询空任务、不启用未经批准的持续监控或夜间 Agent。若用户日后重新启用 Kody，仅限已批准预算下的 Balanced/最少必要审查，不使用 Heavy。
