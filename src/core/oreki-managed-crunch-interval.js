@@ -50,6 +50,8 @@ const STATE = {
    */
   originalTime: null,
   originalMode: null,
+  /** 最近一次托管写入后的真实运行标记；用于区分玩家改 mode 与原版 reset。 */
+  lastCrunchMarker: null,
   /** 原值所属存档身份；换档即失效。 */
   originalSaveId: null,
   /**
@@ -383,7 +385,11 @@ export class OrekiManagedCrunchInterval {
       // mode 与 time 分别记录原值。原版 Eternal reset 可能只重置 mode，
       // 不能因此把仍受管的 time 误当作玩家新原值。
       if (timeEdited) STATE.originalTime = actual;
-      if (modeEdited) STATE.originalMode = actualMode;
+      const resetSinceManagedWrite = crunchConsumedSince(
+        STATE.lastCrunchMarker,
+        readCrunchMarker(),
+      );
+      if (modeEdited && !resetSinceManagedWrite) STATE.originalMode = actualMode;
     }
     if (actualMode !== desiredMode) writeActualMode(desiredMode);
     if (!sameInterval(actual, desiredSeconds)) writeActualInterval(desiredSeconds);
@@ -408,6 +414,7 @@ export class OrekiManagedCrunchInterval {
     STATE.lastReason = reason;
     STATE.lastValue = desiredSeconds;
     STATE.lastMode = desiredMode;
+    STATE.lastCrunchMarker = readCrunchMarker();
     console.info(
       `[OrekiCrunchInterval] tick=${resolvedTick} managed mode ${actualMode} -> ${desiredMode} ` +
         `interval ${actual} -> ${desiredSeconds} (${reason})`
@@ -498,6 +505,7 @@ export class OrekiManagedCrunchInterval {
       STATE.lastTick = 0;
       STATE.originalTime = null;
       STATE.originalMode = null;
+      STATE.lastCrunchMarker = null;
       STATE.originalSaveId = null;
       STATE.lastValue = null;
       STATE.lastMode = null;
@@ -522,6 +530,7 @@ export class OrekiManagedCrunchInterval {
       STATE.lastTick = 0;
       STATE.originalTime = null;
       STATE.originalMode = null;
+      STATE.lastCrunchMarker = null;
       STATE.originalSaveId = null;
       STATE.lastValue = null;
       STATE.lastMode = null;
@@ -549,6 +558,7 @@ export class OrekiManagedCrunchInterval {
     STATE.lastTick = 0;
     STATE.originalTime = null;
     STATE.originalMode = null;
+    STATE.lastCrunchMarker = null;
     STATE.originalSaveId = null;
     STATE.lastValue = null;
     STATE.lastMode = null;
@@ -599,6 +609,7 @@ export class OrekiManagedCrunchInterval {
       clearReleaseWindow();
       STATE.originalTime = null;
       STATE.originalMode = null;
+      STATE.lastCrunchMarker = null;
       STATE.originalSaveId = null;
       STATE.lastValue = null;
       STATE.lastMode = null;
@@ -701,6 +712,7 @@ export class OrekiManagedCrunchInterval {
     STATE.saveId = null;
     STATE.originalTime = null;
     STATE.originalMode = null;
+    STATE.lastCrunchMarker = null;
     STATE.originalSaveId = null;
     STATE.released = false;
     STATE.releasedSaveId = null;

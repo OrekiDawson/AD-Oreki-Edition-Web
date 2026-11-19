@@ -360,12 +360,12 @@ const defaultIntervalSec = Number(EXECUTOR_SRC.match(
   /const INTERVAL_DEFAULT_SEC = (\d+);/)[1]);
 
 check("17. 原版自动购买器的有效间隔 = interval / F（高倍率下按游戏时间触发）", () => {
-  assert.equal(gameSpeedDefault, 10000, "默认倍率应为 10000×");
+  assert.equal(gameSpeedDefault, 3000, "默认倍率应为 3000×");
   assert.match(AUTOBUYER_SRC,
     /get effectiveInterval\(\) \{\s*\n\s*return this\.interval \/ Math\.max\(1, getGlobalSpeedFactor\(\)\);/);
 });
 
-check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买器在 10000× 下每帧都能触发", () => {
+check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买器在新默认倍率下每帧都能触发", () => {
   const dimBoostInterval = Number(PLAYER_SRC.match(
     /dimBoost: \{[\s\S]*?interval: (\d+),/)[1]);
   const galaxyInterval = Number(PLAYER_SRC.match(

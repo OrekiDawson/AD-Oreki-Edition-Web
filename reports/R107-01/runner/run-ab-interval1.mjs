@@ -458,7 +458,7 @@ const summary = {
     automation_interval_sec_at_birth: null,
     final_speed_factor: null,
     speed_ramps: null,
-    note: "oreki-game-speed 默认 10000×、动态升档默认开启；均为产品默认值，本轮不修改",
+    note: "oreki-game-speed 默认 3000×、动态升档默认开启；已有用户倍率优先",
   },
   events: [],
   firsts: {},

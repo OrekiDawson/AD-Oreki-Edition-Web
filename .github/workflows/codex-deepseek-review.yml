@@ -1,7 +1,8 @@
 name: Codex DeepSeek PR 审查（非阻断）
 
 'on':
-  pull_request:
+  # 始终执行受信任 base 工作流，只通过 Git 对象读取 PR 差异，不检出或运行 PR 代码。
+  pull_request_target:
     branches: [main]
     types: [opened, reopened, synchronize, ready_for_review]
 
@@ -90,10 +91,10 @@ jobs:
     outputs:
       final_message: ${{ steps.codex.outputs.final-message }}
     steps:
-      - name: 检出 PR Head，不保存凭据
+      - name: 检出受信任 Base，不保存凭据
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -101,11 +102,18 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         shell: bash
         run: |
           set -euo pipefail
           review_dir="$RUNNER_TEMP/review"
           mkdir -p "$review_dir"
+          git fetch --no-tags --no-recurse-submodules origin \
+            "refs/pull/${PR_NUMBER}/head:refs/review/head"
+          test "$(git rev-parse refs/review/head)" = "$HEAD_SHA" || {
+            echo "::error::PR head advanced during review; refusing mixed context"
+            exit 1
+          }
           git diff --name-only "${BASE_SHA}...${HEAD_SHA}" > "$review_dir/files.txt"
           git diff --numstat "${BASE_SHA}...${HEAD_SHA}" > "$review_dir/numstat.txt"
           git diff --unified=8 --no-ext-diff --diff-filter=ACMR \
@@ -115,17 +123,26 @@ jobs:
             ':(exclude)*.webp' ':(exclude)*.zip' ':(exclude)*.apk' \
             ':(exclude)*.jar' ':(exclude)*.lock' ':(exclude)pnpm-lock.yaml' \
             > "$review_dir/full.patch"
-          head -c 120000 "$review_dir/full.patch" > "$review_dir/review.patch"
+          raw_bytes="$(wc -c < "$review_dir/full.patch")"
+          head -c 24000 "$review_dir/full.patch" > "$review_dir/review.patch"
+          review_bytes="$(wc -c < "$review_dir/review.patch")"
+          if (( raw_bytes > review_bytes )); then
+            patch_truncated=true
+          else
+            patch_truncated=false
+          fi
           {
             echo "BASE_SHA=$BASE_SHA"
             echo "HEAD_SHA=$HEAD_SHA"
-            echo "RAW_DIFF_BYTES=$(wc -c < "$review_dir/full.patch")"
-            echo "REVIEW_DIFF_BYTES=$(wc -c < "$review_dir/review.patch")"
+            echo "RAW_DIFF_BYTES=$raw_bytes"
+            echo "REVIEW_DIFF_BYTES=$review_bytes"
+            echo "PATCH_TRUNCATED=$patch_truncated"
             echo "--- files.txt ---"
             cat "$review_dir/files.txt"
             echo "--- numstat.txt ---"
             cat "$review_dir/numstat.txt"
           } > "$review_dir/manifest.txt"
+          rm -f "$review_dir/full.patch"
 
       - name: 准备 Codex DeepSeek 模型元数据
         shell: bash
@@ -151,6 +168,7 @@ jobs:
           effort: "low"
           codex-version: "0.170.0"
           codex-home: ${{ runner.temp }}/codex-home
+          working-directory: ${{ runner.temp }}/review
           permission-profile: ":read-only"
           safety-strategy: drop-sudo
           codex-args: '["--ephemeral"]'
