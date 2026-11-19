@@ -445,8 +445,10 @@ jobs:
     name: 使用 Oreki Audit App 发布代码审查
     needs: [classify, review]
     if: >-
-      needs.review.outputs.final_message != '' ||
-      needs.classify.outputs.quota_notice != ''
+      always() && (
+        needs.review.outputs.final_message != '' ||
+        needs.classify.outputs.quota_notice != ''
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 3
     permissions:
