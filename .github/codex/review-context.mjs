@@ -328,6 +328,7 @@ export function planPatchBatches(
   sourceFiles = entries.map(entry => entry.path),
 ) {
   const entryPaths = new Set(entries.map(entry => entry.path));
+  const unreviewableFiles = [];
   const ordered = entries
     .filter(entry => !PATCH_EXCLUDES.some(pattern => pattern.test(entry.path)))
     .map(entry => ({ ...entry, priority: patchPriority(source, entry.path) }))
@@ -347,7 +348,11 @@ export function planPatchBatches(
 
   for (const entry of ordered) {
     const { header, hunks } = splitPatchHunks(entry.patch);
-    const pieces = hunks.length ? hunks.map(hunk => `${header}${hunk}`) : [entry.patch];
+    if (hunks.length === 0) {
+      unreviewableFiles.push(entry.path);
+      continue;
+    }
+    const pieces = hunks.map(hunk => `${header}${hunk}`);
     const categories = classify(source, [entry.path]).categories;
     for (let index = 0; index < pieces.length; index += 1) {
       const piece = pieces[index];
@@ -384,7 +389,9 @@ export function planPatchBatches(
     excludedFiles: entries
       .filter(entry => PATCH_EXCLUDES.some(pattern => pattern.test(entry.path)))
       .map(entry => entry.path),
-    emptyFiles: sourceFiles.filter(path => !entryPaths.has(path)),
+    emptyFiles: sourceFiles.filter(path =>
+      !entryPaths.has(path) || unreviewableFiles.includes(path)),
+    unreviewableFiles,
     sourceFiles,
   };
 }
@@ -563,6 +570,7 @@ async function main() {
       rawBytes: plan.rawBytes,
       excludedFiles: plan.excludedFiles,
       emptyFiles: plan.emptyFiles,
+      unreviewableFiles: plan.unreviewableFiles,
       batchCount: plan.batches.length,
       batches: plan.batches,
     };

@@ -98,6 +98,13 @@ const emptyFilePlan = planPatchBatches("web", [
   { path: "src/a.js", patch: firstPatch },
 ], 120, ["src/a.js", "src/empty.js"]);
 assert.deepEqual(emptyFilePlan.emptyFiles, ["src/empty.js"]);
+const noHunk = planPatchBatches("web", [{
+  path: "src/binary.bin",
+  patch: "diff --git a/src/binary.bin b/src/binary.bin\nBinary files differ\n",
+}], 120, ["src/binary.bin"]);
+assert.equal(noHunk.batches.length, 0);
+assert.deepEqual(noHunk.unreviewableFiles, ["src/binary.bin"]);
+assert.deepEqual(noHunk.emptyFiles, ["src/binary.bin"]);
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "review-context-"));
 const file = path.join(tmp, "files.txt");

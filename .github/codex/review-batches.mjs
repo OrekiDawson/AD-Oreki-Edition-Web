@@ -109,6 +109,7 @@ export function mergeBatchResults(plan, batchFiles) {
   if ((plan.batches || []).some(batch => (batch.oversized || []).length > 0)) {
     partial = true;
   }
+  if ((plan.unreviewableFiles || []).length > 0) partial = true;
 
   const coverage = [...plannedUnits.entries()]
     .map(([file, units]) => {
@@ -154,6 +155,9 @@ export function mergeBatchResults(plan, batchFiles) {
       (plan.excludedFiles || []).length
         ? `另有 ${(plan.excludedFiles || []).length} 个文档/二进制文件按规则排除；`
         : "",
+      (plan.unreviewableFiles || []).length
+        ? `无完整文本 hunk、未送审：${(plan.unreviewableFiles || []).join(", ")}；`
+        : "",
       uncertainFiles.length
         ? `共享玩法分类待人工确认：${uncertainFiles.join(", ")}；`
         : "",
@@ -173,6 +177,7 @@ export function mergeBatchResults(plan, batchFiles) {
     uncovered_files: uncovered,
     excluded_files: [...new Set(plan.excludedFiles || [])].sort(),
     empty_files: [...new Set(plan.emptyFiles || [])].sort(),
+    unreviewable_files: [...new Set(plan.unreviewableFiles || [])].sort(),
     manual_required: plan.classification?.manualRequired === true,
     uncertain_files: uncertainFiles,
     coverage,

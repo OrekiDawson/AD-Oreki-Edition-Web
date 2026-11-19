@@ -68,6 +68,11 @@ uncertainPlan.classification = {
 const uncertain = mergeBatchResults(uncertainPlan, tmp);
 assert.equal(uncertain.status, "partial");
 assert.deepEqual(uncertain.uncertain_files, ["src/core/new-rule.js"]);
+const unreviewablePlan = structuredClone(plan);
+unreviewablePlan.unreviewableFiles = ["src/binary.bin"];
+const unreviewable = mergeBatchResults(unreviewablePlan, tmp);
+assert.equal(unreviewable.status, "partial");
+assert.deepEqual(unreviewable.unreviewable_files, ["src/binary.bin"]);
 
 const failing = structuredClone(plan);
 failing.batchCount = 1;
