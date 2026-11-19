@@ -50,10 +50,10 @@
       "requestId": "7c43df7fa56f5a80825655e3824245703bf40a20d104420ce551cc9974ee4393",
       "date": "2026-11-20",
       "attempt": 1,
-      "status": "reserved",
-      "modelCalls": 0,
+      "status": "model_started",
+      "modelCalls": 1,
       "reservedAt": "2026-11-19T17:08:47.709Z",
-      "updatedAt": "2026-11-19T17:08:47.709Z",
+      "updatedAt": "2026-11-19T17:09:04.469Z",
       "report": ""
     }
   ]
