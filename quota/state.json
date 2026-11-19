@@ -32,10 +32,10 @@
       "requestId": "d8e81f1626d48e53e374285d5d2709e6f1d5d3e439ae3a615b0fd238f52f967f",
       "date": "2026-11-20",
       "attempt": 1,
-      "status": "model_started",
+      "status": "model_failed",
       "modelCalls": 1,
       "reservedAt": "2026-11-19T17:06:15.320Z",
-      "updatedAt": "2026-11-19T17:06:44.106Z",
+      "updatedAt": "2026-11-19T17:07:07.264Z",
       "report": ""
     }
   ]
