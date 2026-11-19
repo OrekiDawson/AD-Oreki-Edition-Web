@@ -51,3 +51,22 @@
 
 修复后使用独立真实新档，先执行阶段门禁、MOD 总开关、托管购买器恢复和存档重载，
 再等待首次永恒。必须证明 `et=0` 持续至少 180 s 驻留期，之后才允许真实结算。
+
+结果：**PASS**
+
+- 新档文档起点：`1795085563491`
+- 首次无限：`+5.2 s`
+- 打破无限：`+15.3 s`
+- 首次永恒：`+269.2 s`（此前修复前为 `+101 s`）
+- 首次现实：`+625.2 s`（`realities=5`、`stage=glyphs`）
+- 阶段门禁、MOD 总开关、托管自动购买器恢复、存档 reload、首永恒、首现实：全部 PASS
+- `consoleErrors=0`、`pageErrors=0`
+- `requestFailures=4` 均为页面 reload 时浏览器主动 abort 的 `.webm` 背景视频，不是业务资源 404
+
+证据：
+
+- `web-gate-fixed/web-runtime-results.json`
+- `web-gate-fixed/01-fresh-start.png`
+- `web-gate-fixed/07-first-eternity.png`
+- `web-gate-fixed/08-first-reality.png`
+- `web-gate-fixed/09-post-reality-30s.png`

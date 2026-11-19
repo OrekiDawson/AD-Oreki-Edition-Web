@@ -1,0 +1,876 @@
+{
+  "startedAt": "2026-11-19T10:52:41.301Z",
+  "base": "http://127.0.0.1:4173/",
+  "sourceSha": "e443f38",
+  "steps": {
+    "fresh-stage-gate": {
+      "status": "PASS",
+      "value": {
+        "infinities": "0",
+        "eternityTab": {
+          "unlocked": false,
+          "available": false,
+          "hidden": false,
+          "inDom": false,
+          "visible": false
+        },
+        "realityTab": {
+          "unlocked": false,
+          "available": false,
+          "hidden": false,
+          "inDom": false,
+          "visible": false
+        }
+      }
+    },
+    "first-infinity-stage-gate": {
+      "status": "PASS",
+      "value": {
+        "infinities": "1",
+        "break": false,
+        "eternityUnlocked": false,
+        "eternityTab": {
+          "unlocked": false,
+          "available": false,
+          "hidden": false,
+          "inDom": false,
+          "visible": false
+        },
+        "realityTab": {
+          "unlocked": false,
+          "available": false,
+          "hidden": false,
+          "inDom": false,
+          "visible": false
+        },
+        "tabTexts": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "成就",
+          "统计数据",
+          "选项"
+        ]
+      }
+    },
+    "break-stage-gate": {
+      "status": "PASS",
+      "value": {
+        "eternityUnlocked": false,
+        "eternityTab": {
+          "unlocked": false,
+          "available": false,
+          "hidden": false,
+          "inDom": false,
+          "visible": false
+        },
+        "realityTab": {
+          "unlocked": false,
+          "available": false,
+          "hidden": false,
+          "inDom": false,
+          "visible": false
+        },
+        "unlockedMatchesAvailability": true
+      }
+    },
+    "mod-master-switch": {
+      "status": "PASS",
+      "value": {
+        "before": {
+          "enabled": true,
+          "hostingTick": 19,
+          "managedTicks": 19
+        },
+        "off": {
+          "enabled": false,
+          "hostingTickFrozen": true,
+          "managedTicksFrozen": true,
+          "startTicks": 19,
+          "endTicks": 19
+        },
+        "resumed": {
+          "enabled": true,
+          "hostingTick": 22,
+          "advanced": true
+        }
+      }
+    },
+    "managed-autobuyer-restore": {
+      "status": "PASS",
+      "value": {
+        "restored": true,
+        "samples": [
+          {
+            "managedTicks": 23,
+            "managedWrites": 0,
+            "lastRestored": []
+          },
+          {
+            "managedTicks": 23,
+            "managedWrites": 0,
+            "lastRestored": []
+          },
+          {
+            "managedTicks": 23,
+            "managedWrites": 0,
+            "lastRestored": []
+          },
+          {
+            "managedTicks": 23,
+            "managedWrites": 0,
+            "lastRestored": []
+          },
+          {
+            "managedTicks": 24,
+            "managedWrites": 11,
+            "lastRestored": [
+              "dim1",
+              "dim2",
+              "dim3",
+              "dim4",
+              "dim5",
+              "dim6",
+              "dim7",
+              "dim8",
+              "tickspeed",
+              "dimboost",
+              "galaxy"
+            ]
+          },
+          {
+            "managedTicks": 24,
+            "managedWrites": 11,
+            "lastRestored": [
+              "dim1",
+              "dim2",
+              "dim3",
+              "dim4",
+              "dim5",
+              "dim6",
+              "dim7",
+              "dim8",
+              "tickspeed",
+              "dimboost",
+              "galaxy"
+            ]
+          },
+          {
+            "managedTicks": 24,
+            "managedWrites": 11,
+            "lastRestored": [
+              "dim1",
+              "dim2",
+              "dim3",
+              "dim4",
+              "dim5",
+              "dim6",
+              "dim7",
+              "dim8",
+              "tickspeed",
+              "dimboost",
+              "galaxy"
+            ]
+          },
+          {
+            "managedTicks": 24,
+            "managedWrites": 11,
+            "lastRestored": [
+              "dim1",
+              "dim2",
+              "dim3",
+              "dim4",
+              "dim5",
+              "dim6",
+              "dim7",
+              "dim8",
+              "tickspeed",
+              "dimboost",
+              "galaxy"
+            ]
+          },
+          {
+            "managedTicks": 24,
+            "managedWrites": 11,
+            "lastRestored": [
+              "dim1",
+              "dim2",
+              "dim3",
+              "dim4",
+              "dim5",
+              "dim6",
+              "dim7",
+              "dim8",
+              "tickspeed",
+              "dimboost",
+              "galaxy"
+            ]
+          },
+          {
+            "managedTicks": 24,
+            "managedWrites": 11,
+            "lastRestored": [
+              "dim1",
+              "dim2",
+              "dim3",
+              "dim4",
+              "dim5",
+              "dim6",
+              "dim7",
+              "dim8",
+              "tickspeed",
+              "dimboost",
+              "galaxy"
+            ]
+          },
+          {
+            "managedTicks": 25,
+            "managedWrites": 11,
+            "lastRestored": []
+          },
+          {
+            "managedTicks": 25,
+            "managedWrites": 11,
+            "lastRestored": []
+          },
+          {
+            "managedTicks": 25,
+            "managedWrites": 11,
+            "lastRestored": []
+          },
+          {
+            "managedTicks": 25,
+            "managedWrites": 11,
+            "lastRestored": []
+          },
+          {
+            "managedTicks": 25,
+            "managedWrites": 11,
+            "lastRestored": []
+          },
+          {
+            "managedTicks": 25,
+            "managedWrites": 11,
+            "lastRestored": []
+          }
+        ]
+      }
+    },
+    "save-reload": {
+      "status": "PASS",
+      "value": {
+        "before": {
+          "infinities": "6",
+          "eternities": "0",
+          "realities": 0,
+          "break": true,
+          "eternityTab": {
+            "unlocked": false,
+            "available": false,
+            "hidden": false,
+            "inDom": false,
+            "visible": false
+          }
+        },
+        "after": {
+          "infinities": "7",
+          "eternities": "0",
+          "realities": 0,
+          "break": true,
+          "eternityTab": {
+            "unlocked": false,
+            "available": false,
+            "hidden": false,
+            "inDom": false,
+            "visible": false
+          }
+        },
+        "invariants": {
+          "breakSame": true,
+          "eternitiesSame": true,
+          "realitiesSame": true,
+          "infinitiesNotDecreased": true,
+          "stageGateSame": true
+        }
+      }
+    },
+    "first-eternity-stage-gate": {
+      "status": "PASS",
+      "value": {
+        "eternities": "5",
+        "eternityUnlocked": true,
+        "eternityTab": {
+          "unlocked": true,
+          "available": true,
+          "hidden": false,
+          "inDom": true,
+          "visible": true
+        },
+        "realityUnlocked": false,
+        "realityTab": {
+          "unlocked": false,
+          "available": false,
+          "hidden": false,
+          "inDom": false,
+          "visible": false
+        },
+        "tabTexts": [
+          "维度",
+          "自动化",
+          "挑战",
+          "无限",
+          "永恒",
+          "成就",
+          "统计数据",
+          "选项"
+        ]
+      }
+    },
+    "export-save-after-eternity": {
+      "status": "PASS",
+      "value": {
+        "length": 7581
+      }
+    },
+    "first-reality-stage-gate": {
+      "status": "PASS",
+      "value": {
+        "realities": 5,
+        "stage": {
+          "id": "glyphs",
+          "title": "符文装备与现实升级"
+        },
+        "eternityTab": {
+          "unlocked": true,
+          "available": true,
+          "hidden": false,
+          "inDom": true,
+          "visible": true
+        },
+        "realityTab": {
+          "unlocked": true,
+          "available": true,
+          "hidden": false,
+          "inDom": true,
+          "visible": true
+        },
+        "hostingTickDelta": 15,
+        "managedTickDelta": 15,
+        "infinities": {
+          "start": "0",
+          "end": "137581"
+        },
+        "ip": {
+          "start": "0",
+          "end": "2.54891707997982e+45"
+        },
+        "d1Bought": {
+          "start": 423,
+          "end": 1300
+        }
+      }
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "requestFailures": [
+    "http://127.0.0.1:4173/public/images/stars-bg.webm :: net::ERR_ABORTED",
+    "http://127.0.0.1:4173/public/images/realityanimbg.webm :: net::ERR_ABORTED",
+    "http://127.0.0.1:4173/public/images/stars-bg.webm :: net::ERR_ABORTED",
+    "http://127.0.0.1:4173/public/images/realityanimbg.webm :: net::ERR_ABORTED"
+  ],
+  "initial": {
+    "now": 1795085563491,
+    "am": "3.060009924252e+116",
+    "ip": "0",
+    "infinities": "0",
+    "eternities": "0",
+    "ep": "0",
+    "realities": 0,
+    "break": false,
+    "eternityUnlocked": false,
+    "realityUnlocked": false,
+    "eternityTab": {
+      "unlocked": false,
+      "available": false,
+      "hidden": false,
+      "inDom": false,
+      "visible": false
+    },
+    "realityTab": {
+      "unlocked": false,
+      "available": false,
+      "hidden": false,
+      "inDom": false,
+      "visible": false
+    },
+    "tabTexts": [
+      "维度",
+      "自动化",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "currentTab": "dimensions",
+    "hosting": {
+      "tick": 2,
+      "intervalMs": 1000,
+      "anchorAt": 1795.1000000000931
+    },
+    "stage": {
+      "id": "preInfinity",
+      "title": "无限前准备阶段"
+    },
+    "maxEpExponent": 0,
+    "timeStudyReality": false,
+    "ecCompletions": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "dilationStudies": [
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "managed": {
+      "lastTick": 2,
+      "lastTickAt": 1795.2000000001863,
+      "saveId": 1795085562336,
+      "ticks": 2,
+      "writes": 0,
+      "skips": 6,
+      "lastRestored": [],
+      "lastReason": "ok",
+      "realities": 0
+    },
+    "crunch": {
+      "lastTick": 2,
+      "lastValue": 60,
+      "writes": 1,
+      "skips": 1,
+      "lastReason": "resume:pre-infinity",
+      "releasePending": true,
+      "nowMs": 1819
+    },
+    "executor": {
+      "enabled": true,
+      "intervalSec": 10
+    },
+    "autobuyersOn": true,
+    "crunchMode": 0,
+    "crunchTime": 60,
+    "d1Bought": 390
+  },
+  "firstInfinity": {
+    "now": 1795085568657,
+    "am": "4.5447259063839e+146",
+    "ip": "9",
+    "infinities": "1",
+    "eternities": "0",
+    "ep": "0",
+    "realities": 0,
+    "break": false,
+    "eternityUnlocked": false,
+    "realityUnlocked": false,
+    "eternityTab": {
+      "unlocked": false,
+      "available": false,
+      "hidden": false,
+      "inDom": false,
+      "visible": false
+    },
+    "realityTab": {
+      "unlocked": false,
+      "available": false,
+      "hidden": false,
+      "inDom": false,
+      "visible": false
+    },
+    "tabTexts": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "currentTab": "dimensions",
+    "hosting": {
+      "tick": 7,
+      "intervalMs": 1000,
+      "anchorAt": 6920.200000000186
+    },
+    "stage": {
+      "id": "breakInfinity",
+      "title": "打破无限前阶段"
+    },
+    "maxEpExponent": 0,
+    "timeStudyReality": false,
+    "ecCompletions": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "dilationStudies": [
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "managed": {
+      "lastTick": 7,
+      "lastTickAt": 6920.299999999814,
+      "saveId": 1795085562336,
+      "ticks": 7,
+      "writes": 0,
+      "skips": 20,
+      "lastRestored": [],
+      "lastReason": "ok",
+      "realities": 0
+    },
+    "crunch": {
+      "lastTick": 7,
+      "lastValue": 60,
+      "writes": 1,
+      "skips": 6,
+      "lastReason": "resume:pre-infinity",
+      "releasePending": false,
+      "nowMs": 6984.700000000186
+    },
+    "executor": {
+      "enabled": true,
+      "intervalSec": 10
+    },
+    "autobuyersOn": true,
+    "crunchMode": 2,
+    "crunchTime": 60,
+    "d1Bought": 290
+  },
+  "breakReached": {
+    "now": 1795085578802,
+    "am": "1.3440480904109e+213",
+    "ip": "3455205045",
+    "infinities": "4",
+    "eternities": "0",
+    "ep": "0",
+    "realities": 0,
+    "break": true,
+    "eternityUnlocked": false,
+    "realityUnlocked": false,
+    "eternityTab": {
+      "unlocked": false,
+      "available": false,
+      "hidden": false,
+      "inDom": false,
+      "visible": false
+    },
+    "realityTab": {
+      "unlocked": false,
+      "available": false,
+      "hidden": false,
+      "inDom": false,
+      "visible": false
+    },
+    "tabTexts": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "currentTab": "dimensions",
+    "hosting": {
+      "tick": 16,
+      "intervalMs": 1000,
+      "anchorAt": 16116.299999999814
+    },
+    "stage": {
+      "id": "infinityDimensions",
+      "title": "无限维度与永恒前置"
+    },
+    "maxEpExponent": 0,
+    "timeStudyReality": false,
+    "ecCompletions": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "dilationStudies": [
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "managed": {
+      "lastTick": 16,
+      "lastTickAt": 16116.399999999907,
+      "saveId": 1795085562336,
+      "ticks": 16,
+      "writes": 0,
+      "skips": 39,
+      "lastRestored": [],
+      "lastReason": "ok",
+      "realities": 0
+    },
+    "crunch": {
+      "lastTick": 16,
+      "lastValue": 3600,
+      "writes": 3,
+      "skips": 13,
+      "lastReason": "pause:id-peak-wait",
+      "releasePending": false,
+      "nowMs": 17129.899999999907
+    },
+    "executor": {
+      "enabled": true,
+      "intervalSec": 10
+    },
+    "autobuyersOn": true,
+    "crunchMode": 2,
+    "crunchTime": 3600,
+    "d1Bought": 710
+  },
+  "firstEternity": {
+    "now": 1795085832679,
+    "am": "3.25551741755963e+313",
+    "ip": "107821933310284",
+    "infinities": "500",
+    "eternities": "5",
+    "ep": "5.8257649627958585e+604248",
+    "realities": 0,
+    "break": true,
+    "eternityUnlocked": true,
+    "realityUnlocked": false,
+    "eternityTab": {
+      "unlocked": true,
+      "available": true,
+      "hidden": false,
+      "inDom": true,
+      "visible": true
+    },
+    "realityTab": {
+      "unlocked": false,
+      "available": false,
+      "hidden": false,
+      "inDom": false,
+      "visible": false
+    },
+    "tabTexts": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "永恒",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "currentTab": "dimensions",
+    "hosting": {
+      "tick": 237,
+      "intervalMs": 1000,
+      "anchorAt": 241991.1000000001
+    },
+    "stage": {
+      "id": "eternityTimeStudy",
+      "title": "永恒与时间研究（含第一次永恒）"
+    },
+    "maxEpExponent": 604248,
+    "timeStudyReality": false,
+    "ecCompletions": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "dilationStudies": [
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "managed": {
+      "lastTick": 237,
+      "lastTickAt": 241991.1000000001,
+      "saveId": 1795085562336,
+      "ticks": 237,
+      "writes": 2,
+      "skips": 513,
+      "lastRestored": [],
+      "lastReason": "ok",
+      "realities": 0
+    },
+    "crunch": {
+      "lastTick": 237,
+      "lastValue": 3600,
+      "writes": 6,
+      "skips": 231,
+      "lastReason": "pause:ep-high-grow",
+      "releasePending": false,
+      "nowMs": 242753.8999999999
+    },
+    "executor": {
+      "enabled": true,
+      "intervalSec": 10
+    },
+    "autobuyersOn": true,
+    "crunchMode": 2,
+    "crunchTime": 3600,
+    "d1Bought": 10
+  },
+  "firstReality": {
+    "now": 1795086188686,
+    "am": "9.24721533823649e+115",
+    "ip": "0",
+    "infinities": "0",
+    "eternities": "0",
+    "ep": "0",
+    "realities": 5,
+    "break": false,
+    "eternityUnlocked": true,
+    "realityUnlocked": true,
+    "eternityTab": {
+      "unlocked": true,
+      "available": true,
+      "hidden": false,
+      "inDom": true,
+      "visible": true
+    },
+    "realityTab": {
+      "unlocked": true,
+      "available": true,
+      "hidden": false,
+      "inDom": true,
+      "visible": true
+    },
+    "tabTexts": [
+      "维度",
+      "自动化",
+      "挑战",
+      "无限",
+      "永恒",
+      "现实",
+      "成就",
+      "统计数据",
+      "选项"
+    ],
+    "currentTab": "dimensions",
+    "hosting": {
+      "tick": 585,
+      "intervalMs": 2000,
+      "anchorAt": 597999
+    },
+    "stage": {
+      "id": "glyphs",
+      "title": "符文装备与现实升级"
+    },
+    "maxEpExponent": 0,
+    "timeStudyReality": false,
+    "ecCompletions": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "dilationStudies": [
+      null,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "managed": {
+      "lastTick": 585,
+      "lastTickAt": 597999,
+      "saveId": 1795085562336,
+      "ticks": 585,
+      "writes": 2,
+      "skips": 791,
+      "lastRestored": [],
+      "lastReason": "ok",
+      "realities": 5
+    },
+    "crunch": {
+      "lastTick": 585,
+      "lastValue": 60,
+      "writes": 86,
+      "skips": 499,
+      "lastReason": "pause:eternity-grow",
+      "releasePending": true,
+      "nowMs": 598759.8999999999
+    },
+    "executor": {
+      "enabled": true,
+      "intervalSec": 10
+    },
+    "autobuyersOn": true,
+    "crunchMode": 2,
+    "crunchTime": 60,
+    "d1Bought": 340
+  },
+  "finishedAt": "2026-11-19T11:03:38.945Z",
+  "verdict": "PASS"
+}
