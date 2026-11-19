@@ -200,6 +200,16 @@ export const GameSpeed = {
     try {
       const p = target_player();
       if (!p) return false;
+      // 首次永恒前仍处于离散的 Infinity 生长链，调度动作与自动器 tick 对倍率非常敏感；
+      // 此阶段统一保持用户设定倍率，不把“IP 尚未跳变”误当成挂机停滞。真实永恒或
+      // 现实结算后才允许动态升档。
+      const positive = v => {
+        if (typeof v === "number") return v > 0;
+        if (v && typeof v.gt === "function") return v.gt(0);
+        if (v && typeof v.toNumber === "function") return v.toNumber() > 0;
+        return false;
+      };
+      if (!positive(p.eternityPoints) && !positive(p.realities)) return false;
       // 用 0.01 数量级的分辨率做指纹：只看 exponent 取整会把「同一数量级内的真实增长」
       // 误判成停滞（例如 1.2e100 → 4.8e100）。尾数信息一起纳入，既不漏判也不过敏。
       const ex = v => {
