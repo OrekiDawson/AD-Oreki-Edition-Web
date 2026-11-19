@@ -97,6 +97,8 @@ check("下越界安全钳制到 1 秒", EXEC.intervalSec === 1);
 EXEC.setIntervalSec(61);
 check("上越界安全钳制到 60 秒", EXEC.intervalSec === 60);
 check("NaN 安全回退 10 秒", EXEC.setIntervalSec(Number.NaN).intervalSec === 10);
+check("小数输入安全钳制为整数秒", EXEC.setIntervalSec(10.9).intervalSec === 10);
+check("整数秒可被重载读取", Number.isInteger(Number(store.get("oreki.automation.intervalSec"))));
 
 const invalid = loadExecutor(new Map([
   ["oreki.automation.intervalSec", "NaN"],

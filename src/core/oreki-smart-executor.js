@@ -105,11 +105,11 @@ const INTERVAL_MIN_SEC = 1;
 const INTERVAL_MAX_SEC = 60;
 // R85：双端新存档默认 10 秒；已有合法配置必须保留。
 const INTERVAL_DEFAULT_SEC = 10;
-/** 间隔钳制：非数字 / NaN / 越界一律落到边界值，绝不接受 0 或 Infinity */
+/** 间隔钳制：只接受整数秒；非数字回退 10，越界落到 1/60，绝不接受 0 或 Infinity。 */
 function clampIntervalSec(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return INTERVAL_DEFAULT_SEC;
-  return Math.min(INTERVAL_MAX_SEC, Math.max(INTERVAL_MIN_SEC, n));
+  return Math.min(INTERVAL_MAX_SEC, Math.max(INTERVAL_MIN_SEC, Math.trunc(n)));
 }
 function readStoredAutomation() {
   const out = { enabled: true, intervalSec: INTERVAL_DEFAULT_SEC, strictGlobal: false };
