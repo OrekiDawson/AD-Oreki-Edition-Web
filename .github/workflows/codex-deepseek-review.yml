@@ -205,6 +205,9 @@ jobs:
             identity-complete) notice='' ;;
             *) notice='' ;;
           esac
+          if [[ "$reason" == "quota-service-unavailable" && -z "${QUOTA_TOKEN:-}" ]]; then
+            notice='共享配额服务不可用：独立 Quota App 变量/私钥未配置、App 未安装到 AD-Oreki-Edition-Web，或缺少 Contents 写权限。'
+          fi
           {
             echo "should_review=$should_review"
             echo "allowed=$allowed"

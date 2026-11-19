@@ -57,6 +57,7 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertNotIn("daily-budget", body)
         self.assertIn("audit-quota.mjs", body)
         self.assertIn("daily-quota-exhausted", body)
+        self.assertIn("独立 Quota App 变量/私钥未配置", body)
         self.assertIn("model_started", body)
         self.assertIn("model_succeeded", body)
         self.assertIn("--mode patch", body)
