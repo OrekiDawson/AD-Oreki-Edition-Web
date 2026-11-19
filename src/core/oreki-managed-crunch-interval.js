@@ -252,20 +252,22 @@ function clearReleaseWindow() {
  * 只认最近一次与紧邻上一次（上一拍仅限 15 秒落盘窗口内）；不把 5/60/3600
  * 这类玩家可选值长期纳入匹配，避免把玩家手设值误判为托管值。
  */
-function persistedContainsManagedValue(
+function persistedContainsManagedTime(
   persisted,
   seconds,
-  mode,
   { includePrevious = true, now = Date.now() } = {},
 ) {
   if (!persisted || !Number.isFinite(seconds)) return false;
-  const modeMatches = persisted.writtenMode === null ||
-    Number.isInteger(mode) && persisted.writtenMode === mode;
-  if (sameInterval(persisted.writtenTime, seconds) && modeMatches) return true;
+  if (sameInterval(persisted.writtenTime, seconds)) return true;
   if (!includePrevious || !Number.isFinite(persisted.previousWrittenTime)) return false;
   if (!Number.isFinite(persisted.updatedAt) ||
       now - persisted.updatedAt > PREVIOUS_WRITE_MATCH_WINDOW_MS) return false;
-  return sameInterval(persisted.previousWrittenTime, seconds) && modeMatches;
+  return sameInterval(persisted.previousWrittenTime, seconds);
+}
+
+function persistedContainsManagedMode(persisted, mode) {
+  return Boolean(persisted && Number.isInteger(mode) &&
+    Number.isInteger(persisted.writtenMode) && persisted.writtenMode === mode);
 }
 
 function hostingIntervalMs() {
@@ -356,23 +358,32 @@ export class OrekiManagedCrunchInterval {
     // 首次写入前记录玩家原值；换档或玩家在两次写入之间手改过时同步刷新。
     // 合并为一个条件，避免两处重复赋值后续漏改。
     const originalFresh = STATE.originalTime === null || STATE.originalSaveId !== saveId;
-    const playerEdited = (STATE.lastValue !== null && !sameInterval(actual, STATE.lastValue)) ||
-      (STATE.lastMode !== null && actualMode !== STATE.lastMode);
-    if (originalFresh || playerEdited) {
+    const timeEdited = STATE.lastValue !== null && !sameInterval(actual, STATE.lastValue);
+    const modeEdited = STATE.lastMode !== null && actualMode !== STATE.lastMode;
+    if (originalFresh) {
       // 页面刷新/重开后内存态丢失：只有持久化记录来自上一次会话、当前值仍是
       // 最近/紧邻上一次托管写出值，且原值与写出值不同，才复用它。
       const persistedBefore = originalFresh ? readPersistedManagedTime(saveId) : null;
-      const persistedUsable = originalFresh && saveId !== null &&
+      const persistedBaseUsable = saveId !== null &&
         persistedBefore !== null &&
         (persistedBefore.sessionId !== MANAGED_TIME_SESSION_ID ||
-          STATE.originalSaveId !== saveId) &&
+          STATE.originalSaveId !== saveId);
+      const timeRecordUsable = persistedBaseUsable &&
         !sameInterval(persistedBefore.originalTime, persistedBefore.writtenTime) &&
-        persistedContainsManagedValue(persistedBefore, actual, actualMode);
-      STATE.originalTime = persistedUsable ? persistedBefore.originalTime : actual;
-      STATE.originalMode = persistedUsable && persistedBefore.originalMode !== null
+        persistedContainsManagedTime(persistedBefore, actual);
+      const modeRecordUsable = persistedBaseUsable &&
+        persistedBefore.originalMode !== null &&
+        persistedContainsManagedMode(persistedBefore, actualMode);
+      STATE.originalTime = timeRecordUsable ? persistedBefore.originalTime : actual;
+      STATE.originalMode = modeRecordUsable
         ? persistedBefore.originalMode
         : actualMode;
       STATE.originalSaveId = saveId;
+    } else {
+      // mode 与 time 分别记录原值。原版 Eternal reset 可能只重置 mode，
+      // 不能因此把仍受管的 time 误当作玩家新原值。
+      if (timeEdited) STATE.originalTime = actual;
+      if (modeEdited) STATE.originalMode = actualMode;
     }
     if (actualMode !== desiredMode) writeActualMode(desiredMode);
     if (!sameInterval(actual, desiredSeconds)) writeActualInterval(desiredSeconds);
@@ -440,22 +451,24 @@ export class OrekiManagedCrunchInterval {
         STATE.originalSaveId !== saveId);
     const inMemorySave = STATE.originalSaveId === null || saveId === null ||
       STATE.originalSaveId === saveId;
-    const persistedHit = persistedUsable &&
-      persistedContainsManagedValue(persisted, actual, actualMode);
+    const persistedTimeHit = persistedUsable &&
+      persistedContainsManagedTime(persisted, actual);
+    const persistedModeHit = persistedUsable &&
+      persistedContainsManagedMode(persisted, actualMode);
     // 内存 lastValue 只在同一存档内有效；换档后必须用目标档的持久化写出值，
     // 否则会把上一档的 lastValue 与当前档 actual 比较，误判玩家手改。
     const lastValue = inMemorySave && STATE.lastValue !== null
       ? STATE.lastValue
-      : (persistedHit ? actual : null);
+      : (persistedTimeHit ? actual : null);
     const lastMode = inMemorySave && STATE.lastMode !== null
       ? STATE.lastMode
-      : (persistedHit ? persisted.writtenMode : null);
+      : (persistedModeHit ? persisted.writtenMode : null);
     const original = inMemorySave && STATE.originalTime !== null
       ? STATE.originalTime
-      : (persistedUsable ? persisted.originalTime : null);
+      : (persistedTimeHit ? persisted.originalTime : null);
     const originalMode = inMemorySave && STATE.originalMode !== null
       ? STATE.originalMode
-      : (persistedUsable ? persisted.originalMode : null);
+      : (persistedModeHit ? persisted.originalMode : null);
     const sameSave = inMemorySave || persistedUsable;
     const changedTime = sameSave && lastValue !== null && original !== null &&
       !sameInterval(lastValue, original);
@@ -500,7 +513,12 @@ export class OrekiManagedCrunchInterval {
 
     if (!changed) {
       // 没有可写回的原值（从未托管 / 原值等于写出值）：确认后才清记录。
-      const persistedMismatch = persistedUsable && !persistedHit;
+      const timeTracked = persistedUsable &&
+        Number.isFinite(persisted.originalTime) && Number.isFinite(persisted.writtenTime);
+      const modeTracked = persistedUsable &&
+        Number.isInteger(persisted.originalMode) && Number.isInteger(persisted.writtenMode);
+      const persistedMismatch = (timeTracked && !persistedTimeHit) ||
+        (modeTracked && !persistedModeHit);
       STATE.lastTick = 0;
       STATE.originalTime = null;
       STATE.originalMode = null;

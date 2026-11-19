@@ -49,6 +49,9 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertIn("OREKI_AUDIT_LLM_KEY", body)
         self.assertIn("OREKI_AUDIT_APP_PRIVATE_KEY", body)
         self.assertIn("oreki-codex-deepseek-review:v1", body)
+        self.assertIn("comment.user.login === 'oreki-audit[bot]'", body)
+        self.assertIn("fetch-depth: 0", body)
+        self.assertIn("minuteOfDay >= 50", body)
 
 
 if __name__ == "__main__":

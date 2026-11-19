@@ -72,7 +72,9 @@ jobs:
             });
             const headMarker = `HEAD_SHA: ${process.env.HEAD_SHA}`;
             const duplicate = comments.some(comment =>
-              comment.body && comment.body.includes(marker) && comment.body.includes(headMarker)
+              comment.user && comment.user.login === 'oreki-audit[bot]' &&
+              comment.user.type === 'Bot' && comment.body &&
+              comment.body.includes(marker) && comment.body.includes(headMarker)
             );
             core.setOutput('should_review', duplicate ? 'false' : 'true');
             core.setOutput('reason', duplicate ? 'same-head-reviewed' : 'ok');
@@ -201,7 +203,8 @@ jobs:
               per_page: 100,
             });
             const previous = comments.find(comment =>
-              comment.body && comment.body.includes(marker)
+              comment.user && comment.user.login === 'oreki-audit[bot]' &&
+              comment.user.type === 'Bot' && comment.body && comment.body.includes(marker)
             );
             if (previous) {
               await github.rest.issues.updateComment({

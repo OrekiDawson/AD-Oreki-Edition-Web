@@ -303,6 +303,19 @@ test("关闭 MOD 时玩家只改 mode ⇒ 保留玩家 mode，仍恢复受管 ti
   assert.equal(bigCrunch.time, 30, "未被玩家修改的托管 time 必须恢复");
 });
 
+test("原版 reset 只改 mode ⇒ 不用托管 time 覆盖玩家原值", () => {
+  OrekiManagedCrunchInterval.resetForTest();
+  bigCrunch.mode = 2;
+  bigCrunch.time = 60;
+  OrekiManagedCrunchInterval.apply(3600, "pause", 1);
+  bigCrunch.mode = 2; // 模拟原版 BigCrunchAutobuyerState.reset()
+  OrekiManagedCrunchInterval.apply(3600, "pause", 2);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  OrekiManagedCrunchInterval.releaseToPlayer();
+  assert.equal(bigCrunch.mode, 2);
+  assert.equal(bigCrunch.time, 60, "mode 变化不得污染 time 原值");
+});
+
 test("IU15 冲刺整体让路；Pelle 只让大坍缩，其余 13 项仍对账", () => {
   apply(1);
   registry.antimatterDimension.isActive = false;
