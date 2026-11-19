@@ -13,7 +13,6 @@ name: Kody PR 审查触发器
         type: string
 
 permissions:
-  checks: write
   contents: read
   pull-requests: read
 
@@ -77,6 +76,10 @@ jobs:
       # 串行段仅覆盖预算检查与评论写入；稳定等待已在上一 Job 完成。
       group: kody-trigger-budget-${{ github.repository }}
       cancel-in-progress: false
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: read
     steps:
       - name: 检出受信任 Base
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
