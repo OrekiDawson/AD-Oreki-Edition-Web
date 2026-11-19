@@ -58,7 +58,7 @@ test("PAT 身份必须严格等于 OrekiDawson", () => {
   assert.equal(validateTriggerIdentity("oreki-bot").allowed, false);
 });
 
-test("同一 Head 只由成功 Check Run 精确去重，不依赖提交时间", () => {
+test("同一 Head 由成功、中性或进行中 Check Run 保守去重，不依赖提交时间", () => {
   const head = "a".repeat(40);
   const identity = triggerIdentity(repository, 7, head);
   assert.ok(findTriggerReservation([
