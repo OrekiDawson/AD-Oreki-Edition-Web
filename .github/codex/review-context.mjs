@@ -7,6 +7,7 @@
  */
 
 import fs from "node:fs";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 export const REPOS = Object.freeze({
@@ -262,6 +263,71 @@ export async function buildPeerContext({ classification, token, owner, peerSha }
   };
 }
 
+const PATCH_EXCLUDES = [
+  /^reports\//,
+  /^docs\//,
+  /\.(?:png|jpe?g|webp|zip|apk|jar|lock)$/i,
+  /^pnpm-lock\.yaml$/,
+];
+
+export function patchPriority(source, path) {
+  if (source === "android") {
+    if (path.startsWith(ANDROID_ROOT)) return 0;
+    if (path.startsWith("scripts/payload/smali/")) return 10;
+    if (path.includes("/src/test/") || path.startsWith("scripts/tests/")) return 20;
+    if (path.startsWith(".github/")) return 30;
+    if (path.startsWith("scripts/")) return 25;
+    return 40;
+  }
+  if (path === "src/game.js" || path.startsWith("src/core/")) return 0;
+  if (path.startsWith("src/")) return 10;
+  if (path.startsWith("scripts/tests/") || path.includes("/test/")) return 20;
+  if (path.startsWith("scripts/")) return 25;
+  if (path.startsWith(".github/")) return 30;
+  return 40;
+}
+
+export function selectPatchChunks(source, entries, maxBytes = 24000) {
+  const ordered = entries
+    .filter(entry => !PATCH_EXCLUDES.some(pattern => pattern.test(entry.path)))
+    .map(entry => ({ ...entry, priority: patchPriority(source, entry.path) }))
+    .sort((a, b) => a.priority - b.priority || a.path.localeCompare(b.path));
+  const included = [];
+  const skipped = [];
+  let bytes = 0;
+  for (const entry of ordered) {
+    const size = Buffer.byteLength(entry.patch);
+    if (bytes + size <= maxBytes) {
+      included.push(entry);
+      bytes += size;
+    } else {
+      skipped.push(entry.path);
+    }
+  }
+  return {
+    text: included.map(entry => entry.patch).join(""),
+    bytes,
+    rawBytes: ordered.reduce((sum, entry) => sum + Buffer.byteLength(entry.patch), 0),
+    included: included.map(entry => entry.path),
+    skipped,
+    truncated: skipped.length > 0,
+  };
+}
+
+export function buildPatch({ source, files, base, head, maxBytes = 24000 }) {
+  const entries = files
+    .filter(path => !PATCH_EXCLUDES.some(pattern => pattern.test(path)))
+    .map(path => ({
+      path,
+      patch: execFileSync("git", [
+        "diff", "--unified=8", "--no-ext-diff", "--diff-filter=ACMR",
+        `${base}...${head}`, "--", path,
+      ], { encoding: "utf8", maxBuffer: 8 * 1024 * 1024 }),
+    }))
+    .filter(entry => entry.patch.length > 0);
+  return selectPatchChunks(source, entries, maxBytes);
+}
+
 function argument(name, fallback = "") {
   const index = process.argv.indexOf(`--${name}`);
   return index >= 0 && process.argv[index + 1] ? process.argv[index + 1] : fallback;
@@ -286,6 +352,20 @@ async function main() {
     if (!owner || !peerSha || !token) throw new Error("owner, peer-sha and GITHUB_TOKEN are required");
     const result = await buildPeerContext({ classification, token, owner, peerSha });
     fs.writeFileSync(out, `${result.text}\n`);
+    return;
+  }
+  if (mode === "patch") {
+    const source = argument("source");
+    const files = linesFromFile(argument("files"));
+    const result = buildPatch({
+      source,
+      files,
+      base: argument("base"),
+      head: argument("head"),
+      maxBytes: Number(argument("max-bytes", "24000")),
+    });
+    fs.writeFileSync(out, result.text);
+    fs.writeFileSync(argument("manifest-out"), `${JSON.stringify(result, null, 2)}\n`);
     return;
   }
   throw new Error(`unknown mode: ${mode}`);

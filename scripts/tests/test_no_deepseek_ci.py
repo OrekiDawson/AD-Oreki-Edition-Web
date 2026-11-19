@@ -1,15 +1,17 @@
-"""CI policy: do not call paid LLM APIs from ordinary CI workflows.
+"""CI policy: isolate the authorized paid AI review from ordinary CI.
 
 Kodus Cloud is an external hosted GitHub App: its reviews do not run in this
-repository's Actions. Historical Oreki Audit execution must not return.
+repository's Actions. The single internal-PR Codex/DeepSeek review workflow is
+read-only and non-blocking; legacy triage entrypoints must not return.
 """
 import unittest
 from pathlib import Path
+
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_WORKFLOW = ROOT / ".github/workflows/codex-deepseek-review.yml"
 
 
-class NoDeepSeekReviewInCi(unittest.TestCase):
+class ScopedDeepSeekReviewInCi(unittest.TestCase):
     def test_legacy_ai_triage_entrypoints_removed(self):
         for path in (
             ".github/workflows/deepseek-triage.yml",
@@ -18,13 +20,20 @@ class NoDeepSeekReviewInCi(unittest.TestCase):
             "scripts/audit/oreki_auto_runner.py",
         ):
             self.assertFalse((ROOT / path).exists(), path)
+
     def test_workflows_do_not_call_paid_model_api(self):
         for path in (ROOT / ".github/workflows").glob("*.yml"):
             if path == REVIEW_WORKFLOW:
                 continue
             with self.subTest(path=path.name):
-                body=path.read_text(encoding="utf-8")
-                for marker in ("DEEPSEEK_API_KEY","api.deepseek.com","deepseek_ci_triage.py","OREKI_AUDIT_LLM_KEY","oreki_auto_runner.py"):
+                body = path.read_text(encoding="utf-8")
+                for marker in (
+                    "DEEPSEEK_API_KEY",
+                    "api.deepseek.com",
+                    "deepseek_ci_triage.py",
+                    "OREKI_AUDIT_LLM_KEY",
+                    "oreki_auto_runner.py",
+                ):
                     self.assertNotIn(marker, body)
 
     def test_review_workflow_is_isolated_and_read_only(self):
@@ -42,11 +51,14 @@ class NoDeepSeekReviewInCi(unittest.TestCase):
         self.assertIn("PATCH_EXCLUDED_PATTERNS=", body)
         self.assertIn("OREKI_AUDIT_DAILY_LIMIT", body)
         self.assertIn("daily-budget", body)
-        self.assertIn("head -c 24000", body)
+        self.assertIn("--mode patch", body)
+        self.assertNotIn("head -c 24000", body)
         self.assertIn("classify:", body)
         self.assertIn("CATEGORIES=", body)
         self.assertIn("CROSS_REPO=", body)
         self.assertIn("PEER_SHA=", body)
+        self.assertIn("PATCH_INCLUDED_FILES=", body)
+        self.assertIn("PATCH_SKIPPED_FILES=", body)
         self.assertIn("peer-context.md", body)
         self.assertIn("AD-Oreki-Edition-Android,AD-Oreki-Edition-Web", body)
         self.assertIn("permission-contents: read", body)
