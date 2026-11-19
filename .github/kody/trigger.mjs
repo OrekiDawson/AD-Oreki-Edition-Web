@@ -4,10 +4,7 @@ import { pathToFileURL } from "node:url";
 export const TRIGGER_AUTHOR = "OrekiDawson";
 export const TRIGGER_BODY = "@kody start-review";
 export const KODY_LOGIN = "kody-ai[bot]";
-export const REPOSITORIES = Object.freeze([
-  "OrekiDawson/AD-Oreki-Edition-Android",
-  "OrekiDawson/AD-Oreki-Edition-Web",
-]);
+export const CHECK_NAME = "Kody trigger";
 
 export function validatePullRequest(pr, repositoryFullName) {
   if (!pr) return { allowed: false, reason: "missing_pull_request" };
@@ -15,6 +12,9 @@ export function validatePullRequest(pr, repositoryFullName) {
   if (pr.base?.ref !== "main") return { allowed: false, reason: "base_not_main" };
   if (pr.head?.repo?.full_name !== repositoryFullName) {
     return { allowed: false, reason: "fork_or_cross_repository" };
+  }
+  if (pr.state !== "open" || pr.merged_at != null) {
+    return { allowed: false, reason: "pr_not_open" };
   }
   if (pr.draft === true) return { allowed: false, reason: "draft" };
   if (!pr.head?.sha) return { allowed: false, reason: "missing_head_sha" };
@@ -33,13 +33,15 @@ export function isExactTriggerComment(comment) {
     comment.body.trim() === TRIGGER_BODY;
 }
 
-export function findTriggerForHead(comments, commitCreatedAt) {
-  const commitTime = Date.parse(commitCreatedAt);
-  if (!Number.isFinite(commitTime)) return null;
-  return comments.find(comment =>
-    isExactTriggerComment(comment) &&
-    Number.isFinite(Date.parse(comment.created_at)) &&
-    Date.parse(comment.created_at) >= commitTime
+export function triggerIdentity(repository, prNumber, headSha) {
+  return `kody-trigger:${repository}#${prNumber}@${headSha}`;
+}
+
+export function findSuccessfulTriggerCheck(checkRuns, externalId) {
+  return checkRuns.find(run =>
+    run.external_id === externalId &&
+    run.status === "completed" &&
+    run.conclusion === "success"
   ) ?? null;
 }
 
@@ -74,6 +76,10 @@ export function countTriggersSince(comments, since) {
     Number.isFinite(Date.parse(comment.created_at)) &&
     Date.parse(comment.created_at) >= sinceMs
   ).length;
+}
+
+export function dailyCommentsPath(repository, since) {
+  return `/repos/${repository}/issues/comments?since=${encodeURIComponent(since.toISOString())}&per_page=100`;
 }
 
 export function budgetDecision(repoTriggerCount, perRepoLimit) {
@@ -166,12 +172,54 @@ async function getPullRequest(repository, number, token) {
   return response.json();
 }
 
+async function findTriggerCheck(repository, headSha, externalId, token) {
+  const response = await requestJson(
+    `/repos/${repository}/commits/${headSha}/check-runs?check_name=${encodeURIComponent(CHECK_NAME)}&filter=latest&per_page=100`,
+    { token },
+  );
+  const payload = await response.json();
+  return findSuccessfulTriggerCheck(payload.check_runs ?? [], externalId);
+}
+
+async function createTriggerCheck(repository, prNumber, headSha, externalId, token) {
+  return (await (await requestJson(`/repos/${repository}/check-runs`, {
+    method: "POST",
+    token,
+    body: {
+      name: CHECK_NAME,
+      head_sha: headSha,
+      external_id: externalId,
+      status: "in_progress",
+      output: {
+        title: "Kody 审查触发中",
+        summary: `PR #${prNumber}，Head \`${headSha}\`。`,
+      },
+    },
+  })).json()).id;
+}
+
+async function completeTriggerCheck(repository, checkRunId, conclusion, summary, token) {
+  await requestJson(`/repos/${repository}/check-runs/${checkRunId}`, {
+    method: "PATCH",
+    token,
+    body: {
+      status: "completed",
+      conclusion,
+      output: {
+        title: conclusion === "success" ? "Kody 审查触发已发送" : "Kody 审查触发失败",
+        summary,
+      },
+    },
+  });
+}
+
 async function sleep(seconds) {
   if (seconds > 0) await new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
 export async function main() {
   const token = requiredEnv("GH_TOKEN");
+  const checkToken = requiredEnv("CHECK_TOKEN");
   const repository = requiredEnv("GITHUB_REPOSITORY");
   const eventName = requiredEnv("EVENT_NAME");
   const event = JSON.parse(readFileSync(requiredEnv("GITHUB_EVENT_PATH"), "utf8"));
@@ -195,6 +243,7 @@ export async function main() {
 
   const prNumber = pr.number;
   const headSha = pr.head.sha;
+  const externalId = triggerIdentity(repository, prNumber, headSha);
   if (eventName === "synchronize") {
     const seconds = Number.parseInt(process.env.STABILIZATION_SECONDS ?? "300", 10);
     await sleep(Number.isFinite(seconds) && seconds >= 0 ? seconds : 300);
@@ -211,12 +260,7 @@ export async function main() {
     `/repos/${repository}/issues/${prNumber}/comments?per_page=100`,
     token,
   );
-  const commit = await (await requestJson(
-    `/repos/${repository}/commits/${headSha}`,
-    { token },
-  )).json();
-  const commitCreatedAt = commit?.commit?.committer?.date;
-  if (findTriggerForHead(comments, commitCreatedAt)) {
+  if (await findTriggerCheck(repository, headSha, externalId, checkToken)) {
     finishSkip("trigger_exists_for_head", pr, headSha);
     return;
   }
@@ -231,18 +275,11 @@ export async function main() {
   }
 
   const since = shanghaiDayStart(new Date());
-  const dailyComments = [];
-  for (const repo of REPOSITORIES) {
-    const repoComments = await listAllPages(
-      `/repos/${repo}/issues/comments?since=${encodeURIComponent(since.toISOString())}&per_page=100`,
-      token,
-    );
-    dailyComments.push(...repoComments);
-  }
-  const repoTriggerCount = countTriggersSince(
-    dailyComments.filter(comment => comment.repository_url?.endsWith(`/repos/${repository}`)),
-    since,
+  const dailyComments = await listAllPages(
+    dailyCommentsPath(repository, since),
+    token,
   );
+  const repoTriggerCount = countTriggersSince(dailyComments, since);
   const perRepoLimit = Number.parseInt(
     process.env.MAX_TRIGGERS_PER_REPO_PER_DAY ?? "50",
     10,
@@ -254,19 +291,49 @@ export async function main() {
   }
 
   const latest = await getPullRequest(repository, prNumber, token);
+  if (latest.state !== "open" || latest.merged_at != null) {
+    finishSkip("pr_not_open", latest, latest.head?.sha ?? "", repoTriggerCount);
+    return;
+  }
   if (latest.head?.sha !== headSha || latest.draft === true) {
     finishSkip("head_changed_before_comment", latest, latest.head?.sha ?? "", repoTriggerCount);
     return;
   }
 
-  const created = await (await requestJson(
-    `/repos/${repository}/issues/${prNumber}/comments`,
-    {
-      method: "POST",
-      token,
-      body: { body: TRIGGER_BODY },
-    },
-  )).json();
+  const checkRunId = await createTriggerCheck(
+    repository,
+    prNumber,
+    headSha,
+    externalId,
+    checkToken,
+  );
+  let created;
+  try {
+    created = await (await requestJson(
+      `/repos/${repository}/issues/${prNumber}/comments`,
+      {
+        method: "POST",
+        token,
+        body: { body: TRIGGER_BODY },
+      },
+    )).json();
+  } catch (error) {
+    await completeTriggerCheck(
+      repository,
+      checkRunId,
+      "failure",
+      `触发评论发送失败；未宣称 Kody 已开始。PR #${prNumber}，Head \`${headSha}\`。`,
+      checkToken,
+    );
+    throw error;
+  }
+  await completeTriggerCheck(
+    repository,
+    checkRunId,
+    "success",
+    `已以 OrekiDawson 身份发送触发评论。PR #${prNumber}，Head \`${headSha}\`，评论 ${created.html_url}。Kody 审查结果仍需独立核验。`,
+    checkToken,
+  );
 
   writeOutput("kody_review_state", "trigger_posted");
   writeOutput("head_sha", headSha);
