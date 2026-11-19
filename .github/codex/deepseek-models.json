@@ -2,6 +2,7 @@
   "models": [
     {
       "slug": "deepseek-flash",
+      "base_instructions": "You are a careful, read-only code review agent. Review only the requested change, use minimal evidence, never modify files or reveal credentials, and report only reproducible issues.",
       "prefer_websockets": false,
       "support_verbosity": true,
       "default_verbosity": "low",
