@@ -157,11 +157,13 @@ jobs:
             --out "$review_dir/classification.json"
           jq --arg sha "$peer_sha" '. + {peerSha: $sha}' \
             "$review_dir/classification.json" > "$review_dir/classified.json"
-          echo "cross_repo=$(jq -r '.crossRepo' "$review_dir/classified.json")" >> "$GITHUB_OUTPUT"
-          echo "categories=$(jq -r '.categories | join(\",\")' "$review_dir/classified.json")" >> "$GITHUB_OUTPUT"
-          echo "peer_repo=$(jq -r '.peerRepo' "$review_dir/classified.json")" >> "$GITHUB_OUTPUT"
-          echo "peer_sha=$peer_sha" >> "$GITHUB_OUTPUT"
-          echo "classification_b64=$(base64 -w0 "$review_dir/classified.json")" >> "$GITHUB_OUTPUT"
+          {
+            echo "cross_repo=$(jq -r '.crossRepo' "$review_dir/classified.json")"
+            echo "categories=$(jq -r '.categories | join(\",\")' "$review_dir/classified.json")"
+            echo "peer_repo=$(jq -r '.peerRepo' "$review_dir/classified.json")"
+            echo "peer_sha=$peer_sha"
+            echo "classification_b64=$(base64 -w0 "$review_dir/classified.json")"
+          } >> "$GITHUB_OUTPUT"
 
   review:
     name: Codex + DeepSeek-Flash 只读审查

@@ -38,6 +38,8 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
 
     def test_review_workflow_is_isolated_and_read_only(self):
         self.assertTrue(REVIEW_WORKFLOW.exists())
+        self.assertTrue((ROOT / ".github/codex/deepseek-models.json").exists())
+        self.assertTrue((ROOT / ".github/codex/review-context.mjs").exists())
         body = REVIEW_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("pull_request_target:", body)
         self.assertNotIn("\n  pull_request:\n", body)
