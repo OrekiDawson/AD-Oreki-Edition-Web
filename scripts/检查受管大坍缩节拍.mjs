@@ -45,12 +45,13 @@ let bigCrunch = crunch111;
 let maxAMLog = 100;
 globalThis.player = {
   break: true,
-  auto: { bigCrunch },
+  auto: { autobuyersOn: true, bigCrunch },
   records: {
     gameCreatedTime: 111,
     thisInfinity: { realTime: 100, maxAM: { log10: () => maxAMLog } },
   },
 };
+globalThis.Autobuyer = { bigCrunch: { isUnlocked: true, isBought: false } };
 globalThis.OrekiSmartExecutor = { enabled: true, hostingIntervalMs: 1000 };
 let infinitiesToken = 0;
 globalThis.Currency = { infinities: { value: { toNumber: () => infinitiesToken } } };
@@ -467,6 +468,23 @@ check("页面刷新（内存态丢失）后仍按持久化记录写回原值", (
   globalThis.OrekiSmartExecutor.enabled = false;
   assert.strictEqual(M.releaseToPlayer(), true);
   assert.strictEqual(bigCrunch.time, 30, "不得把 3600 当原值");
+});
+
+check("持久化 mode 为 null 时按未知处理，不把 null 还原成 AMOUNT", () => {
+  reset({ time: 30 });
+  M.apply(60, "resume:x", 1);
+  const record = JSON.parse(storage.get(managedRecordKey(111)));
+  record.originalMode = 1;
+  record.writtenMode = null;
+  storage.set(managedRecordKey(111), JSON.stringify(record));
+  bigCrunch.mode = 0;
+  bigCrunch.time = 60;
+  M.resetForTest();
+  M.rotateSessionForTest();
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.strictEqual(M.releaseToPlayer(), true);
+  assert.strictEqual(bigCrunch.time, 30, "仍应恢复可确认的 time 原值");
+  assert.strictEqual(bigCrunch.mode, 0, "writtenMode=null 不得被 Number(null) 误判为 AMOUNT");
 });
 
 check("换档后不采用上一档的持久化原值", () => {

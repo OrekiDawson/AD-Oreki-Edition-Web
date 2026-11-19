@@ -30,9 +30,11 @@ import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { execSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
-const WORKSPACE = "/home/oreki/AD-Oreki-Unified";
-const REPO = WORKSPACE + "/web/AD-Oreki-Edition";
+const WORKSPACE = "/home/oreki/AD-Oreki-Edition";
+// Runner 可能位于任意隔离工作树；源码根必须由脚本位置解析，避免验证了另一分支。
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 
 // ── 参数解析 ───────────────────────────────────────────────────────────────
 function arg(name, def) {
@@ -455,7 +457,7 @@ const summary = {
     automation_interval_sec_at_birth: null,
     final_speed_factor: null,
     speed_ramps: null,
-    note: "oreki-game-speed 默认 10000×、动态升档默认开启；均为产品默认值，本轮不修改",
+    note: "oreki-game-speed 默认 3000×、动态升档默认开启；已有用户倍率优先",
   },
   events: [],
   firsts: {},

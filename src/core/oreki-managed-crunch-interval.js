@@ -2,7 +2,7 @@
 // [R96 / R116-02] 大坍缩「受管节拍」—— Web 侧（调度器托管 Tick 版）
 //
 // 与 Android OrekiStageAuto.writeManagedCrunchInterval() 的玩家可见语义等价：
-//   1. 只在 MOD 调度器的**托管 Tick** 上处理（与 1s / 5s / 玩家 1～60s 同步）；
+//   1. 只在 MOD 调度器的**托管 Tick** 上处理（严格采用玩家 1～60 秒配置）；
 //   2. 每个有效 Tick 读一次真实值 player.auto.bigCrunch.time 与当帧策略目标；
 //   3. 玩家手动改间隔后，本 Tick 保留其操作；下一次有效 Tick 写回最新目标一次；
 //   4. 实际值已等于目标 ⇒ 不写、不持久化（幂等，避免逐帧抖动）；
@@ -30,6 +30,7 @@ const STATE = {
   skips: 0,
   lastReason: "",
   lastValue: null,
+  lastMode: null,
   /** 上一帧策略是否 allow；用于识别 deny→allow 的一次性 release。 */
   lastDecisionAllow: null,
   /** 一次性 release 的保留截止时刻（ms）；0 = 无。 */
@@ -48,6 +49,9 @@ const STATE = {
    * 在两次托管写入之间手改过，则以玩家最新值为原值。
    */
   originalTime: null,
+  originalMode: null,
+  /** 最近一次托管写入后的真实运行标记；用于区分玩家改 mode 与原版 reset。 */
+  lastCrunchMarker: null,
   /** 原值所属存档身份；换档即失效。 */
   originalSaveId: null,
   /**
@@ -86,6 +90,24 @@ function readActualInterval() {
 
 function writeActualInterval(seconds) {
   player.auto.bigCrunch.time = seconds;
+}
+
+function readActualMode() {
+  try {
+    const mode = player && player.auto && player.auto.bigCrunch && player.auto.bigCrunch.mode;
+    return Number.isInteger(mode) ? mode : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeActualMode(mode) {
+  player.auto.bigCrunch.mode = mode;
+}
+
+function targetCrunchMode() {
+  const mode = Number(globalThis.AUTO_CRUNCH_MODE && globalThis.AUTO_CRUNCH_MODE.TIME);
+  return Number.isInteger(mode) ? mode : 1;
 }
 
 /**
@@ -182,6 +204,12 @@ function readPersistedManagedTime(saveId) {
     if (!parsed || typeof parsed !== "object") return null;
     const originalTime = Number(parsed.originalTime);
     const writtenTime = Number(parsed.writtenTime);
+    const originalMode = parsed.originalMode === null || parsed.originalMode === undefined
+      ? null
+      : Number(parsed.originalMode);
+    const writtenMode = parsed.writtenMode === null || parsed.writtenMode === undefined
+      ? null
+      : Number(parsed.writtenMode);
     const previousWrittenTime = Number(parsed.previousWrittenTime);
     const updatedAt = Number(parsed.updatedAt);
     if (!Number.isFinite(originalTime) || !Number.isFinite(writtenTime)) return null;
@@ -189,6 +217,8 @@ function readPersistedManagedTime(saveId) {
       saveId,
       originalTime,
       writtenTime,
+      originalMode: Number.isInteger(originalMode) ? originalMode : null,
+      writtenMode: Number.isInteger(writtenMode) ? writtenMode : null,
       previousWrittenTime: Number.isFinite(previousWrittenTime) ? previousWrittenTime : null,
       updatedAt: Number.isFinite(updatedAt) ? updatedAt : null,
       sessionId: typeof parsed.sessionId === "string" ? parsed.sessionId : null,
@@ -228,13 +258,22 @@ function clearReleaseWindow() {
  * 只认最近一次与紧邻上一次（上一拍仅限 15 秒落盘窗口内）；不把 5/60/3600
  * 这类玩家可选值长期纳入匹配，避免把玩家手设值误判为托管值。
  */
-function persistedContainsManagedValue(persisted, seconds, { includePrevious = true, now = Date.now() } = {}) {
+function persistedContainsManagedTime(
+  persisted,
+  seconds,
+  { includePrevious = true, now = Date.now() } = {},
+) {
   if (!persisted || !Number.isFinite(seconds)) return false;
   if (sameInterval(persisted.writtenTime, seconds)) return true;
   if (!includePrevious || !Number.isFinite(persisted.previousWrittenTime)) return false;
   if (!Number.isFinite(persisted.updatedAt) ||
       now - persisted.updatedAt > PREVIOUS_WRITE_MATCH_WINDOW_MS) return false;
   return sameInterval(persisted.previousWrittenTime, seconds);
+}
+
+function persistedContainsManagedMode(persisted, mode) {
+  return Boolean(persisted && Number.isInteger(mode) &&
+    Number.isInteger(persisted.writtenMode) && persisted.writtenMode === mode);
 }
 
 function hostingIntervalMs() {
@@ -250,6 +289,21 @@ function hostingIntervalMs() {
 function isPelleDoomed() {
   try {
     return typeof Pelle !== "undefined" && Pelle && Pelle.isDoomed === true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function isManagedContextOpen() {
+  try {
+    const executor = globalThis.OrekiSmartExecutor;
+    if (executor && executor.enabled === false) return false;
+    if (typeof player === "undefined" || !player || !player.auto ||
+        player.auto.autobuyersOn !== true) return false;
+    const sprint = globalThis.OrekiIu15Sprint;
+    if (sprint && sprint.active === true) return false;
+    const crunch = globalThis.Autobuyer && globalThis.Autobuyer.bigCrunch;
+    return Boolean(crunch && (crunch.isUnlocked === true || crunch.isBought === true));
   } catch (e) {
     return false;
   }
@@ -291,36 +345,58 @@ export class OrekiManagedCrunchInterval {
     } catch (e) {
       return false;
     }
+    if (!isManagedContextOpen()) return false;
     const resolvedTick = resolveTick(tick);
     if (resolvedTick === null) return false;
     if (resolvedTick === STATE.lastTick) return false;
     const actual = readActualInterval();
     if (actual === null) return false;
+    const actualMode = readActualMode();
+    if (actualMode === null) return false;
+    const desiredMode = targetCrunchMode();
     const saveId = readSaveId();
     STATE.lastTick = resolvedTick;
-    // 相等则不写、不持久化（幂等）。
-    if (sameInterval(actual, desiredSeconds)) {
+    // 调度策略是受管 mode/time 的唯一权威来源；两项都相等时保持幂等。
+    if (sameInterval(actual, desiredSeconds) && actualMode === desiredMode) {
       STATE.skips += 1;
       return false;
     }
     // 首次写入前记录玩家原值；换档或玩家在两次写入之间手改过时同步刷新。
     // 合并为一个条件，避免两处重复赋值后续漏改。
     const originalFresh = STATE.originalTime === null || STATE.originalSaveId !== saveId;
-    const playerEdited = STATE.lastValue !== null && !sameInterval(actual, STATE.lastValue);
-    if (originalFresh || playerEdited) {
+    const timeEdited = STATE.lastValue !== null && !sameInterval(actual, STATE.lastValue);
+    const modeEdited = STATE.lastMode !== null && actualMode !== STATE.lastMode;
+    if (originalFresh) {
       // 页面刷新/重开后内存态丢失：只有持久化记录来自上一次会话、当前值仍是
       // 最近/紧邻上一次托管写出值，且原值与写出值不同，才复用它。
       const persistedBefore = originalFresh ? readPersistedManagedTime(saveId) : null;
-      const persistedUsable = originalFresh && saveId !== null &&
+      const persistedBaseUsable = saveId !== null &&
         persistedBefore !== null &&
         (persistedBefore.sessionId !== MANAGED_TIME_SESSION_ID ||
-          STATE.originalSaveId !== saveId) &&
+          STATE.originalSaveId !== saveId);
+      const timeRecordUsable = persistedBaseUsable &&
         !sameInterval(persistedBefore.originalTime, persistedBefore.writtenTime) &&
-        persistedContainsManagedValue(persistedBefore, actual);
-      STATE.originalTime = persistedUsable ? persistedBefore.originalTime : actual;
+        persistedContainsManagedTime(persistedBefore, actual);
+      const modeRecordUsable = persistedBaseUsable &&
+        persistedBefore.originalMode !== null &&
+        persistedContainsManagedMode(persistedBefore, actualMode);
+      STATE.originalTime = timeRecordUsable ? persistedBefore.originalTime : actual;
+      STATE.originalMode = modeRecordUsable
+        ? persistedBefore.originalMode
+        : actualMode;
       STATE.originalSaveId = saveId;
+    } else {
+      // mode 与 time 分别记录原值。原版 Eternal reset 可能只重置 mode，
+      // 不能因此把仍受管的 time 误当作玩家新原值。
+      if (timeEdited) STATE.originalTime = actual;
+      const resetSinceManagedWrite = crunchConsumedSince(
+        STATE.lastCrunchMarker,
+        readCrunchMarker(),
+      );
+      if (modeEdited && !resetSinceManagedWrite) STATE.originalMode = actualMode;
     }
-    writeActualInterval(desiredSeconds);
+    if (actualMode !== desiredMode) writeActualMode(desiredMode);
+    if (!sameInterval(actual, desiredSeconds)) writeActualInterval(desiredSeconds);
     STATE.released = false;
     STATE.releasedSaveId = null;
     if (saveId !== null) {
@@ -331,6 +407,8 @@ export class OrekiManagedCrunchInterval {
         saveId,
         originalTime: STATE.originalTime,
         writtenTime: desiredSeconds,
+        originalMode: STATE.originalMode,
+        writtenMode: desiredMode,
         previousWrittenTime: previous !== null ? previous.writtenTime : null,
         updatedAt: Date.now(),
         sessionId: MANAGED_TIME_SESSION_ID,
@@ -339,8 +417,11 @@ export class OrekiManagedCrunchInterval {
     STATE.writes += 1;
     STATE.lastReason = reason;
     STATE.lastValue = desiredSeconds;
+    STATE.lastMode = desiredMode;
+    STATE.lastCrunchMarker = readCrunchMarker();
     console.info(
-      `[OrekiCrunchInterval] tick=${resolvedTick} managed interval ${actual} -> ${desiredSeconds} (${reason})`
+      `[OrekiCrunchInterval] tick=${resolvedTick} managed mode ${actualMode} -> ${desiredMode} ` +
+        `interval ${actual} -> ${desiredSeconds} (${reason})`
     );
     return true;
   }
@@ -368,48 +449,95 @@ export class OrekiManagedCrunchInterval {
       STATE.releasedSaveId = null;
       return false;
     }
+    const actualMode = readActualMode();
+    if (actualMode === null) {
+      STATE.lastTick = 0;
+      STATE.released = false;
+      STATE.releasedSaveId = null;
+      return false;
+    }
     const persisted = readPersistedManagedTime(saveId);
     const persistedUsable = persisted !== null && saveId !== null &&
       (persisted.sessionId !== MANAGED_TIME_SESSION_ID ||
         STATE.originalSaveId !== saveId);
     const inMemorySave = STATE.originalSaveId === null || saveId === null ||
       STATE.originalSaveId === saveId;
-    const persistedHit = persistedUsable &&
-      persistedContainsManagedValue(persisted, actual);
+    const persistedTimeHit = persistedUsable &&
+      persistedContainsManagedTime(persisted, actual);
+    const persistedModeHit = persistedUsable &&
+      persistedContainsManagedMode(persisted, actualMode);
     // 内存 lastValue 只在同一存档内有效；换档后必须用目标档的持久化写出值，
     // 否则会把上一档的 lastValue 与当前档 actual 比较，误判玩家手改。
     const lastValue = inMemorySave && STATE.lastValue !== null
       ? STATE.lastValue
-      : (persistedHit ? actual : null);
+      : (persistedTimeHit ? actual : null);
+    const lastMode = inMemorySave && STATE.lastMode !== null
+      ? STATE.lastMode
+      : (persistedModeHit ? persisted.writtenMode : null);
     const original = inMemorySave && STATE.originalTime !== null
       ? STATE.originalTime
-      : (persistedUsable ? persisted.originalTime : null);
+      : (persistedTimeHit ? persisted.originalTime : null);
+    const originalMode = inMemorySave && STATE.originalMode !== null
+      ? STATE.originalMode
+      : (persistedModeHit ? persisted.originalMode : null);
     const sameSave = inMemorySave || persistedUsable;
-    const changed = sameSave && lastValue !== null && original !== null &&
+    const changedTime = sameSave && lastValue !== null && original !== null &&
       !sameInterval(lastValue, original);
+    const changedMode = sameSave && lastMode !== null && originalMode !== null &&
+      lastMode !== originalMode;
+    const changed = changedTime || changedMode;
 
     // 玩家在最后一次托管写入后手改过 ⇒ 尊重玩家，确认无需写回后再清理。
-    if (lastValue !== null && !sameInterval(actual, lastValue)) {
+    const timeOverridden = lastValue !== null && !sameInterval(actual, lastValue);
+    const modeOverridden = lastMode !== null && actualMode !== lastMode;
+    if (timeOverridden || modeOverridden) {
+      let wrote = false;
+      try {
+        if (!timeOverridden && changedTime) {
+          writeActualInterval(original);
+          wrote = true;
+        }
+        if (!modeOverridden && changedMode) {
+          writeActualMode(originalMode);
+          wrote = true;
+        }
+      } catch (e) {
+        STATE.lastTick = 0;
+        STATE.released = false;
+        return false;
+      }
       STATE.lastTick = 0;
       STATE.originalTime = null;
+      STATE.originalMode = null;
+      STATE.lastCrunchMarker = null;
       STATE.originalSaveId = null;
       STATE.lastValue = null;
+      STATE.lastMode = null;
       STATE.released = true;
       STATE.releasedSaveId = saveId;
       clearPersistedManagedTime(saveId);
       console.info(
-        `[OrekiCrunchInterval] mod-off restore skipped: player override ${actual} != ${lastValue}`
+        `[OrekiCrunchInterval] mod-off partial restore ` +
+          `timeOverride=${timeOverridden} modeOverride=${modeOverridden} wrote=${wrote}`
       );
-      return false;
+      return wrote;
     }
 
     if (!changed) {
       // 没有可写回的原值（从未托管 / 原值等于写出值）：确认后才清记录。
-      const persistedMismatch = persistedUsable && !persistedHit;
+      const timeTracked = persistedUsable &&
+        Number.isFinite(persisted.originalTime) && Number.isFinite(persisted.writtenTime);
+      const modeTracked = persistedUsable &&
+        Number.isInteger(persisted.originalMode) && Number.isInteger(persisted.writtenMode);
+      const persistedMismatch = (timeTracked && !persistedTimeHit) ||
+        (modeTracked && !persistedModeHit);
       STATE.lastTick = 0;
       STATE.originalTime = null;
+      STATE.originalMode = null;
+      STATE.lastCrunchMarker = null;
       STATE.originalSaveId = null;
       STATE.lastValue = null;
+      STATE.lastMode = null;
       STATE.released = true;
       STATE.releasedSaveId = saveId;
       clearPersistedManagedTime(saveId);
@@ -423,7 +551,8 @@ export class OrekiManagedCrunchInterval {
 
     // 真正写回；写失败时保留原值/记录并允许下一帧重试，绝不先清空。
     try {
-      writeActualInterval(original);
+      if (changedMode) writeActualMode(originalMode);
+      if (changedTime) writeActualInterval(original);
     } catch (e) {
       STATE.lastTick = 0;
       STATE.released = false;
@@ -432,13 +561,17 @@ export class OrekiManagedCrunchInterval {
     }
     STATE.lastTick = 0;
     STATE.originalTime = null;
+    STATE.originalMode = null;
+    STATE.lastCrunchMarker = null;
     STATE.originalSaveId = null;
     STATE.lastValue = null;
+    STATE.lastMode = null;
     STATE.released = true;
     STATE.releasedSaveId = saveId;
     clearPersistedManagedTime(saveId);
     console.info(
-      `[OrekiCrunchInterval] mod-off restore managed interval ${lastValue} -> ${original}`
+      `[OrekiCrunchInterval] mod-off restore managed mode ${lastMode} -> ${originalMode}, ` +
+        `interval ${lastValue} -> ${original}`
     );
     return true;
   }
@@ -461,6 +594,7 @@ export class OrekiManagedCrunchInterval {
     } catch (e) {
       return false;
     }
+    if (!isManagedContextOpen()) return false;
     // [R97] 允许调用方传入本帧**唯一**一次 OrekiCrunchPolicy.decide() 的结果：
     // decide() 内部会推进坍缩等待计时，同一帧重复调用可能得出不同结论。
     if (!decision) {
@@ -478,8 +612,11 @@ export class OrekiManagedCrunchInterval {
     if (STATE.saveId !== null && saveId !== null && saveId !== STATE.saveId) {
       clearReleaseWindow();
       STATE.originalTime = null;
+      STATE.originalMode = null;
+      STATE.lastCrunchMarker = null;
       STATE.originalSaveId = null;
       STATE.lastValue = null;
+      STATE.lastMode = null;
       STATE.released = false;
       STATE.releasedSaveId = null;
     }
@@ -554,6 +691,7 @@ export class OrekiManagedCrunchInterval {
     return {
       lastTick: STATE.lastTick,
       lastValue: STATE.lastValue,
+      lastMode: STATE.lastMode,
       writes: STATE.writes,
       skips: STATE.skips,
       lastReason: STATE.lastReason,
@@ -573,9 +711,12 @@ export class OrekiManagedCrunchInterval {
     STATE.skips = 0;
     STATE.lastReason = "";
     STATE.lastValue = null;
+    STATE.lastMode = null;
     clearReleaseWindow();
     STATE.saveId = null;
     STATE.originalTime = null;
+    STATE.originalMode = null;
+    STATE.lastCrunchMarker = null;
     STATE.originalSaveId = null;
     STATE.released = false;
     STATE.releasedSaveId = null;

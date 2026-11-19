@@ -1098,7 +1098,7 @@ export function gameLoop(passDiff, options = {}) {
   // ── [R96/R97 → R116-02] 受管自动购买器统一由调度器托管 Tick 管理（**不**进 runCycle）──
   // 归属 §80.2 / §81 + R116-02 §28：这是目标驱动型智能自动购买器的配置优化路径，
   // 不占用 runCycle 的动作名额，也不单独计时；但**只在调度器的托管 Tick 上处理一次**，
-  // 与 1s / 5s / 玩家 1～60s / 阶段上限同步（OrekiSmartExecutor.hostingTick()）。
+  // 与玩家配置的 1～60 秒周期严格同步（OrekiSmartExecutor.hostingTick()）。
   //   · 大坍缩间隔：同 Tick 读真实值，玩家手改后下一次有效 Tick 写回最新策略目标；
   //   · 自动器启停/模式/阈值：同 Tick 按当前阶段目标恢复，总开关关闭即整体让路。
   // `OrekiCrunchPolicy.decide()` 内部会推进等待计时，**本帧只算一次**并同时喂给
@@ -1114,7 +1114,7 @@ export function gameLoop(passDiff, options = {}) {
     }
   }
   // [R116-02] 本帧只推进/读取一次托管 Tick，两个受管模块共用同一序号：
-  // 同一 Tick 只处理一次，1s/5s/动态配置与阶段上限自动同步。
+  // 同一 Tick 只处理一次，配置周期变化后下一窗口直接采用新值。
   let orekiHostingTick = null;
   try {
     orekiHostingTick = OrekiSmartExecutor.hostingTick();

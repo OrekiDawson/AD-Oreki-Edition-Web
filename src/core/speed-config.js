@@ -29,7 +29,7 @@ function target_player() {
   return (typeof window !== "undefined" && window.player) ? window.player : null;
 }
 
-export const GAME_SPEED_DEFAULT = 10000;
+export const GAME_SPEED_DEFAULT = 3000;
 export const GAME_SPEED_MIN = 1;
 /**
  * 上限的技术依据：
@@ -38,7 +38,7 @@ export const GAME_SPEED_MIN = 1;
  *   真正的限制来自「离散机制」：自动购买器/Automator 每帧只 tick 一次，
  *   倍率越高，其相对游戏时间的触发频率越低；离线模拟的 tick 数按真实秒数固定，
  *   倍率越高，单 tick 覆盖的游戏时间越长，精度越差。
- * - 100000× 是默认值 10000× 的 10 倍余量，仍在可玩范围内；
+ * - 100000× 是默认值 3000× 的约 33 倍余量，仍在可玩范围内；
  *   再往上收益递减且会明显失真，因此硬性钳制在 1e5。
  */
 export const GAME_SPEED_MAX = 100000;
@@ -55,7 +55,7 @@ export function parseSpeedFactor(input) {
 
   // 只接受普通十进制写法，显式拒绝 Infinity / NaN / 科学计数法误用
   if (!/^[+-]?(\d+(\.\d*)?|\.\d+)$/u.test(text)) {
-    return { ok: false, value: GAME_SPEED_DEFAULT, message: "格式无效：请输入普通数字，例如 10000" };
+    return { ok: false, value: GAME_SPEED_DEFAULT, message: "格式无效：请输入普通数字，例如 3000" };
   }
   const value = Number(text);
   if (!Number.isFinite(value)) {
@@ -200,6 +200,17 @@ export const GameSpeed = {
     try {
       const p = target_player();
       if (!p) return false;
+      // 首次现实前仍处于离散的无限/永恒成长链，调度动作与自动器 tick 对倍率非常敏感；
+      // 此阶段统一保持用户设定倍率，不把“IP 尚未跳变”误当成挂机停滞。真实 Reality
+      // 结算后才允许动态升档。不能使用 eternities：新档该字段存在内部初值，且 Reality
+      // 会清零；EP 也会被升级消费，三者都不能稳定表示“首次现实已经发生”。
+      const positive = v => {
+        if (typeof v === "number") return v > 0;
+        if (v && typeof v.gt === "function") return v.gt(0);
+        if (v && typeof v.toNumber === "function") return v.toNumber() > 0;
+        return false;
+      };
+      if (!positive(p.realities)) return false;
       // 用 0.01 数量级的分辨率做指纹：只看 exponent 取整会把「同一数量级内的真实增长」
       // 误判成停滞（例如 1.2e100 → 4.8e100）。尾数信息一起纳入，既不漏判也不过敏。
       const ex = v => {
@@ -211,7 +222,9 @@ export const GameSpeed = {
       };
       signal = [
         ex(p.infinities), ex(p.infinityPoints), ex(p.eternities), ex(p.realities),
-        ex(p.records.thisEternity.maxAM), p.dimensionBoosts, p.galaxies,
+        ex(p.records.thisInfinity?.maxAM), ex(p.records.thisEternity?.maxAM),
+        ex(p.records.thisReality?.maxAM), ex(p.records.totalAntimatter),
+        ex(p.timestudy?.theorem), p.dimensionBoosts, p.galaxies,
         p.break ? 1 : 0,
       ].join("|");
     } catch (e) { return false; }
@@ -279,9 +292,9 @@ export const GameSpeed = {
  *
  * 【Mod 定制 · 2026-10-27】上游 ADfaster 在 `public/index.html:6` 让
  * `getGlobalSpeedFactor()` 在 Pelle 毁灭现实中返回 `sqrt(f)`，本 Mod 早期沿用。
- * 后果是：默认 10000× 下，毁灭现实只剩 100×，整条终局拉伸慢 100 倍；
+ * 后果是：旧默认 10000× 下，毁灭现实只剩 100×，整条终局拉伸慢 100 倍；
  * 且与本 Mod 的 Android 端（`OrekiSpeed.mult()` 无 isDoomed 分支，恒为全额）
- * 形成跨端不一致（Web 100× vs Android 10000×）。
+ * 形成跨端不一致（Web 100× vs Android 全额）。
  *
  * 按《Oreki 爽玩优先标准》——缩短现实通关时间优先、两端规则一致——
  * 这里取消开平方，毁灭现实与其余阶段同用全额倍率。

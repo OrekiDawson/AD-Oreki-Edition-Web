@@ -27,7 +27,7 @@ export default {
       automatorLogSize: 0,
       speedFactor: GameSpeed.factor,
       speedInput: String(GameSpeed.factor),
-      speedPresets: [1, 10, 100, 1000, 10000, 100000],
+      speedPresets: [1, 10, 100, 1000, 3000, 10000, 100000],
       // 直接读 GameSpeed 的开关状态，不另设一份存档/本地状态
       scaleAutobuyerInterval: GameSpeed.scaleAutobuyerInterval,
       scaleTickspeedAutobuyerInterval: GameSpeed.scaleTickspeedAutobuyerInterval,

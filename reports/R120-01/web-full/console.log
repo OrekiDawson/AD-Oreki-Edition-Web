@@ -1,0 +1,512 @@
+[2026-11-19T10:28:16.333Z][log] 🌌 Antimatter Dimensions: Reality Update 🌌
+[2026-11-19T10:28:16.444Z][info] [OREKI_CRUNCH_DEC] allow=true reason=pre-infinity
+[2026-11-19T10:28:16.444Z][info] [OrekiCrunchInterval] pending release reason=pre-infinity holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:28:16.445Z][info] [OrekiCrunchInterval] tick=1 managed interval 1 -> 60 (resume:pre-infinity)
+[2026-11-19T10:28:17.201Z][requestfailed] requestfailed http://127.0.0.1:34245/public/images/stars-bg.webm :: net::ERR_ABORTED
+[2026-11-19T10:28:17.201Z][requestfailed] requestfailed http://127.0.0.1:34245/public/images/realityanimbg.webm :: net::ERR_ABORTED
+[2026-11-19T10:28:17.624Z][log] 🌌 Antimatter Dimensions: Reality Update 🌌
+[2026-11-19T10:28:17.695Z][info] [OREKI_CRUNCH_DEC] allow=true reason=pre-infinity
+[2026-11-19T10:28:17.695Z][info] [OrekiCrunchInterval] pending release reason=pre-infinity holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:28:17.696Z][info] [OrekiCrunchInterval] tick=1 managed interval 1 -> 60 (resume:pre-infinity)
+[2026-11-19T10:28:22.825Z][info] [OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip
+[2026-11-19T10:28:29.987Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:28:30.976Z][info] [OrekiCrunchInterval] tick=14 managed interval 60 -> 5 (resume:ip-jump)
+[2026-11-19T10:28:31.306Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:28:32.000Z][info] [OrekiCrunchInterval] tick=15 managed interval 5 -> 3600 (pause:id-peak-wait)
+[2026-11-19T10:28:32.666Z][requestfailed] requestfailed http://127.0.0.1:34245/public/images/stars-bg.webm :: net::ERR_ABORTED
+[2026-11-19T10:28:32.666Z][requestfailed] requestfailed http://127.0.0.1:34245/public/images/realityanimbg.webm :: net::ERR_ABORTED
+[2026-11-19T10:28:35.129Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:28:35.135Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:28:40.376Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:28:40.382Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:28:44.732Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:28:44.738Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:28:49.517Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:28:49.523Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:28:56.876Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:28:56.883Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:03.608Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:03.616Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:09.548Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:09.554Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:15.884Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:15.890Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:20.141Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:20.147Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:30.107Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:30.113Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:36.509Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-19T10:29:36.515Z][info] [OrekiCrunchInterval] pending release reason=id-peak-reached holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:29:37.472Z][info] [OrekiCrunchInterval] tick=79 managed interval 3600 -> 5 (resume:id-peak-reached)
+[2026-11-19T10:29:37.499Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:37.532Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:37.532Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:38.496Z][info] [OrekiCrunchInterval] tick=80 managed interval 5 -> 3600 (pause:id-peak-wait)
+[2026-11-19T10:29:38.753Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:38.753Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:40.370Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-19T10:29:40.378Z][info] [OrekiCrunchInterval] pending release reason=id-peak-reached holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:29:40.542Z][info] [OrekiCrunchInterval] tick=82 managed interval 3600 -> 5 (resume:id-peak-reached)
+[2026-11-19T10:29:41.591Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:41.624Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:41.625Z][info] [OREKI_CRUNCH_DEC] allow=true reason=id-peak-reached
+[2026-11-19T10:29:41.631Z][info] [OrekiCrunchInterval] pending release reason=id-peak-reached holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:29:45.683Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:45.716Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:45.717Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:45.749Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:45.749Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:45.848Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:45.849Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:46.178Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:46.178Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:46.680Z][info] [OrekiCrunchInterval] tick=88 managed interval 5 -> 3600 (pause:id-peak-wait)
+[2026-11-19T10:29:47.201Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:47.201Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:49.313Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:49.313Z][info] [OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait
+[2026-11-19T10:29:49.808Z][info] [OREKI_CRUNCH_DEC] allow=true reason=ip-jump
+[2026-11-19T10:29:49.808Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ready
+[2026-11-19T10:29:49.815Z][info] [OrekiCrunchInterval] pending release reason=eternity-ready holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:29:50.772Z][info] [OrekiCrunchInterval] tick=92 managed interval 3600 -> 5 (resume:eternity-ready)
+[2026-11-19T10:29:50.807Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:51.729Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:51.795Z][info] [OrekiCrunchInterval] tick=93 managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-19T10:29:51.795Z][info] [OREKI_MANAGED_AUTO] key=ipmult tick=93 event=isActive-restored target=true
+[2026-11-19T10:29:52.256Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:52.257Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:29:52.487Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:53.207Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:53.214Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:29:53.643Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:54.857Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:54.864Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:54.891Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:54.899Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:29:54.956Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:54.989Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:54.989Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:55.022Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:55.023Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:55.055Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:55.056Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:55.121Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:55.122Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:55.220Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:55.220Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:55.352Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:55.353Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:55.484Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:55.487Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:55.649Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:55.651Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:55.847Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:55.854Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:29:55.887Z][info] [OrekiCrunchInterval] tick=97 managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-19T10:29:55.953Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:56.309Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:56.311Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:56.705Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:56.706Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:56.910Z][info] [OrekiCrunchInterval] tick=98 managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-19T10:29:57.134Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:57.134Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:57.596Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:57.596Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:58.299Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:58.299Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:58.784Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:58.791Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:29:58.956Z][info] [OrekiCrunchInterval] tick=100 managed interval 60 -> 5 (resume:eternity-ip-jump)
+[2026-11-19T10:29:59.016Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.048Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.048Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.082Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.082Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.114Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.114Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.147Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.147Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.180Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.181Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.246Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.246Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.312Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.312Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.411Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.411Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.543Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.543Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.675Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.675Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.840Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:29:59.840Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:29:59.979Z][info] [OrekiCrunchInterval] tick=101 managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-19T10:30:00.011Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:00.023Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:00.080Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:00.104Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:00.113Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:00.147Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:00.170Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:00.171Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:00.203Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:00.203Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:00.269Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:00.270Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:00.401Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:00.402Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:00.566Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:00.566Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:00.797Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:00.797Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:01.226Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:01.226Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:01.721Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:01.721Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:02.084Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:02.085Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.107Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.118Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:03.141Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.173Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.174Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.206Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.207Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.239Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.240Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.272Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.273Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.338Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.339Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.404Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.405Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.503Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.504Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.635Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.636Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.800Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.801Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:03.998Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:03.999Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:04.073Z][info] [OrekiCrunchInterval] tick=105 managed interval 60 -> 5 (release-pending:eternity-grow)
+[2026-11-19T10:30:06.119Z][info] [OrekiCrunchInterval] tick=107 managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-19T10:30:06.176Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:06.177Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.199Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.209Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:07.266Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.300Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.302Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.331Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.332Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.364Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.365Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.397Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.399Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.430Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.431Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.496Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.498Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.562Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.563Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.661Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.662Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.760Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.761Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:07.892Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:07.893Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:08.024Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:08.025Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:08.190Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:08.199Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:08.330Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:08.354Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:08.355Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:08.387Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:08.387Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:08.453Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:08.453Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:08.552Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:08.553Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:08.684Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:08.685Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:08.849Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:08.849Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:09.080Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:09.080Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:09.509Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:09.510Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:10.004Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:10.005Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:10.268Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:10.269Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.291Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.301Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:11.325Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.357Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.358Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.390Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.391Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.423Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.424Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.456Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.457Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.489Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.490Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.555Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.556Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.621Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.622Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.720Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.721Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.852Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.853Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:11.984Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:11.985Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:12.149Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:12.150Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:12.258Z][info] [OrekiCrunchInterval] tick=113 managed interval 60 -> 5 (release-pending:eternity-grow)
+[2026-11-19T10:30:14.030Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:14.031Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:14.303Z][info] [OrekiCrunchInterval] tick=115 managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-19T10:30:14.360Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:14.361Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.383Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.393Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.417Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.426Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:15.515Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.553Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.554Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.581Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.582Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.614Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.615Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.647Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.648Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.680Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.681Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.746Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.747Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.818Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.818Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:15.911Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:15.912Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.010Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.011Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.142Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.144Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.274Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.275Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.350Z][info] [OrekiCrunchInterval] tick=117 managed interval 60 -> 5 (release-pending:eternity-grow)
+[2026-11-19T10:30:16.374Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.391Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:16.450Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.473Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.483Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.505Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.506Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.538Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.539Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.571Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.572Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.605Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.607Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.637Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.638Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.670Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.671Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.707Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.707Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.769Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.770Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.835Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.836Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:16.901Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:16.902Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:17.000Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:17.001Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:17.099Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:17.100Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:17.231Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:17.232Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:17.363Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:17.364Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:17.374Z][info] [OrekiCrunchInterval] tick=118 managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-19T10:30:17.495Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:17.496Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:17.627Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:17.628Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:17.792Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:17.793Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:17.957Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:17.958Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:18.155Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:18.158Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:18.386Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:18.387Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:18.452Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:18.453Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.475Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.486Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:19.518Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.542Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.551Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:19.574Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.607Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.608Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.640Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.641Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.673Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.674Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.712Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.712Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.739Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.744Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.772Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.773Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.805Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.806Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.838Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.839Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.904Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.910Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:19.971Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:19.972Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.036Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.037Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.135Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.136Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.234Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.235Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.366Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.368Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.499Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.506Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.531Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.532Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.564Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.565Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.597Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.600Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.631Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.632Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.663Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.664Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.696Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.697Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.764Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.765Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.828Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.829Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:20.930Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:20.930Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:21.026Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:21.027Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:21.158Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:21.159Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:21.296Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:21.296Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:21.422Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:21.423Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:21.554Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:21.555Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:21.686Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:21.691Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:21.856Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:21.856Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:22.049Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:22.050Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:22.280Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:22.282Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:22.544Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:22.545Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.567Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.578Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:23.675Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.701Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.711Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:23.732Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.765Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.766Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.798Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.799Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.831Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.832Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.864Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.865Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.897Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.898Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.930Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.931Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.966Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.968Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:23.999Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:23.999Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.062Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.063Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.128Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.129Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.227Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.228Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.326Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.327Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.458Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.460Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.557Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-19T10:30:24.590Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.591Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-19T10:30:24.623Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.634Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.656Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.670Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:24.733Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.788Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.790Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.821Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.823Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.854Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.855Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.887Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.888Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.920Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.921Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.953Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.954Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:24.986Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:24.987Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.019Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.021Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.052Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.053Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.119Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.121Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.184Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.185Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.250Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.251Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.349Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.350Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.449Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.450Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.580Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.582Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.712Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.716Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.844Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.845Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:25.976Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:25.977Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:26.108Z][info] [OREKI_CRUNCH_DEC] allow=true reason=eternity-ip-jump
+[2026-11-19T10:30:26.109Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:26.274Z][info] [OREKI_CRUNCH_DEC] allow=false reason=eternity-grow
+[2026-11-19T10:30:27.702Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:36.833Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-19T10:30:36.877Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:37.833Z][info] [OrekiCrunchInterval] tick=138 managed interval 60 -> 5 (release-pending:eternity-grow)
+[2026-11-19T10:30:39.879Z][info] [OrekiCrunchInterval] tick=140 managed interval 5 -> 60 (pause:eternity-grow)
+[2026-11-19T10:30:50.133Z][info] [OREKI_CRUNCH_DEC] allow=false reason=ep-high-grow
+[2026-11-19T10:30:50.176Z][info] [OrekiCrunchInterval] pending release reason=eternity-ip-jump holdMs=2000 tickIntervalMs=1000
+[2026-11-19T10:30:56.279Z][runner] 日志限流：省略 339 条重复/超量 console 行（前缀计数见 summary）
+[2026-11-19T10:30:56.279Z][runner] 日志限流：省略 339 条重复/超量 console 行（前缀计数见 summary）
