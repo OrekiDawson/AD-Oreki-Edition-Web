@@ -4,6 +4,7 @@ Kodus Cloud is an external hosted GitHub App: its reviews do not run in this
 repository's Actions. The single internal-PR Codex/DeepSeek review workflow is
 read-only and non-blocking; legacy triage entrypoints must not return.
 """
+import json
 import unittest
 from pathlib import Path
 
@@ -96,6 +97,10 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         review_token_steps = body.split("- name: 生成 Pull Request Review 写令牌", 1)[1]
         self.assertIn("OREKI_AUDIT_APP_PRIVATE_KEY", review_token_steps)
         self.assertNotIn("OREKI_AUDIT_QUOTA_APP_PRIVATE_KEY", review_token_steps)
+        models = json.loads(
+            (ROOT / ".github/codex/deepseek-models.json").read_text(encoding="utf-8"))
+        flash = next(model for model in models["models"] if model["slug"] == "deepseek-flash")
+        self.assertGreaterEqual(flash["truncation_policy"]["limit"], 65536)
         self.assertIn("fetch-depth: 0", body)
         self.assertIn("minuteOfDay >= 50", body)
 
