@@ -85,7 +85,7 @@ const STALL_REPORT_MS = 60000;
 // ── [Oreki R50 web · 九修] 用户可配的统一调度节拍 ─────────────────────────────
 //
 // 用户令（2026-11-01）：所有由 mod 主动发起的自动操作必须经过**同一个调度器**，
-// 任意两次「实际执行」之间至少要隔用户配置的秒数（1~60，默认 3），
+// 任意两次「实际执行」之间至少要隔用户配置的秒数（1~60，默认 10），
 // 开关可独立关闭且必须持久化。原版 tick 与原版自带自动购买器不在限制范围内。
 //
 // 为什么做在 execute 层而不是新开一个 scheduler：本文件已经是全仓唯一的
@@ -296,7 +296,7 @@ const STATE = {
   degradedStops: 0,
   enabled: readStoredAutomation().enabled,
   /**
-   * [Oreki R50 web · 九修] 用户可配的调度间隔（秒，1~60，默认 3）。
+   * [Oreki R50 web · 九修] 用户可配的调度间隔（秒，1~60，默认 10）。
    * 语义：**任意两次实际执行之间**至少隔这么久；只在「真的发出动作」时推进节拍，
    * 没有动作的帧不消耗间隔（否则会白等一拍）。
    */
@@ -867,61 +867,9 @@ function nowMs() {
   return Date.now();
 }
 
-/**
- * [R107-01 P1] **阶段化节拍上限**（只约束 MOD 自动化，不动玩家配置/UI/游戏结算）。
- *
- * 依据（Android 同源实测，2026-11-14）：
- *   · 默认 10 s 节拍下，首个 reality 约 42 分钟；玩家把间隔调到 1 s 时约 14.6 分钟；
- *   · Web 旧默认 3 s（R50）曾 739.6 s 通关，R85 把默认改到 10 s 后同样显著变慢；
- *   · MOD 自动化在**前中期**（现实数少）需要更高的购买/结算频率，
- *     而后期的策略决策并不需要同样高的频率（每拍动作数受同帧唯一动作限制）。
- *
- * 语义：`effectiveInterval = min(玩家配置 intervalSec, stageCap(realities))`。
- *   · 玩家配置仍是**上限**（配置 1 s 时不会被拉长；配置 60 s 时阶段上限仍可缩短）；
- *   · 只改本调度器的判定与面板倒计时，**不写 player 字段、不改 UI 输入值/存储值**；
- *   · 不改变任何游戏结算、资源产出或原版自动购买器（它们不经过本调度器）；
- *   · 读不到 `player.realities`（Node 夹具/初始化中）时返回 Infinity，保持旧行为。
- *
- * 分档（可微调；依据是 Reality 的层阶与 R50/R107 实测的成长节奏）：
- *   · realities == 0      → 1 s：首无限→首永恒→首现实，最需要高频；
- *   · 1 ~ 9               → 2 s：现实奖励/升级重复期，仍高频；
- *   · 10 ~ 49             → 3 s：现实树/天神期，动作间隔可放宽；
- *   · >= 50               → 5 s：后期内容（Laitela/Pelle），策略决策为主。
- */
-const STAGE_BEAT_CAPS = [
-  { minRealities: 50, capSec: 5 },
-  { minRealities: 10, capSec: 3 },
-  { minRealities: 1, capSec: 2 },
-  { minRealities: 0, capSec: 1 },
-];
-
-/** 只读：当前现实数（Number/Decimal 都兼容；读不到返回 null）。 */
-function readRealitiesForBeat() {
-  try {
-    if (typeof player === "undefined" || player === null) return null;
-    const value = player.realities;
-    if (typeof value === "number" && Number.isFinite(value)) return value;
-    if (value && typeof value.toNumber === "function") {
-      const num = value.toNumber();
-      return Number.isFinite(num) ? num : null;
-    }
-  } catch (e) { /* 读取失败按未知处理 */ }
-  return null;
-}
-
-/** 当前阶段允许的最短节拍（秒）；未知阶段返回 Infinity（保持旧行为）。 */
-function stageBeatCapSec() {
-  const realities = readRealitiesForBeat();
-  if (realities === null) return Infinity;
-  for (const tier of STAGE_BEAT_CAPS) {
-    if (realities >= tier.minRealities) return tier.capSec;
-  }
-  return Infinity;
-}
-
-/** 实际生效的节拍（毫秒）= min(玩家配置, 阶段上限)。 */
+/** 实际生效的节拍（毫秒）严格等于玩家配置；阶段变化不得改写周期。 */
 function effectiveBeatMs() {
-  return Math.min(STATE.intervalSec, stageBeatCapSec()) * 1000;
+  return STATE.intervalSec * 1000;
 }
 
 // ---------------------------------------------------------------------------
@@ -931,7 +879,7 @@ function effectiveBeatMs() {
 //   · lastBeatAt 只在**真的执行了一个动作**时推进，用于限制动作频率；
 //   · 本 Tick 是**调度机会**：每跨过一个 effectiveBeatMs() 就前进一次，
 //     即使这一拍没有动作也照常前进，供「配置恢复/托管检查」使用。
-// 两者共用同一个 intervalSec 与阶段上限，所以 1s / 5s / 动态配置自动同步；
+// 两者共用同一个 intervalSec，所以 1～60 秒配置按原值生效；
 // 它不是独立计时器（不 setInterval、不自己算玩家间隔），只是同一节拍的序号。
 // 受管模块必须在**同一个 tick 序号**上只处理一次，避免逐帧重复写配置。
 // ---------------------------------------------------------------------------
@@ -1393,10 +1341,9 @@ function debugState() {
   return {
     enabled: STATE.enabled,
     // [Oreki R50 web · 九修] 调度节拍（面板与探针都读这里，不另算一遍）
-    // intervalSec 是**玩家配置值**（UI/存档不变）；effectiveIntervalSec 是实际生效值。
+    // 配置值就是实际生效值；保留两个字段兼容既有面板与探针。
     intervalSec: STATE.intervalSec,
-    effectiveIntervalSec: Math.min(STATE.intervalSec, stageBeatCapSec()),
-    stageCapSec: stageBeatCapSec(),
+    effectiveIntervalSec: STATE.intervalSec,
     strictGlobal: STATE.strictGlobal,
     hosting: {
       tick: hostingTickSeq,
@@ -1499,16 +1446,16 @@ export const OrekiSmartExecutor = {
   get intervalSec() {
     return STATE.intervalSec;
   },
-  /** [R107-01 P1] 实际生效节拍 = min(玩家配置, 阶段上限)；只读，供探针/验收使用。 */
+  /** 配置值即实际生效节拍；保留此只读入口兼容既有探针。 */
   get effectiveIntervalSec() {
-    return Math.min(STATE.intervalSec, stageBeatCapSec());
+    return STATE.intervalSec;
   },
   get strictGlobal() {
     return STATE.strictGlobal;
   },
   /** [R116-02] 托管 Tick：受管自动购买器配置恢复的唯一调度机会。 */
   hostingTick,
-  /** [R116-02] 当前托管 Tick 的实际间隔（毫秒，含阶段上限），只读。 */
+  /** [R116-02] 当前托管 Tick 的实际间隔（毫秒），只读。 */
   get hostingIntervalMs() {
     return effectiveBeatMs();
   },

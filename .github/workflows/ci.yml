@@ -86,7 +86,7 @@ jobs:
           node scripts/test-r90-early-routine-beat.mjs
           node scripts/test-r87-break-id1-reserve.mjs
           # R107-01 P1 stage-capped beat: effectiveInterval = min(user config, stage cap)
-          node scripts/test-stage-beat-cap.mjs
+          node scripts/test-scheduler-period.mjs
           # R116-02 scheduler hosting: managed autobuyers on the scheduler tick,
           # manual config restored on the next tick, 1s/5s dynamic tick semantics.
           node "scripts/检查调度器托管Tick.mjs"

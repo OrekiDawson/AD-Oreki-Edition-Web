@@ -2,7 +2,7 @@
 // [R96 / R116-02] 大坍缩「受管节拍」—— Web 侧（调度器托管 Tick 版）
 //
 // 与 Android OrekiStageAuto.writeManagedCrunchInterval() 的玩家可见语义等价：
-//   1. 只在 MOD 调度器的**托管 Tick** 上处理（与 1s / 5s / 玩家 1～60s 同步）；
+//   1. 只在 MOD 调度器的**托管 Tick** 上处理（严格采用玩家 1～60 秒配置）；
 //   2. 每个有效 Tick 读一次真实值 player.auto.bigCrunch.time 与当帧策略目标；
 //   3. 玩家手动改间隔后，本 Tick 保留其操作；下一次有效 Tick 写回最新目标一次；
 //   4. 实际值已等于目标 ⇒ 不写、不持久化（幂等，避免逐帧抖动）；
