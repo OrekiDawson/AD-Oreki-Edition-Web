@@ -174,7 +174,7 @@ async function getPullRequest(repository, number, token) {
 
 async function findTriggerCheck(repository, headSha, externalId, token) {
   const response = await requestJson(
-    `/repos/${repository}/commits/${headSha}/check-runs?check_name=${encodeURIComponent(CHECK_NAME)}&filter=latest&per_page=100`,
+    `/repos/${repository}/commits/${headSha}/check-runs?check_name=${encodeURIComponent(CHECK_NAME)}&filter=all&per_page=100`,
     { token },
   );
   const payload = await response.json();
