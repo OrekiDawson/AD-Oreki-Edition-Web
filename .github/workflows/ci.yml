@@ -85,13 +85,16 @@ jobs:
           node scripts/test-r88-executor-clock.mjs
           node scripts/test-r90-early-routine-beat.mjs
           node scripts/test-r87-break-id1-reserve.mjs
-          # R107-01 P1 stage-capped beat: effectiveInterval = min(user config, stage cap)
+          # R120-01 exact 1–60 second scheduler period.
           node scripts/test-scheduler-period.mjs
           # R116-02 scheduler hosting: managed autobuyers on the scheduler tick,
           # manual config restored on the next tick, 1s/5s dynamic tick semantics.
           node "scripts/检查调度器托管Tick.mjs"
           node scripts/check_managed_autobuyer_state.mjs
           node "scripts/检查受管大坍缩节拍.mjs"
+          node scripts/tests/test_review_context.mjs
+          node scripts/tests/test_audit_quota.mjs
+          node scripts/tests/test_publish_review.mjs
       - name: 保护 Web 生产部署精确源码
         run: node scripts/check_deploy_workflow.mjs
       # Source JSON, generated tutorial, and player-visible terminology are

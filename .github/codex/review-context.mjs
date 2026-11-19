@@ -271,15 +271,29 @@ const PATCH_EXCLUDES = [
 ];
 
 export function patchPriority(source, path) {
+  const keyPaths = source === "android"
+    ? [
+        `${ANDROID_ROOT}OrekiAutomationScheduler.kt`,
+        `${ANDROID_ROOT}OrekiManagedAutobuyerAuthority.kt`,
+        `${ANDROID_ROOT}OrekiPlayerIntent.kt`,
+        `${ANDROID_ROOT}OrekiStageAuto.kt`,
+      ]
+    : [
+        "src/core/oreki-smart-executor.js",
+        "src/core/oreki-managed-autobuyer-state.js",
+        "src/core/oreki-managed-crunch-interval.js",
+        "src/game.js",
+      ];
+  if (keyPaths.includes(path)) return 0;
   if (source === "android") {
-    if (path.startsWith(ANDROID_ROOT)) return 0;
+    if (path.startsWith(ANDROID_ROOT)) return 5;
     if (path.startsWith("scripts/payload/smali/")) return 10;
     if (path.includes("/src/test/") || path.startsWith("scripts/tests/")) return 20;
     if (path.startsWith(".github/")) return 30;
     if (path.startsWith("scripts/")) return 25;
     return 40;
   }
-  if (path === "src/game.js" || path.startsWith("src/core/")) return 0;
+  if (path.startsWith("src/core/")) return 5;
   if (path.startsWith("src/")) return 10;
   if (path.startsWith("scripts/tests/") || path.includes("/test/")) return 20;
   if (path.startsWith("scripts/")) return 25;
@@ -293,24 +307,53 @@ export function selectPatchChunks(source, entries, maxBytes = 24000) {
     .map(entry => ({ ...entry, priority: patchPriority(source, entry.path) }))
     .sort((a, b) => a.priority - b.priority || a.path.localeCompare(b.path));
   const included = [];
+  const partial = [];
   const skipped = [];
   let bytes = 0;
   for (const entry of ordered) {
-    const size = Buffer.byteLength(entry.patch);
-    if (bytes + size <= maxBytes) {
-      included.push(entry);
-      bytes += size;
-    } else {
+    const remaining = Math.min(7000, maxBytes - bytes);
+    const clipped = clipPatch(entry.patch, remaining);
+    if (!clipped.text) {
       skipped.push(entry.path);
+      continue;
     }
+    included.push({ ...entry, patch: clipped.text });
+    bytes += Buffer.byteLength(clipped.text);
+    if (clipped.truncated) partial.push(entry.path);
+    if (bytes >= maxBytes) break;
   }
   return {
     text: included.map(entry => entry.patch).join(""),
     bytes,
     rawBytes: ordered.reduce((sum, entry) => sum + Buffer.byteLength(entry.patch), 0),
     included: included.map(entry => entry.path),
+    partial,
     skipped,
-    truncated: skipped.length > 0,
+    truncated: skipped.length > 0 || partial.length > 0,
+  };
+}
+
+function clipPatch(patch, maxBytes) {
+  if (!Number.isFinite(maxBytes) || maxBytes <= 0) return { text: "", truncated: true };
+  if (Buffer.byteLength(patch) <= maxBytes) return { text: patch, truncated: false };
+  const lines = patch.split(/(?<=\n)/u);
+  const firstHunk = lines.findIndex(line => line.startsWith("@@"));
+  if (firstHunk < 0) return { text: "", truncated: true };
+  const output = [lines.slice(0, firstHunk).join("")];
+  let used = Buffer.byteLength(output[0]);
+  for (let index = firstHunk; index < lines.length;) {
+    let end = index + 1;
+    while (end < lines.length && !lines[end].startsWith("@@")) end += 1;
+    const hunk = lines.slice(index, end).join("");
+    const size = Buffer.byteLength(hunk);
+    if (used + size > maxBytes) break;
+    output.push(hunk);
+    used += size;
+    index = end;
+  }
+  return {
+    text: output.length > 1 ? output.join("") : "",
+    truncated: output.length > 1,
   };
 }
 
@@ -320,7 +363,7 @@ export function buildPatch({ source, files, base, head, maxBytes = 24000 }) {
     .map(path => ({
       path,
       patch: execFileSync("git", [
-        "diff", "--unified=8", "--no-ext-diff", "--diff-filter=ACMR",
+        "diff", "--unified=3", "--no-ext-diff", "--diff-filter=ACMR",
         `${base}...${head}`, "--", path,
       ], { encoding: "utf8", maxBuffer: 8 * 1024 * 1024 }),
     }))
