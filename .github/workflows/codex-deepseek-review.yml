@@ -472,22 +472,12 @@ jobs:
           repositories: ${{ github.event.repository.name }}
           permission-pull-requests: write
 
-      - name: 生成安全降级评论令牌
-        id: comment-app
-        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
-        with:
-          app-id: ${{ vars.OREKI_AUDIT_APP_ID }}
-          private-key: ${{ secrets.OREKI_AUDIT_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-issues: write
-
       - name: 校验并发布 Pull Request Review
         id: publish
         env:
-          GITHUB_TOKEN: ${{ steps.comment-app.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.review-app.outputs.token }}
           REVIEW_TOKEN: ${{ steps.review-app.outputs.token }}
-          COMMENT_TOKEN: ${{ steps.comment-app.outputs.token }}
+          COMMENT_TOKEN: ${{ steps.review-app.outputs.token }}
           REVIEW_RESULT: ${{ needs.review.outputs.final_message }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
