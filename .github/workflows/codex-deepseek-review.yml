@@ -205,6 +205,7 @@ jobs:
           PEER_REPO: ${{ needs.classify.outputs.peer_repo }}
           PEER_SHA: ${{ needs.classify.outputs.peer_sha }}
           PEER_TOKEN: ${{ steps.peer-read.outputs.token || github.token }}
+          SOURCE_KIND: web
         shell: bash
         run: |
           set -euo pipefail
@@ -225,21 +226,16 @@ jobs:
             ':(exclude)*.webp' ':(exclude)*.zip' ':(exclude)*.apk' \
             ':(exclude)*.jar' ':(exclude)*.lock' ':(exclude)pnpm-lock.yaml' \
             > "$review_dir/patch_files.txt"
-          git diff --unified=8 --no-ext-diff --diff-filter=ACMR \
-            "${BASE_SHA}...${HEAD_SHA}" -- \
-            . ':(exclude)reports/**' ':(exclude)docs/**' \
-            ':(exclude)*.png' ':(exclude)*.jpg' ':(exclude)*.jpeg' \
-            ':(exclude)*.webp' ':(exclude)*.zip' ':(exclude)*.apk' \
-            ':(exclude)*.jar' ':(exclude)*.lock' ':(exclude)pnpm-lock.yaml' \
-            > "$review_dir/full.patch"
-          raw_bytes="$(wc -c < "$review_dir/full.patch")"
-          head -c 24000 "$review_dir/full.patch" > "$review_dir/review.patch"
+          node .github/codex/review-context.mjs \
+            --mode patch --source "$SOURCE_KIND" --files "$review_dir/files.txt" \
+            --base "$BASE_SHA" --head "$HEAD_SHA" --max-bytes 24000 \
+            --out "$review_dir/review.patch" \
+            --manifest-out "$review_dir/patch-manifest.json"
+          raw_bytes="$(jq -r '.rawBytes' "$review_dir/patch-manifest.json")"
           review_bytes="$(wc -c < "$review_dir/review.patch")"
-          if (( raw_bytes > review_bytes )); then
-            patch_truncated=true
-          else
-            patch_truncated=false
-          fi
+          patch_truncated="$(jq -r '.truncated' "$review_dir/patch-manifest.json")"
+          patch_skipped="$(jq -r '.skipped | join(\",\")' "$review_dir/patch-manifest.json")"
+          patch_included="$(jq -r '.included | join(\",\")' "$review_dir/patch-manifest.json")"
           {
             echo "BASE_SHA=$BASE_SHA"
             echo "HEAD_SHA=$HEAD_SHA"
@@ -251,6 +247,8 @@ jobs:
             echo "RAW_DIFF_BYTES=$raw_bytes"
             echo "REVIEW_DIFF_BYTES=$review_bytes"
             echo "PATCH_TRUNCATED=$patch_truncated"
+            echo "PATCH_INCLUDED_FILES=$patch_included"
+            echo "PATCH_SKIPPED_FILES=$patch_skipped"
             echo "PATCH_EXCLUDED_PATTERNS=docs/**;reports/**;binary-media;archives;jars;lockfiles"
             echo "--- files.txt ---"
             cat "$review_dir/files.txt"
@@ -264,7 +262,6 @@ jobs:
             --owner "$GITHUB_REPOSITORY_OWNER" --peer-sha "$PEER_SHA" \
             --out "$review_dir/peer-context.md"
           echo "PEER_CONTEXT_BYTES=$(wc -c < "$review_dir/peer-context.md")" >> "$review_dir/manifest.txt"
-          rm -f "$review_dir/full.patch"
 
       - name: 准备 Codex DeepSeek 模型元数据
         shell: bash
