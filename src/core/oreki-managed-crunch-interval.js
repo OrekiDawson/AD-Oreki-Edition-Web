@@ -204,8 +204,12 @@ function readPersistedManagedTime(saveId) {
     if (!parsed || typeof parsed !== "object") return null;
     const originalTime = Number(parsed.originalTime);
     const writtenTime = Number(parsed.writtenTime);
-    const originalMode = Number(parsed.originalMode);
-    const writtenMode = Number(parsed.writtenMode);
+    const originalMode = parsed.originalMode === null || parsed.originalMode === undefined
+      ? null
+      : Number(parsed.originalMode);
+    const writtenMode = parsed.writtenMode === null || parsed.writtenMode === undefined
+      ? null
+      : Number(parsed.writtenMode);
     const previousWrittenTime = Number(parsed.previousWrittenTime);
     const updatedAt = Number(parsed.updatedAt);
     if (!Number.isFinite(originalTime) || !Number.isFinite(writtenTime)) return null;
