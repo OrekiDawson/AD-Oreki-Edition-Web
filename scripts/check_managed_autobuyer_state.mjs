@@ -61,6 +61,12 @@ let registry;
 let bigCrunch;
 
 function resetFakes() {
+  const storage = new Map();
+  globalThis.localStorage = {
+    getItem: key => storage.has(key) ? storage.get(key) : null,
+    setItem: (key, value) => { storage.set(key, String(value)); },
+    removeItem: key => { storage.delete(key); },
+  };
   globalThis.Decimal = FakeDecimal;
   globalThis.AUTO_CRUNCH_MODE = { AMOUNT: 0, TIME: 1, X_HIGHEST: 2 };
   globalThis.player = {
@@ -404,6 +410,53 @@ test("没有调度器 Tick 注入/可读 ⇒ no-tick，不写", () => {
   assert.equal(result.applied, false);
   assert.equal(result.reason, "no-tick");
   assert.equal(registry.antimatterDimension.isActive, false);
+});
+
+test("关闭 MOD ⇒ 受管字段与启停恢复首次接管前的玩家原值", () => {
+  dims[0].mode = 1;
+  registry.tickspeed.mode = 100;
+  registry.dimboost.limitDimBoosts = true;
+  registry.galaxy.limitGalaxies = true;
+  registry.sacrifice.multiplier = new FakeDecimal(999);
+  bigCrunch.isActive = false;
+  bigCrunch.amount = new FakeDecimal(77);
+  bigCrunch.xHighest = new FakeDecimal(88);
+  bigCrunch.increaseWithMult = true;
+
+  apply(1);
+  assert.equal(dims[0].mode, 10);
+  assert.equal(registry.tickspeed.mode, 1);
+  assert.equal(bigCrunch.isActive, true);
+
+  Managed.releaseAll({ autobuyers: registry });
+  assert.equal(dims[0].mode, 1);
+  assert.equal(registry.tickspeed.mode, 100);
+  assert.equal(registry.dimboost.limitDimBoosts, true);
+  assert.equal(registry.galaxy.limitGalaxies, true);
+  assert.equal(Number(registry.sacrifice.multiplier), 999);
+  assert.equal(bigCrunch.isActive, false);
+  assert.equal(Number(bigCrunch.amount), 77);
+  assert.equal(Number(bigCrunch.xHighest), 88);
+  assert.equal(bigCrunch.increaseWithMult, true);
+});
+
+test("玩家在最后一次托管写入后手改 ⇒ 关闭 MOD 保留玩家最新值", () => {
+  dims[0].mode = 1;
+  apply(1);
+  dims[0].mode = 2;
+  Managed.releaseAll({ autobuyers: registry });
+  assert.equal(dims[0].mode, 2);
+});
+
+test("页面刷新丢失内存态后仍按持久化原值恢复", () => {
+  dims[0].mode = 1;
+  apply(1);
+  assert.equal(dims[0].mode, 10);
+  const persisted = globalThis.localStorage.getItem("oreki.managedAutobuyerOriginals");
+  assert.notEqual(persisted, null);
+  Managed.resetForTest();
+  Managed.releaseAll({ autobuyers: registry });
+  assert.equal(dims[0].mode, 1);
 });
 
 console.log(`\nR116-02 托管自动购买器夹具：${passed} PASS / ${failed} FAIL`);

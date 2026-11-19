@@ -14,7 +14,8 @@
 //      OrekiManagedCrunchInterval 在同一个托管 Tick 强制到策略值。玩家修改只允许
 //      存活到下一次有效 Tick。
 //   5. 两个总开关（MOD 全局自动化 / 原版自动购买器总开关）任一关闭：
-//      整体不接管，不写配置，也不消费 Tick；重新开启后从下一个有效 Tick 恢复。
+//      整体不接管，不写配置，也不消费 Tick；关闭 MOD 时按 saveId 写回首次接管前
+//      的原值（若玩家在最后一次托管写入后再次手改，则保留玩家最新值）。
 //   6. IU15 冲刺整体让路（冲刺模块有意关闭 ID 自动器）；佩勒毁灭态只让大坍缩目标
 //      保持关闭，其余 13 项仍按目标对账（与 Android 旧实现一致，避免玩家关闭后
 //      整个阶段无法恢复）。
@@ -28,6 +29,7 @@
 // ---------------------------------------------------------------------------
 
 const TAG = "OREKI_MANAGED_AUTO";
+const ORIGINAL_STORAGE_KEY = "oreki.managedAutobuyerOriginals";
 
 /** 受托管项的固定键序（用于自检/面板展示；读写仍按实际枚举）。 */
 export const MANAGED_KEYS = Object.freeze([
@@ -64,6 +66,8 @@ const STATE = {
   lastTickAt: 0,
   lastRestored: [],
   lastReason: "",
+  /** 当前存档的首次原值/最近托管写值；关闭 MOD 时据此安全回滚。 */
+  originalRecord: null,
 };
 
 /** 日志里的时间统一保留 1 位小数，避免不同浏览器打印位数不一致。 */
@@ -102,6 +106,62 @@ function decimalTarget(value) {
   } catch (e) {
     return value;
   }
+}
+
+function serializeManagedValue(value) {
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "string") {
+    return value;
+  }
+  try {
+    if (value && typeof value.toString === "function") return { decimal: value.toString() };
+  } catch (e) { /* ignore */ }
+  return null;
+}
+
+function deserializeManagedValue(value) {
+  if (value && typeof value === "object" && typeof value.decimal === "string") {
+    return decimalTarget(value.decimal);
+  }
+  return value;
+}
+
+function readOriginalRecord(saveId) {
+  try {
+    const raw = globalThis.localStorage?.getItem(ORIGINAL_STORAGE_KEY);
+    if (!raw) return { saveId, fields: {} };
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.saveId === saveId && parsed.fields && typeof parsed.fields === "object") {
+      return parsed;
+    }
+  } catch (e) { /* malformed/unavailable storage is treated as empty */ }
+  return { saveId, fields: {} };
+}
+
+function writeOriginalRecord() {
+  try {
+    const record = STATE.originalRecord;
+    if (record && Object.keys(record.fields).length > 0) {
+      globalThis.localStorage?.setItem(ORIGINAL_STORAGE_KEY, JSON.stringify(record));
+    }
+  } catch (e) { /* persistence failure leaves the in-memory baseline usable */ }
+}
+
+function ensureOriginalRecord(saveId) {
+  if (STATE.originalRecord && STATE.originalRecord.saveId === saveId) {
+    return STATE.originalRecord;
+  }
+  STATE.originalRecord = readOriginalRecord(saveId);
+  return STATE.originalRecord;
+}
+
+/** 在首次真实写入前记录原值，并持续记录最近一次托管写出值。 */
+function rememberManagedWrite(key, actual, target) {
+  const record = ensureOriginalRecord(STATE.saveId);
+  if (!record.fields[key]) {
+    record.fields[key] = { original: serializeManagedValue(actual), written: null };
+  }
+  record.fields[key].written = serializeManagedValue(target);
+  writeOriginalRecord();
 }
 
 /** 解析当前托管 Tick：优先显式注入（测试/调用方），其次调度器。 */
@@ -246,6 +306,7 @@ export function applyAll({
     STATE.lastRestored = [];
   }
   STATE.saveId = saveId;
+  ensureOriginalRecord(saveId);
 
   let checked = 0;
   let wrote = 0;
@@ -261,6 +322,7 @@ export function applyAll({
         return;
       }
       if (same(actual, target)) return;
+      rememberManagedWrite(key, actual, target);
       write(target);
       wrote += 1;
       STATE.writes += 1;
@@ -289,6 +351,7 @@ export function applyAll({
         return;
       }
       const actual = group ? group.read() : item.isActive === true;
+      if (actual !== target) rememberManagedWrite(key, actual, target);
       const didWrite = reconcile(key, actual, target, value => {
         if (group) group.write(value);
         else item.isActive = value;
@@ -315,6 +378,7 @@ export function applyAll({
   const dimensionItems = [];
   try {
     if (dims && dims.isActive !== true) {
+      rememberManagedWrite("dimGroup", dims.isActive, true);
       dims.isActive = true;
       wrote += 1;
       STATE.writes += 1;
@@ -417,6 +481,82 @@ export function applyAll({
   };
 }
 
+/**
+ * MOD 总开关关闭时把本模块实际写过的字段恢复到首次接管前原值。
+ *
+ * 只有当前值仍等于该字段最近一次托管写出值时才回滚；玩家在最后一次写入后自行
+ * 修改的值保持不变。原值与最近写出值按当前存档 saveId 持久化，页面刷新后仍可恢复。
+ */
+export function releaseAll({ autobuyers = null } = {}) {
+  const saveId = readSaveId();
+  const record = readOriginalRecord(saveId);
+  const root = resolveAutobuyers(autobuyers);
+  if (!root || Object.keys(record.fields).length === 0) {
+    STATE.originalRecord = record;
+    return false;
+  }
+
+  let released = 0;
+  const release = (key, read, write, same = Object.is) => {
+    const item = record.fields[key];
+    if (!item) return;
+    try {
+      const actual = read();
+      if (actual === null || actual === undefined) return;
+      if (!same(actual, deserializeManagedValue(item.written))) return;
+      const original = deserializeManagedValue(item.original);
+      if (same(actual, original)) return;
+      write(original);
+      released += 1;
+      logLine(`key=${key} event=player-value-restored source=mod-off`);
+    } catch (e) {
+      logLine(`key=${key} event=player-value-restore-failed ` +
+        `error=${e && e.name ? e.name : "unknown"}`);
+    }
+  };
+
+  const dims = root.antimatterDimension;
+  release("dimGroup", () => dims && dims.isActive, value => { dims.isActive = value; });
+  for (let tier = 1; tier <= 8; tier += 1) {
+    const item = typeof dims === "function" ? dims(tier) : (dims && (dims[tier - 1] || dims[tier]));
+    release(`dim${tier}`, () => item && item.isActive, value => { item.isActive = value; });
+    release(`dim${tier}.mode`, () => item && item.mode, value => { item.mode = value; });
+  }
+  for (const key of ["tickspeed", "dimboost", "galaxy", "sacrifice", "crunch", "ipmult"]) {
+    const item = key === "crunch" ? root.bigCrunch : root[key];
+    release(key, () => item && item.isActive, value => { item.isActive = value; });
+  }
+  release("tickspeed.mode", () => root.tickspeed && root.tickspeed.mode,
+    value => { root.tickspeed.mode = value; });
+  release("dimboost.limitDimBoosts",
+    () => root.dimboost && root.dimboost.limitDimBoosts,
+    value => { root.dimboost.limitDimBoosts = value; });
+  release("dimboost.limitUntilGalaxies",
+    () => root.dimboost && root.dimboost.limitUntilGalaxies,
+    value => { root.dimboost.limitUntilGalaxies = value; });
+  release("galaxy.limitGalaxies",
+    () => root.galaxy && root.galaxy.limitGalaxies,
+    value => { root.galaxy.limitGalaxies = value; });
+  release("sacrifice.multiplier",
+    () => root.sacrifice && root.sacrifice.multiplier,
+    value => { root.sacrifice.multiplier = value; }, sameDecimal);
+  release("crunch.amount",
+    () => root.bigCrunch && root.bigCrunch.amount,
+    value => { root.bigCrunch.amount = value; }, sameDecimal);
+  release("crunch.xHighest",
+    () => root.bigCrunch && root.bigCrunch.xHighest,
+    value => { root.bigCrunch.xHighest = value; }, sameDecimal);
+  release("crunch.increaseWithMult",
+    () => root.bigCrunch && root.bigCrunch.increaseWithMult,
+    value => { root.bigCrunch.increaseWithMult = value; });
+
+  try { globalThis.localStorage?.removeItem(ORIGINAL_STORAGE_KEY); } catch (e) { /* ignore */ }
+  STATE.originalRecord = null;
+  STATE.lastTick = 0;
+  STATE.lastReason = released > 0 ? "released-to-player" : "release-noop";
+  return released > 0;
+}
+
 /** 面板/日志用摘要。 */
 export function describeManagedActive() {
   return `tick=${STATE.lastTick} restored=[${STATE.lastRestored.join(",")}] ` +
@@ -449,6 +589,7 @@ export function resetForTest() {
   STATE.lastTickAt = 0;
   STATE.lastRestored = [];
   STATE.lastReason = "";
+  STATE.originalRecord = null;
 }
 
 try {
@@ -457,6 +598,7 @@ try {
     MANAGED_FIELDS,
     reconcile,
     applyAll,
+    releaseAll,
     describeManagedActive,
     debugState,
     resetForTest,

@@ -287,6 +287,79 @@ try {
         `mode=${player.auto.bigCrunch.mode} time=${player.auto.bigCrunch.time}`,
     };
   }));
+
+  result.checks.push(await page.evaluate(() => {
+    OrekiManagedAutobuyerState.resetForTest();
+    localStorage.removeItem("oreki.managedAutobuyerOriginals");
+
+    player.auto.antimatterDims.isActive = false;
+    player.auto.antimatterDims.all[0].mode = AUTOBUYER_MODE.BUY_SINGLE;
+    player.auto.tickspeed.mode = AUTOBUYER_MODE.BUY_MAX;
+    player.auto.dimBoost.limitDimBoosts = true;
+    player.auto.dimBoost.limitUntilGalaxies = true;
+    player.auto.galaxy.limitGalaxies = true;
+    player.auto.sacrifice.multiplier = new Decimal(999);
+    player.auto.bigCrunch.isActive = false;
+    player.auto.bigCrunch.amount = new Decimal(77);
+    player.auto.bigCrunch.xHighest = new Decimal(88);
+    player.auto.bigCrunch.increaseWithMult = true;
+    // 这些就是 MOD 首次接管前看到的玩家值，也是关闭 MOD 后必须恢复的目标。
+    const playerOriginal = {
+      dimGroup: player.auto.antimatterDims.isActive,
+      dimMode: player.auto.antimatterDims.all[0].mode,
+      tickspeedMode: player.auto.tickspeed.mode,
+      limitDimBoosts: player.auto.dimBoost.limitDimBoosts,
+      limitUntilGalaxies: player.auto.dimBoost.limitUntilGalaxies,
+      limitGalaxies: player.auto.galaxy.limitGalaxies,
+      sacrifice: player.auto.sacrifice.multiplier.toString(),
+      crunchActive: player.auto.bigCrunch.isActive,
+      crunchAmount: player.auto.bigCrunch.amount.toString(),
+      crunchXHighest: player.auto.bigCrunch.xHighest.toString(),
+      crunchIncreaseWithMult: player.auto.bigCrunch.increaseWithMult,
+    };
+
+    const tick = OrekiSmartExecutor.hostingTick() + 2_000_000;
+    OrekiManagedAutobuyerState.applyAll({ wantCrunch: true, autobuyers: Autobuyer, tick });
+    const recordBeforeRelease = localStorage.getItem("oreki.managedAutobuyerOriginals");
+    const releaseReturned = OrekiManagedAutobuyerState.releaseAll({ autobuyers: Autobuyer });
+    const restored =
+      player.auto.antimatterDims.isActive === playerOriginal.dimGroup &&
+      player.auto.antimatterDims.all[0].mode === playerOriginal.dimMode &&
+      player.auto.tickspeed.mode === playerOriginal.tickspeedMode &&
+      player.auto.dimBoost.limitDimBoosts === playerOriginal.limitDimBoosts &&
+      player.auto.dimBoost.limitUntilGalaxies === playerOriginal.limitUntilGalaxies &&
+      player.auto.galaxy.limitGalaxies === playerOriginal.limitGalaxies &&
+      player.auto.sacrifice.multiplier.eq(new Decimal(playerOriginal.sacrifice)) &&
+      player.auto.bigCrunch.isActive === playerOriginal.crunchActive &&
+      player.auto.bigCrunch.amount.eq(new Decimal(playerOriginal.crunchAmount)) &&
+      player.auto.bigCrunch.xHighest.eq(new Decimal(playerOriginal.crunchXHighest)) &&
+      player.auto.bigCrunch.increaseWithMult === playerOriginal.crunchIncreaseWithMult;
+    if (!restored) throw new Error(`MOD-off 未恢复玩家原值：${JSON.stringify({
+      playerOriginal,
+      recordBeforeRelease,
+      releaseReturned,
+      actual: {
+        dimGroup: player.auto.antimatterDims.isActive,
+        dimMode: player.auto.antimatterDims.all[0].mode,
+        tickspeedMode: player.auto.tickspeed.mode,
+        limitDimBoosts: player.auto.dimBoost.limitDimBoosts,
+        limitUntilGalaxies: player.auto.dimBoost.limitUntilGalaxies,
+        limitGalaxies: player.auto.galaxy.limitGalaxies,
+        sacrifice: player.auto.sacrifice.multiplier.toString(),
+        crunchActive: player.auto.bigCrunch.isActive,
+        crunchAmount: player.auto.bigCrunch.amount.toString(),
+        crunchXHighest: player.auto.bigCrunch.xHighest.toString(),
+        crunchIncreaseWithMult: player.auto.bigCrunch.increaseWithMult,
+      },
+    })}`);
+    return {
+      name: "MOD 关闭后恢复受管字段与启停的玩家原值",
+      pass: true,
+      detail: `dimMode=${player.auto.antimatterDims.all[0].mode} ` +
+        `tickspeedMode=${player.auto.tickspeed.mode} crunch=${player.auto.bigCrunch.isActive}`,
+    };
+  }));
+
   await page.screenshot({
     path: path.join(OUT, "managed-authority-final.png"),
     fullPage: false,
