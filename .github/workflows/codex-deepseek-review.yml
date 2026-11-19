@@ -14,8 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  gate:
-    name: 审查前置门禁
+  classify:
+    name: 审查门禁与跨仓分类
     if: >-
       github.event.pull_request.base.ref == 'main' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
@@ -30,6 +30,12 @@ jobs:
     outputs:
       should_review: ${{ steps.decision.outputs.should_review }}
       reason: ${{ steps.decision.outputs.reason }}
+      cross_repo: ${{ steps.classification.outputs.cross_repo || 'false' }}
+      categories: ${{ steps.classification.outputs.categories || '' }}
+      peer_repo: ${{ steps.classification.outputs.peer_repo || '' }}
+      peer_sha: ${{ steps.classification.outputs.peer_sha || '' }}
+      classification_b64: ${{ steps.classification.outputs.classification_b64 || '' }}
+      config_version: ${{ steps.config.outputs.value }}
     steps:
       - name: 验证必要 Secret 与 Variable 存在
         env:
@@ -43,13 +49,32 @@ jobs:
           test -n "$AUDIT_APP_PRIVATE_KEY" || { echo "::error::OREKI_AUDIT_APP_PRIVATE_KEY is missing"; exit 1; }
           test -n "$AUDIT_APP_ID" || { echo "::error::OREKI_AUDIT_APP_ID is missing"; exit 1; }
 
-      - name: 检查峰时、同 Head SHA 去重
+      - name: 检出受信任 Base
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: 计算审查配置版本
+        id: config
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(sha256sum \
+            .github/workflows/codex-deepseek-review.yml \
+            .github/codex/deepseek-models.json \
+            .github/codex/review-context.mjs | sha256sum | cut -d' ' -f1)"
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: 检查峰时、同 Head SHA 与配置版本去重
         id: decision
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           DAILY_REVIEW_LIMIT: ${{ vars.OREKI_AUDIT_DAILY_LIMIT || '6' }}
+          REVIEW_CONFIG_VERSION: ${{ steps.config.outputs.value }}
         with:
           script: |
             const marker = '<!-- oreki-codex-deepseek-review:v1 -->';
@@ -89,18 +114,59 @@ jobs:
               per_page: 100,
             });
             const headMarker = `HEAD_SHA: ${process.env.HEAD_SHA}`;
+            const configMarker = `REVIEW_CONFIG_VERSION: ${process.env.REVIEW_CONFIG_VERSION}`;
             const duplicate = comments.some(comment =>
               comment.user && comment.user.login === 'oreki-audit[bot]' &&
               comment.user.type === 'Bot' && comment.body &&
-              comment.body.includes(marker) && comment.body.includes(headMarker)
+              comment.body.includes(marker) && comment.body.includes(headMarker) &&
+              comment.body.includes(configMarker)
             );
             core.setOutput('should_review', duplicate ? 'false' : 'true');
             core.setOutput('reason', duplicate ? 'same-head-reviewed' : 'ok');
 
+      - name: 生成跨仓只读安装令牌
+        id: audit-read
+        if: steps.decision.outputs.should_review == 'true'
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ vars.OREKI_AUDIT_APP_ID }}
+          private-key: ${{ secrets.OREKI_AUDIT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: AD-Oreki-Edition-Android,AD-Oreki-Edition-Web
+          permission-contents: read
+
+      - name: 分类共享玩法并定位对端 main
+        id: classification
+        if: steps.decision.outputs.should_review == 'true'
+        env:
+          GH_TOKEN: ${{ steps.audit-read.outputs.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          review_dir="$RUNNER_TEMP/classification"
+          mkdir -p "$review_dir"
+          gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" \
+            --jq '.[].filename' > "$review_dir/files.txt"
+          source_kind=web
+          peer_repo=AD-Oreki-Edition-Android
+          peer_sha="$(gh api "repos/${GITHUB_REPOSITORY_OWNER}/${peer_repo}/commits/main" --jq '.sha')"
+          node .github/codex/review-context.mjs \
+            --mode classify --source "$source_kind" --files "$review_dir/files.txt" \
+            --out "$review_dir/classification.json"
+          jq --arg sha "$peer_sha" '. + {peerSha: $sha}' \
+            "$review_dir/classification.json" > "$review_dir/classified.json"
+          echo "cross_repo=$(jq -r '.crossRepo' "$review_dir/classified.json")" >> "$GITHUB_OUTPUT"
+          echo "categories=$(jq -r '.categories | join(\",\")' "$review_dir/classified.json")" >> "$GITHUB_OUTPUT"
+          echo "peer_repo=$(jq -r '.peerRepo' "$review_dir/classified.json")" >> "$GITHUB_OUTPUT"
+          echo "peer_sha=$peer_sha" >> "$GITHUB_OUTPUT"
+          echo "classification_b64=$(base64 -w0 "$review_dir/classified.json")" >> "$GITHUB_OUTPUT"
+
   review:
     name: Codex + DeepSeek-Flash 只读审查
-    needs: gate
-    if: needs.gate.outputs.should_review == 'true'
+    needs: classify
+    if: needs.classify.outputs.should_review == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     permissions:
@@ -115,16 +181,34 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: 生成对端仓库只读令牌
+        if: needs.classify.outputs.cross_repo == 'true'
+        id: peer-read
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ vars.OREKI_AUDIT_APP_ID }}
+          private-key: ${{ secrets.OREKI_AUDIT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: AD-Oreki-Edition-Android,AD-Oreki-Edition-Web
+          permission-contents: read
+
       - name: 生成有界审查上下文
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          CLASSIFICATION_B64: ${{ needs.classify.outputs.classification_b64 }}
+          CROSS_REPO: ${{ needs.classify.outputs.cross_repo }}
+          CATEGORIES: ${{ needs.classify.outputs.categories }}
+          PEER_REPO: ${{ needs.classify.outputs.peer_repo }}
+          PEER_SHA: ${{ needs.classify.outputs.peer_sha }}
+          PEER_TOKEN: ${{ steps.peer-read.outputs.token || github.token }}
         shell: bash
         run: |
           set -euo pipefail
           review_dir="$RUNNER_TEMP/review"
           mkdir -p "$review_dir"
+          printf '%s' "$CLASSIFICATION_B64" | base64 -d > "$review_dir/classification.json"
           git fetch --no-tags --no-recurse-submodules origin \
             "refs/pull/${PR_NUMBER}/head:refs/review/head"
           test "$(git rev-parse refs/review/head)" = "$HEAD_SHA" || {
@@ -157,6 +241,11 @@ jobs:
           {
             echo "BASE_SHA=$BASE_SHA"
             echo "HEAD_SHA=$HEAD_SHA"
+            echo "CROSS_REPO=$CROSS_REPO"
+            echo "CATEGORIES=$CATEGORIES"
+            echo "PEER_REPO=$PEER_REPO"
+            echo "PEER_SHA=$PEER_SHA"
+            echo "MANUAL_REQUIRED=$(jq -r '.manualRequired' "$review_dir/classification.json")"
             echo "RAW_DIFF_BYTES=$raw_bytes"
             echo "REVIEW_DIFF_BYTES=$review_bytes"
             echo "PATCH_TRUNCATED=$patch_truncated"
@@ -168,6 +257,11 @@ jobs:
             echo "--- numstat.txt ---"
             cat "$review_dir/numstat.txt"
           } > "$review_dir/manifest.txt"
+          GITHUB_TOKEN="$PEER_TOKEN" node .github/codex/review-context.mjs \
+            --mode peer --classification "$review_dir/classification.json" \
+            --owner "$GITHUB_REPOSITORY_OWNER" --peer-sha "$PEER_SHA" \
+            --out "$review_dir/peer-context.md"
+          echo "PEER_CONTEXT_BYTES=$(wc -c < "$review_dir/peer-context.md")" >> "$review_dir/manifest.txt"
           rm -f "$review_dir/full.patch"
 
       - name: 准备 Codex DeepSeek 模型元数据
@@ -200,8 +294,9 @@ jobs:
           codex-args: '["--ephemeral"]'
           prompt: |
             审查 Web 仓库 PR #${{ github.event.pull_request.number }} 仅由本次变更引入的问题。
-            唯一审查输入是 `${{ runner.temp }}/review/manifest.txt` 和
-            `${{ runner.temp }}/review/review.patch`。只读取这两个文件一次，不得运行 git、搜索、
+            唯一审查输入是 `${{ runner.temp }}/review/manifest.txt`、
+            `${{ runner.temp }}/review/review.patch` 和
+            `${{ runner.temp }}/review/peer-context.md`。只读取这三个文件一次，不得运行 git、搜索、
             测试或扫描仓库其它文件；如清单表明 Diff 被截断，必须明确报告覆盖不足。
 
             你是只读审查者。不得修改文件、提交、合并、发布、调用网络或创建 Subagent。
@@ -213,15 +308,19 @@ jobs:
             - 脚本复用、职责拆分、重复实现和复杂度；
             - 可复现的运行错误、逻辑错误和安全风险；
             - 与 Android 关键行为的语义一致性（仅依据本仓可见上下文）。
+            - 若 CROSS_REPO=true，仅用 peer-context.md 中指定 PEER_SHA 的可信 main 源码比较；
+              不得把对端未合并改动当成当前 PR 已同步，无法确认时标记待确认。
             - 不重复 CI/Lint 已明确报告的问题。
 
             仅报告有实质依据的问题。每项包含：严重程度、文件位置、原因、触发条件、最小修复建议。
             没有确认问题时只输出“未发现可确认问题”，不得声称代码完全无 Bug。
-            输出简体中文 Markdown，控制在 4000 字以内，并附“覆盖文件/未覆盖文件”。不要输出密钥或环境变量值。
+            输出简体中文 Markdown，控制在 4000 字以内，必须包含审查状态（完成/部分完成/未完成）、
+            源 PR 与 Head SHA、是否跨仓、对端参考 SHA、实际覆盖范围、可确认问题、未覆盖或待确认风险。
+            不要输出密钥或环境变量值。
 
   comment:
     name: 使用 Oreki Audit App 更新审查评论
-    needs: [gate, review]
+    needs: [classify, review]
     if: needs.review.outputs.final_message != ''
     runs-on: ubuntu-latest
     timeout-minutes: 3
@@ -236,6 +335,8 @@ jobs:
           private-key: ${{ secrets.OREKI_AUDIT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
+          permission-issues: write
+          permission-pull-requests: write
 
       - name: 创建或更新单一 AI 审查评论
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
@@ -243,6 +344,11 @@ jobs:
           REVIEW_BODY: ${{ needs.review.outputs.final_message }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          REVIEW_CONFIG_VERSION: ${{ needs.classify.outputs.config_version }}
+          CROSS_REPO: ${{ needs.classify.outputs.cross_repo }}
+          CATEGORIES: ${{ needs.classify.outputs.categories }}
+          PEER_REPO: ${{ needs.classify.outputs.peer_repo }}
+          PEER_SHA: ${{ needs.classify.outputs.peer_sha }}
         with:
           github-token: ${{ steps.audit-app.outputs.token }}
           script: |
@@ -256,6 +362,11 @@ jobs:
               '### Codex + DeepSeek-Flash 审查（非阻断）',
               '',
               `HEAD_SHA: ${process.env.HEAD_SHA}`,
+              `REVIEW_CONFIG_VERSION: ${process.env.REVIEW_CONFIG_VERSION}`,
+              `CROSS_REPO: ${process.env.CROSS_REPO}`,
+              `CATEGORIES: ${process.env.CATEGORIES || '(none)'}`,
+              `PEER_REPO: ${process.env.PEER_REPO || '(none)'}`,
+              `PEER_SHA: ${process.env.PEER_SHA || '(none)'}`,
               '',
               review,
               '',
