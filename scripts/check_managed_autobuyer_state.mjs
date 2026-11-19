@@ -92,6 +92,7 @@ function resetFakes() {
     ipMult: makeItem({ active: true }),
   };
   registry.sacrifice.multiplier = new FakeDecimal(2);
+  globalThis.Autobuyer = { bigCrunch };
 }
 
 const apply = (tick, extra = {}) => Managed.applyAll({
@@ -266,6 +267,40 @@ test("原版自动购买器总开关关闭 ⇒ 整体让路，不写", () => {
   assert.equal(result.applied, false);
   assert.equal(result.reason, "vanilla-off");
   assert.equal(registry.antimatterDimension.isActive, false);
+});
+
+test("大坍缩 interval 同样服从总开关、IU15 与解锁门禁", () => {
+  OrekiManagedCrunchInterval.resetForTest();
+  globalThis.player.auto.autobuyersOn = false;
+  bigCrunch.mode = 0;
+  bigCrunch.time = 99;
+  assert.equal(OrekiManagedCrunchInterval.apply(60, "vanilla-off", 1), false);
+  assert.equal(bigCrunch.mode, 0);
+  assert.equal(bigCrunch.time, 99);
+
+  globalThis.player.auto.autobuyersOn = true;
+  globalThis.OrekiIu15Sprint = { active: true };
+  assert.equal(OrekiManagedCrunchInterval.apply(60, "iu15", 2), false);
+  assert.equal(bigCrunch.mode, 0);
+  assert.equal(bigCrunch.time, 99);
+
+  delete globalThis.OrekiIu15Sprint;
+  bigCrunch.isUnlocked = false;
+  assert.equal(OrekiManagedCrunchInterval.apply(60, "locked", 3), false);
+  assert.equal(bigCrunch.mode, 0);
+  assert.equal(bigCrunch.time, 99);
+});
+
+test("关闭 MOD 时玩家只改 mode ⇒ 保留玩家 mode，仍恢复受管 time", () => {
+  OrekiManagedCrunchInterval.resetForTest();
+  bigCrunch.mode = 2;
+  bigCrunch.time = 30;
+  assert.equal(OrekiManagedCrunchInterval.apply(60, "baseline", 1), true);
+  bigCrunch.mode = 0;
+  globalThis.OrekiSmartExecutor.enabled = false;
+  assert.equal(OrekiManagedCrunchInterval.releaseToPlayer(), true);
+  assert.equal(bigCrunch.mode, 0, "玩家最后一次 mode 修改必须保留");
+  assert.equal(bigCrunch.time, 30, "未被玩家修改的托管 time 必须恢复");
 });
 
 test("IU15 冲刺整体让路；Pelle 只让大坍缩，其余 13 项仍对账", () => {

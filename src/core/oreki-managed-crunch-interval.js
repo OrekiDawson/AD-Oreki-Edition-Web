@@ -252,13 +252,20 @@ function clearReleaseWindow() {
  * 只认最近一次与紧邻上一次（上一拍仅限 15 秒落盘窗口内）；不把 5/60/3600
  * 这类玩家可选值长期纳入匹配，避免把玩家手设值误判为托管值。
  */
-function persistedContainsManagedValue(persisted, seconds, { includePrevious = true, now = Date.now() } = {}) {
+function persistedContainsManagedValue(
+  persisted,
+  seconds,
+  mode,
+  { includePrevious = true, now = Date.now() } = {},
+) {
   if (!persisted || !Number.isFinite(seconds)) return false;
-  if (sameInterval(persisted.writtenTime, seconds)) return true;
+  const modeMatches = persisted.writtenMode === null ||
+    Number.isInteger(mode) && persisted.writtenMode === mode;
+  if (sameInterval(persisted.writtenTime, seconds) && modeMatches) return true;
   if (!includePrevious || !Number.isFinite(persisted.previousWrittenTime)) return false;
   if (!Number.isFinite(persisted.updatedAt) ||
       now - persisted.updatedAt > PREVIOUS_WRITE_MATCH_WINDOW_MS) return false;
-  return sameInterval(persisted.previousWrittenTime, seconds);
+  return sameInterval(persisted.previousWrittenTime, seconds) && modeMatches;
 }
 
 function hostingIntervalMs() {
@@ -274,6 +281,21 @@ function hostingIntervalMs() {
 function isPelleDoomed() {
   try {
     return typeof Pelle !== "undefined" && Pelle && Pelle.isDoomed === true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function isManagedContextOpen() {
+  try {
+    const executor = globalThis.OrekiSmartExecutor;
+    if (executor && executor.enabled === false) return false;
+    if (typeof player === "undefined" || !player || !player.auto ||
+        player.auto.autobuyersOn !== true) return false;
+    const sprint = globalThis.OrekiIu15Sprint;
+    if (sprint && sprint.active === true) return false;
+    const crunch = globalThis.Autobuyer && globalThis.Autobuyer.bigCrunch;
+    return Boolean(crunch && (crunch.isUnlocked === true || crunch.isBought === true));
   } catch (e) {
     return false;
   }
@@ -315,6 +337,7 @@ export class OrekiManagedCrunchInterval {
     } catch (e) {
       return false;
     }
+    if (!isManagedContextOpen()) return false;
     const resolvedTick = resolveTick(tick);
     if (resolvedTick === null) return false;
     if (resolvedTick === STATE.lastTick) return false;
@@ -344,7 +367,7 @@ export class OrekiManagedCrunchInterval {
         (persistedBefore.sessionId !== MANAGED_TIME_SESSION_ID ||
           STATE.originalSaveId !== saveId) &&
         !sameInterval(persistedBefore.originalTime, persistedBefore.writtenTime) &&
-        persistedContainsManagedValue(persistedBefore, actual);
+        persistedContainsManagedValue(persistedBefore, actual, actualMode);
       STATE.originalTime = persistedUsable ? persistedBefore.originalTime : actual;
       STATE.originalMode = persistedUsable && persistedBefore.originalMode !== null
         ? persistedBefore.originalMode
@@ -418,7 +441,7 @@ export class OrekiManagedCrunchInterval {
     const inMemorySave = STATE.originalSaveId === null || saveId === null ||
       STATE.originalSaveId === saveId;
     const persistedHit = persistedUsable &&
-      persistedContainsManagedValue(persisted, actual);
+      persistedContainsManagedValue(persisted, actual, actualMode);
     // 内存 lastValue 只在同一存档内有效；换档后必须用目标档的持久化写出值，
     // 否则会把上一档的 lastValue 与当前档 actual 比较，误判玩家手改。
     const lastValue = inMemorySave && STATE.lastValue !== null
@@ -441,8 +464,24 @@ export class OrekiManagedCrunchInterval {
     const changed = changedTime || changedMode;
 
     // 玩家在最后一次托管写入后手改过 ⇒ 尊重玩家，确认无需写回后再清理。
-    if ((lastValue !== null && !sameInterval(actual, lastValue)) ||
-        (lastMode !== null && actualMode !== lastMode)) {
+    const timeOverridden = lastValue !== null && !sameInterval(actual, lastValue);
+    const modeOverridden = lastMode !== null && actualMode !== lastMode;
+    if (timeOverridden || modeOverridden) {
+      let wrote = false;
+      try {
+        if (!timeOverridden && changedTime) {
+          writeActualInterval(original);
+          wrote = true;
+        }
+        if (!modeOverridden && changedMode) {
+          writeActualMode(originalMode);
+          wrote = true;
+        }
+      } catch (e) {
+        STATE.lastTick = 0;
+        STATE.released = false;
+        return false;
+      }
       STATE.lastTick = 0;
       STATE.originalTime = null;
       STATE.originalMode = null;
@@ -453,9 +492,10 @@ export class OrekiManagedCrunchInterval {
       STATE.releasedSaveId = saveId;
       clearPersistedManagedTime(saveId);
       console.info(
-        `[OrekiCrunchInterval] mod-off restore skipped: player override time=${actual} mode=${actualMode}`
+        `[OrekiCrunchInterval] mod-off partial restore ` +
+          `timeOverride=${timeOverridden} modeOverride=${modeOverridden} wrote=${wrote}`
       );
-      return false;
+      return wrote;
     }
 
     if (!changed) {
@@ -522,6 +562,7 @@ export class OrekiManagedCrunchInterval {
     } catch (e) {
       return false;
     }
+    if (!isManagedContextOpen()) return false;
     // [R97] 允许调用方传入本帧**唯一**一次 OrekiCrunchPolicy.decide() 的结果：
     // decide() 内部会推进坍缩等待计时，同一帧重复调用可能得出不同结论。
     if (!decision) {

@@ -45,12 +45,13 @@ let bigCrunch = crunch111;
 let maxAMLog = 100;
 globalThis.player = {
   break: true,
-  auto: { bigCrunch },
+  auto: { autobuyersOn: true, bigCrunch },
   records: {
     gameCreatedTime: 111,
     thisInfinity: { realTime: 100, maxAM: { log10: () => maxAMLog } },
   },
 };
+globalThis.Autobuyer = { bigCrunch: { isUnlocked: true, isBought: false } };
 globalThis.OrekiSmartExecutor = { enabled: true, hostingIntervalMs: 1000 };
 let infinitiesToken = 0;
 globalThis.Currency = { infinities: { value: { toNumber: () => infinitiesToken } } };

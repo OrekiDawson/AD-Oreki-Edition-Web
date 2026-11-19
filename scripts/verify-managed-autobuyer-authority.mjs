@@ -80,10 +80,9 @@ try {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
 
-  await page.addInitScript(() => {
-    try { localStorage.clear(); } catch (e) { /* ignore */ }
-  });
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120_000 });
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: "domcontentloaded", timeout: 120_000 });
   await page.waitForFunction(
     () => globalThis.player && globalThis.Autobuyer &&
       globalThis.OrekiManagedAutobuyerState && globalThis.OrekiManagedCrunchInterval,
