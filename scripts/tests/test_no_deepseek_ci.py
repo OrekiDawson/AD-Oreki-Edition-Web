@@ -69,6 +69,5 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertIn("fetch-depth: 0", body)
         self.assertIn("minuteOfDay >= 50", body)
 
-
 if __name__ == "__main__":
     unittest.main()
