@@ -1259,7 +1259,8 @@ export const OrekiEternityAutomation = {
    */
   realEternityAllowed() {
     try {
-      if (player.auto.eternity.isActive === true) return true;
+      // 未解锁时 isActive 可能只是 MOD 持久化的内部所有权状态，不能绕过首次驻留。
+      if (this._eternityAutobuyerUnlocked() && player.auto.eternity.isActive === true) return true;
       // [R116-01 P0] 首次永恒驻留期间不放行任何 MOD 发起的真实结算。
       // 与 Android challengeAutoStartAllowed() 的 dwell 首条判据同语义；dwell 为 0 时
       // （非首次永恒 / 玩家已开自动永恒 / 资格未成立）本行不改变既有行为。

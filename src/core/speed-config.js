@@ -29,6 +29,10 @@ function target_player() {
   return (typeof window !== "undefined" && window.player) ? window.player : null;
 }
 
+/**
+ * 新档默认倍率。与 Android `OrekiGamePace.DEFAULT_SPEED` 保持同一节奏起点；
+ * 已有玩家保存的合法倍率继续保留，不因升级被覆盖。
+ */
 export const GAME_SPEED_DEFAULT = 3000;
 export const GAME_SPEED_MIN = 1;
 /**
