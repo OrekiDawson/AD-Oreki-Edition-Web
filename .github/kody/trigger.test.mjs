@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   TRIGGER_BODY,
+  assertPaginationComplete,
   budgetDecision,
   countTriggersSince,
   dailyCommentsPath,
@@ -120,4 +121,10 @@ test("每日预算只读取当前仓库，另一仓库不阻断", () => {
   const path = dailyCommentsPath(repository, new Date("2026-11-20T16:00:00Z"));
   assert.match(path, new RegExp(`^/repos/${repository}/issues/comments`));
   assert.doesNotMatch(path, /AD-Oreki-Edition-Android/);
+});
+
+test("分页仍有下一页且达到上限时拒绝使用不完整数据", () => {
+  assert.doesNotThrow(() => assertPaginationComplete(false, 10, 10));
+  assert.doesNotThrow(() => assertPaginationComplete(true, 9, 10));
+  assert.throws(() => assertPaginationComplete(true, 10, 10), /incomplete/);
 });

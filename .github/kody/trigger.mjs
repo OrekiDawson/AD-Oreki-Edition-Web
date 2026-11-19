@@ -82,6 +82,12 @@ export function dailyCommentsPath(repository, since) {
   return `/repos/${repository}/issues/comments?since=${encodeURIComponent(since.toISOString())}&per_page=100`;
 }
 
+export function assertPaginationComplete(hasNextPage, pagesRead, maxPages) {
+  if (hasNextPage && pagesRead >= maxPages) {
+    throw new Error("GitHub API pagination exceeded; refusing an incomplete budget or dedupe view");
+  }
+}
+
 export function budgetDecision(repoTriggerCount, perRepoLimit) {
   if (!Number.isInteger(perRepoLimit) || perRepoLimit < 1) {
     throw new Error("per-repo trigger limit must be a positive integer");
@@ -162,6 +168,7 @@ async function listAllPages(path, token, maxPages = 10) {
     items.push(...await response.json());
     const link = response.headers.get("link") ?? "";
     const match = link.match(/<([^>]+)>;\s*rel="next"/);
+    assertPaginationComplete(Boolean(match), page + 1, maxPages);
     next = match ? match[1].replace("https://api.github.com", "") : "";
   }
   return items;
