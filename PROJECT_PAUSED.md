@@ -1,4 +1,6 @@
-# WEB DEVELOPMENT ACTIVE — AD-Oreki-Edition-Web
+# PROJECT ACTIVE — AD-Oreki-Edition-Web（历史暂停内容保留）
+
+> 2026-11-19 用户已明确解除 `PROJECT_PAUSED` 并启动 R120-01。以下自 2026-11-12 起的开发与恢复记录仅作历史追溯，不代表当前执行状态；当前规则以 `AGENTS.md` 为准。
 
 - 状态修正日期：2026-11-12（Asia/Hong_Kong）
 - 项目状态：**ACTIVE**，独立开发、测试及发布；不因 Android、AVD 或插件工作暂停。R101 的 Web 生产变更（autoEternity 门禁 + 教程/附录 F 文案）已合入源码
