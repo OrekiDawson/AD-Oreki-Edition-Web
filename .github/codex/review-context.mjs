@@ -7,6 +7,7 @@
  */
 
 import fs from "node:fs";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 export const REPOS = Object.freeze({
@@ -262,6 +263,114 @@ export async function buildPeerContext({ classification, token, owner, peerSha }
   };
 }
 
+const PATCH_EXCLUDES = [
+  /^reports\//,
+  /^docs\//,
+  /\.(?:png|jpe?g|webp|zip|apk|jar|lock)$/i,
+  /^pnpm-lock\.yaml$/,
+];
+
+export function patchPriority(source, path) {
+  const keyPaths = source === "android"
+    ? [
+        `${ANDROID_ROOT}OrekiAutomationScheduler.kt`,
+        `${ANDROID_ROOT}OrekiManagedAutobuyerAuthority.kt`,
+        `${ANDROID_ROOT}OrekiPlayerIntent.kt`,
+        `${ANDROID_ROOT}OrekiStageAuto.kt`,
+      ]
+    : [
+        "src/core/oreki-smart-executor.js",
+        "src/core/oreki-managed-autobuyer-state.js",
+        "src/core/oreki-managed-crunch-interval.js",
+        "src/game.js",
+      ];
+  if (keyPaths.includes(path)) return 0;
+  if (source === "android") {
+    if (path.startsWith(ANDROID_ROOT)) return 5;
+    if (path.startsWith("scripts/payload/smali/")) return 10;
+    if (path.includes("/src/test/") || path.startsWith("scripts/tests/")) return 20;
+    if (path.startsWith(".github/")) return 30;
+    if (path.startsWith("scripts/")) return 25;
+    return 40;
+  }
+  if (path.startsWith("src/core/")) return 5;
+  if (path.startsWith("src/")) return 10;
+  if (path.startsWith("scripts/tests/") || path.includes("/test/")) return 20;
+  if (path.startsWith("scripts/")) return 25;
+  if (path.startsWith(".github/")) return 30;
+  return 40;
+}
+
+export function selectPatchChunks(source, entries, maxBytes = 24000) {
+  const ordered = entries
+    .filter(entry => !PATCH_EXCLUDES.some(pattern => pattern.test(entry.path)))
+    .map(entry => ({ ...entry, priority: patchPriority(source, entry.path) }))
+    .sort((a, b) => a.priority - b.priority || a.path.localeCompare(b.path));
+  const included = [];
+  const partial = [];
+  const skipped = [];
+  let bytes = 0;
+  for (const entry of ordered) {
+    const remaining = Math.min(7000, maxBytes - bytes);
+    const clipped = clipPatch(entry.patch, remaining);
+    if (!clipped.text) {
+      skipped.push(entry.path);
+      continue;
+    }
+    included.push({ ...entry, patch: clipped.text });
+    bytes += Buffer.byteLength(clipped.text);
+    if (clipped.truncated) partial.push(entry.path);
+    if (bytes >= maxBytes) break;
+  }
+  return {
+    text: included.map(entry => entry.patch).join(""),
+    bytes,
+    rawBytes: ordered.reduce((sum, entry) => sum + Buffer.byteLength(entry.patch), 0),
+    included: included.map(entry => entry.path),
+    partial,
+    skipped,
+    truncated: skipped.length > 0 || partial.length > 0,
+  };
+}
+
+function clipPatch(patch, maxBytes) {
+  if (!Number.isFinite(maxBytes) || maxBytes <= 0) return { text: "", truncated: true };
+  if (Buffer.byteLength(patch) <= maxBytes) return { text: patch, truncated: false };
+  const lines = patch.split(/(?<=\n)/u);
+  const firstHunk = lines.findIndex(line => line.startsWith("@@"));
+  if (firstHunk < 0) return { text: "", truncated: true };
+  const output = [lines.slice(0, firstHunk).join("")];
+  let used = Buffer.byteLength(output[0]);
+  for (let index = firstHunk; index < lines.length;) {
+    let end = index + 1;
+    while (end < lines.length && !lines[end].startsWith("@@")) end += 1;
+    const hunk = lines.slice(index, end).join("");
+    const size = Buffer.byteLength(hunk);
+    if (used + size > maxBytes) break;
+    output.push(hunk);
+    used += size;
+    index = end;
+  }
+  return {
+    text: output.length > 1 ? output.join("") : "",
+    truncated: output.length > 1,
+  };
+}
+
+export function buildPatch({ source, files, base, head, maxBytes = 24000 }) {
+  const entries = files
+    .filter(path => !PATCH_EXCLUDES.some(pattern => pattern.test(path)))
+    .map(path => ({
+      path,
+      patch: execFileSync("git", [
+        "diff", "--unified=3", "--no-ext-diff", "--diff-filter=ACMR",
+        `${base}...${head}`, "--", path,
+      ], { encoding: "utf8", maxBuffer: 8 * 1024 * 1024 }),
+    }))
+    .filter(entry => entry.patch.length > 0);
+  return selectPatchChunks(source, entries, maxBytes);
+}
+
 function argument(name, fallback = "") {
   const index = process.argv.indexOf(`--${name}`);
   return index >= 0 && process.argv[index + 1] ? process.argv[index + 1] : fallback;
@@ -286,6 +395,20 @@ async function main() {
     if (!owner || !peerSha || !token) throw new Error("owner, peer-sha and GITHUB_TOKEN are required");
     const result = await buildPeerContext({ classification, token, owner, peerSha });
     fs.writeFileSync(out, `${result.text}\n`);
+    return;
+  }
+  if (mode === "patch") {
+    const source = argument("source");
+    const files = linesFromFile(argument("files"));
+    const result = buildPatch({
+      source,
+      files,
+      base: argument("base"),
+      head: argument("head"),
+      maxBytes: Number(argument("max-bytes", "24000")),
+    });
+    fs.writeFileSync(out, result.text);
+    fs.writeFileSync(argument("manifest-out"), `${JSON.stringify(result, null, 2)}\n`);
     return;
   }
   throw new Error(`unknown mode: ${mode}`);

@@ -28,7 +28,7 @@ jobs:
       issues: read
       pull-requests: read
     outputs:
-      should_review: ${{ steps.decision.outputs.should_review }}
+      should_review: ${{ steps.quota.outputs.should_review || 'false' }}
       reason: ${{ steps.decision.outputs.reason }}
       cross_repo: ${{ steps.classification.outputs.cross_repo || 'false' }}
       categories: ${{ steps.classification.outputs.categories || '' }}
@@ -36,6 +36,12 @@ jobs:
       peer_sha: ${{ steps.classification.outputs.peer_sha || '' }}
       classification_b64: ${{ steps.classification.outputs.classification_b64 || '' }}
       config_version: ${{ steps.config.outputs.value }}
+      review_identity: ${{ steps.quota.outputs.identity || steps.decision.outputs.identity || '' }}
+      quota_allowed: ${{ steps.quota.outputs.allowed || 'false' }}
+      quota_reused: ${{ steps.quota.outputs.reused || 'false' }}
+      quota_request_id: ${{ steps.quota.outputs.request_id || '' }}
+      quota_report_b64: ${{ steps.quota.outputs.report_b64 || '' }}
+      quota_notice: ${{ steps.quota.outputs.notice || steps.decision.outputs.notice || '' }}
     steps:
       - name: 验证必要 Secret 与 Variable 存在
         env:
@@ -64,20 +70,24 @@ jobs:
           version="$(sha256sum \
             .github/workflows/codex-deepseek-review.yml \
             .github/codex/deepseek-models.json \
-            .github/codex/review-context.mjs | sha256sum | cut -d' ' -f1)"
+            .github/codex/review-context.mjs \
+            .github/codex/audit-quota.mjs \
+            .github/codex/publish-review.mjs \
+            .github/codex/review-result.schema.json | sha256sum | cut -d' ' -f1)"
           echo "value=$version" >> "$GITHUB_OUTPUT"
 
-      - name: 检查峰时、同 Head SHA 与配置版本去重
+      - name: 检查 DeepSeek 峰时
         id: decision
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          DAILY_REVIEW_LIMIT: ${{ vars.OREKI_AUDIT_DAILY_LIMIT || '6' }}
           REVIEW_CONFIG_VERSION: ${{ steps.config.outputs.value }}
         with:
           script: |
-            const marker = '<!-- oreki-codex-deepseek-review:v1 -->';
+            core.setOutput('identity',
+              `peak|${context.repo.owner}/${context.repo.repo}|${process.env.PR_NUMBER}|` +
+              `${process.env.HEAD_SHA}|${process.env.REVIEW_CONFIG_VERSION}`);
             const now = new Date();
             const weekday = now.getUTCDay() >= 1 && now.getUTCDay() <= 5;
             const minuteOfDay = now.getUTCHours() * 60 + now.getUTCMinutes();
@@ -89,40 +99,12 @@ jobs:
             if (peak) {
               core.setOutput('should_review', 'false');
               core.setOutput('reason', 'deepseek-peak');
+              core.setOutput('notice', 'DeepSeek 峰时暂停，AI 审查未发起。');
               return;
             }
-            const limit = Math.max(1, Number(process.env.DAILY_REVIEW_LIMIT) || 6);
-            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'codex-deepseek-review.yml',
-              created: `>=${new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()}`,
-              per_page: 100,
-            });
-            if (runs.length > limit) {
-              await core.summary
-                .addRaw(`AI 审查已触发最近 24 小时预算上限（${limit} 次），本次跳过付费调用。`)
-                .write();
-              core.setOutput('should_review', 'false');
-              core.setOutput('reason', 'daily-budget');
-              return;
-            }
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number(process.env.PR_NUMBER),
-              per_page: 100,
-            });
-            const headMarker = `HEAD_SHA: ${process.env.HEAD_SHA}`;
-            const configMarker = `REVIEW_CONFIG_VERSION: ${process.env.REVIEW_CONFIG_VERSION}`;
-            const duplicate = comments.some(comment =>
-              comment.user && comment.user.login === 'oreki-audit[bot]' &&
-              comment.user.type === 'Bot' && comment.body &&
-              comment.body.includes(marker) && comment.body.includes(headMarker) &&
-              comment.body.includes(configMarker)
-            );
-            core.setOutput('should_review', duplicate ? 'false' : 'true');
-            core.setOutput('reason', duplicate ? 'same-head-reviewed' : 'ok');
+            core.setOutput('should_review', 'true');
+            core.setOutput('reason', 'ok');
+            core.setOutput('notice', '');
 
       - name: 生成跨仓只读安装令牌
         id: audit-read
@@ -165,6 +147,75 @@ jobs:
             echo "classification_b64=$(base64 -w0 "$review_dir/classified.json")"
           } >> "$GITHUB_OUTPUT"
 
+      - name: 生成共享配额写令牌
+        id: quota-token
+        if: steps.decision.outputs.should_review == 'true'
+        continue-on-error: true
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ vars.OREKI_AUDIT_APP_ID }}
+          private-key: ${{ secrets.OREKI_AUDIT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: AD-Oreki-Edition-Web
+          permission-contents: write
+
+      - name: 原子预占共享审查配额
+        id: quota
+        if: steps.decision.outputs.should_review == 'true'
+        env:
+          QUOTA_TOKEN: ${{ steps.quota-token.outputs.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CROSS_REPO: ${{ steps.classification.outputs.cross_repo }}
+          PEER_REPO: ${{ steps.classification.outputs.peer_repo }}
+          PEER_SHA: ${{ steps.classification.outputs.peer_sha }}
+          CONFIG_VERSION: ${{ steps.config.outputs.value }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          review_dir="$RUNNER_TEMP/quota"
+          mkdir -p "$review_dir"
+          peer_sha_for_identity="$PEER_SHA"
+          if [[ "$CROSS_REPO" != "true" ]]; then peer_sha_for_identity=""; fi
+          identity="$(printf '%s' \
+            "v1|${GITHUB_REPOSITORY}|${PR_NUMBER}|${HEAD_SHA}|${CONFIG_VERSION}|deepseek-flash|low|${CROSS_REPO}|${peer_sha_for_identity}" \
+            | sha256sum | cut -d' ' -f1)"
+          if [[ -n "${QUOTA_TOKEN:-}" ]] && GITHUB_TOKEN="$QUOTA_TOKEN" \
+            node .github/codex/audit-quota.mjs --mode reserve \
+              --identity "$identity" --repository "$GITHUB_REPOSITORY" \
+              --pr "$PR_NUMBER" --head-sha "$HEAD_SHA" \
+              --config-version "$CONFIG_VERSION" --cross-repo "$CROSS_REPO" \
+              --peer-repo "$PEER_REPO" --peer-sha "$peer_sha_for_identity" \
+              --out "$review_dir/result.json"; then
+            :
+          else
+            jq -n --arg date "$(TZ=Asia/Shanghai date +%F)" \
+              '{date:$date,limit:100,allowed:false,reused:false,reason:"quota-service-unavailable",record:null}' \
+              > "$review_dir/result.json"
+          fi
+          allowed="$(jq -r '.allowed' "$review_dir/result.json")"
+          reused="$(jq -r '.reused' "$review_dir/result.json")"
+          reason="$(jq -r '.reason' "$review_dir/result.json")"
+          should_review=false
+          if [[ "$allowed" == "true" || "$reused" == "true" ]]; then should_review=true; fi
+          case "$reason" in
+            daily-quota-exhausted) notice='Android/Web 当日共享 AI 审查配额已耗尽（100/100）。' ;;
+            quota-service-unavailable) notice='共享配额服务不可用，AI 审查暂缓。' ;;
+            identity-in-progress) notice='同一审查请求已有配额预占正在执行，本次不重复调用模型。' ;;
+            identity-complete) notice='' ;;
+            *) notice='' ;;
+          esac
+          {
+            echo "should_review=$should_review"
+            echo "allowed=$allowed"
+            echo "reused=$reused"
+            echo "reason=$reason"
+            echo "identity=$identity"
+            echo "request_id=$(jq -r '.record.requestId // ""' "$review_dir/result.json")"
+            echo "report_b64=$(jq -r '.record.report // ""' "$review_dir/result.json" | base64 -w0)"
+            echo "notice=$notice"
+          } >> "$GITHUB_OUTPUT"
+
   review:
     name: Codex + DeepSeek-Flash 只读审查
     needs: classify
@@ -174,9 +225,27 @@ jobs:
     permissions:
       contents: read
     outputs:
-      final_message: ${{ steps.codex.outputs.final-message }}
+      final_message: ${{ steps.codex.outputs.final-message || steps.reuse.outputs.report }}
     steps:
+      - name: 复用已完成的审查结果
+        id: reuse
+        if: needs.classify.outputs.quota_reused == 'true'
+        env:
+          REPORT_B64: ${{ needs.classify.outputs.quota_report_b64 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          report_file="$RUNNER_TEMP/reused-review.md"
+          printf '%s' "$REPORT_B64" | base64 -d > "$report_file"
+          {
+            echo 'report<<__OREKI_REUSED_REPORT__'
+            cat "$report_file"
+            echo
+            echo '__OREKI_REUSED_REPORT__'
+          } >> "$GITHUB_OUTPUT"
+
       - name: 检出受信任 Base，不保存凭据
+        if: needs.classify.outputs.quota_allowed == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ github.event.pull_request.base.sha }}
@@ -184,7 +253,7 @@ jobs:
           persist-credentials: false
 
       - name: 生成对端仓库只读令牌
-        if: needs.classify.outputs.cross_repo == 'true'
+        if: needs.classify.outputs.quota_allowed == 'true' && needs.classify.outputs.cross_repo == 'true'
         id: peer-read
         uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
         with:
@@ -194,7 +263,19 @@ jobs:
           repositories: AD-Oreki-Edition-Android,AD-Oreki-Edition-Web
           permission-contents: read
 
+      - name: 生成共享配额状态令牌
+        id: quota-write
+        if: needs.classify.outputs.quota_allowed == 'true'
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ vars.OREKI_AUDIT_APP_ID }}
+          private-key: ${{ secrets.OREKI_AUDIT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: AD-Oreki-Edition-Web
+          permission-contents: write
+
       - name: 生成有界审查上下文
+        if: needs.classify.outputs.quota_allowed == 'true'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -205,6 +286,7 @@ jobs:
           PEER_REPO: ${{ needs.classify.outputs.peer_repo }}
           PEER_SHA: ${{ needs.classify.outputs.peer_sha }}
           PEER_TOKEN: ${{ steps.peer-read.outputs.token || github.token }}
+          SOURCE_KIND: web
         shell: bash
         run: |
           set -euo pipefail
@@ -225,21 +307,16 @@ jobs:
             ':(exclude)*.webp' ':(exclude)*.zip' ':(exclude)*.apk' \
             ':(exclude)*.jar' ':(exclude)*.lock' ':(exclude)pnpm-lock.yaml' \
             > "$review_dir/patch_files.txt"
-          git diff --unified=8 --no-ext-diff --diff-filter=ACMR \
-            "${BASE_SHA}...${HEAD_SHA}" -- \
-            . ':(exclude)reports/**' ':(exclude)docs/**' \
-            ':(exclude)*.png' ':(exclude)*.jpg' ':(exclude)*.jpeg' \
-            ':(exclude)*.webp' ':(exclude)*.zip' ':(exclude)*.apk' \
-            ':(exclude)*.jar' ':(exclude)*.lock' ':(exclude)pnpm-lock.yaml' \
-            > "$review_dir/full.patch"
-          raw_bytes="$(wc -c < "$review_dir/full.patch")"
-          head -c 24000 "$review_dir/full.patch" > "$review_dir/review.patch"
+          node .github/codex/review-context.mjs \
+            --mode patch --source "$SOURCE_KIND" --files "$review_dir/files.txt" \
+            --base "$BASE_SHA" --head "$HEAD_SHA" --max-bytes 24000 \
+            --out "$review_dir/review.patch" \
+            --manifest-out "$review_dir/patch-manifest.json"
+          raw_bytes="$(jq -r '.rawBytes' "$review_dir/patch-manifest.json")"
           review_bytes="$(wc -c < "$review_dir/review.patch")"
-          if (( raw_bytes > review_bytes )); then
-            patch_truncated=true
-          else
-            patch_truncated=false
-          fi
+          patch_truncated="$(jq -r '.truncated' "$review_dir/patch-manifest.json")"
+          patch_skipped="$(jq -r '.skipped | join(\",\")' "$review_dir/patch-manifest.json")"
+          patch_included="$(jq -r '.included | join(\",\")' "$review_dir/patch-manifest.json")"
           {
             echo "BASE_SHA=$BASE_SHA"
             echo "HEAD_SHA=$HEAD_SHA"
@@ -251,6 +328,8 @@ jobs:
             echo "RAW_DIFF_BYTES=$raw_bytes"
             echo "REVIEW_DIFF_BYTES=$review_bytes"
             echo "PATCH_TRUNCATED=$patch_truncated"
+            echo "PATCH_INCLUDED_FILES=$patch_included"
+            echo "PATCH_SKIPPED_FILES=$patch_skipped"
             echo "PATCH_EXCLUDED_PATTERNS=docs/**;reports/**;binary-media;archives;jars;lockfiles"
             echo "--- files.txt ---"
             cat "$review_dir/files.txt"
@@ -264,9 +343,22 @@ jobs:
             --owner "$GITHUB_REPOSITORY_OWNER" --peer-sha "$PEER_SHA" \
             --out "$review_dir/peer-context.md"
           echo "PEER_CONTEXT_BYTES=$(wc -c < "$review_dir/peer-context.md")" >> "$review_dir/manifest.txt"
-          rm -f "$review_dir/full.patch"
+
+      - name: 标记模型调用开始
+        id: quota-start
+        if: needs.classify.outputs.quota_allowed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ steps.quota-write.outputs.token }}
+          IDENTITY: ${{ needs.classify.outputs.review_identity }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node .github/codex/audit-quota.mjs --mode transition \
+            --identity "$IDENTITY" --status model_started \
+            --out "$RUNNER_TEMP/quota-started.json"
 
       - name: 准备 Codex DeepSeek 模型元数据
+        if: needs.classify.outputs.quota_allowed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -282,6 +374,7 @@ jobs:
 
       - name: 运行只读代码审查
         id: codex
+        if: needs.classify.outputs.quota_allowed == 'true'
         uses: openai/codex-action@306c6a196a99dcc6582530c396a19d2672d5e9ec # v1.14
         with:
           openai-api-key: ${{ secrets.OREKI_AUDIT_LLM_KEY }}
@@ -291,6 +384,8 @@ jobs:
           codex-version: "0.170.0"
           codex-home: ${{ runner.temp }}/codex-home
           working-directory: ${{ runner.temp }}/review
+          output-file: ${{ runner.temp }}/review/review-result.md
+          output-schema-file: ${{ github.workspace }}/.github/codex/review-result.schema.json
           permission-profile: ":read-only"
           safety-strategy: drop-sudo
           codex-args: '["--ephemeral"]'
@@ -316,21 +411,67 @@ jobs:
 
             仅报告有实质依据的问题。每项包含：严重程度、文件位置、原因、触发条件、最小修复建议。
             没有确认问题时只输出“未发现可确认问题”，不得声称代码完全无 Bug。
-            输出简体中文 Markdown，控制在 4000 字以内，必须包含审查状态（完成/部分完成/未完成）、
-            源 PR 与 Head SHA、是否跨仓、对端参考 SHA、实际覆盖范围、可确认问题、未覆盖或待确认风险。
-            不要输出密钥或环境变量值。
+            只输出符合 output schema 的一个 JSON 对象，不要 Markdown 围栏或额外说明。
+            `findings` 只放能准确绑定到本 PR Diff 的问题；`line` 是目标侧结束行号，
+            删除行使用 LEFT，新增/上下文行使用 RIGHT；多行问题提供 start_line/start_side。
+            只有能够确定完整替换代码时才填 `suggestion`，否则省略。无法定位的问题放入
+            `unmapped_findings`，不得编造 path/line。`summary` 保持简短，问题细节放 findings。
+            covered_files/uncovered_files 必须根据实际读到的输入填写。不要输出密钥。
+
+      - name: 持久化模型调用结果
+        if: >-
+          always() &&
+          needs.classify.outputs.quota_allowed == 'true' &&
+          steps.quota-start.outcome == 'success'
+        env:
+          GITHUB_TOKEN: ${{ steps.quota-write.outputs.token }}
+          IDENTITY: ${{ needs.classify.outputs.review_identity }}
+          CODEX_OUTCOME: ${{ steps.codex.outcome }}
+          REPORT_PATH: ${{ runner.temp }}/review/review-result.md
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=model_failed
+          report_arg=()
+          if [[ "$CODEX_OUTCOME" == "success" && -s "$REPORT_PATH" ]]; then
+            status=model_succeeded
+            report_arg=(--report "$REPORT_PATH")
+          fi
+          node .github/codex/audit-quota.mjs --mode transition \
+            --identity "$IDENTITY" --status "$status" "${report_arg[@]}" \
+            --out "$RUNNER_TEMP/quota-finished.json"
 
   comment:
-    name: 使用 Oreki Audit App 更新审查评论
+    name: 使用 Oreki Audit App 发布代码审查
     needs: [classify, review]
-    if: needs.review.outputs.final_message != ''
+    if: >-
+      needs.review.outputs.final_message != '' ||
+      needs.classify.outputs.quota_notice != ''
     runs-on: ubuntu-latest
     timeout-minutes: 3
     permissions:
       contents: read
     steps:
-      - name: 生成 Oreki Audit App 安装令牌
-        id: audit-app
+      - name: 检出受信任发布工具
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: 生成 Pull Request Review 写令牌
+        id: review-app
+        continue-on-error: true
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ vars.OREKI_AUDIT_APP_ID }}
+          private-key: ${{ secrets.OREKI_AUDIT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-pull-requests: write
+
+      - name: 生成安全降级评论令牌
+        id: comment-app
         uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
         with:
           app-id: ${{ vars.OREKI_AUDIT_APP_ID }}
@@ -338,64 +479,22 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
           permission-issues: write
-          permission-pull-requests: write
 
-      - name: 创建或更新单一 AI 审查评论
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+      - name: 校验并发布 Pull Request Review
+        id: publish
         env:
-          REVIEW_BODY: ${{ needs.review.outputs.final_message }}
+          GITHUB_TOKEN: ${{ steps.comment-app.outputs.token }}
+          REVIEW_TOKEN: ${{ steps.review-app.outputs.token }}
+          COMMENT_TOKEN: ${{ steps.comment-app.outputs.token }}
+          REVIEW_RESULT: ${{ needs.review.outputs.final_message }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          REVIEW_IDENTITY: ${{ needs.classify.outputs.review_identity }}
           REVIEW_CONFIG_VERSION: ${{ needs.classify.outputs.config_version }}
-          CROSS_REPO: ${{ needs.classify.outputs.cross_repo }}
-          CATEGORIES: ${{ needs.classify.outputs.categories }}
-          PEER_REPO: ${{ needs.classify.outputs.peer_repo }}
-          PEER_SHA: ${{ needs.classify.outputs.peer_sha }}
-        with:
-          github-token: ${{ steps.audit-app.outputs.token }}
-          script: |
-            const marker = '<!-- oreki-codex-deepseek-review:v1 -->';
-            const review = String(process.env.REVIEW_BODY || '')
-              .replaceAll(marker, '')
-              .replaceAll('@', '@\u200b')
-              .slice(0, 30000);
-            const body = [
-              marker,
-              '### Codex + DeepSeek-Flash 审查（非阻断）',
-              '',
-              `HEAD_SHA: ${process.env.HEAD_SHA}`,
-              `REVIEW_CONFIG_VERSION: ${process.env.REVIEW_CONFIG_VERSION}`,
-              `CROSS_REPO: ${process.env.CROSS_REPO}`,
-              `CATEGORIES: ${process.env.CATEGORIES || '(none)'}`,
-              `PEER_REPO: ${process.env.PEER_REPO || '(none)'}`,
-              `PEER_SHA: ${process.env.PEER_SHA || '(none)'}`,
-              '',
-              review,
-              '',
-              '> 模型：`deepseek-flash`（low effort）；权限：只读；Token/费用：Action 未返回，标记 `unknown`。',
-            ].join('\n');
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number(process.env.PR_NUMBER),
-              per_page: 100,
-            });
-            const previous = comments.find(comment =>
-              comment.user && comment.user.login === 'oreki-audit[bot]' &&
-              comment.user.type === 'Bot' && comment.body && comment.body.includes(marker)
-            );
-            if (previous) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: previous.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: Number(process.env.PR_NUMBER),
-                body,
-              });
-            }
+          QUOTA_NOTICE: ${{ needs.classify.outputs.quota_notice }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          result_file="$RUNNER_TEMP/final-review.json"
+          printf '%s' "$REVIEW_RESULT" > "$result_file"
+          REVIEW_RESULT_PATH="$result_file" node .github/codex/publish-review.mjs

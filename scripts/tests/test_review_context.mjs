@@ -8,6 +8,7 @@ import {
   classify,
   buildPeerContext,
   extractRelevant,
+  selectPatchChunks,
 } from "../../.github/codex/review-context.mjs";
 
 const androidScheduler = classify("android", [
@@ -51,6 +52,15 @@ const skipped = await buildPeerContext({
 assert.match(skipped.text, /CROSS_REPO=false/);
 assert.match(skipped.text, /未读取对端仓库/);
 assert.deepEqual(skipped.filesRead, []);
+
+const prioritized = selectPatchChunks("web", [
+  { path: ".github/workflows/ci.yml", patch: "c".repeat(100) },
+  { path: "scripts/tests/late.mjs", patch: "t".repeat(100) },
+  { path: "src/core/oreki-smart-executor.js", patch: "s".repeat(120) },
+], 150);
+assert.deepEqual(prioritized.included, ["src/core/oreki-smart-executor.js"]);
+assert.deepEqual(prioritized.skipped.sort(), [".github/workflows/ci.yml", "scripts/tests/late.mjs"]);
+assert.equal(prioritized.truncated, true);
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "review-context-"));
 const file = path.join(tmp, "files.txt");
