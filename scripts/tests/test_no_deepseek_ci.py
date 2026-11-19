@@ -8,6 +8,8 @@ import json
 import unittest
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_WORKFLOW = ROOT / ".github/workflows/codex-deepseek-review.yml"
 
@@ -57,34 +59,44 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertTrue(REVIEW_WORKFLOW.exists())
         self.assertTrue((ROOT / ".github/codex/deepseek-models.json").exists())
         self.assertTrue((ROOT / ".github/codex/review-context.mjs").exists())
+        self.assertTrue((ROOT / ".github/codex/review-batches.mjs").exists())
+        self.assertTrue((ROOT / ".github/codex/review-policy.md").exists())
         self.assertTrue((ROOT / ".github/codex/audit-quota.mjs").exists())
         self.assertTrue((ROOT / ".github/codex/publish-review.mjs").exists())
         self.assertTrue((ROOT / ".github/codex/review-result.schema.json").exists())
         body = REVIEW_WORKFLOW.read_text(encoding="utf-8")
+        workflow = yaml.safe_load(body)
         self.assertIn("pull_request_target:", body)
         self.assertNotIn("\n  pull_request:\n", body)
         self.assertIn("github.event.pull_request.head.repo.full_name == github.repository", body)
         self.assertIn("ref: ${{ github.event.pull_request.base.sha }}", body)
         self.assertIn("refs/pull/${PR_NUMBER}/head:refs/review/head", body)
-        self.assertIn("working-directory: ${{ runner.temp }}/review", body)
-        self.assertIn("PATCH_TRUNCATED=", body)
-        self.assertIn("PATCH_EXCLUDED_PATTERNS=", body)
+        self.assertIn("working-directory: ${{ runner.temp }}/batch", body)
+        self.assertNotIn("PATCH_TRUNCATED=", body)
         self.assertNotIn("OREKI_AUDIT_DAILY_LIMIT", body)
         self.assertNotIn("daily-budget", body)
         self.assertIn("audit-quota.mjs", body)
-        self.assertIn("daily-quota-exhausted", body)
-        self.assertIn("独立 Quota App 变量/私钥未配置", body)
+        quota_source = (ROOT / ".github/codex/audit-quota.mjs").read_text(encoding="utf-8")
+        self.assertIn("daily-quota-exhausted", quota_source)
+        self.assertIn("quota-service-unavailable", body)
+        self.assertIn("AI_REVIEW_NOT_EXECUTED", body)
+        self.assertIn("plan_notice", body)
         self.assertIn("model_started", body)
         self.assertIn("model_succeeded", body)
-        self.assertIn("--mode patch", body)
+        self.assertIn("--mode plan", body)
+        self.assertIn("--max-bytes 48000", body)
+        self.assertIn("fromJSON(needs.classify.outputs.batches_json)", body)
+        self.assertIn("review-batches.mjs", body)
+        self.assertIn('batch-${BATCH_ID}.json', body)
+        self.assertIn('meta-${BATCH_ID}.json', body)
+        context_source = (ROOT / ".github/codex/review-context.mjs").read_text(encoding="utf-8")
+        self.assertIn("HUNK_POLICY=complete-hunks-only", context_source)
+        self.assertIn("--function-context", context_source)
+        self.assertIn("review-policy.md", body)
         self.assertNotIn("head -c 24000", body)
         self.assertIn("classify:", body)
-        self.assertIn("CATEGORIES=", body)
-        self.assertIn("CROSS_REPO=", body)
-        self.assertIn("PEER_SHA=", body)
-        self.assertIn("PATCH_INCLUDED_FILES=", body)
-        self.assertIn("PATCH_SKIPPED_FILES=", body)
-        self.assertIn("peer-context.md", body)
+        self.assertIn("本批次类别", body)
+        self.assertIn("PEER_CONTEXT", body)
         self.assertIn("AD-Oreki-Edition-Android,AD-Oreki-Edition-Web", body)
         self.assertIn("permission-contents: read", body)
         self.assertIn("permission-contents: write", body)
@@ -94,6 +106,8 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertIn("publish-review.mjs", body)
         publisher = (ROOT / ".github/codex/publish-review.mjs").read_text(encoding="utf-8")
         self.assertIn("pulls/${pr}/reviews", publisher)
+        self.assertIn("pulls/${pr}/comments", publisher)
+        self.assertIn("historicalFindingKeys", publisher)
         self.assertIn("event: \"COMMENT\"", publisher)
         self.assertIn("```suggestion", publisher)
         self.assertIn("comment.user?.login === \"oreki-audit[bot]\"", publisher)
@@ -106,8 +120,8 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertIn("OREKI_AUDIT_APP_PRIVATE_KEY", body)
         self.assertIn("OREKI_AUDIT_QUOTA_APP_ID", body)
         self.assertIn("OREKI_AUDIT_QUOTA_APP_PRIVATE_KEY", body)
-        quota_steps = body.split("- name: 生成共享配额写令牌", 1)[1]
-        quota_steps = quota_steps.split("- name: 原子预占共享审查配额", 1)[0]
+        quota_steps = body.split("- name: 生成共享配额状态令牌", 1)[1]
+        quota_steps = quota_steps.split("- name: 原子预占本批配额", 1)[0]
         self.assertIn("permission-contents: write", quota_steps)
         self.assertIn("repositories: AD-Oreki-Edition-Web", quota_steps)
         self.assertNotIn("permission-pull-requests: write", quota_steps)
@@ -120,6 +134,12 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertGreaterEqual(flash["truncation_policy"]["limit"], 65536)
         self.assertIn("fetch-depth: 0", body)
         self.assertIn("minuteOfDay >= 50", body)
+        self.assertEqual(
+            {"classify", "review", "aggregate", "publish"},
+            set(workflow["jobs"]),
+        )
+        self.assertIn("fromJSON", workflow["jobs"]["review"]["strategy"]["matrix"]["batch"])
+        self.assertIn("review-batches.mjs", body)
 
     def test_output_schema_uses_strict_objects(self):
         schema = json.loads(

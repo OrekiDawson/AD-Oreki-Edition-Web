@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {
   findingBody,
   findingLocationValid,
+  findingThreadKey,
+  historicalFindingKeys,
   validDiffLines,
 } from "../../.github/codex/publish-review.mjs";
 
@@ -55,5 +57,30 @@ assert.match(body, /```suggestion/);
 assert.match(body, /Math\.max/);
 assert.match(body, /@\u200bowner/);
 assert.match(body, /'@safe'/);
+const finding = {
+  path: "src/example.js",
+  line: 12,
+  side: "RIGHT",
+  title: "边界错误",
+};
+const historical = historicalFindingKeys([{
+  id: 1,
+  user: { login: "oreki-audit[bot]" },
+  path: "src/example.js",
+  line: 12,
+  side: "RIGHT",
+  body: "**HIGH · 边界错误**\n\n原因：已发布",
+}]);
+assert.ok(historical.has(findingThreadKey(finding)));
+const replyOnly = historicalFindingKeys([{
+  id: 2,
+  user: { login: "oreki-audit[bot]" },
+  in_reply_to_id: 1,
+  path: "src/example.js",
+  line: 12,
+  side: "RIGHT",
+  body: "**HIGH · 边界错误**",
+}]);
+assert.equal(replyOnly.size, 0);
 
 console.log("PASS  R120-01 GitHub Review 定位与 suggestion 夹具");

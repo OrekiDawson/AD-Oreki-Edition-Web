@@ -8,7 +8,8 @@ import {
   classify,
   buildPeerContext,
   extractRelevant,
-  selectPatchChunks,
+  planPatchBatches,
+  splitPatchHunks,
 } from "../../.github/codex/review-context.mjs";
 
 const androidScheduler = classify("android", [
@@ -53,14 +54,50 @@ assert.match(skipped.text, /CROSS_REPO=false/);
 assert.match(skipped.text, /未读取对端仓库/);
 assert.deepEqual(skipped.filesRead, []);
 
-const prioritized = selectPatchChunks("web", [
-  { path: ".github/workflows/ci.yml", patch: "c".repeat(100) },
-  { path: "scripts/tests/late.mjs", patch: "t".repeat(100) },
-  { path: "src/core/oreki-smart-executor.js", patch: "s".repeat(120) },
-], 150);
-assert.deepEqual(prioritized.included, ["src/core/oreki-smart-executor.js"]);
-assert.deepEqual(prioritized.skipped.sort(), [".github/workflows/ci.yml", "scripts/tests/late.mjs"]);
-assert.equal(prioritized.truncated, true);
+const firstPatch = [
+  "diff --git a/src/a.js b/src/a.js\n",
+  "--- a/src/a.js\n",
+  "+++ b/src/a.js\n",
+  "@@ -1 +1 @@\n",
+  "-old-a\n",
+  "+new-a\n",
+  "@@ -20 +20 @@\n",
+  "-old-a2\n",
+  "+new-a2\n",
+].join("");
+const secondPatch = [
+  "diff --git a/src/b.js b/src/b.js\n",
+  "--- a/src/b.js\n",
+  "+++ b/src/b.js\n",
+  "@@ -1 +1 @@\n",
+  "-old-b\n",
+  "+new-b\n",
+].join("");
+assert.equal(splitPatchHunks(firstPatch).hunks.length, 2);
+const batches = planPatchBatches("web", [
+  { path: "src/a.js", patch: firstPatch },
+  { path: "src/b.js", patch: secondPatch },
+], 120);
+assert.ok(batches.batches.length >= 2);
+assert.equal(batches.batches.map(batch => batch.text).join("")
+  .match(/new-a2/gu).length, 1);
+assert.equal(batches.batches.map(batch => batch.text).join("")
+  .match(/new-b/gu).length, 1);
+for (const batch of batches.batches) {
+  for (const file of batch.files) {
+    assert.ok(file.includedHunks.length >= 1);
+  }
+}
+const oversized = planPatchBatches("web", [
+  { path: "src/a.js", patch: firstPatch },
+], 32, ["src/a.js", "docs/deleted-evidence.md"]);
+assert.ok(oversized.batches.every(batch => batch.oversized.includes("src/a.js")));
+assert.match(oversized.batches.map(batch => batch.text).join(""), /new-a2/);
+assert.deepEqual(oversized.emptyFiles, ["docs/deleted-evidence.md"]);
+const emptyFilePlan = planPatchBatches("web", [
+  { path: "src/a.js", patch: firstPatch },
+], 120, ["src/a.js", "src/empty.js"]);
+assert.deepEqual(emptyFilePlan.emptyFiles, ["src/empty.js"]);
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "review-context-"));
 const file = path.join(tmp, "files.txt");

@@ -74,6 +74,42 @@ export function findingBody(finding) {
   return lines.join("\n");
 }
 
+function normalizedTitle(value) {
+  return safeText(value)
+    .replaceAll("\u200b", "")
+    .replace(/\s+/gu, " ")
+    .trim()
+    .toLowerCase();
+}
+
+export function findingThreadKey(finding) {
+  return [
+    finding.path || "",
+    finding.side || "RIGHT",
+    finding.line || "",
+    normalizedTitle(finding.title),
+  ].join("|");
+}
+
+export function historicalFindingKeys(comments) {
+  const keys = new Set();
+  for (const comment of comments) {
+    if (comment.user?.login !== "oreki-audit[bot]" || comment.in_reply_to_id) continue;
+    const title = String(comment.body || "").match(
+      /\*\*(?:CRITICAL|HIGH|MEDIUM|LOW) · (.+?)\*\*/u,
+    )?.[1];
+    const line = comment.line ?? comment.original_line;
+    if (!title || !comment.path || !line) continue;
+    keys.add(findingThreadKey({
+      path: comment.path,
+      side: comment.side || "RIGHT",
+      line,
+      title,
+    }));
+  }
+  return keys;
+}
+
 function unmappedBody(findings) {
   if (!findings.length) return "";
   return [
@@ -129,13 +165,21 @@ function output(name, value) {
   }
 }
 
-async function fallbackComment({ token, repository, pr, identity, notice, text }) {
+async function fallbackComment({
+  token,
+  repository,
+  pr,
+  identity,
+  notice,
+  text,
+  label = "AI_REVIEW_NOT_EXECUTED",
+}) {
   const [owner, repo] = repository.split("/");
   const body = [
     COMMENT_MARKER,
     "### Oreki Audit（行内审查未能发布）",
     "",
-    "AI_REVIEW_NOT_EXECUTED",
+    label,
     "",
     `REVIEW_IDENTITY: ${identity}`,
     "",
@@ -184,6 +228,7 @@ async function main() {
       identity,
       notice,
       text,
+      label: result ? "AI_REVIEW_EXECUTED_PUBLISH_FAILED" : "AI_REVIEW_NOT_EXECUTED",
     });
     output("mode", "comment-fallback");
     return;
@@ -206,15 +251,29 @@ async function main() {
     }
 
     if (!result) {
-      await fallbackComment({ token: commentToken, repository, pr, identity, notice, text });
+      await fallbackComment({
+        token: commentToken,
+        repository,
+        pr,
+        identity,
+        notice,
+        text,
+        label: "AI_REVIEW_NOT_EXECUTED",
+      });
       output("mode", "comment-fallback");
       return;
     }
 
     const files = await paginate(`/repos/${owner}/${repo}/pulls/${pr}/files`, reviewToken);
     const diffLines = validDiffLines(files);
+    const existingComments = await paginate(
+      `/repos/${owner}/${repo}/pulls/${pr}/comments`,
+      reviewToken,
+    );
+    const existingThreadKeys = historicalFindingKeys(existingComments);
     const comments = [];
     const unmapped = [...(result.unmapped_findings || [])];
+    let duplicateThreads = 0;
     for (const finding of result.findings || []) {
       if (!findingLocationValid(finding, diffLines)) {
         unmapped.push({
@@ -224,6 +283,10 @@ async function main() {
           trigger: finding.trigger,
           fix: finding.fix,
         });
+        continue;
+      }
+      if (existingThreadKeys.has(findingThreadKey(finding))) {
+        duplicateThreads += 1;
         continue;
       }
       const comment = {
@@ -247,6 +310,10 @@ async function main() {
       "",
       safeText(result.summary),
       "",
+      duplicateThreads
+        ? `已有 ${duplicateThreads} 个相同历史行内线程，本次未重复创建。`
+        : "",
+      "",
       unmappedBody(unmapped),
       "",
       `> 覆盖 ${result.covered_files?.length || 0} 个文件；未覆盖 ${result.uncovered_files?.length || 0} 个文件。`,
@@ -258,6 +325,7 @@ async function main() {
     output("mode", "review");
     output("review_url", review.html_url);
     output("threads", comments.length);
+    output("duplicate_threads", duplicateThreads);
     output("suggestions", comments.filter(comment => comment.body.includes("```suggestion")).length);
   } catch (error) {
     await fallbackComment({
@@ -267,6 +335,7 @@ async function main() {
       identity,
       notice: `GitHub Review 发布失败：${error.message}`,
       text,
+      label: result ? "AI_REVIEW_EXECUTED_PUBLISH_FAILED" : "AI_REVIEW_NOT_EXECUTED",
     });
     output("mode", "comment-fallback");
     output("publish_error", error.message);

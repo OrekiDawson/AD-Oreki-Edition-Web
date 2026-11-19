@@ -7,6 +7,7 @@
  */
 
 import fs from "node:fs";
+import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
@@ -77,12 +78,15 @@ const PEER_FILES = Object.freeze({
       "src/core/oreki-smart-executor.js",
       "src/core/oreki-managed-autobuyer-state.js",
       "src/core/oreki-managed-crunch-interval.js",
+      "src/core/constants.js",
+      "scripts/check_managed_autobuyer_state.mjs",
     ],
     "stage-gates": [
       "src/game.js",
       "src/core/oreki-eternity-automation.js",
       "src/core/oreki-early-automation.js",
       "src/core/oreki-reality-automation.js",
+      "scripts/test-stage-beat-cap.mjs",
     ],
     economy: [
       "src/core/speed-config.js",
@@ -222,8 +226,9 @@ export async function buildPeerContext({ classification, token, owner, peerSha }
   const filesRead = [];
   let truncated = false;
   let totalBytes = Buffer.byteLength(header.join("\n"));
-  const maxTotal = 18000;
-  for (const path of classification.peerFiles.slice(0, 8)) {
+  // 质量优先：保留必要常量与行为测试，单批最多 24 KiB；超限明确标记，不静默截断。
+  const maxTotal = 24000;
+  for (const path of classification.peerFiles.slice(0, 12)) {
     if (totalBytes >= maxTotal) {
       truncated = true;
       break;
@@ -301,74 +306,167 @@ export function patchPriority(source, path) {
   return 40;
 }
 
-export function selectPatchChunks(source, entries, maxBytes = 24000) {
+export function splitPatchHunks(patch) {
+  const lines = patch.split(/(?<=\n)/u);
+  const firstHunk = lines.findIndex(line => line.startsWith("@@"));
+  if (firstHunk < 0) return { header: patch, hunks: [] };
+  const header = lines.slice(0, firstHunk).join("");
+  const hunks = [];
+  for (let index = firstHunk; index < lines.length;) {
+    let end = index + 1;
+    while (end < lines.length && !lines[end].startsWith("@@")) end += 1;
+    hunks.push(lines.slice(index, end).join(""));
+    index = end;
+  }
+  return { header, hunks };
+}
+
+export function planPatchBatches(
+  source,
+  entries,
+  maxBytes = 48000,
+  sourceFiles = entries.map(entry => entry.path),
+) {
+  const entryPaths = new Set(entries.map(entry => entry.path));
   const ordered = entries
     .filter(entry => !PATCH_EXCLUDES.some(pattern => pattern.test(entry.path)))
     .map(entry => ({ ...entry, priority: patchPriority(source, entry.path) }))
     .sort((a, b) => a.priority - b.priority || a.path.localeCompare(b.path));
-  const included = [];
-  const partial = [];
-  const skipped = [];
-  let bytes = 0;
+  const builders = [];
+  let current = { bytes: 0, pieces: [], files: new Map(), oversized: [] };
+
+  const closeBatch = () => {
+    if (!current.pieces.length) return;
+    builders.push({
+      ...current,
+      text: current.pieces.join(""),
+      files: [...current.files.values()],
+    });
+    current = { bytes: 0, pieces: [], files: new Map(), oversized: [] };
+  };
+
   for (const entry of ordered) {
-    const remaining = Math.min(7000, maxBytes - bytes);
-    const clipped = clipPatch(entry.patch, remaining);
-    if (!clipped.text) {
-      skipped.push(entry.path);
-      continue;
+    const { header, hunks } = splitPatchHunks(entry.patch);
+    const pieces = hunks.length ? hunks.map(hunk => `${header}${hunk}`) : [entry.patch];
+    const categories = classify(source, [entry.path]).categories;
+    for (let index = 0; index < pieces.length; index += 1) {
+      const piece = pieces[index];
+      const size = Buffer.byteLength(piece);
+      if (current.bytes > 0 && current.bytes + size > maxBytes) closeBatch();
+      if (size > maxBytes && current.pieces.length === 0) current.oversized.push(entry.path);
+      current.pieces.push(piece);
+      current.bytes += size;
+      const previous = current.files.get(entry.path) || {
+        path: entry.path,
+        categories,
+        totalHunks: hunks.length,
+        includedHunks: [],
+      };
+      previous.includedHunks.push(hunks.length ? index + 1 : 0);
+      current.files.set(entry.path, previous);
     }
-    included.push({ ...entry, patch: clipped.text });
-    bytes += Buffer.byteLength(clipped.text);
-    if (clipped.truncated) partial.push(entry.path);
-    if (bytes >= maxBytes) break;
   }
+  closeBatch();
+
   return {
-    text: included.map(entry => entry.patch).join(""),
-    bytes,
+    batches: builders.map((batch, index) => {
+      const id = `b${String(index + 1).padStart(2, "0")}`;
+      return {
+        id,
+        bytes: batch.bytes,
+        oversized: [...new Set(batch.oversized)],
+        categories: [...new Set(batch.files.flatMap(file => file.categories))],
+        files: batch.files,
+        text: batch.text,
+      };
+    }),
     rawBytes: ordered.reduce((sum, entry) => sum + Buffer.byteLength(entry.patch), 0),
-    included: included.map(entry => entry.path),
-    partial,
-    skipped,
-    truncated: skipped.length > 0 || partial.length > 0,
+    excludedFiles: entries
+      .filter(entry => PATCH_EXCLUDES.some(pattern => pattern.test(entry.path)))
+      .map(entry => entry.path),
+    emptyFiles: sourceFiles.filter(path => !entryPaths.has(path)),
+    sourceFiles,
   };
 }
 
-function clipPatch(patch, maxBytes) {
-  if (!Number.isFinite(maxBytes) || maxBytes <= 0) return { text: "", truncated: true };
-  if (Buffer.byteLength(patch) <= maxBytes) return { text: patch, truncated: false };
-  const lines = patch.split(/(?<=\n)/u);
-  const firstHunk = lines.findIndex(line => line.startsWith("@@"));
-  if (firstHunk < 0) return { text: "", truncated: true };
-  const output = [lines.slice(0, firstHunk).join("")];
-  let used = Buffer.byteLength(output[0]);
-  for (let index = firstHunk; index < lines.length;) {
-    let end = index + 1;
-    while (end < lines.length && !lines[end].startsWith("@@")) end += 1;
-    const hunk = lines.slice(index, end).join("");
-    const size = Buffer.byteLength(hunk);
-    if (used + size > maxBytes) break;
-    output.push(hunk);
-    used += size;
-    index = end;
-  }
-  return {
-    text: output.length > 1 ? output.join("") : "",
-    truncated: output.length > 1,
-  };
-}
-
-export function buildPatch({ source, files, base, head, maxBytes = 24000 }) {
-  const entries = files
-    .filter(path => !PATCH_EXCLUDES.some(pattern => pattern.test(path)))
+function readPatchEntries(files, base, head) {
+  return files
     .map(path => ({
       path,
       patch: execFileSync("git", [
-        "diff", "--unified=3", "--no-ext-diff", "--diff-filter=ACMR",
+        "diff", "--function-context", "--no-ext-diff", "--diff-filter=ACDMR",
         `${base}...${head}`, "--", path,
       ], { encoding: "utf8", maxBuffer: 8 * 1024 * 1024 }),
     }))
     .filter(entry => entry.patch.length > 0);
-  return selectPatchChunks(source, entries, maxBytes);
+}
+
+function peerContextForCategory(classification, category, token, owner, peerSha) {
+  return buildPeerContext({
+    classification: {
+      ...classification,
+      categories: [category],
+      peerFiles: PEER_FILES[classification.source][category] || [],
+      crossRepo: true,
+    },
+    token,
+    owner,
+    peerSha,
+  });
+}
+
+async function buildBatchPlan({
+  source,
+  files,
+  base,
+  head,
+  maxBytes = 48000,
+  classification,
+  owner,
+  peerSha,
+  peerToken,
+}) {
+  const entries = readPatchEntries(files, base, head);
+  const rawPlan = planPatchBatches(source, entries, maxBytes, files);
+  const includedCategories = [...new Set(rawPlan.batches.flatMap(batch => batch.categories))];
+  const peerTextByCategory = new Map();
+  if (classification.crossRepo) {
+    for (const category of includedCategories) {
+      try {
+        const peer = await peerContextForCategory(
+          classification, category, peerToken, owner, peerSha,
+        );
+        peerTextByCategory.set(category, peer.text);
+      } catch (error) {
+        peerTextByCategory.set(
+          category,
+          `PEER_CONTEXT_UNAVAILABLE=true\nCATEGORY=${category}\nERROR=${String(error.message || error)}`,
+        );
+      }
+    }
+  }
+  return {
+    ...rawPlan,
+    classification,
+    peerSha,
+    maxBytes,
+    batches: rawPlan.batches.map(batch => {
+      const peerContexts = batch.categories.map(category => `peer-${category}.md`);
+      const context = `${batch.text}\n${batch.categories
+        .map(category => peerTextByCategory.get(category) || "").join("\n")}`;
+      return {
+        id: batch.id,
+        bytes: batch.bytes,
+        oversized: batch.oversized,
+        categories: batch.categories,
+        files: batch.files,
+        peerContexts,
+        contextSha: crypto.createHash("sha256").update(context).digest("hex"),
+      };
+    }),
+    peerTextByCategory: Object.fromEntries(peerTextByCategory),
+    batchTextById: Object.fromEntries(rawPlan.batches.map(batch => [batch.id, batch.text])),
+  };
 }
 
 function argument(name, fallback = "") {
@@ -400,15 +498,75 @@ async function main() {
   if (mode === "patch") {
     const source = argument("source");
     const files = linesFromFile(argument("files"));
-    const result = buildPatch({
+    const result = planPatchBatches(
+      source,
+      readPatchEntries(files, argument("base"), argument("head")),
+      Number(argument("max-bytes", "48000")),
+    );
+    fs.writeFileSync(out, result.batches.map(batch => batch.text).join(""));
+    fs.writeFileSync(argument("manifest-out"), `${JSON.stringify({
+      ...result,
+      batches: result.batches.map(({ text, ...batch }) => batch),
+    }, null, 2)}\n`);
+    return;
+  }
+  if (mode === "plan") {
+    const source = argument("source");
+    const files = linesFromFile(argument("files"));
+    const classification = JSON.parse(
+      fs.readFileSync(argument("classification"), "utf8"),
+    );
+    const outDir = argument("out-dir");
+    const plan = await buildBatchPlan({
       source,
       files,
       base: argument("base"),
       head: argument("head"),
-      maxBytes: Number(argument("max-bytes", "24000")),
+      maxBytes: Number(argument("max-bytes", "48000")),
+      classification,
+      owner: argument("owner"),
+      peerSha: argument("peer-sha"),
+      peerToken: process.env.GITHUB_TOKEN,
     });
-    fs.writeFileSync(out, result.text);
-    fs.writeFileSync(argument("manifest-out"), `${JSON.stringify(result, null, 2)}\n`);
+    fs.mkdirSync(outDir, { recursive: true });
+    for (const [category, text] of Object.entries(plan.peerTextByCategory)) {
+      fs.writeFileSync(`${outDir}/peer-${category}.md`, `${text}\n`);
+    }
+    for (const batch of plan.batches) {
+      fs.writeFileSync(`${outDir}/batch-${batch.id}.patch`, plan.batchTextById[batch.id]);
+      const manifest = [
+        `BATCH_ID=${batch.id}`,
+        `BASE_SHA=${argument("base")}`,
+        `HEAD_SHA=${argument("head")}`,
+        `CATEGORIES=${batch.categories.join(",")}`,
+        `BATCH_BYTES=${batch.bytes}`,
+        `OVERSIZED_FILES=${batch.oversized.join(",")}`,
+        `PEER_SHA=${plan.peerSha}`,
+        `MANUAL_REQUIRED=${plan.classification.manualRequired === true}`,
+        `UNCERTAIN_FILES=${(plan.classification.uncertainFiles || []).join(",")}`,
+        "HUNK_POLICY=complete-hunks-only",
+        "--- covered files ---",
+        ...batch.files.map(file =>
+          `${file.path} totalHunks=${file.totalHunks} included=${file.includedHunks.join(",")}`),
+      ].join("\n");
+      fs.writeFileSync(`${outDir}/manifest-${batch.id}.txt`, `${manifest}\n`);
+    }
+    const persisted = {
+      schema: 1,
+      source,
+      base: argument("base"),
+      head: argument("head"),
+      maxBytes: plan.maxBytes,
+      peerSha: plan.peerSha,
+      classification,
+      sourceFiles: plan.sourceFiles,
+      rawBytes: plan.rawBytes,
+      excludedFiles: plan.excludedFiles,
+      emptyFiles: plan.emptyFiles,
+      batchCount: plan.batches.length,
+      batches: plan.batches,
+    };
+    fs.writeFileSync(argument("plan-out"), `${JSON.stringify(persisted, null, 2)}\n`);
     return;
   }
   throw new Error(`unknown mode: ${mode}`);

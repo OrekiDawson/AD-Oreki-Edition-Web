@@ -13,7 +13,7 @@
   "properties": {
     "status": {
       "type": "string",
-      "enum": ["complete", "partial", "incomplete"]
+      "enum": ["complete", "partial", "incomplete", "not_executed", "failed"]
     },
     "summary": {
       "type": "string",
