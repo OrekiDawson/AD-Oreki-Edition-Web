@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "summary",
+    "findings",
+    "unmapped_findings",
+    "covered_files",
+    "uncovered_files"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["complete", "partial", "incomplete"]
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 1800
+    },
+    "findings": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "severity",
+          "path",
+          "line",
+          "start_line",
+          "side",
+          "start_side",
+          "title",
+          "reason",
+          "trigger",
+          "fix",
+          "suggestion"
+        ],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "path": { "type": "string" },
+          "line": { "type": "integer", "minimum": 1 },
+          "start_line": {
+            "type": ["integer", "null"],
+            "minimum": 1
+          },
+          "side": { "type": "string", "enum": ["RIGHT", "LEFT"] },
+          "start_side": {
+            "type": ["string", "null"],
+            "enum": ["RIGHT", "LEFT", null]
+          },
+          "title": { "type": "string", "maxLength": 200 },
+          "reason": { "type": "string", "maxLength": 1200 },
+          "trigger": { "type": "string", "maxLength": 800 },
+          "fix": { "type": "string", "maxLength": 1200 },
+          "suggestion": {
+            "type": ["string", "null"],
+            "maxLength": 5000
+          }
+        }
+      }
+    },
+    "unmapped_findings": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["severity", "title", "reason", "trigger", "fix"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "title": { "type": "string", "maxLength": 200 },
+          "reason": { "type": "string", "maxLength": 1200 },
+          "trigger": { "type": "string", "maxLength": 800 },
+          "fix": { "type": "string", "maxLength": 1200 }
+        }
+      }
+    },
+    "covered_files": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "uncovered_files": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # Web MOD · Agent 工作规则
 
-> **当前唯一执行状态：`PROJECT_ACTIVE`（用户于 2026-11-19 明确解除休眠并启动 R120-01）。** 仅在当前授权轮次内恢复开发；不因旧任务、旧状态或定时计划扩展到其他轮次。2026-11-17 的六仓规则精简/合并是一次性文档授权，不意味着无限期复工。
+> **当前执行状态：`R120-01` 进行中（用户于 2026-11-20 明确继续）。** 本文件适用于本仓 Agent；仅推进用户最近明确授权的审查迁移、双端规则与游戏节奏任务，不恢复无关历史任务或定时计划。
 >
 > 本文优先于旧轮次说明、旧版 AGENTS 快照和交接文件中的冲突措辞。详细事实按需查阅源码与专题文档；[优化前规则原文](docs/agent-policy/LEGACY_2026-11-17.md) 仅供历史追溯，**不会自动继承为当前指令**。
 
@@ -16,7 +16,8 @@
 - 先读相关源码/配置/事实，按风险做**最小必要修改与验证**。构建成功、CI 绿色、截图、模型自评都不能代替真实游戏/功能验收；未运行写 `NOT RUN`，失败写 `FAIL`，受阻写 `BLOCKED`，仅有证据才写 `PASS`。文档单改不机械做游戏长跑。
 - 使用受保护分支、PR、Required Checks、签名/发布审批。不得强推、关闭 Ruleset、跳过 CI/人工审批或伪造验证。真实 Critical/P0/P1、阻塞性 Medium 必须修复或证据充分地判定误报；非阻塞意见记录合理处置。
 - **审查信息读取**：合并前同时检查 PR 普通评论、Reviews、Review Threads、最新 HEAD SHA、Checks；所有需解决的线程归零。Kody 无可用 Provider 出现 `Skipped` / `BYOK Configuration Required` 表示 **KODY NOT RUN**，不是 PASS；不因缺密钥自行重接 Provider，也不制造空 Commit 或重复触发收费审查。
-- **Kody 付费审查暂停（用户决定，2026-11-19，R118-01）**：暂停 Kody 付费初审与复审，不恢复付费 Provider、不主动触发收费审查、不使用 Heavy。已有真实审查意见仍须逐条处理；`KODY NOT RUN` / `Skipped` 如实记录为 NOT RUN，不得冒充 PASS。
+- **Kody PR 审查（R120-01）**：云端自动审查保持 Manual；`kody-trigger.yml` 仅在 OrekiDawson 的同仓、`main`、非 Draft PR 上，经稳定窗口、作者白名单、同 Head 去重和预算门禁后，以 OrekiDawson 身份发送精确评论 `@kody start-review`。Kody 使用 Balanced、简体中文和最多 3 条路径限定的核心规则；`KODY NOT RUN` / `Skipped` 如实记录为 NOT RUN。触发命令上限不等于 Provider 模型调用硬上限，不得夸大成本保证。
+- **旧 Oreki Audit（备份）**：Android/Web 的 `codex-deepseek-review.yml` 与 `OREKI_AUDIT_ENABLED` 默认保持停用，仅保留回滚代码；未经用户明确恢复，不得调用 DeepSeek、发布自制 Review 或重新扩权。Oreki Audit App 不再是日常代码审查权威。
 - **替代合并门禁**：业务 PR 按工作区 `AGENTS.md` 执行：Required Checks、Ruleset、审批与分支保护全部通过；需解决 Review Threads 归零且普通评论逐条有结论；变更范围对应的真实运行验证（Web Playwright/Chromium 手机视口；未运行记 `NOT RUN`）；高风险改动（阶段门禁、存档、自动购买器、构建/部署链）完成独立定向复核。
 - **过渡边界**：工作区规则 PR 已合并后按替代门禁执行；不得借本节绕过真实 P0/P1、Ruleset、Required Checks 或既有审批。用户**明确逐次授权**的纯文档维护按其批准范围处理审查缺失，但必须保留记录，不得推广为业务/生产 PR 的常规豁免。
 - 只有授权开发会话内才主动处理 Issues/PR；不轮询空任务、不启用未经批准的持续监控或夜间 Agent。若用户日后重新启用 Kody，仅限已批准预算下的 Balanced/最少必要审查，不使用 Heavy。

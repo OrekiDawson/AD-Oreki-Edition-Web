@@ -4,15 +4,16 @@
 
 在线地址：<https://oreki.net>
 
-## 项目状态与开发成本（2026-11-17）
+## 项目状态与开发成本（2026-11-20）
 
-**当前状态：`PROJECT_ACTIVE`（R120-01）。** 用户已明确解除休眠并授权当前轮次继续 P0/P1、真实浏览器验证、CI/CD 与交付；现有源码、PR、Issues、Release、测试证据和部署记录继续保留。激活只覆盖当前授权轮次，不代表历史缺陷或候选已完成验收。
+**当前状态：`R120-01` 进行中。** 用户已明确恢复当前开发轮次，范围包括 Oreki Audit 迁移、Kody 审查、双端规则与游戏节奏校准；无关历史任务仍保持原状态。源码、PR、Issues、Release、测试证据和部署记录继续保留。
 
-- **费用门禁**：恢复开发前须明确批准人民币预算、周期、Provider 和任务范围；预算消耗达到 80% 时预警，达到 100% 时停止新增付费调用；DeepSeek 可用余额低于 ¥10 时维持已有全员暂停规则。禁止通过换 Key、模型或账号规避预算。
-- **Kody / Kodus**：代码审查继续由 Kody 承担，Oreki Audit 只负责在受信 `pull_request_target` 流程中检查作者、SHA 去重和预算后触发 `@kody start-review`。Kody 显示 `Skipped` / `BYOK Configuration Required` 时是**审查未完成**，不是 PASS；不得自行重建 Provider，也不得绕过适用的最终提交审查、Critical/P0/P1、Review Threads 全部解决、Required Checks 与发布门禁。
-- **自动化边界**：不主动启动付费 Agent、Kody 审查、定时 AI 写作或新测试；不使用长时间 `sleep` 和空转轮询维持 Agent。已公开的网站与已有仓库不因休眠自动删除或撤销。README 只说明管理状态，本身不能阻止云端计费；订阅与 Provider 需要在相应平台管理。
+- **费用门禁**：继续遵守既定人民币预算、80% 预警、100% 停止新增付费调用与 DeepSeek 余额低于 ¥10 暂停规则。禁止通过换 Key、模型或账号规避预算；无法可靠取得余额时不得声称余额充足。
+- **Kody / Kodus**：代码审查由 Kodus Manual + `.github/workflows/kody-trigger.yml` 驱动。触发器只对 `OrekiDawson` 的同仓、`main`、非 Draft PR 生效，按 Head SHA 去重并使用最小权限 PAT。`Skipped`、`KODY NOT RUN` 均不是 PASS。
+- **旧 Oreki Audit**：`codex-deepseek-review.yml` 保留作回滚备份，`OREKI_AUDIT_ENABLED=false`；未经用户明确恢复，不调用 DeepSeek，也不发布自制 Review。
+- **自动化边界**：Kody Rules 初期最多 3 条并限定仓库路径；默认 Balanced、简体中文，不使用 Heavy。自动审查保持 Manual，不批量重审历史 PR。
 
-**Web 特别说明**：现有站点与存档功能的已发布状态不因休眠改变；恢复前需按实际改动完成 Node、Playwright/移动浏览器与部署门禁。
+**Web 特别说明**：现有站点与存档功能的已发布状态不因本轮工作改变；涉及玩法、自动化、存档或部署的改动仍需通过 Node、Playwright/移动浏览器与对应部署门禁。
 
 
 ## 1. 适用范围
@@ -44,8 +45,20 @@ node serve.mjs 8080
 3. 首次大坍缩后必须真实经历无限阶段，不能立即自动 Break Infinity。
 4. 无限阶段隐藏永恒层内容；永恒和现实内容只能在真实结算后显示。
 5. 游戏推进不依赖频繁切换页面；页面主要负责显示真实状态，不能通过切页伪造业务触发。
-6. 新档默认全局速度为 **3000×**，与 Android 的 `OrekiGamePace.DEFAULT_SPEED` 对齐；已有合法速度设置不被覆盖。动态速度仅在检测到真实停滞时升档。
-7. 五阶段节奏目标是成长曲线验收口径，不用于按时钟解锁；真实新档墙钟硬上限仍为 180 分钟。
+6. 调度周期可在 **1～60 秒** 配置，默认 **10 秒**。受管自动购买器由调度器独占管理，玩家修改后必须在下一调度 tick 恢复当前合法策略。
+7. 新档默认全局速度为 **3000×**，与 Android 的 `OrekiGamePace.DEFAULT_SPEED` 对齐；已有合法速度设置不被覆盖。动态速度仅在检测到真实停滞时升档。
+
+### 4.1 正式五阶段节奏目标
+
+| 真实墙钟时间 | 体验目标 |
+| --- | --- |
+| 0～30 分钟 | 快速成长，建立基础维度、升级与自动化理解 |
+| 30～75 分钟 | 无限、打破无限、永恒及核心挑战逐步展开 |
+| 75～130 分钟 | 现实系统、主要天神与现实后自动化 |
+| 130～165 分钟 | 后期挑战、莱特拉与 Pelle 终局 |
+| 165～180 分钟 | 最终突破、真实结算与收尾 |
+
+分段用于指导内容节奏，不得按时钟强制解锁。新档真实墙钟通关 **≤180 分钟** 仍是硬性上限；截至本文更新，本轮完整 180 分钟双端长跑仍为 `NOT RUN`。
 
 ## 5. 测试
 
@@ -64,7 +77,7 @@ node serve.mjs 8080
 
 ## 6. 规则与交付
 
-规则入口：[AGENTS.md](AGENTS.md)；规则索引见 [docs/RULES_INDEX.md](docs/RULES_INDEX.md)。提交前检查链接、命令、中文术语和测试范围；本地服务器可用不等于线上部署成功。
+规则入口：[AGENTS.md](AGENTS.md)；规则索引见 [docs/RULES_INDEX.md](docs/RULES_INDEX.md)；双端差异见 [WEB_ANDROID_DIFFERENCES.md](WEB_ANDROID_DIFFERENCES.md)。提交前检查链接、命令、中文术语和测试范围；本地服务器可用不等于线上部署成功。
 
 ## 7. 反馈与许可证
 

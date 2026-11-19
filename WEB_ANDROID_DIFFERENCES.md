@@ -30,6 +30,21 @@
 
 ---
 
+## R120-01 当前权威增量（2026-11-20）
+
+> 本节优先于下方历史章节中与审查架构、调度周期或正式节奏目标冲突的旧结论；仅覆盖本节列出的项目。
+
+| 功能模块 | Web | Android | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 |
+|---|---|---|---|---|---|---|---|
+| 正式五阶段节奏 | 0～30 / 30～75 / 75～130 / 130～165 / 165～180 分钟 | 同一五阶段目标 | 无差异 | 体验目标，不是按时钟解锁 | 内容顺序合法、关键阶段有实际过程，真实通关仍须 ≤180 分钟 | 规范已落地；完整新档长跑 `NOT RUN` | 两端 `AGENTS.md`、`README.md`、本节 |
+| 调度周期 | 可配置 1～60 秒，默认 10 秒 | 同一范围与默认值 | 无差异 | 预期 | 非法值安全钳制；修改后安全重排唯一调度生命周期 | 代码与定向测试分层记录；完整长跑 `NOT RUN` | Web 调度器与测试；Android `OrekiAutomationScheduler` / `check_automation_scheduler.py` |
+| 自动购买器控制权 | 受管配置由调度器当前策略独占 | 同一语义 | 无差异 | 预期 | 玩家修改后下一次调度 tick 统一恢复；不覆盖非受管设置；不提前启用未解锁自动器 | 待两端最终 HEAD 运行期复核 | `OrekiAutomationScheduler` 与 Web scheduler 测试 |
+| Kody 审查入口 | `kody-trigger.yml`，Manual，Balanced | `kody-trigger.yml`，Manual，Balanced | 平台实现差异 | 预期 | 仅 OrekiDawson 同仓 main 非 Draft；同 SHA 去重；稳定窗口；精确评论 `@kody start-review` | 两仓首次触发与重复跳过 Actions 已实测 | Web `#88` / run `44595449663`、`44595591312`；Android `#199` / run `44595820172`、`44595952226` |
+| 旧 Oreki Audit | 保留工作流但停用 | 保留工作流但停用 | 无差异 | 备份状态 | 不调用 DeepSeek、不发布自制 Review、不扩大 App 权限 | 已实测两仓旧审查 Job 为 `Skipped` | `OREKI_AUDIT_ENABLED=false`；PR 检查记录 |
+| Android 业务语言 | 不适用 | 新业务逻辑必须 Kotlin，不新增 Java/Smali 业务 | 平台限制 | 预期 | DEX/Smali 仅作兼容入口 | 发布前按 AGP/AVD 门禁复核 | `AGENTS.md`；Kody Rule `Android Kotlin 业务` |
+
+**边界**：Actions 成功只表示触发评论已发出；Kody 完成审查、原生 Review Threads 和真实通关时间必须分别验证。Kody 一次审查可能产生多次 Provider 调用，每日 100 次触发命令上限不等于模型调用硬上限。
+
 ## 1. 游戏核心逻辑与数值公式
 
 | 功能模块 | Web 实现 | Android 实现 | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 | 负责人/后续 |
