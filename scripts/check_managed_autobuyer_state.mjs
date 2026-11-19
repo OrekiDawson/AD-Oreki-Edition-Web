@@ -4,9 +4,8 @@
 //
 // 验收目标：
 //   1. 只在托管 Tick 上处理一次；同一 Tick 不重复写（逐帧调用也不会刷写）。
-//   2. 玩家手动改动启停后，下一次有效 Tick 恢复；大坍缩 mode/xHighest 不托管
-//      （单一所有者，避免强写 mode 使受管 interval 失效）。
-//   3. 大坍缩暂停/未知时不强制关闭，保留原生一次性 release；只在允许时恢复开启。
+//   2. 玩家手动改动启停/模式/阈值后，下一次有效 Tick 恢复当前策略目标。
+//   3. 大坍缩启停严格跟随策略；mode/time 与 amount/xHighest 分属明确唯一写入口。
 //   4. 两个总开关关闭 → 不写、不消费 Tick；重新开启后恢复托管。
 //   5. IU15 冲刺整体让路；Pelle 只让大坍缩，其余项仍对账；未解锁项 fail-closed。
 //   6. 只写配置，不调用购买/tick 接口（配置恢复 ≠ 真实购买）。
@@ -16,6 +15,7 @@
 
 import assert from "node:assert/strict";
 import * as Managed from "../src/core/oreki-managed-autobuyer-state.js";
+import { OrekiManagedCrunchInterval } from "../src/core/oreki-managed-crunch-interval.js";
 
 let passed = 0;
 let failed = 0;
@@ -40,11 +40,15 @@ class FakeDecimal {
   toString() { return String(this.value); }
 }
 
-function makeItem({ active = true, unlocked = true, bought = false } = {}) {
+function makeItem({ active = true, unlocked = true, bought = false, mode = null } = {}) {
   return {
     _active: active,
     isUnlocked: unlocked,
     isBought: bought,
+    mode,
+    limitDimBoosts: false,
+    limitUntilGalaxies: false,
+    limitGalaxies: false,
     tickCalls: 0,
     get isActive() { return this._active; },
     set isActive(value) { this._active = value; },
@@ -68,21 +72,26 @@ function resetFakes() {
   delete globalThis.OrekiIu15Sprint;
   delete globalThis.Pelle;
 
-  dims = Array.from({ length: 8 }, () => makeItem({ active: true }));
+  dims = Array.from({ length: 8 }, () => makeItem({ active: true, mode: 10 }));
   const dimAccessor = tier => dims[tier - 1];
   dimAccessor.isActive = true; // 组级开关（原版 UI 的唯一可见 checkbox）
-  bigCrunch = makeItem({ active: true });
+  bigCrunch = makeItem({ active: true, mode: 2 });
   bigCrunch.mode = 2; // X_HIGHEST
+  bigCrunch.time = 10;
+  bigCrunch.amount = new FakeDecimal(10);
+  globalThis.player.auto.bigCrunch = bigCrunch;
   bigCrunch.xHighest = new FakeDecimal(10);
+  bigCrunch.increaseWithMult = true;
   registry = {
     antimatterDimension: dimAccessor,
-    tickspeed: makeItem({ active: true }),
+    tickspeed: makeItem({ active: true, mode: 100 }),
     dimboost: makeItem({ active: true }),
     galaxy: makeItem({ active: true }),
     sacrifice: makeItem({ active: true }),
     bigCrunch,
     ipMult: makeItem({ active: true }),
   };
+  registry.sacrifice.multiplier = new FakeDecimal(2);
 }
 
 const apply = (tick, extra = {}) => Managed.applyAll({
@@ -135,33 +144,103 @@ test("玩家关闭维度组/计数频率/大坍缩 ⇒ 下一 Tick 恢复开启"
   assert.deepEqual([...result.restored].sort(), ["crunch", "dim1", "tickspeed"]);
 });
 
-test("wantCrunch=false ⇒ 不主动关闭大坍缩（保留原生一次性结算机会）", () => {
+test("wantCrunch=false ⇒ 下一 Tick 由调度器关闭大坍缩；玩家重开后再次关闭", () => {
   apply(1, { wantCrunch: false });
-  assert.equal(bigCrunch.isActive, true, "暂停目标也不得把原生自动器关掉");
-  bigCrunch.isActive = false; // 玩家/终局模块关闭
+  assert.equal(bigCrunch.isActive, false, "策略要求关闭时必须关闭");
+  bigCrunch.isActive = true; // 玩家手开
   apply(2, { wantCrunch: false });
-  assert.equal(bigCrunch.isActive, false, "暂停期间不得擅自重新开启");
-});test("决策未知（null）⇒ 不碰大坍缩，也不改模式", () => {
+  assert.equal(bigCrunch.isActive, false, "下一次 Tick 必须恢复策略关闭目标");
+});
+
+test("决策未知（null）⇒ 不碰大坍缩，也不改模式/阈值", () => {
   apply(1);
   bigCrunch.isActive = false;
   bigCrunch.mode = 0;
+  bigCrunch.amount = new FakeDecimal(999);
+  bigCrunch.xHighest = new FakeDecimal(999);
   const result = apply(2, { wantCrunch: null });
   assert.equal(result.applied, true);
   assert.equal(bigCrunch.isActive, false, "未知状态不得改启停");
   assert.equal(bigCrunch.mode, 0, "未知状态不得改模式");
+  assert.equal(Number(bigCrunch.amount), 999, "未知状态不得改阈值");
+  assert.equal(Number(bigCrunch.xHighest), 999, "未知状态不得改阈值");
 });
 
 // ---------------------------------------------------------------------------
 // 3. 手动改模式/阈值 → 下一 Tick 恢复
 // ---------------------------------------------------------------------------
-test("不强制大坍缩 mode/xHighest：玩家选择保持，单一所有者只托管 interval", () => {
-  apply(1);
+test("大坍缩 mode/time 均以下一次调度 Tick 的策略值为准", () => {
+  OrekiManagedCrunchInterval.resetForTest();
+  OrekiManagedCrunchInterval.apply(10, "baseline", 1);
   bigCrunch.mode = 0;
-  bigCrunch.xHighest = new FakeDecimal(99);
-  apply(2);
-  assert.equal(bigCrunch.mode, 0, "托管层不得改写 mode");
-  assert.equal(Number(bigCrunch.xHighest), 99, "托管层不得改写 xHighest");
-});// ---------------------------------------------------------------------------
+  bigCrunch.time = 99;
+  const changed = OrekiManagedCrunchInterval.apply(60, "stage-target", 2);
+  assert.equal(changed, true);
+  assert.equal(bigCrunch.mode, 1, "mode 必须恢复为 TIME");
+  assert.equal(bigCrunch.time, 60, "time 必须恢复为策略目标");
+});
+
+test("重复同一托管 Tick 不重复写 mode/time", () => {
+  OrekiManagedCrunchInterval.resetForTest();
+  OrekiManagedCrunchInterval.apply(60, "first", 1);
+  bigCrunch.mode = 0;
+  bigCrunch.time = 99;
+  assert.equal(OrekiManagedCrunchInterval.apply(5, "same-tick", 1), false);
+  assert.equal(bigCrunch.mode, 0);
+  assert.equal(bigCrunch.time, 99);
+  assert.equal(OrekiManagedCrunchInterval.apply(5, "next-tick", 2), true);
+  assert.equal(bigCrunch.mode, 1);
+  assert.equal(bigCrunch.time, 5);
+});
+
+test("连续修改多项受管配置 ⇒ 下一次 Tick 一次统一恢复", () => {
+  apply(1);
+  registry.antimatterDimension.isActive = false;
+  registry.tickspeed.isActive = false;
+  registry.dimboost.mode = 999;
+  registry.dimboost.isActive = false;
+  bigCrunch.isActive = false;
+  const result = apply(2, { wantCrunch: true });
+  assert.equal(registry.antimatterDimension.isActive, true);
+  assert.equal(registry.tickspeed.isActive, true);
+  assert.equal(registry.dimboost.isActive, true);
+  assert.equal(bigCrunch.isActive, true);
+  assert.deepEqual([...result.restored].sort(), ["crunch", "dim1", "dimboost", "tickspeed"]);
+});
+
+test("玩家修改模式、购买次数、阈值、限额和献祭倍数 ⇒ 下一 Tick 统一恢复", () => {
+  apply(1);
+  for (const dim of dims) dim.mode = 1;
+  registry.tickspeed.mode = 1;
+  registry.dimboost.limitDimBoosts = true;
+  registry.dimboost.limitUntilGalaxies = true;
+  registry.galaxy.limitGalaxies = true;
+  registry.sacrifice.multiplier = new FakeDecimal(999);
+  bigCrunch.amount = new FakeDecimal(999);
+  bigCrunch.xHighest = new FakeDecimal(999);
+  bigCrunch.increaseWithMult = false;
+  const result = apply(2, { wantCrunch: true });
+  assert.equal(dims.every(dim => dim.mode === 10), true, "维度批量目标应为 BUY_10");
+  assert.equal(registry.tickspeed.mode, 100, "计数频率目标应为 BUY_MAX");
+  assert.equal(registry.dimboost.limitDimBoosts, false);
+  assert.equal(registry.dimboost.limitUntilGalaxies, false);
+  assert.equal(registry.galaxy.limitGalaxies, false);
+  assert.equal(Number(registry.sacrifice.multiplier), 2);
+  assert.equal(Number(bigCrunch.amount), 10);
+  assert.equal(Number(bigCrunch.xHighest), 10);
+  assert.equal(bigCrunch.increaseWithMult, true);
+  assert.equal(result.restored.includes("tickspeed.mode"), true);
+  assert.equal(result.restored.includes("crunch.xHighest"), true);
+});
+
+test("受管字段已等于目标 ⇒ 新 Tick 仍零写入", () => {
+  apply(1);
+  const before = Managed.debugState().writes;
+  const result = apply(2, { wantCrunch: true });
+  assert.equal(result.wrote, 0);
+  assert.equal(Managed.debugState().writes, before);
+});
+// ---------------------------------------------------------------------------
 // 4. 总开关 / 特殊阶段
 // ---------------------------------------------------------------------------
 test("MOD 总开关关闭 ⇒ 不写、不消费 Tick；重开后同 Tick 恢复", () => {
@@ -237,6 +316,33 @@ test("换存档：下一次 Tick 按新档真实字段重算，不保留旧统�
   assert.equal(result.applied, true);
   assert.equal(registry.antimatterDimension.isActive, true, "新档同一 Tick 也按当前目标恢复");
   assert.equal(Managed.debugState().saveId, 222);
+});
+
+test("保存/加载手动值后，下一次调度 Tick 恢复策略目标", () => {
+  apply(1);
+  registry.antimatterDimension.isActive = false;
+  registry.tickspeed.isActive = false;
+  bigCrunch.isActive = false;
+  // 模拟页面重载：插件的非持久内存被清空，存档保留玩家改过的值。
+  Managed.resetForTest();
+  const result = apply(2, { wantCrunch: true });
+  assert.equal(result.applied, true);
+  assert.equal(registry.antimatterDimension.isActive, true);
+  assert.equal(registry.tickspeed.isActive, true);
+  assert.equal(bigCrunch.isActive, true);
+});
+
+test("阶段策略由开到关并反向切换，下一次 Tick 应用当前目标", () => {
+  apply(1, { wantCrunch: true });
+  bigCrunch.isActive = false;
+  apply(2, { wantCrunch: false });
+  assert.equal(bigCrunch.isActive, false);
+  bigCrunch.isActive = true;
+  apply(3, { wantCrunch: true });
+  assert.equal(bigCrunch.isActive, true);
+  bigCrunch.isActive = false;
+  apply(4, { wantCrunch: false });
+  assert.equal(bigCrunch.isActive, false);
 });
 
 test("没有调度器 Tick 注入/可读 ⇒ no-tick，不写", () => {
