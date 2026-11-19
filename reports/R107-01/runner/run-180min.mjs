@@ -30,9 +30,11 @@ import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { execSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 const WORKSPACE = "/home/oreki/AD-Oreki-Edition";
-const REPO = "/home/oreki/AD-Oreki-Edition/工作树/web/r120-01";
+// Runner 可能位于任意隔离工作树；源码根必须由脚本位置解析，避免验证了另一分支。
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 
 // ── 参数解析 ───────────────────────────────────────────────────────────────
 function arg(name, def) {
