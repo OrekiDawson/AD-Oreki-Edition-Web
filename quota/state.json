@@ -68,10 +68,10 @@
       "requestId": "daa6a8e9483604a8c1c13fed54db3f0fb597a1a5452769923b0175246f4465f6",
       "date": "2026-11-20",
       "attempt": 1,
-      "status": "reserved",
-      "modelCalls": 0,
+      "status": "model_started",
+      "modelCalls": 1,
       "reservedAt": "2026-11-19T17:09:21.947Z",
-      "updatedAt": "2026-11-19T17:09:21.947Z",
+      "updatedAt": "2026-11-19T17:09:52.957Z",
       "report": ""
     }
   ]
