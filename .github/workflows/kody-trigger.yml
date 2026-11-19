@@ -1,0 +1,100 @@
+name: Kody PR 审查触发器
+
+'on':
+  # 使用受信任 base 工作流；不检出、不执行 PR 代码。
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, ready_for_review, synchronize]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 要检查的 PR 编号
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  stabilize:
+    name: 等待并复核 PR Head
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request_target' &&
+      github.event.pull_request.user.login == 'OrekiDawson' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.draft == false)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      eligible: ${{ steps.check.outputs.eligible }}
+      head_sha: ${{ steps.check.outputs.head_sha }}
+    steps:
+      - name: 等待稳定窗口并复核
+        id: check
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          EVENT_ACTION: ${{ github.event.action }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        with:
+          script: |
+            const prNumber = context.payload.pull_request?.number ??
+              Number(process.env.INPUT_PR_NUMBER);
+            if (!Number.isInteger(prNumber) || prNumber <= 0) {
+              core.setOutput('eligible', 'false');
+              core.setOutput('reason', 'invalid_pr_number');
+              return;
+            }
+            if (process.env.EVENT_ACTION === 'synchronize') {
+              await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+            }
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+            const eligible =
+              pr.state === 'open' &&
+              pr.merged_at == null &&
+              pr.draft === false &&
+              pr.user?.login === 'OrekiDawson' &&
+              pr.base?.ref === 'main' &&
+              pr.head?.repo?.full_name === `${context.repo.owner}/${context.repo.repo}`;
+            core.setOutput('eligible', String(eligible));
+            core.setOutput('reason', eligible ? 'eligible' : 'ineligible_after_wait');
+            core.setOutput('head_sha', pr.head?.sha ?? '');
+
+  trigger:
+    name: 验证并触发 Kody
+    needs: stabilize
+    if: needs.stabilize.outputs.eligible == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      # 串行段仅覆盖预算检查与评论写入；稳定等待已在上一 Job 完成。
+      group: kody-trigger-budget-${{ github.repository }}
+      queue: max
+      cancel-in-progress: false
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: read
+    steps:
+      - name: 检出受信任 Base
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: 验证身份、去重、预算并发送触发评论
+        env:
+          GH_TOKEN: ${{ secrets.KODY_TRIGGER_PAT }}
+          CHECK_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          STABILIZATION_SECONDS: "0"
+          MAX_TRIGGERS_PER_REPO_PER_DAY: "50"
+        shell: bash
+        run: node .github/kody/trigger.mjs
