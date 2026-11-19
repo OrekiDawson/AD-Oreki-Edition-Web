@@ -839,6 +839,9 @@ try {
     A.firstEternityDwellRemainingMs() === 180_000);
   check("[R120] 未解锁开关为 true 的驻留期内不结算首次永恒",
     A.tickEternity() === false && env.eternityCalls.length === 0);
+  A._freshSessionBootstrap = true;
+  check("[R120] 未解锁开关为 true 不得绕过单一真实永恒门禁",
+    A.realEternityAllowed() === false);
 
   // 解锁后的真实开关才代表玩家可表达的关闭/开启意图。
   setup({ eternities: 0, isActive: true, unlocked: true });
