@@ -249,7 +249,7 @@ export async function main() {
   const prNumber = pr.number;
   const headSha = pr.head.sha;
   const externalId = triggerIdentity(repository, prNumber, headSha);
-  if (eventName === "synchronize") {
+  if (event.action === "synchronize") {
     const seconds = Number.parseInt(process.env.STABILIZATION_SECONDS ?? "300", 10);
     await sleep(Number.isFinite(seconds) && seconds >= 0 ? seconds : 300);
     const current = await getPullRequest(repository, prNumber, token);

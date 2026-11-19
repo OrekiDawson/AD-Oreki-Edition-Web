@@ -36,7 +36,7 @@ jobs:
         id: check
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
-          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
           INPUT_PR_NUMBER: ${{ inputs.pr_number }}
         with:
           script: |
@@ -47,7 +47,7 @@ jobs:
               core.setOutput('reason', 'invalid_pr_number');
               return;
             }
-            if (process.env.EVENT_NAME === 'synchronize') {
+            if (process.env.EVENT_ACTION === 'synchronize') {
               await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
             }
             const { data: pr } = await github.rest.pulls.get({
@@ -84,6 +84,7 @@ jobs:
       - name: 检出受信任 Base
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: main
           persist-credentials: false
 
       - name: 验证身份、去重、预算并发送触发评论
