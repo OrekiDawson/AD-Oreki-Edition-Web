@@ -213,7 +213,7 @@ try {
     player.auto.bigCrunch.isActive = true;
     player.auto.bigCrunch.amount = new Decimal(999);
     player.auto.bigCrunch.xHighest = new Decimal(999);
-    player.auto.bigCrunch.increaseWithMult = false;
+    player.auto.bigCrunch.increaseWithMult = true;
     player.auto.bigCrunch.mode = AUTO_CRUNCH_MODE.X_HIGHEST;
     player.auto.bigCrunch.time = 999;
 

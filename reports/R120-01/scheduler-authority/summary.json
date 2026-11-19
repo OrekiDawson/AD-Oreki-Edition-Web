@@ -2,13 +2,13 @@
   "criterion": "R120-01 managed autobuyer scheduler authority",
   "source": {
     "repo": "/home/oreki/AD-Oreki-Edition/工作树/web/r120-01-scheduler",
-    "sha": "164c91f8f560f07055c31d354921b319cab692c2"
+    "sha": "026d8880c816ed7e40cdca73bb5121b6e6ec43ad"
   },
   "browser": {
     "version": "159.0.8154.6",
     "executable": "/home/oreki/.cache/ms-playwright/chromium-1255/chrome-linux64/chrome"
   },
-  "server": "http://127.0.0.1:38839/",
+  "server": "http://127.0.0.1:46045/",
   "stage": {
     "infinities": "1",
     "break": false,
@@ -59,7 +59,7 @@
     {
       "name": "献祭与大坍缩阈值恢复",
       "pass": true,
-      "detail": "sacrificeUnlocked=false sacrifice=999 amount=10 xHighest=10 increase=true"
+      "detail": "sacrificeUnlocked=false sacrifice=999 amount=10 xHighest=10 increase=false"
     },
     {
       "name": "大坍缩 mode/time 恢复同一策略拍",
@@ -89,16 +89,16 @@
     {
       "name": "真实存档入口完成写入",
       "pass": true,
-      "detail": "gameCreatedTime=1795089720013"
+      "detail": "gameCreatedTime=1795090088564"
     },
     {
       "name": "保存并 reload 后下一调度 tick 恢复策略值",
       "pass": true,
-      "detail": "activeTick=5 intervalTick=5 mode=1 time=60"
+      "detail": "activeTick=4 intervalTick=4 mode=1 time=60"
     }
   ],
   "consoleErrors": [],
   "pageErrors": [],
   "result": "PASS",
-  "finishedAt": "2026-11-19T12:02:06.992Z"
+  "finishedAt": "2026-11-19T12:08:15.882Z"
 }

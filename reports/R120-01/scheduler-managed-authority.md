@@ -36,7 +36,7 @@
 - 献祭：`isActive`、`multiplier=2`
 - 无限点数倍率：`isActive`（已合法进入无限层后）
 - 大坍缩：`isActive`、`mode=TIME`、`time`、`amount=10`、
-  `xHighest=10`、`increaseWithMult=true`
+  `xHighest=10`、`increaseWithMult=false`
 - 调度动作优先级继续由现有 `OrekiSmartExecutor` 策略提供；没有第二套优先级状态。
 
 ## 真实浏览器证据

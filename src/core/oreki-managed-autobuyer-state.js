@@ -48,7 +48,8 @@ export const MANAGED_FIELDS = Object.freeze({
   sacrificeMultiplier: 2,
   crunchAmount: 10,
   crunchXHighest: 10,
-  crunchIncreaseWithMult: true,
+  // TIME 是受管模式；关闭原版 amount 自增，避免每次坍缩后与固定阈值互相覆盖。
+  crunchIncreaseWithMult: false,
 });
 
 const STATE = {

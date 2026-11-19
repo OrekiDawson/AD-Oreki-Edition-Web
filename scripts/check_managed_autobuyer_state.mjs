@@ -81,7 +81,7 @@ function resetFakes() {
   bigCrunch.amount = new FakeDecimal(10);
   globalThis.player.auto.bigCrunch = bigCrunch;
   bigCrunch.xHighest = new FakeDecimal(10);
-  bigCrunch.increaseWithMult = true;
+  bigCrunch.increaseWithMult = false;
   registry = {
     antimatterDimension: dimAccessor,
     tickspeed: makeItem({ active: true, mode: 100 }),
@@ -218,7 +218,7 @@ test("玩家修改模式、购买次数、阈值、限额和献祭倍数 ⇒ 下
   registry.sacrifice.multiplier = new FakeDecimal(999);
   bigCrunch.amount = new FakeDecimal(999);
   bigCrunch.xHighest = new FakeDecimal(999);
-  bigCrunch.increaseWithMult = false;
+  bigCrunch.increaseWithMult = true;
   const result = apply(2, { wantCrunch: true });
   assert.equal(dims.every(dim => dim.mode === 10), true, "维度批量目标应为 BUY_10");
   assert.equal(registry.tickspeed.mode, 100, "计数频率目标应为 BUY_MAX");
@@ -228,7 +228,7 @@ test("玩家修改模式、购买次数、阈值、限额和献祭倍数 ⇒ 下
   assert.equal(Number(registry.sacrifice.multiplier), 2);
   assert.equal(Number(bigCrunch.amount), 10);
   assert.equal(Number(bigCrunch.xHighest), 10);
-  assert.equal(bigCrunch.increaseWithMult, true);
+  assert.equal(bigCrunch.increaseWithMult, false);
   assert.equal(result.restored.includes("tickspeed.mode"), true);
   assert.equal(result.restored.includes("crunch.xHighest"), true);
 });
