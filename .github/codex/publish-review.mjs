@@ -135,6 +135,8 @@ async function fallbackComment({ token, repository, pr, identity, notice, text }
     COMMENT_MARKER,
     "### Oreki Audit（行内审查未能发布）",
     "",
+    "AI_REVIEW_NOT_EXECUTED",
+    "",
     `REVIEW_IDENTITY: ${identity}`,
     "",
     safeText(notice || text),
