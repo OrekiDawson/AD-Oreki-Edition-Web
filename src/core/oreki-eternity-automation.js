@@ -1201,8 +1201,10 @@ export const OrekiEternityAutomation = {
         // 换存档：不继承上一个存档的「曾永恒」结论（导入无进度新档仍需引导窗口）。
         this._firstEternityEverSeen = false;
       }
-      // 玩家亲自打开原版「自动永恒」开关 = 明确授权自动结算，不驻留（手动优先）。
-      if (player.auto.eternity.isActive === true) return 0;
+      // 只有已解锁后的真实开关才代表玩家可以表达的意图。自动器未解锁时，R118 的
+      // 跨读档所有权修复会把 isActive 持久化为 true；不能把这层 MOD 内部状态误当成
+      // 玩家亲自打开开关，否则会绕过首次永恒 180 s 驻留（R120-01 真实新档实测）。
+      if (this._eternityAutobuyerUnlocked() && player.auto.eternity.isActive === true) return 0;
       // 非首次永恒：既有自动化节奏完全不受影响。
       if (!this._neverEternitied()) return 0;
       // 资格消失：重置计时，下次重新具备资格时重新计满 180 s。

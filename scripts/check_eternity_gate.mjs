@@ -822,10 +822,17 @@ try {
     && env.eternityCalls[0][0] === false && env.eternityCalls[0][1] === true,
     JSON.stringify(env.eternityCalls));
 
-  // ② 玩家亲自开启自动永恒 ⇒ 尊重玩家意图，不驻留
+  // ② 未解锁时 isActive=true 可能是 R118 的 MOD 所有权持久化，不得绕过驻留。
   setup({ eternities: 0, isActive: true, unlocked: false });
-  check("[R116] 玩家已开自动永恒 ⇒ 驻留为 0", A.firstEternityDwellRemainingMs() === 0);
-  check("[R116] 玩家已开自动永恒 ⇒ 首次永恒立即放行", A.tickEternity() === true);
+  check("[R120] 未解锁开关为 true 仍属 MOD 内部状态 ⇒ 开始 180 s 驻留",
+    A.firstEternityDwellRemainingMs() === 180_000);
+  check("[R120] 未解锁开关为 true 的驻留期内不结算首次永恒",
+    A.tickEternity() === false && env.eternityCalls.length === 0);
+
+  // 解锁后的真实开关才代表玩家可表达的关闭/开启意图。
+  setup({ eternities: 0, isActive: true, unlocked: true });
+  check("[R116] 已解锁且玩家开自动永恒 ⇒ 驻留为 0", A.firstEternityDwellRemainingMs() === 0);
+  check("[R116] 已解锁且玩家开自动永恒 ⇒ 首次永恒立即放行", A.tickEternity() === true);
   check("[R116] 立即放行时原版 eternity 恰好 1 次", env.eternityCalls.length === 1);
 
   // ③ 已永恒过的存档 ⇒ 完全不受限
@@ -917,8 +924,8 @@ try {
       src.includes("const FIRST_ETERNITY_DWELL_MS = 180_000;"));
     check("[R116] 计时用单调时钟 performance.now（对齐 Android elapsedRealtime）",
       src.includes("performance") && src.includes("typeof perf.now === \"function\""));
-    check("[R116] 驻留方法读取玩家真实开关（isActive === true ⇒ 0）",
-      src.includes("if (player.auto.eternity.isActive === true) return 0;"));
+    check("[R120] 只有在自动器已解锁时才允许真实开关绕过驻留",
+      src.includes("if (this._eternityAutobuyerUnlocked() && player.auto.eternity.isActive === true) return 0;"));
     check("[R116] 已永恒存档短路（eternities < 1 才可能驻留）",
       src.includes("if (!this._neverEternitied()) return 0;"));
     check("[R116] Web 无 bigEternities：用 realities>0 识别 Reality 后的已永恒存档",
@@ -950,13 +957,14 @@ try {
   // isActive / 已永恒两个 early return 之后。A(新档驻留中)→B(已永恒或玩家开自动)→A
   // 时 B 不更新 dwellSaveId，回到 A 复用旧计时，甚至把在 B 的时间算入 → 剩余 0，
   // 首次永恒立即被自动化结算。这里锁死 A→B→A 必须重新计满 180 s。
-  const roundTrip = ({ bIsActive = false, bEternities = 13 } = {}) => {
+  const roundTrip = ({ bIsActive = false, bEternities = 13, bUnlocked = bIsActive } = {}) => {
     setup({ eternities: 0, isActive: false, canEternity: true, saveId: 111, unlocked: false });
     const start = A.firstEternityDwellRemainingMs();      // A：开始 180 s
     dwellClock += 60_000;
     player.records.gameCreatedTime = 222;                 // 切到 B
     player.eternities = mkE(bEternities);
     player.auto.eternity.isActive = bIsActive;
+    globalThis.EternityMilestone = { autobuyerEternity: { isReached: bUnlocked } };
     const inB = A.firstEternityDwellRemainingMs();        // B：命中 early return
     dwellClock += 130_000;                                // 在 B 停留 130 s（A 累计 190 s）
     player.records.gameCreatedTime = 111;                 // 回到 A
@@ -1041,7 +1049,9 @@ try {
   {
     const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
     const saveIdx = src.indexOf("const saveId = this._saveIdentity();");
-    const activeIdx = src.indexOf("if (player.auto.eternity.isActive === true) return 0;");
+    const activeIdx = src.indexOf(
+      "if (this._eternityAutobuyerUnlocked() && player.auto.eternity.isActive === true) return 0;",
+    );
     const neverIdx = src.indexOf("if (!this._neverEternitied()) return 0;");
     check("[R116 review] 换档重置在 isActive / 已永恒 early return 之前",
       saveIdx >= 0 && activeIdx > saveIdx && neverIdx > saveIdx,
