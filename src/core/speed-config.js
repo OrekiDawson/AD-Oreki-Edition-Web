@@ -215,7 +215,9 @@ export const GameSpeed = {
       };
       signal = [
         ex(p.infinities), ex(p.infinityPoints), ex(p.eternities), ex(p.realities),
-        ex(p.records.thisEternity.maxAM), p.dimensionBoosts, p.galaxies,
+        ex(p.records.thisInfinity?.maxAM), ex(p.records.thisEternity?.maxAM),
+        ex(p.records.thisReality?.maxAM), ex(p.records.totalAntimatter),
+        ex(p.timestudy?.theorem), p.dimensionBoosts, p.galaxies,
         p.break ? 1 : 0,
       ].join("|");
     } catch (e) { return false; }

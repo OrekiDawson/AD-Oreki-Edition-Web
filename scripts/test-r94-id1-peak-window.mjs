@@ -365,6 +365,13 @@ check("17. 原版自动购买器的有效间隔 = interval / F（高倍率下按
     /get effectiveInterval\(\) \{\s*\n\s*return this\.interval \/ Math\.max\(1, getGlobalSpeedFactor\(\)\);/);
 });
 
+check("17b. 动态速度进度指纹包含时间之理与反物质峰值，真实成长不得误触升档", () => {
+  assert.match(SPEED_SRC, /ex\(p\.records\.thisInfinity\?\.maxAM\)/);
+  assert.match(SPEED_SRC, /ex\(p\.records\.thisReality\?\.maxAM\)/);
+  assert.match(SPEED_SRC, /ex\(p\.records\.totalAntimatter\)/);
+  assert.match(SPEED_SRC, /ex\(p\.timestudy\?\.theorem\)/);
+});
+
 check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买器在 3000× 下每帧都能触发", () => {
   const dimBoostInterval = Number(PLAYER_SRC.match(
     /dimBoost: \{[\s\S]*?interval: (\d+),/)[1]);
