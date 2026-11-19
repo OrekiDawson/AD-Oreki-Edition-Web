@@ -14,10 +14,10 @@
       "requestId": "078582faa7b3d7194f789d66bd2c0a5693b9df0796977708f1fe44be2910b818",
       "date": "2026-11-20",
       "attempt": 1,
-      "status": "reserved",
-      "modelCalls": 0,
+      "status": "model_started",
+      "modelCalls": 1,
       "reservedAt": "2026-11-19T17:06:07.941Z",
-      "updatedAt": "2026-11-19T17:06:07.941Z",
+      "updatedAt": "2026-11-19T17:06:32.702Z",
       "report": ""
     },
     {
