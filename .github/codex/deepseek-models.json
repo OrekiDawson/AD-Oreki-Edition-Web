@@ -11,11 +11,13 @@
         "text",
         "image"
       ],
+      "supports_image_detail_original": true,
       "truncation_policy": {
         "mode": "tokens",
         "limit": 10000
       },
       "supports_parallel_tool_calls": true,
+      "tool_mode": null,
       "multi_agent_version": "v2",
       "use_responses_lite": false,
       "include_skills_usage_instructions": false,
@@ -23,10 +25,11 @@
       "context_window": 1048576,
       "max_context_window": 1048576,
       "effective_context_window_percent": 95,
-      "auto_compact_token_limit": null,
+      "auto_compact_token_limit": 943718,
       "comp_hash": "3000",
       "reasoning_summary_format": "experimental",
       "default_reasoning_summary": "none",
+      "default_service_tier": null,
       "display_name": "DeepSeek-Flash",
       "description": "Latest frontier agentic coding model with image input.",
       "default_reasoning_level": "low",
@@ -44,6 +47,9 @@
           "description": "Maximum reasoning depth for the hardest work"
         }
       ],
+      "supports_reasoning_summaries": true,
+      "supports_search_tool": false,
+      "experimental_supported_tools": [],
       "shell_type": "shell_command",
       "visibility": "list",
       "minimal_client_version": "0.164.0",
