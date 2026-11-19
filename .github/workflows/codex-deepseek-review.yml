@@ -49,6 +49,7 @@ jobs:
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          DAILY_REVIEW_LIMIT: ${{ vars.OREKI_AUDIT_DAILY_LIMIT || '6' }}
         with:
           script: |
             const marker = '<!-- oreki-codex-deepseek-review:v1 -->';
@@ -63,6 +64,22 @@ jobs:
             if (peak) {
               core.setOutput('should_review', 'false');
               core.setOutput('reason', 'deepseek-peak');
+              return;
+            }
+            const limit = Math.max(1, Number(process.env.DAILY_REVIEW_LIMIT) || 6);
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'codex-deepseek-review.yml',
+              created: `>=${new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()}`,
+              per_page: 100,
+            });
+            if (runs.length > limit) {
+              await core.summary
+                .addRaw(`AI 审查已触发最近 24 小时预算上限（${limit} 次），本次跳过付费调用。`)
+                .write();
+              core.setOutput('should_review', 'false');
+              core.setOutput('reason', 'daily-budget');
               return;
             }
             const comments = await github.paginate(github.rest.issues.listComments, {
@@ -116,6 +133,12 @@ jobs:
           }
           git diff --name-only "${BASE_SHA}...${HEAD_SHA}" > "$review_dir/files.txt"
           git diff --numstat "${BASE_SHA}...${HEAD_SHA}" > "$review_dir/numstat.txt"
+          git diff --name-only "${BASE_SHA}...${HEAD_SHA}" -- \
+            . ':(exclude)reports/**' ':(exclude)docs/**' \
+            ':(exclude)*.png' ':(exclude)*.jpg' ':(exclude)*.jpeg' \
+            ':(exclude)*.webp' ':(exclude)*.zip' ':(exclude)*.apk' \
+            ':(exclude)*.jar' ':(exclude)*.lock' ':(exclude)pnpm-lock.yaml' \
+            > "$review_dir/patch_files.txt"
           git diff --unified=8 --no-ext-diff --diff-filter=ACMR \
             "${BASE_SHA}...${HEAD_SHA}" -- \
             . ':(exclude)reports/**' ':(exclude)docs/**' \
@@ -137,8 +160,11 @@ jobs:
             echo "RAW_DIFF_BYTES=$raw_bytes"
             echo "REVIEW_DIFF_BYTES=$review_bytes"
             echo "PATCH_TRUNCATED=$patch_truncated"
+            echo "PATCH_EXCLUDED_PATTERNS=docs/**;reports/**;binary-media;archives;jars;lockfiles"
             echo "--- files.txt ---"
             cat "$review_dir/files.txt"
+            echo "--- patch_files.txt ---"
+            cat "$review_dir/patch_files.txt"
             echo "--- numstat.txt ---"
             cat "$review_dir/numstat.txt"
           } > "$review_dir/manifest.txt"
