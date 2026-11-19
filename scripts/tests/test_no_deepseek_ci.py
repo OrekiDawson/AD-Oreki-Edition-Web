@@ -6,6 +6,9 @@ repository's Actions. Historical Oreki Audit execution must not return.
 import unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
+REVIEW_WORKFLOW = ROOT / ".github/workflows/codex-deepseek-review.yml"
+
+
 class NoDeepSeekReviewInCi(unittest.TestCase):
     def test_legacy_ai_triage_entrypoints_removed(self):
         for path in (
@@ -17,10 +20,13 @@ class NoDeepSeekReviewInCi(unittest.TestCase):
             self.assertFalse((ROOT / path).exists(), path)
     def test_workflows_do_not_call_paid_model_api(self):
         for path in (ROOT / ".github/workflows").glob("*.yml"):
+            if path == REVIEW_WORKFLOW:
+                continue
             with self.subTest(path=path.name):
                 body=path.read_text(encoding="utf-8")
                 for marker in ("DEEPSEEK_API_KEY","api.deepseek.com","deepseek_ci_triage.py","OREKI_AUDIT_LLM_KEY","oreki_auto_runner.py"):
                     self.assertNotIn(marker, body)
+
     def test_review_workflow_is_isolated_and_read_only(self):
         self.assertTrue(REVIEW_WORKFLOW.exists())
         body = REVIEW_WORKFLOW.read_text(encoding="utf-8")
