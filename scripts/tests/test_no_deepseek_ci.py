@@ -59,6 +59,8 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertIn("peer-context.md", body)
         self.assertIn("AD-Oreki-Edition-Android,AD-Oreki-Edition-Web", body)
         self.assertIn("permission-contents: read", body)
+        self.assertIn("permission-issues: write", body)
+        self.assertNotIn("permission-pull-requests: write", body)
         self.assertIn("REVIEW_CONFIG_VERSION", body)
         self.assertIn("openai/codex-action@306c6a196a99dcc6582530c396a19d2672d5e9ec", body)
         self.assertIn("permission-profile: \":read-only\"", body)

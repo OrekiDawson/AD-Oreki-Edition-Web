@@ -338,7 +338,6 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
           permission-issues: write
-          permission-pull-requests: write
 
       - name: 创建或更新单一 AI 审查评论
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
