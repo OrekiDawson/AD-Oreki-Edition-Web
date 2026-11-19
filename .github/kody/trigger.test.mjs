@@ -7,7 +7,7 @@ import {
   countTriggersSince,
   dailyCommentsPath,
   findKodyReviewForHead,
-  findSuccessfulTriggerCheck,
+  findTriggerReservation,
   shanghaiDayStart,
   triggerIdentity,
   validatePullRequest,
@@ -61,14 +61,19 @@ test("PAT 身份必须严格等于 OrekiDawson", () => {
 test("同一 Head 只由成功 Check Run 精确去重，不依赖提交时间", () => {
   const head = "a".repeat(40);
   const identity = triggerIdentity(repository, 7, head);
-  assert.ok(findSuccessfulTriggerCheck([
+  assert.ok(findTriggerReservation([
     { external_id: identity, status: "completed", conclusion: "success" },
   ], identity));
-  assert.equal(findSuccessfulTriggerCheck([
+  assert.ok(findTriggerReservation([
     { external_id: identity, status: "in_progress", conclusion: null },
+  ], identity));
+  assert.ok(findTriggerReservation([
+    { external_id: identity, status: "completed", conclusion: "neutral" },
+  ], identity));
+  assert.equal(findTriggerReservation([
     { external_id: identity, status: "completed", conclusion: "failure" },
   ], identity), null);
-  assert.equal(findSuccessfulTriggerCheck([
+  assert.equal(findTriggerReservation([
     { external_id: triggerIdentity(repository, 7, "b".repeat(40)),
       status: "completed", conclusion: "success" },
   ], identity), null);
