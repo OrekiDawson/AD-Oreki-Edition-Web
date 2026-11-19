@@ -248,11 +248,11 @@
       "requestId": "8d4a37070b9635efd13bcf3dd51b825d4bf01fe105a1be166b85d8619ed26736",
       "date": "2026-11-20",
       "attempt": 1,
-      "status": "model_started",
+      "status": "model_succeeded",
       "modelCalls": 1,
       "reservedAt": "2026-11-19T18:09:08.474Z",
-      "updatedAt": "2026-11-19T18:09:24.642Z",
-      "report": ""
+      "updatedAt": "2026-11-19T18:12:59.811Z",
+      "report": "{\"status\":\"partial\",\"summary\":\"审查仅基于 manifest.txt、review.patch 和 peer-context.md。PR 只改 CI 审查脚本与策略，未触及调度器、自动购买器、结算或存档逻辑；CROSS_REPO=false，未读取 Android 仓库。发现 1 个可确认问题：历史行内线程去重键遗漏 severity，可能把升级后的发现静默当作重复项。重要覆盖限制：PATCH_TRUNCATED=true，review-batches.mjs 与 workflow 完全未包含，review-context.mjs 仅部分 hunk 可见，因此批次规划/聚合、workflow 权限与门禁、策略文件加载自举均无法确认。\",\"findings\":[{\"severity\":\"medium\",\"path\":\".github/codex/publish-review.mjs\",\"line\":92,\"start_line\":85,\"side\":\"RIGHT\",\"start_side\":\"RIGHT\",\"title\":\"历史线程去重键未包含 severity，可能静默丢弃升级后的发现\",\"reason\":\"findingThreadKey 只拼接 path、side、line 和 title，historicalFindingKeys 虽然用正则匹配了 CRITICAL/HIGH/MEDIUM/LOW，却只取 title 并构造同样的无 severity 键。因此同一位置、同一标题但严重程度升高的新发现会被判定为历史重复，duplicateThreads 加一后 continue，不再发布行内评论；摘要也只显示重复数量，不显示被丢弃的新 severity。该行为可直接由现有测试夹具复现：同一 path/side/line/title 但 reason 不同的两条 finding 已按一条合并。\",\"trigger\":\"同一 PR 重跑审查，或后续提交中同一 path/side/line/title 的既有评论为 LOW/MEDIUM，而新分析将同一问题升级为 CRITICAL/HIGH；发布器会静默跳过新发现。\",\"fix\":\"让 severity 参与去重：正则捕获 severity 并传入 findingThreadKey，findingThreadKey 增加 severity 字段；或者仅在既有 severity 不低于新 severity 时去重，并把被跳过的发现及其 severity 写入摘要或 unmapped。\",\"suggestion\":null}],\"unmapped_findings\":[],\"covered_files\":[\".github/codex/publish-review.mjs\",\".github/codex/review-policy.md\",\".github/codex/review-result.schema.json\",\"scripts/tests/test_no_deepseek_ci.py\",\"scripts/tests/test_publish_review.mjs\",\"scripts/tests/test_review_batches.mjs\",\"scripts/tests/test_review_context.mjs\"],\"uncovered_files\":[\".github/codex/review-batches.mjs\",\".github/codex/review-context.mjs\",\".github/workflows/codex-deepseek-review.yml\"]}"
     },
     {
       "identity": "a8ee5b4fbbc71cd060e1c54856aaa11e358c89ed67495828425c2422574ba653",
