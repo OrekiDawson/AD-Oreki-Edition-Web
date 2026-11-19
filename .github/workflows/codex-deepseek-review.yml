@@ -141,7 +141,7 @@ jobs:
             "$review_dir/classification.json" > "$review_dir/classified.json"
           {
             echo "cross_repo=$(jq -r '.crossRepo' "$review_dir/classified.json")"
-            echo "categories=$(jq -r '.categories | join(\",\")' "$review_dir/classified.json")"
+            echo "categories=$(jq -r '.categories | join(",")' "$review_dir/classified.json")"
             echo "peer_repo=$(jq -r '.peerRepo' "$review_dir/classified.json")"
             echo "peer_sha=$peer_sha"
             echo "classification_b64=$(base64 -w0 "$review_dir/classified.json")"
@@ -315,8 +315,8 @@ jobs:
           raw_bytes="$(jq -r '.rawBytes' "$review_dir/patch-manifest.json")"
           review_bytes="$(wc -c < "$review_dir/review.patch")"
           patch_truncated="$(jq -r '.truncated' "$review_dir/patch-manifest.json")"
-          patch_skipped="$(jq -r '.skipped | join(\",\")' "$review_dir/patch-manifest.json")"
-          patch_included="$(jq -r '.included | join(\",\")' "$review_dir/patch-manifest.json")"
+          patch_skipped="$(jq -r '.skipped | join(",")' "$review_dir/patch-manifest.json")"
+          patch_included="$(jq -r '.included | join(",")' "$review_dir/patch-manifest.json")"
           {
             echo "BASE_SHA=$BASE_SHA"
             echo "HEAD_SHA=$HEAD_SHA"
