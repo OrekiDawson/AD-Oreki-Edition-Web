@@ -84,7 +84,7 @@ function resetFakes() {
   bigCrunch.increaseWithMult = false;
   registry = {
     antimatterDimension: dimAccessor,
-    tickspeed: makeItem({ active: true, mode: 100 }),
+    tickspeed: makeItem({ active: true, mode: 1 }),
     dimboost: makeItem({ active: true }),
     galaxy: makeItem({ active: true }),
     sacrifice: makeItem({ active: true }),
@@ -211,7 +211,7 @@ test("连续修改多项受管配置 ⇒ 下一次 Tick 一次统一恢复", () 
 test("玩家修改模式、购买次数、阈值、限额和献祭倍数 ⇒ 下一 Tick 统一恢复", () => {
   apply(1);
   for (const dim of dims) dim.mode = 1;
-  registry.tickspeed.mode = 1;
+  registry.tickspeed.mode = 100;
   registry.dimboost.limitDimBoosts = true;
   registry.dimboost.limitUntilGalaxies = true;
   registry.galaxy.limitGalaxies = true;
@@ -221,7 +221,7 @@ test("玩家修改模式、购买次数、阈值、限额和献祭倍数 ⇒ 下
   bigCrunch.increaseWithMult = true;
   const result = apply(2, { wantCrunch: true });
   assert.equal(dims.every(dim => dim.mode === 10), true, "维度批量目标应为 BUY_10");
-  assert.equal(registry.tickspeed.mode, 100, "计数频率目标应为 BUY_MAX");
+  assert.equal(registry.tickspeed.mode, 1, "计数频率目标应为 BUY_SINGLE");
   assert.equal(registry.dimboost.limitDimBoosts, false);
   assert.equal(registry.dimboost.limitUntilGalaxies, false);
   assert.equal(registry.galaxy.limitGalaxies, false);

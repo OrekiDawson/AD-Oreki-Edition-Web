@@ -2,13 +2,13 @@
   "criterion": "R120-01 managed autobuyer scheduler authority",
   "source": {
     "repo": "/home/oreki/AD-Oreki-Edition/工作树/web/r120-01-scheduler",
-    "sha": "026d8880c816ed7e40cdca73bb5121b6e6ec43ad"
+    "sha": "0810c68ebadb8b3d168ca82b95a0b34c6228313c"
   },
   "browser": {
     "version": "159.0.8154.6",
     "executable": "/home/oreki/.cache/ms-playwright/chromium-1255/chrome-linux64/chrome"
   },
-  "server": "http://127.0.0.1:46045/",
+  "server": "http://127.0.0.1:36987/",
   "stage": {
     "infinities": "1",
     "break": false,
@@ -47,9 +47,9 @@
       "detail": "10,10,10,10,10,10,10,10"
     },
     {
-      "name": "计数频率购买模式恢复 BUY_MAX",
+      "name": "计数频率购买模式恢复 BUY_SINGLE",
       "pass": true,
-      "detail": "mode=100"
+      "detail": "mode=1"
     },
     {
       "name": "维度提升/星系限额恢复",
@@ -89,16 +89,16 @@
     {
       "name": "真实存档入口完成写入",
       "pass": true,
-      "detail": "gameCreatedTime=1795090088564"
+      "detail": "gameCreatedTime=1795091370914"
     },
     {
       "name": "保存并 reload 后下一调度 tick 恢复策略值",
       "pass": true,
-      "detail": "activeTick=4 intervalTick=4 mode=1 time=60"
+      "detail": "activeTick=6 intervalTick=6 mode=1 time=60"
     }
   ],
   "consoleErrors": [],
   "pageErrors": [],
   "result": "PASS",
-  "finishedAt": "2026-11-19T12:08:15.882Z"
+  "finishedAt": "2026-11-19T12:29:42.158Z"
 }

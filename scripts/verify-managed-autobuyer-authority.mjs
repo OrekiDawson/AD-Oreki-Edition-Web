@@ -205,7 +205,7 @@ try {
     player.auto.dimBoost.isActive = false;
     player.auto.galaxy.isActive = false;
     for (const dim of player.auto.antimatterDims.all) dim.mode = AUTOBUYER_MODE.BUY_SINGLE;
-    player.auto.tickspeed.mode = AUTOBUYER_MODE.BUY_SINGLE;
+    player.auto.tickspeed.mode = AUTOBUYER_MODE.BUY_MAX;
     player.auto.dimBoost.limitDimBoosts = true;
     player.auto.dimBoost.limitUntilGalaxies = true;
     player.auto.galaxy.limitGalaxies = true;
@@ -238,8 +238,8 @@ try {
     check("维度购买模式恢复 BUY_10",
       player.auto.antimatterDims.all.every(dim => dim.mode === AUTOBUYER_MODE.BUY_10),
       player.auto.antimatterDims.all.map(dim => dim.mode).join(","));
-    check("计数频率购买模式恢复 BUY_MAX",
-      player.auto.tickspeed.mode === AUTOBUYER_MODE.BUY_MAX,
+    check("计数频率购买模式恢复 BUY_SINGLE",
+      player.auto.tickspeed.mode === AUTOBUYER_MODE.BUY_SINGLE,
       `mode=${player.auto.tickspeed.mode}`);
     check("维度提升/星系限额恢复", player.auto.dimBoost.limitDimBoosts === false &&
       player.auto.dimBoost.limitUntilGalaxies === false &&
@@ -328,7 +328,7 @@ try {
         const dims = player.auto.antimatterDims;
         return dims.isActive === true && dims.all[1].isActive === true &&
           player.auto.tickspeed.isActive === true &&
-          player.auto.tickspeed.mode === AUTOBUYER_MODE.BUY_MAX &&
+          player.auto.tickspeed.mode === AUTOBUYER_MODE.BUY_SINGLE &&
           player.auto.bigCrunch.amount.eq(new Decimal(10)) &&
           player.auto.bigCrunch.xHighest.eq(new Decimal(10)) &&
           player.auto.bigCrunch.mode === AUTO_CRUNCH_MODE.TIME;

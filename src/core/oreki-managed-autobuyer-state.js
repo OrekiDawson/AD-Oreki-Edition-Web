@@ -39,12 +39,12 @@ export const MANAGED_KEYS = Object.freeze([
  * 当前策略的受管参数目标。
  *
  * 这些值对应原版真实配置字段，并只在对应自动器已解锁时应用。购买上限/模式不是
- * 为了让玩家"改不动"而写死：基础维度采用原版 10 次批量，计数频率采用购买最大，
+ * 为了让玩家"改不动"而写死：基础维度采用原版 10 次批量，计数频率采用单次购买，
  * 维度提升/星系取消人为限额，献祭阈值为 2×；大坍缩启停和节拍仍由当帧策略决定。
  */
 export const MANAGED_FIELDS = Object.freeze({
   dimensionMode: "BUY_10",
-  tickspeedMode: "BUY_MAX",
+  tickspeedMode: "BUY_SINGLE",
   sacrificeMultiplier: 2,
   crunchAmount: 10,
   crunchXHighest: 10,
@@ -358,7 +358,7 @@ export function applyAll({
     field(
       "tickspeed.mode",
       root.tickspeed.mode,
-      modeValue(MANAGED_FIELDS.tickspeedMode, 100),
+      modeValue(MANAGED_FIELDS.tickspeedMode, 1),
       value => { root.tickspeed.mode = value; },
     );
   }
