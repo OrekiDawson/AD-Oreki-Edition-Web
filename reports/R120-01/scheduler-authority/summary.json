@@ -1,0 +1,104 @@
+{
+  "criterion": "R120-01 managed autobuyer scheduler authority",
+  "source": {
+    "repo": "/home/oreki/AD-Oreki-Edition/工作树/web/r120-01-scheduler",
+    "sha": "164c91f8f560f07055c31d354921b319cab692c2"
+  },
+  "browser": {
+    "version": "159.0.8154.6",
+    "executable": "/home/oreki/.cache/ms-playwright/chromium-1255/chrome-linux64/chrome"
+  },
+  "server": "http://127.0.0.1:38839/",
+  "stage": {
+    "infinities": "1",
+    "break": false,
+    "realities": "0",
+    "crunchUnlocked": true
+  },
+  "checks": [
+    {
+      "name": "真实大坍缩自动器已合法解锁",
+      "pass": true,
+      "detail": "unlocked=true"
+    },
+    {
+      "name": "同一调度 tick 不抢写",
+      "pass": true,
+      "detail": "reason=tick-wait"
+    },
+    {
+      "name": "手动修改在 tick 前临时保留",
+      "pass": true,
+      "detail": "同 tick 内玩家值保持不变"
+    },
+    {
+      "name": "策略要求开启的自动器恢复开启",
+      "pass": true,
+      "detail": "restored=dim1,dim1,tickspeed,dimboost,galaxy,crunch,dim1.mode,dim2.mode,dim3.mode,dim4.mode,dim5.mode,dim6.mode,dim7.mode,dim8.mode,tickspeed.mode,dimboost.limitDimBoosts,dimboost.limitUntilGalaxies,galaxy.limitGalaxies,crunch.amount,crunch.xHighest,crunch.increaseWithMult"
+    },
+    {
+      "name": "策略要求关闭的大坍缩恢复关闭",
+      "pass": true,
+      "detail": "active=false"
+    },
+    {
+      "name": "维度购买模式恢复 BUY_10",
+      "pass": true,
+      "detail": "10,10,10,10,10,10,10,10"
+    },
+    {
+      "name": "计数频率购买模式恢复 BUY_MAX",
+      "pass": true,
+      "detail": "mode=100"
+    },
+    {
+      "name": "维度提升/星系限额恢复",
+      "pass": true,
+      "detail": "limitDimBoosts=false limitUntilGalaxies=false limitGalaxies=false"
+    },
+    {
+      "name": "献祭与大坍缩阈值恢复",
+      "pass": true,
+      "detail": "sacrificeUnlocked=false sacrifice=999 amount=10 xHighest=10 increase=true"
+    },
+    {
+      "name": "大坍缩 mode/time 恢复同一策略拍",
+      "pass": true,
+      "detail": "mode=1 time=5"
+    },
+    {
+      "name": "同一 tick 不重复写 mode/time",
+      "pass": true,
+      "detail": "same=false mode=0 time=77"
+    },
+    {
+      "name": "下一 tick 恢复 mode/time",
+      "pass": true,
+      "detail": "mode=1 time=60"
+    },
+    {
+      "name": "重复执行 tick 零写入",
+      "pass": true,
+      "detail": "activeWrites=0 intervalWrite=false"
+    },
+    {
+      "name": "阶段目标反转后下一 tick 开启大坍缩",
+      "pass": true,
+      "detail": "active=true"
+    },
+    {
+      "name": "真实存档入口完成写入",
+      "pass": true,
+      "detail": "gameCreatedTime=1795089720013"
+    },
+    {
+      "name": "保存并 reload 后下一调度 tick 恢复策略值",
+      "pass": true,
+      "detail": "activeTick=5 intervalTick=5 mode=1 time=60"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "result": "PASS",
+  "finishedAt": "2026-11-19T12:02:06.992Z"
+}
