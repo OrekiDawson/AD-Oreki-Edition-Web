@@ -31,8 +31,8 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { execSync } from "node:child_process";
 
-const WORKSPACE = "/home/oreki/AD-Oreki-Unified";
-const REPO = WORKSPACE + "/web/AD-Oreki-Edition";
+const WORKSPACE = "/home/oreki/AD-Oreki-Edition";
+const REPO = "/home/oreki/AD-Oreki-Edition/工作树/web/r120-01";
 
 // ── 参数解析 ───────────────────────────────────────────────────────────────
 function arg(name, def) {
