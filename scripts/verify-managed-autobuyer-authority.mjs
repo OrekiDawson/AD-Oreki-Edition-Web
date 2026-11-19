@@ -14,88 +14,24 @@
  */
 
 import fs from "node:fs";
-import http from "node:http";
 import path from "node:path";
-import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { loadPlaywright, startStaticServer } from "./lib/browser-harness.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "reports", "R120-01", "scheduler-authority");
 fs.mkdirSync(OUT, { recursive: true });
 
-function resolvePlaywright() {
-  const require = createRequire(import.meta.url);
-  const candidates = [
-    "/tmp/pwtest",
-    "/home/oreki/.npm/_npx/e41f203b7505f1fb",
-    path.join(ROOT, "node_modules"),
-    "/home/oreki/AD-Oreki-Edition/工作树/web/r120-01",
-    "/home/oreki/.codex/node_modules",
-    "/home/oreki/.npm-global/lib/node_modules",
-    "/home/oreki/AD-Oreki-Edition/node_modules",
-  ];
-  for (const base of candidates) {
-    try {
-      const req = createRequire(path.join(base, "noop.js"));
-      return req("playwright");
-    } catch (e) {
-      // 继续尝试下一目录
-    }
-  }
-  return require("playwright");
-}
-
-function mime(file) {
-  const ext = path.extname(file).toLowerCase();
-  return ({
-    ".html": "text/html; charset=utf-8",
-    ".js": "text/javascript; charset=utf-8",
-    ".mjs": "text/javascript; charset=utf-8",
-    ".css": "text/css; charset=utf-8",
-    ".json": "application/json; charset=utf-8",
-    ".png": "image/png",
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".svg": "image/svg+xml",
-    ".webm": "video/webm",
-    ".woff": "font/woff",
-    ".woff2": "font/woff2",
-  })[ext] || "application/octet-stream";
-}
-
-function startServer() {
-  const server = http.createServer((req, res) => {
-    const pathname = decodeURIComponent((req.url || "/").split("?")[0]);
-    const file = pathname === "/"
-      ? path.join(ROOT, "index.html")
-      : path.resolve(ROOT, "." + pathname);
-    if (!file.startsWith(ROOT + path.sep)) {
-      res.writeHead(403).end("forbidden");
-      return;
-    }
-    fs.readFile(file, (error, data) => {
-      if (error) {
-        res.writeHead(404).end("not found");
-        return;
-      }
-      res.writeHead(200, { "content-type": mime(file), "cache-control": "no-store" });
-      res.end(data);
-    });
-  });
-  return new Promise(resolve => {
-    server.listen(0, "127.0.0.1", () => resolve({
-      server,
-      url: `http://127.0.0.1:${server.address().port}/`,
-    }));
-  });
-}
-
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-const playwright = resolvePlaywright();
-const { server, url } = await startServer();
+const playwright = loadPlaywright([
+  path.join(ROOT, "node_modules"),
+  "/home/oreki/AD-Oreki-Edition/工作树/web/r120-01",
+  "/home/oreki/AD-Oreki-Edition/node_modules",
+]);
+const { server, url } = await startStaticServer(ROOT);
 let browser = null;
 const consoleErrors = [];
 const pageErrors = [];

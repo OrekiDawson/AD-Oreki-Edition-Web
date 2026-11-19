@@ -2,13 +2,13 @@
   "criterion": "R120-01 managed autobuyer scheduler authority",
   "source": {
     "repo": "/home/oreki/AD-Oreki-Edition/工作树/web/r120-01-scheduler",
-    "sha": "0810c68ebadb8b3d168ca82b95a0b34c6228313c"
+    "sha": "4d01e041893dad781a67ab24056c43406261d287"
   },
   "browser": {
     "version": "159.0.8154.6",
     "executable": "/home/oreki/.cache/ms-playwright/chromium-1255/chrome-linux64/chrome"
   },
-  "server": "http://127.0.0.1:36987/",
+  "server": "http://127.0.0.1:43085/",
   "stage": {
     "infinities": "1",
     "break": false,
@@ -89,16 +89,16 @@
     {
       "name": "真实存档入口完成写入",
       "pass": true,
-      "detail": "gameCreatedTime=1795091370914"
+      "detail": "gameCreatedTime=1795091832664"
     },
     {
       "name": "保存并 reload 后下一调度 tick 恢复策略值",
       "pass": true,
-      "detail": "activeTick=6 intervalTick=6 mode=1 time=60"
+      "detail": "activeTick=7 intervalTick=7 mode=1 time=60"
     }
   ],
   "consoleErrors": [],
   "pageErrors": [],
   "result": "PASS",
-  "finishedAt": "2026-11-19T12:29:42.158Z"
+  "finishedAt": "2026-11-19T12:37:23.747Z"
 }
