@@ -43,16 +43,17 @@
 
 - 浏览器：Chromium `159.0.8154.6`，412×915 手机视口；
 - 前置：全新存档，合法完成首次无限；
-- 定向检查：16/16 PASS；
+- 定向检查：17/17 PASS；
 - `pageerror=0`、`console error=0`；
 - 覆盖真实修改、同 Tick 临时保留、下一 Tick 恢复、阶段开/关反转、
-  `mode/time` 恢复、幂等、原版存档写入与 reload 后恢复；
+  `mode/time` 恢复、幂等、原版存档写入与 reload 后恢复、关闭 MOD 后写回
+  玩家原值（且不覆盖最后一次托管写入后的玩家手改）；
 - 证据：`reports/R120-01/scheduler-authority/summary.json`、
   `reports/R120-01/scheduler-authority/managed-authority-final.png`。
 
 ## 定向 Node 结果
 
-- `check_managed_autobuyer_state.mjs`：19 PASS / 0 FAIL
+- `check_managed_autobuyer_state.mjs`：25 PASS / 0 FAIL
 - `check_stage_gate.mjs`：18/18 PASS
 - `check_eternity_gate.mjs`：178/178 PASS
 - R100 新档自动购买器：39/39 PASS
