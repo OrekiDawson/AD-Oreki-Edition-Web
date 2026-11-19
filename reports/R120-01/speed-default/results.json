@@ -1,0 +1,28 @@
+{
+  "base": "http://127.0.0.1:4173/",
+  "startedAt": "2026-11-19T20:12:45.329Z",
+  "steps": {
+    "fresh": {
+      "status": "PASS",
+      "value": {
+        "factor": 3000,
+        "stored": null,
+        "dynamic": true,
+        "label": "自动（当前 3000×）"
+      }
+    },
+    "existingSavedValue": {
+      "status": "PASS",
+      "value": {
+        "factor": 10000,
+        "stored": "10000",
+        "dynamic": true,
+        "label": "自动（当前 10000×）"
+      }
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "verdict": "PASS",
+  "finishedAt": "2026-11-19T20:12:47.015Z"
+}

@@ -9,7 +9,7 @@
 **当前状态：`PROJECT_ACTIVE`（R120-01）。** 用户已明确解除休眠并授权当前轮次继续 P0/P1、真实浏览器验证、CI/CD 与交付；现有源码、PR、Issues、Release、测试证据和部署记录继续保留。激活只覆盖当前授权轮次，不代表历史缺陷或候选已完成验收。
 
 - **费用门禁**：恢复开发前须明确批准人民币预算、周期、Provider 和任务范围；预算消耗达到 80% 时预警，达到 100% 时停止新增付费调用；DeepSeek 可用余额低于 ¥10 时维持已有全员暂停规则。禁止通过换 Key、模型或账号规避预算。
-- **Kody / Kodus**：当前已撤销 DeepSeek API Key，没有可用的大模型 Provider 时，Kody 可能显示 `Skipped` / 未审查。这是**审查未完成**，不是 PASS、无缺陷或自动批准；不得为绕过费用限制恢复 Provider，也不得绕过适用的最终提交审查、Critical/P0/P1、Review Threads 全部解决、Required Checks 与发布门禁。PR 在条件不满足时保持 Draft / BLOCKED。
+- **Kody / Kodus**：代码审查继续由 Kody 承担，Oreki Audit 只负责在受信 `pull_request_target` 流程中检查作者、SHA 去重和预算后触发 `@kody start-review`。Kody 显示 `Skipped` / `BYOK Configuration Required` 时是**审查未完成**，不是 PASS；不得自行重建 Provider，也不得绕过适用的最终提交审查、Critical/P0/P1、Review Threads 全部解决、Required Checks 与发布门禁。
 - **自动化边界**：不主动启动付费 Agent、Kody 审查、定时 AI 写作或新测试；不使用长时间 `sleep` 和空转轮询维持 Agent。已公开的网站与已有仓库不因休眠自动删除或撤销。README 只说明管理状态，本身不能阻止云端计费；订阅与 Provider 需要在相应平台管理。
 
 **Web 特别说明**：现有站点与存档功能的已发布状态不因休眠改变；恢复前需按实际改动完成 Node、Playwright/移动浏览器与部署门禁。
@@ -44,6 +44,8 @@ node serve.mjs 8080
 3. 首次大坍缩后必须真实经历无限阶段，不能立即自动 Break Infinity。
 4. 无限阶段隐藏永恒层内容；永恒和现实内容只能在真实结算后显示。
 5. 游戏推进不依赖频繁切换页面；页面主要负责显示真实状态，不能通过切页伪造业务触发。
+6. 新档默认全局速度为 **3000×**，与 Android 的 `OrekiGamePace.DEFAULT_SPEED` 对齐；已有合法速度设置不被覆盖。动态速度仅在检测到真实停滞时升档。
+7. 五阶段节奏目标是成长曲线验收口径，不用于按时钟解锁；真实新档墙钟硬上限仍为 180 分钟。
 
 ## 5. 测试
 

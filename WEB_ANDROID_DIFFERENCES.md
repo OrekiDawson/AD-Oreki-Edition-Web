@@ -9,7 +9,7 @@
 > `git checkout / reset / pull / merge` 之后必须重新核对 `stat -c '%d %i'`，
 > 关系断了就按 §6 的安全流程重建。
 
-**最后更新**：2026年11月1日（R51）
+**最后更新**：2026年11月20日（R120-01）
 **维护规则**：见项目根 `AGENTS.md` §21 与本节 §15；每轮开工先读、收工必更新。
 **自 R51 起的强制要求**：每轮涉及 Web / Android 功能变化时，必须同步评估本文件是否需要更新。
 本文件是**双端一致性事实清单**，不是待办列表——过期结论必须删改，不得堆积。
@@ -34,7 +34,7 @@
 
 | 功能模块 | Web 实现 | Android 实现 | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 | 负责人/后续 |
 |---|---|---|---|---|---|---|---|---|
-| 游戏速度倍率 | `getGameSpeedupFactor()`，默认 F=10000，`OrekiSpeed` 注入点唯一 | `OrekiSpeed` / `apply` 注入，F=10000；时间补偿（记忆 √F / 动量 F / 暗物质 √F）另行注入 | 逻辑+性能 | 预期（DEX 侧只能改常量与调用点） | 同输入下「现实时间 vs 游戏内时间」比例一致 | 待验证 | Web `src/core/oreki-speed*.js`；Android `scripts/build_mod.py` 的 `[4n]` 天体时间补偿自检 | R41：两端各跑一次 F=1 / F=10000 对照表 |
+| 游戏速度倍率 | `getGameSpeedupFactor()`，新档默认 F=3000；已有合法本地设置保留 | Kotlin `OrekiGamePace.DEFAULT_SPEED=3000`，Smali 只转发默认值；已有 SharedPreferences 保留 | 逻辑+性能 | 预期（实现语言不同） | 新档起点比例一致；用户已保存倍率不被迁移覆盖 | 待验证 | Web `src/core/speed-config.js`；Android `OrekiGamePace.kt` | 需做两端 F=3000 新档对照；F=10000 旧跑次仅作历史证据 |
 | 时间倍率下「已流逝时间」缩放 | 主循环按 `diff × F` | `IntervaledAutobuyerState.c()` 已改为按倍率缩放已流逝时间 | 逻辑 | 预期 | 自动购买器的「间隔」语义一致 | 待验证 | Android 构建日志 `[Oreki AC]` | R41 |
 | 终局判据 | `game-end.js`：`OFFSET = 1`、`TARGET = 1000`，`endState >= 1 ⟺ 反物质指数 ≥ 1000` | `patch_pelle_end_target()` 把两条 `const-wide` 立即数改成 `1.0` / `1000.0`（后续修为 `1001.0`）；`OrekiPelleRecord.smali`（R42）补写 `PelleRecords.totalAntimatter`，由构建期断言强制挂在 `onAutoBuyerTick` | 数值 | 预期 | 判据字面一致（1e1000） | **待验证**（常量与记录写入都已就位，但从未跑到佩勒；`endState` 目前仍恒 0） | Web `src/core/celestials/pelle/game-end.js`；`OrekiPelleRecord.smali`；FACTS §C.15 / §C.17 / §C.59 | R51-AND-01：推进到佩勒再验 |
 | IU25 成本 | `OREKI_IU25_COST = 5e9`（原版 1.6e15） | 未确认是否同步 | 数值 | 需修复（若未同步） | 同一常量 | 未验证 | Web `secret-formula/reality/imaginary-upgrades.js` | R41 用 REA 查 Android 侧 IU25 成本常量 |
@@ -112,9 +112,9 @@
 
 | 功能模块 | Web 实现 | Android 实现 | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 | 负责人/后续 |
 |---|---|---|---|---|---|---|---|---|
-| F=10000 下的实际吞吐 | 单页 Edge + 1 s 采样实测 | AVD 实测（CPU 受限，单次 gameTick ≈22 ms） | 性能 | 预期（设备差异） | 都不得出现「倍率不生效」 | 待验证 | Web `_r40m/*.jsonl`；Android `environment/测试环境记录.md` §性能 | R41 |
+| 新档 F=3000 的实际吞吐 | 默认已对齐 3000，待本轮真实新档复核 | 默认已对齐 3000；Kotlin 单测 PASS，真实 AVD 待复核 | 性能 | 预期（设备差异） | 均不得出现「倍率不生效」 | 待验证 | Web `speed-config.js`；Android `OrekiGamePace.kt` | 下一次真实跑次记录实际倍率与阶段墙钟 |
 | 动态速度模式 | 有（`OrekiSpeed` 动态倍率） | `[T2]` 设置页两个按钮 → `setDynamic` / `modeLabel` | 逻辑 | 预期 | 语义一致 | 待验证 | Android 构建日志 `[T2]` | R41 |
-| 新手真实通关 ≤180 min | **未达成**（R40 长跑 17 min 达到 V+IU15，此后卡在莱特拉/IU25） | **未验证**（连 EC 全链都未 AVD 实测） | 逻辑 | 需修复 | 两端各自从全新存档、无教程、真实墙钟 ≤180 min 触发 `isGameEnd` | 未验证 | `web/_tools/_r40m/r40m-long1-abort.log` | R41：**最高优先** |
+| 新手真实通关 ≤180 min | F=10000 的历史新档已真实通关，但只用 34.85 min，明显快于五阶段目标；默认 3000 的新跑次待验证 | 最新候选已构建，真实 AVD/真机待验证 | 逻辑 | 需平衡 | 两端各自从全新存档、无教程、真实墙钟 ≤180 min 触发 `isGameEnd`，并分别记录阶段墙钟 | Web F=10000 PASS（不满足节奏目标）；F=3000 NOT RUN；Android NOT RUN | `reports/R120-01/web-full-fixed/summary.json`；Android `reports/R120-01/android-ec184-agent.md` | 下一次真实跑次验证默认 3000 曲线 |
 
 ## 8. 自动化行为与触发条件
 
@@ -552,3 +552,19 @@ Android 没有 `ecEntryPending` / IU15 冲刺这两项：前者是 EC 入口等�
 | 2 | tier8 后 IU25 的 DS6 帧 | reality 任务先于 endgame，DS6 一买上就被自动现实清掉；已加 holdForLaitela（最多 240s）截取该帧后再走原版购买 | Android 调度顺序/DS6 处理不同，本轮未对照 | Web 实现差异（已修并运行期验证：run-fixed4 iu25/doomed 1826.5s） |
 | 3 | Teresa 浇注节奏 | 真实墙钟但 celestial 任务约每 19s 才被调度 + OREKI_MAX_REAL_FRAME_MS=100 ⇒ 459.8s 才到 1e24（设计约 2.3s） | 原版主循环按帧累计真实时间，无调度器节流 | 双端节奏差异（非语义），下一轮评估 Web 调度粒度 |
 | 4 | 默认设置新档 180min 门禁 | 三项修复后 **gameEnd @1867.9s（31.1min）PASS**（endState 1.0417、pageerror 0） | Android 本轮同步修 IM 上限/Teresa 浇注/P0-2 节奏等，最终跑次由 Android 侧报告 | Web 已 PASS；Android 待其本轮结果 |
+
+## 22. R120-01 当前节奏、自动化与审查状态
+
+本节优先于上方 R51/R107/R108 的旧默认值与时序结论。旧记录保留作历史追溯，不再代表当前 HEAD。
+
+| # | 能力 | Web 当前状态 | Android 当前状态 | 判定 |
+|---|---|---|---|---|
+| 1 | 新档默认速度 | F=3000，已有合法本地值保留 | Kotlin `OrekiGamePace.DEFAULT_SPEED=3000`，已有 SharedPreferences 保留 | **代码一致；真实跑次未完成** |
+| 2 | 调度器周期 | 1～60 秒，默认 10 秒；非法值安全回退 | 1～60 秒，默认 10 秒；Kotlin 统一配置 | **实现目标一致，边界测试见各仓报告** |
+| 3 | 受管自动购买器恢复 | 玩家改动在下一次调度 Tick 按当前策略恢复；Pelle/未解锁仍让路 | 同语义；本轮补 Pelle 末日让路与 pre-break 同拍保活 | **Kotlin/JS 定向测试 PASS；真实 AVD 待运行** |
+| 4 | 首次永恒驻留 | 已修复未解锁 `isActive=true` 绕过；Reality 历史不会重复触发 | 本轮补 `realities/bigRealities` 历史判断，修复 Reality 清零后误判 | **静态与单元测试 PASS；真实 APK 待运行** |
+| 5 | F=10000 历史真实新档 | `gameEnd=2090.9s`（34.85 min），首无限 10.9s、首永恒 271.1s、首现实 641s、Pelle 2051s | 未在同口径完整新档上复跑 | **Web PASS 合法性；五阶段节奏 FAIL** |
+| 6 | 五阶段目标 | 默认 3000 新跑次 NOT RUN | 最新候选 NOT RUN | **尚不可宣称完成** |
+| 7 | 代码审查 | Kody 原生 Review + Inline Threads；Oreki Audit 仅触发 | 同一触发架构 | **Kody 保持启用；旧自制审查引擎停止调用模型** |
+
+结论：两仓速度默认值已对齐到 3000×；剩余主要缺口是使用该默认值完成两端真实新档墙钟与五阶段曲线验证。
