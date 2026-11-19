@@ -86,6 +86,16 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertIn("model: \"deepseek-flash\"", body)
         self.assertIn("OREKI_AUDIT_LLM_KEY", body)
         self.assertIn("OREKI_AUDIT_APP_PRIVATE_KEY", body)
+        self.assertIn("OREKI_AUDIT_QUOTA_APP_ID", body)
+        self.assertIn("OREKI_AUDIT_QUOTA_APP_PRIVATE_KEY", body)
+        quota_steps = body.split("- name: 生成共享配额写令牌", 1)[1]
+        quota_steps = quota_steps.split("- name: 原子预占共享审查配额", 1)[0]
+        self.assertIn("permission-contents: write", quota_steps)
+        self.assertIn("repositories: AD-Oreki-Edition-Web", quota_steps)
+        self.assertNotIn("permission-pull-requests: write", quota_steps)
+        review_token_steps = body.split("- name: 生成 Pull Request Review 写令牌", 1)[1]
+        self.assertIn("OREKI_AUDIT_APP_PRIVATE_KEY", review_token_steps)
+        self.assertNotIn("OREKI_AUDIT_QUOTA_APP_PRIVATE_KEY", review_token_steps)
         self.assertIn("fetch-depth: 0", body)
         self.assertIn("minuteOfDay >= 50", body)
 
