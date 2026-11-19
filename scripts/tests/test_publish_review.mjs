@@ -46,12 +46,14 @@ assert.equal(findingLocationValid({ path: "missing.js", line: 1, side: "RIGHT" }
 const body = findingBody({
   severity: "high",
   title: "边界错误",
-  reason: "值可能越界",
+  reason: "通知 @owner 且值可能越界",
   trigger: "输入为 0",
   fix: "钳制最小值",
-  suggestion: "const value = Math.max(1, input);",
+  suggestion: "const value = '@safe'.length + Math.max(1, input);",
 });
 assert.match(body, /```suggestion/);
 assert.match(body, /Math\.max/);
+assert.match(body, /@\u200bowner/);
+assert.match(body, /'@safe'/);
 
 console.log("PASS  R120-01 GitHub Review 定位与 suggestion 夹具");

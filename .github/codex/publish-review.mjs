@@ -59,16 +59,17 @@ export function findingLocationValid(finding, diffLines) {
 
 export function findingBody(finding) {
   const lines = [
-    `**${String(finding.severity).toUpperCase()} · ${finding.title}**`,
+    `**${String(finding.severity).toUpperCase()} · ${safeText(finding.title)}**`,
     "",
-    `原因：${finding.reason}`,
+    `原因：${safeText(finding.reason)}`,
     "",
-    `触发条件：${finding.trigger}`,
+    `触发条件：${safeText(finding.trigger)}`,
     "",
-    `最小修复：${finding.fix}`,
+    `最小修复：${safeText(finding.fix)}`,
   ];
   if (finding.suggestion) {
-    lines.push("", "```suggestion", finding.suggestion.replace(/\n$/u, ""), "```");
+    const fence = finding.suggestion.includes("```") ? "````" : "```";
+    lines.push("", `${fence}suggestion`, finding.suggestion.replace(/\n$/u, ""), fence);
   }
   return lines.join("\n");
 }
@@ -79,9 +80,18 @@ function unmappedBody(findings) {
     "### 未映射到当前 Diff 的问题",
     "",
     ...findings.map(finding =>
-      `- **${String(finding.severity).toUpperCase()} · ${finding.title}**：${finding.reason} ` +
-      `触发条件：${finding.trigger} 最小修复：${finding.fix}`),
+      safeText(`- **${String(finding.severity).toUpperCase()} · ${finding.title}**：${finding.reason} ` +
+        `触发条件：${finding.trigger} 最小修复：${finding.fix}`)),
   ].join("\n");
+}
+
+function safeText(value) {
+  return String(value || "")
+    .replaceAll(MARKER, "")
+    .replaceAll(COMMENT_MARKER, "")
+    .replaceAll("REVIEW_IDENTITY:", "REVIEW_IDENTITY_ESCAPED:")
+    .replaceAll("REVIEW_CONFIG_VERSION:", "REVIEW_CONFIG_VERSION_ESCAPED:")
+    .replaceAll("@", "@\u200b");
 }
 
 async function api(path, token, options = {}) {
@@ -127,7 +137,7 @@ async function fallbackComment({ token, repository, pr, identity, notice, text }
     "",
     `REVIEW_IDENTITY: ${identity}`,
     "",
-    notice || text,
+    safeText(notice || text),
   ].join("\n");
   const comments = await paginate(`/repos/${owner}/${repo}/issues/${pr}/comments`, token);
   const previous = comments.find(comment =>
@@ -218,7 +228,7 @@ async function main() {
         path: finding.path,
         line: finding.line,
         side: finding.side || "RIGHT",
-        body: findingBody(finding).replaceAll("@", "@\u200b"),
+        body: findingBody(finding),
       };
       if (finding.start_line) {
         comment.start_line = finding.start_line;
@@ -233,7 +243,7 @@ async function main() {
       "",
       `状态：**${result.status}**`,
       "",
-      result.summary,
+      safeText(result.summary),
       "",
       unmappedBody(unmapped),
       "",
