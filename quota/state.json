@@ -19,6 +19,24 @@
       "reservedAt": "2026-11-19T17:06:07.941Z",
       "updatedAt": "2026-11-19T17:06:07.941Z",
       "report": ""
+    },
+    {
+      "identity": "a9f2f67926e98ae6ef28d7f3d04e97f90bec3fb1a9fea2586fb1d460a125eed5",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Android",
+      "pr": 186,
+      "headSha": "3d5094cda516ec481e6ab0a4e06b04840be50f63",
+      "configVersion": "43e0d7a3080858c6e3e3a4346ae1c6703c2ab716606183a260e343c8c2768d76",
+      "crossRepo": true,
+      "peerRepo": "AD-Oreki-Edition-Web",
+      "peerSha": "587d8c7dd2b8ec1790755ec736f85178c38c91c3",
+      "requestId": "d8e81f1626d48e53e374285d5d2709e6f1d5d3e439ae3a615b0fd238f52f967f",
+      "date": "2026-11-20",
+      "attempt": 1,
+      "status": "reserved",
+      "modelCalls": 0,
+      "reservedAt": "2026-11-19T17:06:15.320Z",
+      "updatedAt": "2026-11-19T17:06:15.320Z",
+      "report": ""
     }
   ]
 }
