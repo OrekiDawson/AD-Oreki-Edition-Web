@@ -1,0 +1,49 @@
+name: Kody PR 审查触发器
+
+'on':
+  # 使用受信任 base 工作流；不检出、不执行 PR 代码。
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, ready_for_review, synchronize]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 要检查的 PR 编号
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  # 每仓串行，保证单仓配额检查和评论写入不竞争。
+  group: kody-trigger-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    name: 验证并触发 Kody
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request_target' &&
+      github.event.pull_request.user.login == 'OrekiDawson' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.draft == false)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: 检出受信任 Base
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: 验证身份、去重、预算并发送触发评论
+        env:
+          GH_TOKEN: ${{ secrets.KODY_TRIGGER_PAT }}
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+          STABILIZATION_SECONDS: "300"
+          MAX_TRIGGERS_PER_REPO_PER_DAY: "50"
+        shell: bash
+        run: node .github/kody/trigger.mjs
