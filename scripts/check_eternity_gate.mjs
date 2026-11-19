@@ -705,6 +705,17 @@ try {
     lockedLoadCase({ eternities: 0, realities: 1 }) === true);
   check("门禁：载入 et=0、realities=0、未解锁 ⇒ 阻止（从未永恒）",
     lockedLoadCase({ eternities: 0, realities: 0 }) === false);
+  check("门禁：已解锁时锁定层驱动例外必须无条件失效", (() => {
+    reset();
+    globalThis.player.eternities = mkEternitiesLoad(200);
+    player.auto.autobuyersOn = true;
+    globalThis.EternityMilestone = { autobuyerEternity: { isReached: true } };
+    try {
+      return A._lockedLayerDriveAllowed() === false;
+    } finally {
+      delete globalThis.EternityMilestone;
+    }
+  })());
   check("载入 et=5 未解锁例外只驱动、不写开关（#69）",
     (() => {
       reset();

@@ -1105,6 +1105,9 @@ export const OrekiEternityAutomation = {
    */
   _lockedLayerDriveAllowed() {
     try {
+      // 名称即契约：只服务于界面未渲染开关的锁定层。已解锁时任何调用都不得
+      // 绕过玩家真实开关，即使当前调用方已先判断 unlocked，也在这里纵深防御。
+      if (this._eternityAutobuyerUnlocked()) return false;
       if (player.auto.autobuyersOn === false) return false;
       if (this._eternityAutoUserClosed === true) return false;
       // 用 _everEternitied() 而不是裸 et≥1：玩家把永恒次数花在永恒升级后 et 可能变 0，
