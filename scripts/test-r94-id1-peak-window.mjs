@@ -372,6 +372,11 @@ check("17b. 动态速度进度指纹包含时间之理与反物质峰值，真�
   assert.match(SPEED_SRC, /ex\(p\.timestudy\?\.theorem\)/);
 });
 
+check("17c. 首次永恒前的离散生长链保持用户设定倍率，不自动升档", () => {
+  assert.match(SPEED_SRC,
+    /if \(!positive\(p\.eternityPoints\) && !positive\(p\.realities\)\) return false;/);
+});
+
 check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买器在 3000× 下每帧都能触发", () => {
   const dimBoostInterval = Number(PLAYER_SRC.match(
     /dimBoost: \{[\s\S]*?interval: (\d+),/)[1]);
