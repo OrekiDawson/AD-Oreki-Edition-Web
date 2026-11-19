@@ -365,6 +365,13 @@ check("17. 原版自动购买器的有效间隔 = interval / F（高倍率下按
     /get effectiveInterval\(\) \{\s*\n\s*return this\.interval \/ Math\.max\(1, getGlobalSpeedFactor\(\)\);/);
 });
 
+check("17b. 动态速度进度指纹包含时间之理与反物质峰值，真实成长不得误触升档", () => {
+  assert.match(SPEED_SRC, /ex\(p\.records\.thisInfinity\?\.maxAM\)/);
+  assert.match(SPEED_SRC, /ex\(p\.records\.thisReality\?\.maxAM\)/);
+  assert.match(SPEED_SRC, /ex\(p\.records\.totalAntimatter\)/);
+  assert.match(SPEED_SRC, /ex\(p\.timestudy\?\.theorem\)/);
+});
+
 check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买器在新默认倍率下每帧都能触发", () => {
   const dimBoostInterval = Number(PLAYER_SRC.match(
     /dimBoost: \{[\s\S]*?interval: (\d+),/)[1]);
@@ -393,7 +400,7 @@ check("19. 受统一节拍限制的只有「解锁/购买 ID1」与「触发首�
   // `early`（买无限维度/无限升级）与 `eternityReset`（触发永恒）都注册在同一个调度器
   assert.match(GAME_SRC, /\["early", 20, \(\) => OrekiEarlyAutomation\.tick\(\)/);
   assert.match(GAME_SRC,
-    /\["eternityReset", 31, \(\) => OrekiEternityAutomation\.tickEternity\(\)/);
+    /\["eternityReset", 31, orekiEternityResetTick, "cont"\]/);
   // 统一全局节拍：任一真动作之间必须 ≥ intervalSec，且没有 `cont` 类旁路
   assert.match(EXECUTOR_SRC, /if \(!globalGateFree\(gateNow\)\) break;/);
   assert.doesNotMatch(EXECUTOR_SRC, /if \(task\.cls === "cont"\)/,
