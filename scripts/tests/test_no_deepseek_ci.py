@@ -13,6 +13,22 @@ REVIEW_WORKFLOW = ROOT / ".github/workflows/codex-deepseek-review.yml"
 
 
 class ScopedDeepSeekReviewInCi(unittest.TestCase):
+    def assert_strict_objects(self, schema, path="$"):
+        if isinstance(schema, dict):
+            if schema.get("type") == "object":
+                with self.subTest(path=path):
+                    self.assertFalse(schema.get("additionalProperties", True), path)
+                    self.assertEqual(
+                        set(schema.get("properties", {})),
+                        set(schema.get("required", [])),
+                        path,
+                    )
+            for key, value in schema.items():
+                self.assert_strict_objects(value, f"{path}.{key}")
+        elif isinstance(schema, list):
+            for index, value in enumerate(schema):
+                self.assert_strict_objects(value, f"{path}[{index}]")
+
     def test_legacy_ai_triage_entrypoints_removed(self):
         for path in (
             ".github/workflows/deepseek-triage.yml",
@@ -104,6 +120,11 @@ class ScopedDeepSeekReviewInCi(unittest.TestCase):
         self.assertGreaterEqual(flash["truncation_policy"]["limit"], 65536)
         self.assertIn("fetch-depth: 0", body)
         self.assertIn("minuteOfDay >= 50", body)
+
+    def test_output_schema_uses_strict_objects(self):
+        schema = json.loads(
+            (ROOT / ".github/codex/review-result.schema.json").read_text(encoding="utf-8"))
+        self.assert_strict_objects(schema)
 
 if __name__ == "__main__":
     unittest.main()
