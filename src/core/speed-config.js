@@ -59,7 +59,7 @@ export function parseSpeedFactor(input) {
 
   // 只接受普通十进制写法，显式拒绝 Infinity / NaN / 科学计数法误用
   if (!/^[+-]?(\d+(\.\d*)?|\.\d+)$/u.test(text)) {
-    return { ok: false, value: GAME_SPEED_DEFAULT, message: "格式无效：请输入普通数字，例如 10000" };
+    return { ok: false, value: GAME_SPEED_DEFAULT, message: "格式无效：请输入普通数字，例如 3000" };
   }
   const value = Number(text);
   if (!Number.isFinite(value)) {
@@ -298,7 +298,7 @@ export const GameSpeed = {
  * `getGlobalSpeedFactor()` 在 Pelle 毁灭现实中返回 `sqrt(f)`，本 Mod 早期沿用。
  * 后果是：旧默认 10000× 下，毁灭现实只剩 100×，整条终局拉伸慢 100 倍；
  * 且与本 Mod 的 Android 端（`OrekiSpeed.mult()` 无 isDoomed 分支，恒为全额）
- * 形成跨端不一致（Web 100× vs Android 10000×）。
+ * 形成跨端不一致（Web 100× vs Android 全额）。
  *
  * 按《Oreki 爽玩优先标准》——缩短现实通关时间优先、两端规则一致——
  * 这里取消开平方，毁灭现实与其余阶段同用全额倍率。
