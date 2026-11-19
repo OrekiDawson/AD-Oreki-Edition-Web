@@ -122,10 +122,10 @@
       "requestId": "e1666aaac17dcd2fd7cb831e7409a3218dde42de2506cf5cd2710bb9e6d240f3",
       "date": "2026-11-20",
       "attempt": 1,
-      "status": "reserved",
-      "modelCalls": 0,
+      "status": "model_started",
+      "modelCalls": 1,
       "reservedAt": "2026-11-19T17:26:44.129Z",
-      "updatedAt": "2026-11-19T17:26:44.129Z",
+      "updatedAt": "2026-11-19T17:27:10.561Z",
       "report": ""
     },
     {
