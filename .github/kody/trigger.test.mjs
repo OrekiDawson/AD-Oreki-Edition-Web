@@ -132,6 +132,10 @@ test("UTC+08:00 自然日边界正确", () => {
     new Date("2026-11-20T15:59:40Z"),
   ), true);
   assert.equal(shouldWaitForQuotaMidnight(
+    new Date("2026-11-20T04:00:00Z"),
+    new Date("2026-11-20T03:59:59Z"),
+  ), false);
+  assert.equal(shouldWaitForQuotaMidnight(
     new Date("2026-11-20T16:00:01Z"),
     new Date("2026-11-20T15:59:50Z"),
   ), false);
