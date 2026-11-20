@@ -12,6 +12,9 @@
 - **Kody / Kodus**：代码审查由 Kodus Manual + `.github/workflows/kody-trigger.yml` 驱动。触发器只对 `OrekiDawson` 的同仓、`main`、非 Draft PR 生效，按 Head SHA 去重并使用最小权限 PAT。`Skipped`、`KODY NOT RUN` 均不是 PASS。
 - **旧 Oreki Audit**：`codex-deepseek-review.yml` 保留作回滚备份，`OREKI_AUDIT_ENABLED=false`；未经用户明确恢复，不调用 DeepSeek，也不发布自制 Review。
 - **自动化边界**：Kody Rules 初期最多 3 条并限定仓库路径；默认 Balanced、简体中文，不使用 Heavy。自动审查保持 Manual，不批量重审历史 PR。
+- **当前线上版本**：`oreki.net` 已由 Pages 工作流部署源码 `de2626805965a24c852352fad6abcdb0f5173dc9`，
+  复用 Web CI `44655186495`；线上移动 Chromium 冒烟为 `3000×`、动态速度开启、调度周期 10 秒，
+  page/console error 均为 0。详见 `reports/R120-01/pages-deployment-evidence.md`。
 
 **Web 特别说明**：现有站点与存档功能的已发布状态不因本轮工作改变；涉及玩法、自动化、存档或部署的改动仍需通过 Node、Playwright/移动浏览器与对应部署门禁。
 
