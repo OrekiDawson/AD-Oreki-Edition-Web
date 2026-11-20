@@ -183,6 +183,47 @@ assert.equal(recoveredOrphan.record.commentId, "5000");
 assert.equal(recoveredOrphan.records.filter(record =>
   record.kind === KODY_KIND && record.commentId === "5000").length, 1);
 
+const laterCommentsReservation = reserveKodyPure([], kodyCandidate("later-comments", kodyAndroid), {
+  date: kodyDate,
+  now: "2026-11-20T00:06:00Z",
+}).records;
+const laterComments = reserveKodyPure(
+  laterCommentsReservation,
+  kodyCandidate("later-comments", kodyAndroid),
+  {
+    date: kodyDate,
+    now: "2026-11-20T00:07:00Z",
+    evidence: [
+      { ...kodyEvidence(kodyAndroid, [5001])[0], createdAt: "2026-11-20T00:06:20Z" },
+      { ...kodyEvidence(kodyAndroid, [5002])[0], createdAt: "2026-11-20T00:06:40Z" },
+    ],
+  },
+);
+assert.equal(laterComments.reason, "identity-recovered");
+assert.equal(laterComments.counts.used, 2);
+assert.equal(laterComments.records.filter(record =>
+  record.kind === KODY_KIND && ["5001", "5002"].includes(record.commentId)).length, 2);
+
+const occupiedComment = attachKodyCommand(
+  reserveKodyPure([], kodyCandidate("other-head", kodyAndroid), {
+    date: kodyDate,
+    now: "2026-11-20T00:07:10Z",
+  }).records,
+  { identity: "other-head", commentId: "5003", createdAt: "2026-11-20T00:07:20Z" },
+);
+const staleReservation = reserveKodyPure([], kodyCandidate("stale-head", kodyAndroid), {
+  date: kodyDate,
+  now: "2026-11-20T00:07:25Z",
+}).records;
+const notClaimed = reserveKodyPure([...occupiedComment.records, ...staleReservation],
+  kodyCandidate("stale-head", kodyAndroid), {
+  date: kodyDate,
+  now: "2026-11-20T00:07:30Z",
+  evidence: [{ ...kodyEvidence(kodyAndroid, [5003])[0], createdAt: "2026-11-20T00:07:20Z" }],
+});
+assert.equal(notClaimed.reason, "identity-in-progress");
+assert.equal(notClaimed.counts.used, 2);
+
 const midnightReservation = reserveKodyPure([], kodyCandidate("midnight", kodyWeb), {
   date: "2026-11-20",
   now: "2026-11-20T15:59:59Z",
@@ -195,6 +236,24 @@ const midnightAttached = attachKodyCommand(midnightReservation, {
 assert.equal(midnightAttached.record.date, "2026-11-21");
 assert.equal(kodyQuotaCounts(midnightAttached.records, "2026-11-20").used, 0);
 assert.equal(kodyQuotaCounts(midnightAttached.records, "2026-11-21").used, 1);
+
+const midnightOrphan = reserveKodyPure([], kodyCandidate("midnight-orphan", kodyWeb), {
+  date: "2026-11-20",
+  now: "2026-11-20T15:59:58Z",
+}).records;
+const midnightRecovered = reserveKodyPure(
+  midnightOrphan,
+  kodyCandidate("midnight-orphan", kodyWeb),
+  {
+    date: "2026-11-21",
+    now: "2026-11-20T16:00:02Z",
+    evidence: [{ ...kodyEvidence(kodyWeb, [6001])[0], createdAt: "2026-11-20T16:00:01Z" }],
+  },
+);
+assert.equal(midnightRecovered.reason, "identity-recovered");
+assert.equal(midnightRecovered.record.date, "2026-11-21");
+assert.equal(kodyQuotaCounts(midnightRecovered.records, "2026-11-20").used, 0);
+assert.equal(kodyQuotaCounts(midnightRecovered.records, "2026-11-21").used, 1);
 
 const kodyDuplicate = reserveKodyPure(kodyAttached.records, kodyCandidate("trigger-b", kodyWeb), {
   date: kodyDate,

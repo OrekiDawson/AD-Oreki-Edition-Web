@@ -142,6 +142,7 @@ function importKodyEvidence(records, evidence, date, now) {
       .map(record => `${String(record.repository ?? "")}#${String(record.commentId ?? "")}`)
       .filter(Boolean),
   );
+  const matchedPending = new Set();
   for (const item of evidence) {
     const repository = String(item?.repository ?? "");
     const commentId = String(item?.commentId ?? "").trim();
@@ -153,13 +154,17 @@ function importKodyEvidence(records, evidence, date, now) {
       throw new Error("Kody quota evidence requires a valid creation time");
     }
     if (shanghaiDate(createdAt) !== date) continue;
-    const matchesPending = pending.some(record =>
+    const commentKey = `${repository}#${commentId}`;
+    if (seen.has(commentKey)) continue;
+    const pendingMatch = pending.find(record =>
+      !matchedPending.has(record.identity) &&
       String(record.repository ?? "") === repository &&
       Number(record.pr) === Number(item?.pr) &&
       createdAt.getTime() >= Date.parse(String(record.reservedAt ?? "")));
-    if (matchesPending) continue;
-    const commentKey = `${repository}#${commentId}`;
-    if (seen.has(commentKey)) continue;
+    if (pendingMatch) {
+      matchedPending.add(pendingMatch.identity);
+      continue;
+    }
     seen.add(commentKey);
     output.push({
       kind: KODY_KIND,
@@ -199,7 +204,11 @@ export function reserveKodyPure(records, candidate, {
     record.identity === identity);
   if (prior) {
     if (prior.status === "reserved" && !String(prior.commentId ?? "")) {
+      const occupiedComments = new Set(output
+        .filter(record => isKodyRecord(record) && String(record.commentId ?? ""))
+        .map(record => `${String(record.repository ?? "")}#${String(record.commentId ?? "")}`));
       const recovered = evidence.find(item =>
+        !occupiedComments.has(`${String(item?.repository ?? "")}#${String(item?.commentId ?? "")}`) &&
         String(item?.repository ?? "") === String(prior.repository ?? "") &&
         Number(item?.pr) === Number(prior.pr) &&
         Date.parse(String(item?.createdAt ?? "")) >= Date.parse(String(prior.reservedAt ?? "")));
@@ -208,6 +217,7 @@ export function reserveKodyPure(records, candidate, {
           identity,
           commentId: recovered.commentId,
           commentUrl: recovered.url,
+          createdAt: recovered.createdAt,
           now,
         });
         return {
