@@ -332,10 +332,10 @@ try {
   }
 }
 
-// ---------------- ⑪ R96：TT 购买收益 ×500（与 Android 同语义） ----------------
+// ---------------- ⑪ TT 购买收益保持原版 ×1 ----------------
 {
   const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
-  check("倍率常量 = 500", src.includes("const TT_REWARD_MULTIPLIER = 500;"));
+  check("倍率常量 = 1", src.includes("const TT_REWARD_MULTIPLIER = 1;"));
   check("totalPurchased 结果按真实类型处理（number 不再调 toNumber）",
     src.includes('typeof raw === "number" ? raw : raw.toNumber()'));
   check("禁止把 totalPurchased() 直接当 Decimal 调 toNumber",
@@ -380,14 +380,14 @@ try {
     total = 3;
     check("无新购买时不发奖", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 4;
-    check("新增 1 次购买 → 补发 499 TT", A2.settleTimeTheoremReward() === 499 && added === 499);
+    check("新增 1 次购买 → 不补发 TT", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 4;
-    check("同一笔购买不会被重复补发", A2.settleTimeTheoremReward() === 0 && added === 499);
+    check("同一笔购买不会被重复补发", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 6;
-    check("批量新增 2 次 → 补发 998 TT", A2.settleTimeTheoremReward() === 998 && added === 1497);
+    check("批量新增 2 次 → 不补发 TT", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 2_400_000;
-    check("[R104 P1] 高倍率单拍真实大额购买 delta=2.4e6 → 按 ×500 补发（不再当换档丢弃）",
-      A2.settleTimeTheoremReward() === (2_400_000 - 6) * 499);
+    check("[R104 P1] 高倍率单拍真实大额购买 delta=2.4e6 → 不补发 TT",
+      A2.settleTimeTheoremReward() === 0);
     const addedAfterBig = added;
     total = 2_400_000 + 200_000_000;
     check("超过 1e8 的换档级跳变仍只重设基线、不发奖",

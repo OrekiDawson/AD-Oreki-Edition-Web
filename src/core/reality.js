@@ -125,8 +125,7 @@ export function isRealityAvailable() {
 export function simulatedRealityCount(advancePartSimCounters) {
   const amplifiedSim = Enslaved.boostReality ? Enslaved.realityBoostRatio - 1 : 0;
   const multiversalSim = AlchemyResource.multiversal.effectValue;
-  // 沿用 ADfaster 的平衡增强：每次 Reality 常驻额外模拟 +4 次（与原有多重宇宙模拟叠加）
-  const simCount = (multiversalSim + 1) * (amplifiedSim + 1) + player.partSimulatedReality - 1 + 4;
+  const simCount = (multiversalSim + 1) * (amplifiedSim + 1) + player.partSimulatedReality - 1;
   if (advancePartSimCounters) {
     player.partSimulatedReality = simCount - Math.floor(simCount);
   }
