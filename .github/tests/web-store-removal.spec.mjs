@@ -1,5 +1,10 @@
 import { test, expect } from "@playwright/test";
 
+const INTEROP_SAVES = [
+  "/savestates/original/new-save.txt",
+  "/savestates/regression/legal-eternity.txt",
+];
+
 // R121-01: the Web build no longer ships a reachable STD/IAP store.  Keep old
 // save fields readable, but prove on the running game that stale purchases
 // cannot restore any shop multiplier or time skip.
@@ -124,93 +129,125 @@ test("Web store is removed and legacy purchase data cannot affect gameplay", asy
   expect(pageErrors, "Unhandled browser errors").toEqual([]);
 });
 
-test("original save round-trips through the storeless build without schema loss", async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect.poll(() => page.evaluate(() => Boolean(window.GameUI?.initialized)), {
-    timeout: 60_000,
-    message: "GameUI 未初始化",
-  }).toBe(true);
+test("original saves round-trip through the storeless build without schema loss", async ({ browser }) => {
+  const imported = [];
+  for (const path of INTEROP_SAVES) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await expect.poll(() => page.evaluate(() => Boolean(window.GameUI?.initialized)), {
+      timeout: 60_000,
+      message: "GameUI 未初始化",
+    }).toBe(true);
+    imported.push(await page.evaluate(async path => {
+      const encoded = (await (await fetch(path)).text()).trim();
+      window.GameStorage.import(encoded);
+      const exported = window.GameStorage.exportModifiedSave();
+      const decoded = window.GameSaveSerializer.deserialize(exported);
+      const validation = window.GameStorage.checkPlayerObject(decoded);
+      window.GameStorage.import(exported);
+      return {
+        path,
+        exported,
+        validation,
+        iapEnabled: decoded.IAP?.enabled,
+        checkoutSessionPresent: Object.hasOwn(decoded.IAP ?? {}, "checkoutSession"),
+        respecIAPPresent: typeof decoded.options?.confirmations?.respecIAP === "boolean",
+        antimatter: decoded.antimatter,
+        reimportedIAPEnabled: window.player.IAP?.enabled,
+        storeEffectCurrentMult: window.ShopPurchase.dimPurchases.currentMult,
+      };
+    }, path));
+    await context.close();
+  }
 
-  const imported = await page.evaluate(async () => {
-    const encoded = (await (await fetch("/savestates/original/new-save.txt")).text()).trim();
-    window.GameStorage.import(encoded);
-    const exported = window.GameStorage.exportModifiedSave();
-    const decoded = window.GameSaveSerializer.deserialize(exported);
-    const validation = window.GameStorage.checkPlayerObject(decoded);
-    window.GameStorage.import(exported);
-    return {
-      exported,
-      validation,
-      iapEnabled: decoded.IAP?.enabled,
-      checkoutSessionPresent: Object.hasOwn(decoded.IAP ?? {}, "checkoutSession"),
-      respecIAPPresent: typeof decoded.options?.confirmations?.respecIAP === "boolean",
-      antimatter: decoded.antimatter,
-      reimportedIAPEnabled: window.player.IAP?.enabled,
-      storeEffectCurrentMult: window.ShopPurchase.dimPurchases.currentMult,
-    };
-  });
-
-  expect(imported.validation).toBe("");
-  expect(imported.iapEnabled).toBe(false);
-  expect(imported.checkoutSessionPresent).toBe(true);
-  expect(imported.respecIAPPresent).toBe(true);
-  expect(typeof imported.antimatter === "string" || typeof imported.antimatter === "number").toBe(true);
-  expect(Number(imported.antimatter)).toBeGreaterThan(0);
-  expect(imported.reimportedIAPEnabled).toBe(false);
-  expect(imported.storeEffectCurrentMult).toBe(1);
+  for (const save of imported) {
+    expect(save.validation, save.path).toBe("");
+    expect(save.iapEnabled, save.path).toBe(false);
+    expect(save.checkoutSessionPresent, save.path).toBe(true);
+    expect(save.respecIAPPresent, save.path).toBe(true);
+    expect(typeof save.antimatter === "string" || typeof save.antimatter === "number", save.path).toBe(true);
+    expect(Number(save.antimatter), save.path).toBeGreaterThan(0);
+    expect(save.reimportedIAPEnabled, save.path).toBe(false);
+    expect(save.storeEffectCurrentMult, save.path).toBe(1);
+  }
 });
 
-test("storeless export round-trips through the frozen upstream original", async ({ page, browser }) => {
+test("storeless export round-trips through the frozen upstream original", async ({ browser }) => {
   const upstreamURL = process.env.UPSTREAM_INTEROP_URL;
   test.skip(!upstreamURL && !process.env.CI, "UPSTREAM_INTEROP_URL 未提供；本地轻量运行跳过原版实例");
   expect(upstreamURL, "CI 发布门禁必须提供冻结上游原版地址").toBeTruthy();
 
-  await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect.poll(() => page.evaluate(() => Boolean(window.GameUI?.initialized)), {
-    timeout: 60_000,
-    message: "GameUI 未初始化",
-  }).toBe(true);
-  const modExport = await page.evaluate(async () => {
-    const originalSave = (await (await fetch("/savestates/original/new-save.txt")).text()).trim();
-    window.GameStorage.import(originalSave);
-    return window.GameStorage.exportModifiedSave();
-  });
+  const modExports = [];
+  for (const path of INTEROP_SAVES) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await expect.poll(() => page.evaluate(() => Boolean(window.GameUI?.initialized)), {
+      timeout: 60_000,
+      message: "GameUI 未初始化",
+    }).toBe(true);
+    modExports.push(await page.evaluate(async path => {
+      const originalSave = (await (await fetch(path)).text()).trim();
+      window.GameStorage.import(originalSave);
+      return window.GameStorage.exportModifiedSave();
+    }, path));
+    await context.close();
+  }
 
-  const upstreamContext = await browser.newContext();
-  const upstream = await upstreamContext.newPage();
-  await upstream.goto(upstreamURL, { waitUntil: "domcontentloaded" });
-  await expect.poll(() => upstream.evaluate(() => Boolean(window.GameUI?.initialized)), {
-    timeout: 90_000,
-    message: "原版 GameUI 未初始化",
-  }).toBe(true);
-  const upstreamResult = await upstream.evaluate(modExport => {
-    window.GameStorage.import(modExport);
-    const exported = window.GameStorage.exportModifiedSave();
-    const decoded = window.GameSaveSerializer.deserialize(exported);
-    return {
-      exported,
-      validation: window.GameStorage.checkPlayerObject(decoded),
-      iapEnabled: decoded.IAP?.enabled,
-      respecIAPPresent: typeof decoded.options?.confirmations?.respecIAP === "boolean",
-      antimatter: decoded.antimatter,
-    };
-  }, modExport);
-  expect(upstreamResult.validation).toBe("");
-  expect(upstreamResult.iapEnabled).toBe(false);
-  expect(upstreamResult.respecIAPPresent).toBe(true);
-  expect(typeof upstreamResult.antimatter === "string" || typeof upstreamResult.antimatter === "number").toBe(true);
-  expect(Number(upstreamResult.antimatter)).toBeGreaterThan(0);
+  const upstreamResults = [];
+  for (const modExport of modExports) {
+    const upstreamContext = await browser.newContext();
+    const upstream = await upstreamContext.newPage();
+    await upstream.goto(upstreamURL, { waitUntil: "domcontentloaded" });
+    await expect.poll(() => upstream.evaluate(() => Boolean(window.GameUI?.initialized)), {
+      timeout: 90_000,
+      message: "原版 GameUI 未初始化",
+    }).toBe(true);
+    upstreamResults.push(await upstream.evaluate(modExport => {
+      window.GameStorage.import(modExport);
+      const exported = window.GameStorage.exportModifiedSave();
+      const decoded = window.GameSaveSerializer.deserialize(exported);
+      return {
+        exported,
+        validation: window.GameStorage.checkPlayerObject(decoded),
+        iapEnabled: decoded.IAP?.enabled,
+        respecIAPPresent: typeof decoded.options?.confirmations?.respecIAP === "boolean",
+        antimatter: decoded.antimatter,
+      };
+    }, modExport));
+    await upstreamContext.close();
+  }
+  for (const result of upstreamResults) {
+    expect(result.validation).toBe("");
+    expect(result.iapEnabled).toBe(false);
+    expect(result.respecIAPPresent).toBe(true);
+    expect(typeof result.antimatter === "string" || typeof result.antimatter === "number").toBe(true);
+    expect(Number(result.antimatter)).toBeGreaterThan(0);
+  }
 
-  const finalImport = await page.evaluate(originalExport => {
-    window.GameStorage.import(originalExport);
-    return {
-      validation: window.GameStorage.checkPlayerObject(window.player),
-      iapEnabled: window.player.IAP?.enabled,
-      storeEffectsNeutral: window.ShopPurchase.all.every(purchase => purchase.currentMult === 1),
-    };
-  }, upstreamResult.exported);
-  expect(finalImport.validation).toBe("");
-  expect(finalImport.iapEnabled).toBe(false);
-  expect(finalImport.storeEffectsNeutral).toBe(true);
-  await upstreamContext.close();
+  const finalImports = [];
+  for (const upstreamResult of upstreamResults) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await expect.poll(() => page.evaluate(() => Boolean(window.GameUI?.initialized)), {
+      timeout: 60_000,
+      message: "GameUI 未初始化",
+    }).toBe(true);
+    finalImports.push(await page.evaluate(originalExport => {
+      window.GameStorage.import(originalExport);
+      return {
+        validation: window.GameStorage.checkPlayerObject(window.player),
+        iapEnabled: window.player.IAP?.enabled,
+        storeEffectsNeutral: window.ShopPurchase.all.every(purchase => purchase.currentMult === 1),
+      };
+    }, upstreamResult.exported));
+    await context.close();
+  }
+  for (const finalImport of finalImports) {
+    expect(finalImport.validation).toBe("");
+    expect(finalImport.iapEnabled).toBe(false);
+    expect(finalImport.storeEffectsNeutral).toBe(true);
+  }
 });

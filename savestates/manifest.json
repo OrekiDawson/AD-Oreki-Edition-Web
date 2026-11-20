@@ -4,10 +4,10 @@
   "note": "与 Android 同源；当前共享 Android 侧已验证样本，不重复存储",
   "shared_with": "../../android/AD_Oreki_Edition_Android/savestates/",
   "samples": [
-    "original/new-save.txt"
+    "original/new-save.txt",
+    "regression/legal-eternity.txt"
   ],
   "pending": [
-    "mod/after-bigcrunch.json",
-    "regression/legal-eternity.json"
+    "mod/after-bigcrunch.json"
   ]
 }
