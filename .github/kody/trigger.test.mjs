@@ -12,6 +12,7 @@ import {
   findTriggerReservation,
   millisecondsUntilShanghaiMidnight,
   quotaPostWindowOpen,
+  shouldWaitForQuotaMidnight,
   sameShanghaiQuotaDay,
   shanghaiDayStart,
   sharedDailyCommentsPaths,
@@ -126,6 +127,14 @@ test("UTC+08:00 自然日边界正确", () => {
     new Date("2026-11-20T15:59:20Z"),
   ), true);
   assert.equal(millisecondsUntilShanghaiMidnight(new Date("2026-11-20T15:59:50Z")), 10000);
+  assert.equal(shouldWaitForQuotaMidnight(
+    new Date("2026-11-20T15:59:50Z"),
+    new Date("2026-11-20T15:59:40Z"),
+  ), true);
+  assert.equal(shouldWaitForQuotaMidnight(
+    new Date("2026-11-20T16:00:01Z"),
+    new Date("2026-11-20T15:59:50Z"),
+  ), false);
 });
 
 function triggerComment(id, createdAt, overrides = {}) {

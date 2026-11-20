@@ -96,6 +96,11 @@ export function millisecondsUntilShanghaiMidnight(now) {
   return Math.max(0, dayEnd - now.getTime());
 }
 
+export function shouldWaitForQuotaMidnight(now, snapshotNow, marginMs = 15_000) {
+  return sameShanghaiQuotaDay(now, snapshotNow) &&
+    !quotaPostWindowOpen(now, snapshotNow, marginMs);
+}
+
 export function dailyCommentsPath(repository, since) {
   return `/repos/${repository}/issues/comments?since=${encodeURIComponent(since.toISOString())}&per_page=100`;
 }
@@ -496,9 +501,12 @@ export async function main() {
     if (quotaPostWindowOpen(new Date(), quotaSnapshot.now)) {
       break;
     }
-    const untilMidnight = millisecondsUntilShanghaiMidnight(new Date());
-    if (untilMidnight > 0) {
-      await sleep(Math.ceil(untilMidnight / 1000) + 1);
+    const now = new Date();
+    if (shouldWaitForQuotaMidnight(now, quotaSnapshot.now)) {
+      const untilMidnight = millisecondsUntilShanghaiMidnight(now);
+      if (untilMidnight > 0) {
+        await sleep(Math.ceil(untilMidnight / 1000) + 1);
+      }
     }
     await releaseReservationOrThrow(token, externalId, quotaSnapshot.now);
     if (dayAttempt === 2) {
