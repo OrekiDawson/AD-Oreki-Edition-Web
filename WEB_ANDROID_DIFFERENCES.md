@@ -66,7 +66,7 @@
 | Pelle 解锁并进入毁灭态 | 173 分 41 秒 |
 | 首次 `isGameEnd=true` | **174 分 11 秒** |
 
-门禁：`PASS`；通关后 180 秒确认无回退；页面错误、控制台错误和冻结告警均为 0。
+门禁：`ENDGAME PASS`、`POST-ENDGAME STABILITY PASS`、`PACING FAIL`；首次 Reality 56.85 分钟早于 75 分钟边界，超出 5 分钟容差。通关后 180 秒确认无回退；页面错误、控制台错误和冻结告警均为 0。
 动态速度只在首次 Reality 后因真实停滞升档，最终为 `100000×`、6 次升档。
 完整证据见 `reports/R120-01/web-pacing-evidence.md`。
 
