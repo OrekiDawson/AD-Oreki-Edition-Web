@@ -26,10 +26,10 @@
 这些值保留真实阻塞能力，关闭 PR 摘要生成和自动批准。规则内容另见 2026-11-20 读取的 [Global Rule「Oreki 全局审查基线」](https://app.kodus.io/settings/code-review/global/kody-rules/6b9b0794-457a-427c-8a07-ff348a8574ce?teamId=577e813f-b16f-49f6-9999-7c7b288b8e84)（ID `6b9b0794-457a-427c-8a07-ff348a8574ce`），用于核对审查分级与禁止 Heavy 等基线内容。
 - 实际审查运行模型为 `deepseek-flash`；该结论来自 2026-11-20 的 [Kodus Token Usage](https://app.kodus.io/usage/tokens) 动态用量记录，不是固定配置证明。CLI 未提供可核对的 Thinking 档位字段，不为该字段作未经证据支持的声明。
 - 第 7 行的 `automatedReviewActive`、`reviewCadence`、`runOnDraft` 已于同日用 `kodus config remote show OrekiDawson/AD-Oreki-Edition-Android`、`...-Web` 和 `...-Wiki` 逐库读取。第 8 行的 Repository/Directory Rules 另用 `kodus rules view --json` 按三个 repository ID 核验，均返回 `[]`；Global 设置页不能单独证明这些仓库级值。
-- Android 的自动触发实证为 `pull_request_target` 事件 [Run 44767526027](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/actions/runs/44767526027)：PR #206，Head `1d0b951324220c4923f46315f72634c055c5e2da`；工作流在共享配额实现合入 `main` 后启用。Web 工作流在 Web 实现合入后启用并按同样方式独立取证。云端设置或工作流启停状态变化时须重新读取并更新本段。
+- Android 的自动触发历史实证为 `pull_request_target` 事件 [Run 44767526027](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/actions/runs/44767526027)：PR #206，Head `1d0b951324220c4923f46315f72634c055c5e2da`。该记录只证明恢复期链路曾运行；当前工作流已由用户指令暂停为 `disabled_manually`。未来重新授权时须重新读取云端设置、工作流启停状态和共享配额状态，不得把历史运行当作当前可触发证据。
 - Android/Web 两仓共用每个 UTC+8 自然日的 100 次全局计数池，不设仓库保留额度或单仓硬上限；80 次预警，100 次拒绝新增主动请求。仅按 GitHub 原始评论唯一 ID 统计有效 `@kody start-review` 指令，Webhook 重试不重复计数；回复、讨论、修复提交、Kody 回复和 Oreki-Audit 自有审查不计数。同一 PR 再次主动发送属于新请求。统计展示全局已用、全局剩余和两端实际用量。
 - 预占与扣减复用 Web 协调分支上的共享 CAS 状态，并发请求基于同一父版本提交，只有一个能成功且冲突方必须重读；支付/统计状态不换算成 Provider 模型调用硬上限。
-- 用户已于 2026-11-20 明确恢复 Kody 审查；GitHub Actions 负责必要触发，Kodus 云端 `automatedReviewActive=false`、`reviewCadence.type=auto_pause`，避免平台自动审查与触发器重复。审查只允许 Balanced，严禁 Heavy。
+- Kody 付费审查当前暂停；未来获准恢复时，GitHub Actions 才负责必要触发，并继续保持 `automatedReviewActive=false`、`reviewCadence.type=auto_pause`，避免平台自动审查与触发器重复。任何恢复场景都只允许 Balanced，严禁 Heavy。
 - `codex-deepseek-review.yml` 保留为回滚资产，`OREKI_AUDIT_ENABLED=false`；未经用户明确恢复，不调用 DeepSeek 或发布自制 Review。
 
 ### 旧项目级规则迁移映射
@@ -46,7 +46,7 @@
 ## PR 审查效率基线（2026-11-20）
 
 - A 类（文档/非行为）：快速检查事实、链接、版权、规范、敏感信息和明显错误，不执行无关业务扫描、构建或游戏长跑。
-- B 类（CI、Actions、审查触发器、配额、构建/发布工具）：定向检查并发原子性、重复触发、权限、状态一致性、边界、失败恢复和回滚；Android PR #205 属于 B 类。
+- B 类（CI、Actions、审查触发器、共享配额、Webhook、构建/发布工具）：属于基础设施定向深入审查，不是轻审；必须检查并发原子性、幂等与 Webhook 重试去重、权限、状态一致性、边界、失败恢复、回滚及对下游审查链的实际影响。Android PR #205 修改共享配额与审查触发链路，是 B 类中的高风险案例，不得因未改游戏代码而降低审查等级。
 - C 类（Kotlin/JS 游戏业务、存档、资源结算、挑战、阶段门禁、自动购买器）：保持完整风险审查与对应真实运行证据。
 - 混合 PR 按最高等级验收，但不同文件采用各自审查重点。同一 HEAD、同一审查配置版本和适用范围已有有效结果时不得重复请求；一批修复完成并定向测试后统一复审。不得以空 Commit、关闭重开、改标题触发复审，也不得将“已审查”替代真实运行 PASS。
 - 达到收口条件时及时合并：最终 HEAD 审查完成，Critical/P0/P1 和阻塞性 Medium 已解，Review Threads 合理归零，Required Checks 与必要定向测试通过，分支保护允许。Codex 自动审查、Kody Balanced、共享 100 次配额、签名和发布门禁均不因效率优化降低。
