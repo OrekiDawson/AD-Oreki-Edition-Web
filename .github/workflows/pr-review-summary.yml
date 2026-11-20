@@ -78,8 +78,16 @@ jobs:
             }
             const taskText=[pr.title,pr.body||"",...commits.map(c=>c.commit.message)].join("\n");
             // 新任务唯一合法格式是 ChatGPT 分配的单层 R整数。
-            // 历史复合编号可出现在说明或证据引用中，不得被当作新任务编号或“缺子编号”。
-            const taskIds=[...new Set(taskText.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
+            // 标题优先，正文和提交信息中的历史轮次引用不得触发多任务告警。
+            const titleSingleTasks=[...new Set(pr.title.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
+            const allSingleTasks=[...new Set(taskText.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
+            const singleTaskIds=titleSingleTasks.length ? titleSingleTasks : allSingleTasks;
+            // 当前 R121-01 等历史编号只在没有单层编号时用于展示，不参与多编号阻断判断。
+            const historicalTaskIds=[...new Set(taskText.match(
+              /\bR\d{2,3}-(?:\d+|[A-Za-z][A-Za-z0-9._-]*)\b/g
+            )||[])];
+            const taskIds=singleTaskIds.length ? singleTaskIds : historicalTaskIds;
+            const hasMultipleSingleTasks=singleTaskIds.length>1;
             const risk=platform==='Android' ? [
               ['AGP/R8/Gradle', /^(agp|gradle)\/|(^|\/)(build\.gradle(\.kts)?|proguard-rules\.pro)$/],
               ['CI/签名/正式发布', /^\.github\/workflows\/|^scripts\/(publish_|release_|enforce_agp)/],
@@ -94,7 +102,7 @@ jobs:
             const touched=risk.map(([title,re])=>[title,files.filter(f=>re.test(f.filename)).length])
               .filter(([,n])=>n>0).map(([t,n])=>t+'（'+n+' 文件）');
             const warnings=[];
-            if(taskIds.length>1) warnings.push('检测到多个任务编号 '+taskIds.join('、')+'；请证明属于同一不可拆分目标，否则拆分后再进入正式审查/合并');
+            if(hasMultipleSingleTasks) warnings.push('检测到多个单层任务编号 '+singleTaskIds.join('、')+'；请证明属于同一不可拆分目标，否则拆分后再进入正式审查/合并');
             if(effectiveFiles>15) warnings.push('有效修改文件超过目标阈值 15 个');
             if(effectiveChanges>400) warnings.push('有效变更超过目标阈值 400 行');
             if(effectiveChanges>800) warnings.push('有效变更超过 800 行；默认拆分，或记录不可拆分的原子理由');
