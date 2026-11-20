@@ -138,6 +138,12 @@ class TabState {
   }
 
   show(manual, subtab = undefined) {
+    // Compatibility guard for old shortcuts, restored UI handlers, or direct
+    // console calls to the retired parent tab. Never render the store shell.
+    if (this.key === "shop") {
+      Tab.dimensions.show(manual);
+      return;
+    }
     if (!manual && !player.options.automaticTabSwitching || Quote.isOpen) return;
     if (subtab !== undefined) {
       if (!Enslaved.isRunning) subtab.unhideTab();

@@ -53,6 +53,11 @@ test("Web store is removed and legacy purchase data cannot affect gameplay", asy
       canRespec: window.ShopPurchaseData.canRespec,
       respecResult: await window.ShopPurchaseData.respecAll(),
       shopUnlocked: window.GameDatabase.tabs.find(tab => tab.key === "shop").condition(),
+      restoredShopTab: window.Tabs.findRestorableTab(10),
+      directShopResult: (() => {
+        window.Tab.shop.show(true);
+        return { tab: window.ui.view.tab, subtab: window.ui.view.subtab };
+      })(),
       shopNavItems: [...document.querySelectorAll("#oreki-sidebar button")]
         .filter(element => element.textContent.includes("商店")).length,
       legacyShopNodes: document.querySelectorAll("[data-v-shop-tab], .c-modal-store-buttons").length,
@@ -88,6 +93,8 @@ test("Web store is removed and legacy purchase data cannot affect gameplay", asy
   expect(result.canRespec).toBe(false);
   expect(result.respecResult).toBe(false);
   expect(result.shopUnlocked).toBe(false);
+  expect(result.restoredShopTab).toBeNull();
+  expect(result.directShopResult.tab).toBe("dimensions");
   expect(result.shopNavItems).toBe(0);
   expect(result.legacyShopNodes).toBe(0);
   expect(result.shopModalPresent).toBe(false);
