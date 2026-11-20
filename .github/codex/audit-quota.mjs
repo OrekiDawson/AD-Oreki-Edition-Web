@@ -12,6 +12,9 @@ import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
 export const LIMIT = 100;
+export const KODY_KIND = "kody_start_review";
+export const KODY_DAILY_LIMIT = 100;
+export const KODY_WARNING_AT = 80;
 export const COORDINATOR_REPO = "AD-Oreki-Edition-Web";
 export const QUOTA_BRANCH = "oreki-audit-quota";
 const OWNER = "OrekiDawson";
@@ -28,8 +31,13 @@ export function shanghaiDate(value = new Date()) {
   }).format(value);
 }
 
+function isModelReviewRecord(record) {
+  return record?.kind == null || record.kind === "model_review";
+}
+
 export function consumedCount(records) {
-  return records.filter(record => record.status !== "released").length;
+  return records.filter(record =>
+    isModelReviewRecord(record) && record.status !== "released").length;
 }
 
 export function reservePure(records, candidate, {
@@ -37,7 +45,8 @@ export function reservePure(records, candidate, {
   limit = LIMIT,
   now = new Date().toISOString(),
 } = {}) {
-  const sameIdentity = records.filter(record => record.identity === candidate.identity);
+  const sameIdentity = records.filter(record =>
+    isModelReviewRecord(record) && record.identity === candidate.identity);
   const completed = sameIdentity.find(record => record.status === "model_succeeded");
   if (completed) {
     return { allowed: false, reused: true, reason: "identity-complete", record: completed, records };
@@ -55,6 +64,7 @@ export function reservePure(records, candidate, {
     .update(`${candidate.identity}:${date}:${attempt}`).digest("hex");
   const record = {
     ...candidate,
+    kind: "model_review",
     requestId,
     date,
     attempt,
@@ -92,6 +102,220 @@ export function transitionPure(records, { identity, status, report = "", now = n
   const output = [...records];
   output[index] = next;
   return { ok: true, reason: status, record: next, records: output };
+}
+
+function isKodyRecord(record) {
+  return record?.kind === KODY_KIND;
+}
+
+function isActiveKodyRecord(record, date) {
+  return isKodyRecord(record) &&
+    record.date === date &&
+    record.status !== "released";
+}
+
+export function kodyQuotaCounts(records, date) {
+  const active = records.filter(record => isActiveKodyRecord(record, date));
+  const byRepository = {};
+  for (const record of active) {
+    const repository = String(record.repository ?? "");
+    byRepository[repository] = (byRepository[repository] ?? 0) + 1;
+  }
+  const used = active.length;
+  return {
+    used,
+    remaining: Math.max(0, KODY_DAILY_LIMIT - used),
+    warning: used >= KODY_WARNING_AT,
+    byRepository,
+  };
+}
+
+function importKodyEvidence(records, evidence, date, now) {
+  const output = [...records];
+  const seen = new Set(
+    output
+      .filter(record => isKodyRecord(record) && String(record.commentId ?? ""))
+      .map(record => `${String(record.repository ?? "")}#${String(record.commentId ?? "")}`)
+      .filter(Boolean),
+  );
+  for (const item of evidence) {
+    const repository = String(item?.repository ?? "");
+    const commentId = String(item?.commentId ?? "").trim();
+    if (!repository || !commentId) {
+      throw new Error("Kody quota evidence requires repository and unique comment id");
+    }
+    const createdAt = new Date(String(item?.createdAt ?? ""));
+    if (!Number.isFinite(createdAt.getTime())) {
+      throw new Error("Kody quota evidence requires a valid creation time");
+    }
+    if (shanghaiDate(createdAt) !== date) continue;
+    const commentKey = `${repository}#${commentId}`;
+    if (seen.has(commentKey)) continue;
+    seen.add(commentKey);
+    output.push({
+      kind: KODY_KIND,
+      identity: `kody-comment:${repository}#${commentId}`,
+      repository,
+      pr: Number(item?.pr),
+      commentId,
+      commentUrl: String(item?.url ?? ""),
+      source: "observed_comment",
+      date,
+      status: "posted",
+      createdAt: createdAt.toISOString(),
+      updatedAt: now,
+    });
+  }
+  return output;
+}
+
+/**
+ * 原子预占 Kody 全局共享额度。
+ *
+ * 两个仓库共用同一份记录，不设置仓库保留额度或单仓上限。调用前读到的
+ * GitHub 原始评论先按 commentId 合并进状态，再判断当前自然日总用量；
+ * 同一 identity 的并发请求只允许一个 active 记录。
+ */
+export function reserveKodyPure(records, candidate, {
+  date = shanghaiDate(),
+  now = new Date().toISOString(),
+  evidence = [],
+} = {}) {
+  const output = importKodyEvidence(records, evidence, date, now);
+  const identity = String(candidate?.identity ?? "");
+  if (!identity) throw new Error("Kody quota identity is required");
+  const prior = output.find(record =>
+    isKodyRecord(record) &&
+    record.status !== "released" &&
+    record.identity === identity);
+  if (prior) {
+    return {
+      allowed: false,
+      reused: true,
+      reason: prior.status === "posted" ? "identity-complete" : "identity-in-progress",
+      record: prior,
+      records: output,
+      counts: kodyQuotaCounts(output, date),
+    };
+  }
+  const counts = kodyQuotaCounts(output, date);
+  if (counts.used >= KODY_DAILY_LIMIT) {
+    return {
+      allowed: false,
+      reused: false,
+      reason: "daily-quota-exhausted",
+      record: null,
+      records: output,
+      counts,
+    };
+  }
+  const record = {
+    kind: KODY_KIND,
+    identity,
+    repository: String(candidate.repository ?? ""),
+    pr: Number(candidate.pr),
+    headSha: String(candidate.headSha ?? ""),
+    source: "automated_trigger",
+    date,
+    status: "reserved",
+    commentId: "",
+    commentUrl: "",
+    reservedAt: now,
+    updatedAt: now,
+  };
+  const reserved = [...output, record];
+  return {
+    allowed: true,
+    reused: false,
+    reason: "reserved",
+    record,
+    records: reserved,
+    counts: kodyQuotaCounts(reserved, date),
+  };
+}
+
+export function attachKodyCommand(records, {
+  identity,
+  commentId,
+  commentUrl = "",
+  createdAt = "",
+  now = new Date().toISOString(),
+}) {
+  if (commentId == null || !String(commentId).trim()) {
+    throw new Error("Kody trigger comment id is missing");
+  }
+  const duplicateComment = String(commentId);
+  const alreadyPosted = records.findLastIndex(record =>
+    isKodyRecord(record) &&
+    record.identity === identity &&
+    record.status === "posted" &&
+    String(record.commentId ?? "") === duplicateComment);
+  if (alreadyPosted >= 0) {
+    return {
+      ok: true,
+      record: records[alreadyPosted],
+      records,
+      counts: kodyQuotaCounts(records, records[alreadyPosted].date),
+    };
+  }
+  const index = records.findLastIndex(record =>
+    isKodyRecord(record) &&
+    record.identity === identity &&
+    record.status === "reserved");
+  if (index < 0) throw new Error(`active Kody quota reservation not found: ${identity}`);
+  const current = records[index];
+  const parsedCreatedAt = new Date(createdAt);
+  const commentDate = Number.isFinite(parsedCreatedAt.getTime())
+    ? shanghaiDate(parsedCreatedAt)
+    : current.date;
+  const output = records.filter((record, cursor) =>
+    cursor === index ||
+    !(isKodyRecord(record) &&
+      String(record.repository ?? "") === String(current.repository ?? "") &&
+      String(record.commentId ?? "") === duplicateComment));
+  const targetIndex = output.findLastIndex(record =>
+    isKodyRecord(record) &&
+    record.identity === identity &&
+    record.status === "reserved");
+  if (targetIndex < 0) throw new Error(`active Kody quota reservation not found: ${identity}`);
+  output[targetIndex] = {
+    ...output[targetIndex],
+    status: "posted",
+    date: commentDate,
+    commentId: duplicateComment,
+    commentUrl: String(commentUrl),
+    updatedAt: now,
+  };
+  return {
+    ok: true,
+    record: output[targetIndex],
+    records: output,
+    counts: kodyQuotaCounts(output, output[targetIndex].date),
+  };
+}
+
+export function releaseKodyCommand(records, {
+  identity,
+  now = new Date().toISOString(),
+}) {
+  const index = records.findLastIndex(record =>
+    isKodyRecord(record) &&
+    record.identity === identity &&
+    record.status === "reserved");
+  if (index < 0) return { ok: false, reason: "reservation-not-found", records };
+  const output = [...records];
+  output[index] = {
+    ...output[index],
+    status: "released",
+    updatedAt: now,
+  };
+  return {
+    ok: true,
+    reason: "released",
+    record: output[index],
+    records: output,
+    counts: kodyQuotaCounts(output, output[index].date),
+  };
 }
 
 export function applyCas(records, expectedVersion, currentVersion, transform) {
@@ -218,6 +442,43 @@ async function mutate(token, date, transform) {
   throw lastError;
 }
 
+export async function reserveKodyQuota(token, candidate, evidence = [], {
+  now = new Date(),
+} = {}) {
+  const date = shanghaiDate(now);
+  return mutate(token, date, records => reserveKodyPure(records, candidate, {
+    date,
+    now: now.toISOString(),
+    evidence,
+  }));
+}
+
+export async function attachKodyQuota(token, identity, {
+  commentId,
+  commentUrl = "",
+  createdAt = "",
+  now = new Date(),
+} = {}) {
+  const date = shanghaiDate(now);
+  return mutate(token, date, records => attachKodyCommand(records, {
+    identity,
+    commentId,
+    commentUrl,
+    createdAt,
+    now: now.toISOString(),
+  }));
+}
+
+export async function releaseKodyQuota(token, identity, {
+  now = new Date(),
+} = {}) {
+  const date = shanghaiDate(now);
+  return mutate(token, date, records => releaseKodyCommand(records, {
+    identity,
+    now: now.toISOString(),
+  }));
+}
+
 function argument(name, fallback = "") {
   const index = process.argv.indexOf(`--${name}`);
   return index >= 0 && process.argv[index + 1] ? process.argv[index + 1] : fallback;
@@ -262,7 +523,7 @@ async function main() {
   const output = {
     date,
     limit: LIMIT,
-    used: result.records.filter(record => record.date === date && record.status !== "released").length,
+    used: consumedCount(result.records.filter(record => record.date === date)),
     ...result,
   };
   delete output.records;

@@ -92,6 +92,7 @@ jobs:
           node "scripts/检查调度器托管Tick.mjs"
           node scripts/check_managed_autobuyer_state.mjs
           node "scripts/检查受管大坍缩节拍.mjs"
+          node --test .github/kody/trigger.test.mjs
           node scripts/tests/test_review_context.mjs
           node scripts/tests/test_audit_quota.mjs
           node scripts/tests/test_publish_review.mjs

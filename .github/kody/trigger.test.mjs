@@ -2,20 +2,27 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  DAILY_TRIGGER_LIMIT,
   TRIGGER_BODY,
   assertPaginationComplete,
   budgetDecision,
-  countTriggersSince,
+  countSharedTriggersSince,
   dailyCommentsPath,
   findKodyReviewForHead,
   findTriggerReservation,
+  millisecondsUntilShanghaiMidnight,
+  quotaPostWindowOpen,
+  shouldWaitForQuotaMidnight,
+  sameShanghaiQuotaDay,
   shanghaiDayStart,
+  sharedDailyCommentsPaths,
+  sharedTriggerQuotaEvidence,
   triggerIdentity,
   validatePullRequest,
   validateTriggerIdentity,
 } from "./trigger.mjs";
 
-const repository = "OrekiDawson/AD-Oreki-Edition-Web";
+const repository = "OrekiDawson/AD-Oreki-Edition-Android";
 
 function pr(overrides = {}) {
   return {
@@ -103,24 +110,138 @@ test("UTC+08:00 自然日边界正确", () => {
     shanghaiDayStart(new Date("2026-11-20T16:00:00Z")).toISOString(),
     "2026-11-20T16:00:00.000Z",
   );
+  assert.equal(sameShanghaiQuotaDay(
+    new Date("2026-11-20T15:59:59Z"),
+    new Date("2026-11-20T00:00:00Z"),
+  ), true);
+  assert.equal(sameShanghaiQuotaDay(
+    new Date("2026-11-20T16:00:00Z"),
+    new Date("2026-11-20T15:59:59Z"),
+  ), false);
+  assert.equal(quotaPostWindowOpen(
+    new Date("2026-11-20T15:59:50Z"),
+    new Date("2026-11-20T15:59:40Z"),
+  ), false);
+  assert.equal(quotaPostWindowOpen(
+    new Date("2026-11-20T15:59:30Z"),
+    new Date("2026-11-20T15:59:20Z"),
+  ), true);
+  assert.equal(millisecondsUntilShanghaiMidnight(new Date("2026-11-20T15:59:50Z")), 10000);
+  assert.equal(shouldWaitForQuotaMidnight(
+    new Date("2026-11-20T15:59:50Z"),
+    new Date("2026-11-20T15:59:40Z"),
+  ), true);
+  assert.equal(shouldWaitForQuotaMidnight(
+    new Date("2026-11-20T04:00:00Z"),
+    new Date("2026-11-20T03:59:59Z"),
+  ), false);
+  assert.equal(shouldWaitForQuotaMidnight(
+    new Date("2026-11-20T16:00:01Z"),
+    new Date("2026-11-20T15:59:50Z"),
+  ), false);
 });
 
-test("每仓 50 次触发上限使双仓共享总量不超过 100", () => {
-  const since = new Date("2026-11-20T16:00:00Z");
-  const comments = Array.from({ length: 50 }, (_, index) => ({
+function triggerComment(id, createdAt, overrides = {}) {
+  return {
+    id,
     user: { login: "OrekiDawson" },
     body: TRIGGER_BODY,
-    created_at: new Date(since.getTime() + index * 1000).toISOString(),
-  }));
-  assert.equal(countTriggersSince(comments, since), 50);
-  assert.equal(budgetDecision(49, 50).allowed, true);
-  assert.equal(budgetDecision(50, 50).allowed, false);
+    created_at: createdAt,
+    html_url: `https://github.com/example/repo/pull/${id}#issuecomment-${id}`,
+    ...overrides,
+  };
+}
+
+test("Android/Web 合计按唯一评论 ID 计数，Webhook 重试不重复计数", () => {
+  const since = new Date("2026-11-20T16:00:00Z");
+  const groups = [
+    {
+      repository: "OrekiDawson/AD-Oreki-Edition-Android",
+      comments: [
+        triggerComment(1, "2026-11-20T16:00:01Z"),
+        triggerComment(2, "2026-11-20T16:00:02Z"),
+        triggerComment(2, "2026-11-20T16:00:02Z"),
+      ],
+    },
+    {
+      repository: "OrekiDawson/AD-Oreki-Edition-Web",
+      comments: [
+        triggerComment(3, "2026-11-20T16:00:03Z"),
+        triggerComment(4, "2026-11-20T16:00:04Z"),
+      ],
+    },
+  ];
+  assert.equal(countSharedTriggersSince(groups, since), 4);
+  assert.deepEqual(
+    sharedTriggerQuotaEvidence(groups, since).map(item => item.commentId),
+    ["1", "2", "3", "4"],
+  );
+  assert.deepEqual(
+    sharedTriggerQuotaEvidence(groups, since).map(item => item.pr),
+    [1, 2, 3, 4],
+  );
 });
 
-test("每日预算只读取当前仓库，另一仓库不阻断", () => {
-  const path = dailyCommentsPath(repository, new Date("2026-11-20T16:00:00Z"));
-  assert.match(path, new RegExp(`^/repos/${repository}/issues/comments`));
-  assert.doesNotMatch(path, /AD-Oreki-Edition-Android/);
+test("仅精确主动指令计数；回复、Bot、Oreki Audit 和自然日外评论均排除", () => {
+  const since = new Date("2026-11-20T16:00:00Z");
+  const groups = [{
+    repository,
+    comments: [
+      triggerComment(10, "2026-11-20T16:00:01Z"),
+      triggerComment(11, "2026-11-20T16:00:02Z", { body: "@kody start-review 请继续" }),
+      triggerComment(12, "2026-11-20T16:00:03Z", { user: { login: "kody-ai[bot]" } }),
+      triggerComment(15, "2026-11-20T16:00:04Z", { user: { login: "oreki-audit[bot]" } }),
+      triggerComment(13, "2026-11-20T15:59:59Z"),
+      triggerComment(14, "2026-11-21T16:00:00Z"),
+    ],
+  }];
+  assert.deepEqual(
+    sharedTriggerQuotaEvidence(groups, since).map(item => item.commentId),
+    ["10"],
+  );
+});
+
+test("同一 PR 再次主动指令按新评论计新请求", () => {
+  const since = new Date("2026-11-20T16:00:00Z");
+  const groups = [{
+    repository,
+    comments: [
+      triggerComment(20, "2026-11-20T16:00:01Z"),
+      triggerComment(21, "2026-11-20T16:01:01Z"),
+    ],
+  }];
+  assert.equal(countSharedTriggersSince(groups, since), 2);
+});
+
+test("80 次预警但放行，100 次阻止新增主动请求", () => {
+  assert.deepEqual(budgetDecision(79), {
+    allowed: true,
+    warning: false,
+    remaining: 21,
+    reason: "budget_available",
+  });
+  assert.deepEqual(budgetDecision(80), {
+    allowed: true,
+    warning: true,
+    remaining: 20,
+    reason: "daily_warning_reached",
+  });
+  assert.equal(budgetDecision(99).allowed, true);
+  assert.deepEqual(budgetDecision(DAILY_TRIGGER_LIMIT), {
+    allowed: false,
+    warning: true,
+    remaining: 0,
+    reason: "daily_trigger_cap_reached",
+  });
+});
+
+test("预算同时读取 Android 与 Web 评论源", () => {
+  const since = new Date("2026-11-20T16:00:00Z");
+  const paths = sharedDailyCommentsPaths(repository, since);
+  assert.equal(paths.length, 2);
+  assert.match(paths[0].path, /AD-Oreki-Edition-Android/);
+  assert.match(paths[1].path, /AD-Oreki-Edition-Web/);
+  assert.equal(paths[0].path, dailyCommentsPath(paths[0].repository, since));
 });
 
 test("分页仍有下一页且达到上限时拒绝使用不完整数据", () => {
