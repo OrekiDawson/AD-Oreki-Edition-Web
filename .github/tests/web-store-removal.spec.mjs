@@ -314,4 +314,58 @@ test("storeless export round-trips through the frozen upstream original", async 
     expect(finalImport.iapEnabled).toBe(false);
     expect(finalImport.storeEffectsNeutral).toBe(true);
   }
+
+  // Historical IAP enablement is a legal original-save field. Preserve it
+  // through the original implementation while keeping its effects disabled.
+  const historyContext = await browser.newContext();
+  const historyPage = await historyContext.newPage();
+  await historyPage.goto("/", { waitUntil: "domcontentloaded" });
+  await expect.poll(() => historyPage.evaluate(() => Boolean(window.GameUI?.initialized)), {
+    timeout: 60_000,
+    message: "GameUI 未初始化",
+  }).toBe(true);
+  const historyExport = await historyPage.evaluate(async () => {
+    const original = (await (await fetch("/savestates/original/new-save.txt")).text()).trim();
+    window.GameStorage.import(original);
+    window.player.IAP.enabled = true;
+    return window.GameStorage.exportModifiedSave();
+  });
+  await historyContext.close();
+
+  const upstreamHistoryContext = await browser.newContext();
+  const upstreamHistory = await upstreamHistoryContext.newPage();
+  await upstreamHistory.goto(upstreamURL, { waitUntil: "domcontentloaded" });
+  await expect.poll(() => upstreamHistory.evaluate(() => Boolean(window.GameUI?.initialized)), {
+    timeout: 90_000,
+    message: "原版 GameUI 未初始化",
+  }).toBe(true);
+  const upstreamHistoryExport = await upstreamHistory.evaluate(historyExport => {
+    window.GameStorage.import(historyExport);
+    return {
+      enabled: window.player.IAP.enabled,
+      exported: window.GameStorage.exportModifiedSave(),
+    };
+  }, historyExport);
+  expect(upstreamHistoryExport.enabled).toBe(true);
+  await upstreamHistoryContext.close();
+
+  const historyReturnContext = await browser.newContext();
+  const historyReturn = await historyReturnContext.newPage();
+  await historyReturn.goto("/", { waitUntil: "domcontentloaded" });
+  await expect.poll(() => historyReturn.evaluate(() => Boolean(window.GameUI?.initialized)), {
+    timeout: 60_000,
+    message: "GameUI 未初始化",
+  }).toBe(true);
+  const historyReturned = await historyReturn.evaluate(exported => {
+    window.GameStorage.import(exported);
+    return {
+      persisted: window.player.IAP.enabled,
+      effective: window.ShopPurchaseData.isIAPEnabled,
+      neutral: window.ShopPurchase.all.every(purchase => purchase.currentMult === 1),
+    };
+  }, upstreamHistoryExport.exported);
+  expect(historyReturned.persisted).toBe(true);
+  expect(historyReturned.effective).toBe(false);
+  expect(historyReturned.neutral).toBe(true);
+  await historyReturnContext.close();
 });
