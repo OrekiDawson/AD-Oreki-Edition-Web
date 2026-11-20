@@ -32,9 +32,9 @@
 ## 证据文件
 
 - `reports/R120-01/web-final-3000-r2-20261120/summary.json`
-- `reports/R120-01/web-final-3000-r2-20261120/run.log`
-- `reports/R120-01/web-final-3000-r2-20261120/console.log`
-- `reports/R120-01/web-final-3000-r2-20261120/samples.jsonl`
+- `reports/R120-01/web-final-3000-r2-20261120/run.log.gz`
+- `reports/R120-01/web-final-3000-r2-20261120/console.log.gz`
+- `reports/R120-01/web-final-3000-r2-20261120/samples.jsonl.gz`
 - `reports/R120-01/web-final-3000-r2-20261120/screenshots/00-start.png`
 - `reports/R120-01/web-final-3000-r2-20261120/screenshots/evt-*.png`
 - `reports/R120-01/web-final-3000-r2-20261120/screenshots/99-final.png`
