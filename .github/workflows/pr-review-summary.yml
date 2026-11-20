@@ -53,18 +53,36 @@ jobs:
               stats.set(k,s);
             }
             const mechanicalFile=path =>
+              /\.gen\.(js|mjs|ts)$/i.test(path) ||
+              ['日志/数据/证据', '实验重建'].includes(category(path)) ||
               /(^|\/)(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|Cargo\.lock|gradle\.lockfile)$|(^|\/)(generated|build|dist|node_modules)\//i.test(path);
-            let effectiveChanges=0, mechanicalChanges=0;
+            let effectiveChanges=0, mechanicalChanges=0, effectiveAdds=0, effectiveDels=0;
             for (const f of files) {
               const lines=(f.additions||0)+(f.deletions||0);
               if (mechanicalFile(f.filename)) mechanicalChanges+=lines;
-              else effectiveChanges+=lines;
+              else {
+                effectiveChanges+=lines;
+                effectiveAdds+=f.additions||0;
+                effectiveDels+=f.deletions||0;
+              }
             }
-            const commits=await github.paginate(github.rest.pulls.listCommits,{
-              owner,repo,pull_number:pr.number,per_page:100
-            });
-            const taskIds=[...new Set(([pr.title,pr.body||"",...commits.map(c=>c.commit.message)].join("\n")
-              .match(/\bR\d{2,3}-\d{2,3}\b/g)||[]))];
+            const effectiveFiles=files.filter(f=>!mechanicalFile(f.filename)).length;
+            let commits=[];
+            try {
+              commits=await github.paginate(github.rest.pulls.listCommits,{
+                owner,repo,pull_number:pr.number,per_page:100
+              });
+            } catch (err) {
+              core.info('Cannot list PR commits; continuing without commit messages: '+
+                String(err?.message||err).slice(0,200));
+            }
+            const taskText=[pr.title,pr.body||"",...commits.map(c=>c.commit.message)].join("\n");
+            const declaredTaskIds=[...new Set(taskText.match(
+              /\bR\d{2,3}-(?:\d{2,3}\b|[^\s，。；、,.;:：()（）\[\]*_\/]+)/g
+            )||[])];
+            const bareRounds=[...new Set(taskText.match(/\bR\d{2,3}\b(?!-)/g)||[])];
+            const taskIds=declaredTaskIds.length ? declaredTaskIds :
+              bareRounds.map(id=>id+'（未带子编号）');
             const risk=platform==='Android' ? [
               ['AGP/R8/Gradle', /^(agp|gradle)\/|(^|\/)(build\.gradle(\.kts)?|proguard-rules\.pro)$/],
               ['CI/签名/正式发布', /^\.github\/workflows\/|^scripts\/(publish_|release_|enforce_agp)/],
@@ -80,12 +98,10 @@ jobs:
               .filter(([,n])=>n>0).map(([t,n])=>t+'（'+n+' 文件）');
             const warnings=[];
             if(taskIds.length>1) warnings.push('检测到多个任务编号 '+taskIds.join('、')+'；请证明属于同一不可拆分目标，否则拆分后再进入正式审查/合并');
-            if(pr.changed_files>15) warnings.push('修改文件超过目标阈值 15 个');
+            if(effectiveFiles>15) warnings.push('有效修改文件超过目标阈值 15 个');
             if(effectiveChanges>400) warnings.push('有效变更超过目标阈值 400 行');
             if(effectiveChanges>800) warnings.push('有效变更超过 800 行；默认拆分，或记录不可拆分的原子理由');
-            if(mechanicalChanges>0) warnings.push('另有 '+mechanicalChanges+' 行锁文件/生成物/构建缓存变更，已单独统计');
-            const rawChanges=(pr.additions||0)+(pr.deletions||0);
-            if(rawChanges>800 && Math.abs((pr.additions||0)-(pr.deletions||0))<rawChanges*0.15)
+            if(effectiveChanges>800 && Math.abs(effectiveAdds-effectiveDels)<effectiveChanges*0.15)
               warnings.push('新增与删除规模接近，需排查是否混入大规模格式化或无关重写');
             if(pr.changed_files>100) warnings.push('超过 100 个文件');
             if(pr.additions>20000) warnings.push('新增超过 20,000 行');
@@ -114,7 +130,7 @@ jobs:
              '### PR 自动审查摘要（'+platform+'，非阻断）',
              '',
              '变更：**'+pr.changed_files+' 个文件，+'+pr.additions+' / -'+pr.deletions+' 行**。',
-             '有效变更：**'+effectiveChanges+' 行**；锁文件/生成物/构建缓存：**'+mechanicalChanges+' 行**；任务编号：'+(taskIds.length?taskIds.join('、'):'未声明')+'。',
+             '有效变更：**'+effectiveFiles+' 个文件 / '+effectiveChanges+' 行**；锁文件/生成物/构建缓存/证据快照：**'+mechanicalChanges+' 行**；任务编号：'+(taskIds.length?taskIds.join('、'):'未声明')+'。',
              '',
              ...table,'',
              '**规模预警**：'+(warnings.length?warnings.join('；')+'。请说明来源、分拆必要性和验证边界。':'未触发已检测的数量阈值。'),
