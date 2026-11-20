@@ -81,6 +81,10 @@ export function shanghaiDayStart(now) {
   ) - 8 * 60 * 60 * 1000);
 }
 
+export function sameShanghaiQuotaDay(now, snapshotNow) {
+  return shanghaiDayStart(now).getTime() === shanghaiDayStart(snapshotNow).getTime();
+}
+
 export function dailyCommentsPath(repository, since) {
   return `/repos/${repository}/issues/comments?since=${encodeURIComponent(since.toISOString())}&per_page=100`;
 }
@@ -246,6 +250,13 @@ function emitQuotaEvidence(evidence) {
   }
 }
 
+function writeQuotaOutputs(quotaCounts) {
+  writeOutput("quota_warning", quotaCounts.warning);
+  writeOutput("shared_trigger_used", quotaCounts.used);
+  writeOutput("shared_trigger_remaining", quotaCounts.remaining);
+  writeOutput("shared_trigger_by_repo", JSON.stringify(quotaCounts.byRepository));
+}
+
 async function requestJson(path, { method = "GET", token, body } = {}) {
   if (!token) throw new Error("GH_TOKEN is missing");
   const response = await fetch(`https://api.github.com${path}`, {
@@ -404,10 +415,10 @@ export async function main() {
     return;
   }
 
-  const quotaSnapshot = await loadStableSharedQuota(repository, token);
+  let quotaSnapshot = await loadStableSharedQuota(repository, token);
   emitQuotaEvidence(quotaSnapshot.evidence);
   writeOutput("quota_evidence", JSON.stringify(quotaSnapshot.evidence));
-  const reservation = await reserveKodyQuota(
+  let reservation = await reserveKodyQuota(
     token,
     {
       identity: externalId,
@@ -419,32 +430,59 @@ export async function main() {
     { now: quotaSnapshot.now },
   );
   let quotaCounts = reservation.counts;
-  writeOutput("quota_warning", quotaCounts.warning);
-  writeOutput("shared_trigger_used", quotaCounts.used);
-  writeOutput("shared_trigger_remaining", quotaCounts.remaining);
-  writeOutput("shared_trigger_by_repo", JSON.stringify(quotaCounts.byRepository));
+  writeQuotaOutputs(quotaCounts);
   if (!reservation.allowed) {
     finishSkip(reservation.reason, pr, headSha, quotaCounts);
     return;
   }
 
-  let latest;
-  try {
-    latest = await getPullRequest(repository, prNumber, token);
-  } catch (error) {
+  let latest = null;
+  for (let dayAttempt = 0; dayAttempt < 3; dayAttempt += 1) {
+    try {
+      latest = await getPullRequest(repository, prNumber, token);
+    } catch (error) {
+      await releaseReservation(token, externalId, quotaSnapshot.now);
+      throw error;
+    }
+    if (latest.state !== "open" || latest.merged_at != null) {
+      await releaseReservation(token, externalId, quotaSnapshot.now);
+      finishSkip("pr_not_open", latest, latest.head?.sha ?? "", quotaCounts);
+      return;
+    }
+    if (latest.head?.sha !== headSha || latest.draft === true) {
+      await releaseReservation(token, externalId, quotaSnapshot.now);
+      finishSkip("head_changed_before_comment", latest, latest.head?.sha ?? "", quotaCounts);
+      return;
+    }
+    if (sameShanghaiQuotaDay(new Date(), quotaSnapshot.now)) {
+      break;
+    }
     await releaseReservation(token, externalId, quotaSnapshot.now);
-    throw error;
+    if (dayAttempt === 2) {
+      throw new Error("UTC+8 quota day changed repeatedly before trigger POST");
+    }
+    quotaSnapshot = await loadStableSharedQuota(repository, token);
+    emitQuotaEvidence(quotaSnapshot.evidence);
+    writeOutput("quota_evidence", JSON.stringify(quotaSnapshot.evidence));
+    reservation = await reserveKodyQuota(
+      token,
+      {
+        identity: externalId,
+        repository,
+        pr: prNumber,
+        headSha,
+      },
+      quotaSnapshot.evidence,
+      { now: quotaSnapshot.now },
+    );
+    quotaCounts = reservation.counts;
+    writeQuotaOutputs(quotaCounts);
+    if (!reservation.allowed) {
+      finishSkip(reservation.reason, pr, headSha, quotaCounts);
+      return;
+    }
   }
-  if (latest.state !== "open" || latest.merged_at != null) {
-    await releaseReservation(token, externalId, quotaSnapshot.now);
-    finishSkip("pr_not_open", latest, latest.head?.sha ?? "", quotaCounts);
-    return;
-  }
-  if (latest.head?.sha !== headSha || latest.draft === true) {
-    await releaseReservation(token, externalId, quotaSnapshot.now);
-    finishSkip("head_changed_before_comment", latest, latest.head?.sha ?? "", quotaCounts);
-    return;
-  }
+  if (!latest) throw new Error("PR state unavailable before trigger POST");
 
   let created;
   try {

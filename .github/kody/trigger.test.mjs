@@ -10,6 +10,7 @@ import {
   dailyCommentsPath,
   findKodyReviewForHead,
   findTriggerReservation,
+  sameShanghaiQuotaDay,
   shanghaiDayStart,
   sharedDailyCommentsPaths,
   sharedTriggerQuotaEvidence,
@@ -106,6 +107,14 @@ test("UTC+08:00 自然日边界正确", () => {
     shanghaiDayStart(new Date("2026-11-20T16:00:00Z")).toISOString(),
     "2026-11-20T16:00:00.000Z",
   );
+  assert.equal(sameShanghaiQuotaDay(
+    new Date("2026-11-20T15:59:59Z"),
+    new Date("2026-11-20T00:00:00Z"),
+  ), true);
+  assert.equal(sameShanghaiQuotaDay(
+    new Date("2026-11-20T16:00:00Z"),
+    new Date("2026-11-20T15:59:59Z"),
+  ), false);
 });
 
 function triggerComment(id, createdAt, overrides = {}) {
