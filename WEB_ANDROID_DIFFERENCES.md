@@ -36,7 +36,7 @@
 
 | 功能模块 | Web | Android | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 |
 |---|---|---|---|---|---|---|---|
-| 正式五阶段节奏 | 0～30 / 30～75 / 75～130 / 130～165 / 165～180 分钟 | 同一五阶段目标 | 无差异 | 体验目标，不是按时钟解锁 | 内容顺序合法、关键阶段有实际过程，真实通关仍须 ≤180 分钟 | Web 新档 `PASS`，174.19 分钟；Android 组合源码终局长跑 `NOT RUN / BLOCKED` | `reports/R120-01/web-pacing-evidence.md`；[Web 长期节奏目标](docs/DELIVERY_RULES.md) §1 与本节（历史运行结果只作对应跑次证据） |
+| 正式五阶段节奏 | 0～30 / 30～75 / 75～130 / 130～165 / 165～180 分钟 | 同一五阶段目标 | 无差异 | 体验目标，不是按时钟解锁 | 内容顺序合法、关键阶段有实际过程，真实通关仍须 ≤180 分钟 | Web 174.19 分钟 ENDGAME PASS，但首次 Reality 约 56.85 分钟，PACING FAIL；Android `9e4571e8` 首次 Reality 约 47.3 分钟，PACING FAIL，ENDGAME NOT RUN | `reports/R120-01/web-pacing-evidence.md`；Android `reports/R121-01/avd-evidence/kvm-final-9e4571e8/` |
 | 调度周期 | 可配置 1～60 秒，默认 10 秒 | 同一范围与默认值 | 无差异 | 预期 | 非法值安全钳制；修改后安全重排唯一调度生命周期 | Web 周期夹具 `PASS`，完整新档以默认 10 秒完成；Android 边界测试 `PASS`，组合 APK 运行 `NOT RUN` | `reports/R120-01/web-final-3000-r2-20261120/summary.json`；Android `OrekiAutomationScheduler` |
 | 自动购买器控制权 | 受管配置由调度器当前策略独占 | 同一语义 | 无差异 | 预期 | 玩家修改后下一次调度 tick 统一恢复；不覆盖非受管设置；不提前启用未解锁自动器 | Web Node 25/25、Chromium 17/17 PASS；Android AGP/契约 PASS，最终组合运行 `NOT RUN` | Web `oreki-managed-autobuyer-state.js` 测试；Android `OrekiManagedAutobuyerAuthority` 测试 |
 | Kody 审查入口 | `kody-trigger.yml`，按 Head SHA 去重 | `kody-trigger.yml`，按 Head SHA 去重 | 平台实现差异 | 预期 | 仅 OrekiDawson 同仓 main 非 Draft；已审查 Head 不重复触发；精确评论 `@kody start-review` | 四个修复 PR 均有 Kody Review；重复触发按既有 Review 跳过 | [Web #74](https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/74#pullrequestreview-5983498790)、[Web #75](https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/75#pullrequestreview-5983256832)、[Android #185](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/pull/185#pullrequestreview-5983102446)、[Android #186](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/pull/186#pullrequestreview-5983717117) |
@@ -44,6 +44,8 @@
 | Android 业务语言 | 不适用 | 新业务逻辑必须 Kotlin，不新增 Java/Smali 业务 | 平台限制 | 预期 | DEX/Smali 仅作兼容入口 | 发布前按 AGP/AVD 门禁复核 | `AGENTS.md`；Kody Rule `Android Kotlin 业务` |
 
 **边界**：Actions 成功只表示触发评论已发出；Kody 完成审查、原生 Review Threads 和真实通关时间必须分别验证。Kody 一次审查可能产生多次 Provider 调用，每日 100 次触发命令上限不等于模型调用硬上限。
+
+**独立门禁**：`GAMEPLAY LEGALITY`、`PACING`、`ENDGAME`、`POST-ENDGAME STABILITY` 分别给出 `PASS / FAIL / BLOCKED / NOT RUN`。ENDGAME PASS 不能覆盖 PACING FAIL；PACING FAIL 安全留存证据后立即停止该候选无效长跑并修复根因。
 
 ### R120-01 Web 真实五阶段取证
 
