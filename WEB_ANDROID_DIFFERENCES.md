@@ -36,14 +36,35 @@
 
 | 功能模块 | Web | Android | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 |
 |---|---|---|---|---|---|---|---|
-| 正式五阶段节奏 | 0～30 / 30～75 / 75～130 / 130～165 / 165～180 分钟 | 同一五阶段目标 | 无差异 | 体验目标，不是按时钟解锁 | 内容顺序合法、关键阶段有实际过程，真实通关仍须 ≤180 分钟 | 规范已落地；完整新档长跑 `NOT RUN` | 两端 `AGENTS.md`、`README.md`、本节 |
-| 调度周期 | 可配置 1～60 秒，默认 10 秒 | 同一范围与默认值 | 无差异 | 预期 | 非法值安全钳制；修改后安全重排唯一调度生命周期 | 代码与定向测试分层记录；完整长跑 `NOT RUN` | Web 调度器与测试；Android `OrekiAutomationScheduler` / `check_automation_scheduler.py` |
-| 自动购买器控制权 | 受管配置由调度器当前策略独占 | 同一语义 | 无差异 | 预期 | 玩家修改后下一次调度 tick 统一恢复；不覆盖非受管设置；不提前启用未解锁自动器 | 待两端最终 HEAD 运行期复核 | `OrekiAutomationScheduler` 与 Web scheduler 测试 |
-| Kody 审查入口 | `kody-trigger.yml`，Manual，Balanced | `kody-trigger.yml`，Manual，Balanced | 平台实现差异 | 预期 | 仅 OrekiDawson 同仓 main 非 Draft；同 SHA 去重；稳定窗口；精确评论 `@kody start-review` | 两仓首次触发与重复跳过 Actions 已实测 | Web `#88` / run `44595449663`、`44595591312`；Android `#199` / run `44595820172`、`44595952226` |
+| 正式五阶段节奏 | 0～30 / 30～75 / 75～130 / 130～165 / 165～180 分钟 | 同一五阶段目标 | 无差异 | 体验目标，不是按时钟解锁 | 内容顺序合法、关键阶段有实际过程，真实通关仍须 ≤180 分钟 | Web 新档 `PASS`，174.19 分钟；Android 组合源码终局长跑 `NOT RUN / BLOCKED` | `reports/R120-01/web-pacing-evidence.md`；两端 `AGENTS.md`、`README.md`、本节 |
+| 调度周期 | 可配置 1～60 秒，默认 10 秒 | 同一范围与默认值 | 无差异 | 预期 | 非法值安全钳制；修改后安全重排唯一调度生命周期 | Web 周期夹具 `PASS`，完整新档以默认 10 秒完成；Android 边界测试 `PASS`，组合 APK 运行 `NOT RUN` | `reports/R120-01/web-final-3000-r2-20261120/summary.json`；Android `OrekiAutomationScheduler` |
+| 自动购买器控制权 | 受管配置由调度器当前策略独占 | 同一语义 | 无差异 | 预期 | 玩家修改后下一次调度 tick 统一恢复；不覆盖非受管设置；不提前启用未解锁自动器 | Web Node 25/25、Chromium 17/17 PASS；Android AGP/契约 PASS，最终组合运行 `NOT RUN` | Web `oreki-managed-autobuyer-state.js` 测试；Android `OrekiManagedAutobuyerAuthority` 测试 |
+| Kody 审查入口 | `kody-trigger.yml`，按 Head SHA 去重 | `kody-trigger.yml`，按 Head SHA 去重 | 平台实现差异 | 预期 | 仅 OrekiDawson 同仓 main 非 Draft；已审查 Head 不重复触发；精确评论 `@kody start-review` | 本轮 Web #74/#75、Android #185/#186 均完成真实 Kody 审查；重复触发按既有 Review 跳过 | PR Review/Thread 与 Actions 记录 |
 | 旧 Oreki Audit | 保留工作流但停用 | 保留工作流但停用 | 无差异 | 备份状态 | 不调用 DeepSeek、不发布自制 Review、不扩大 App 权限 | 已实测两仓旧审查 Job 为 `Skipped` | `OREKI_AUDIT_ENABLED=false`；PR 检查记录 |
 | Android 业务语言 | 不适用 | 新业务逻辑必须 Kotlin，不新增 Java/Smali 业务 | 平台限制 | 预期 | DEX/Smali 仅作兼容入口 | 发布前按 AGP/AVD 门禁复核 | `AGENTS.md`；Kody Rule `Android Kotlin 业务` |
 
 **边界**：Actions 成功只表示触发评论已发出；Kody 完成审查、原生 Review Threads 和真实通关时间必须分别验证。Kody 一次审查可能产生多次 Provider 调用，每日 100 次触发命令上限不等于模型调用硬上限。
+
+### R120-01 Web 真实五阶段取证
+
+真实 Chromium（Pixel 7 视口 412×915、touch、DPR 2.625）从 `localStorage=[]` 新档
+启动，默认 `3000×`、调度周期 10 秒，不使用隐藏推进：
+
+| 阶段节点 | 墙钟 |
+| --- | ---: |
+| 首次无限 | 11.0 秒 |
+| 首次 Break | 41.1 秒 |
+| 首次永恒 | 12 分 41 秒 |
+| 首次时间研究 | 13 分 31 秒 |
+| 首次 Reality / 5 现实 | 56 分 51 秒 |
+| 20 现实、全部现实升级、成就 147、特蕾莎 | 106 分 51 秒 |
+| 莱特拉难度层 1 | 127 分 31 秒 |
+| Pelle 解锁并进入毁灭态 | 173 分 41 秒 |
+| 首次 `isGameEnd=true` | **174 分 11 秒** |
+
+门禁：`PASS`；通关后 180 秒确认无回退；页面错误、控制台错误和冻结告警均为 0。
+动态速度只在首次 Reality 后因真实停滞升档，最终为 `100000×`、6 次升档。
+完整证据见 `reports/R120-01/web-pacing-evidence.md`。
 
 ## 1. 游戏核心逻辑与数值公式
 
