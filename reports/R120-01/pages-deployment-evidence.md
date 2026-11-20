@@ -2,11 +2,17 @@
 
 ## 源码与 CI 身份
 
+- MOD 版本：`Oreki Edition 1.0.2`
+- Web 上游冻结基线：`5409e320cecef96a917cca1dfb68f1f183e499ca`
 - Web 源码 SHA：`de2626805965a24c852352fad6abcdb0f5173dc9`
 - 证据 PR：#91（合并提交即上述 SHA）
 - 精确源码 CI：`44655186495`（Node checks / Mobile Chromium smoke 均成功）
 - Pages 请求工作流：`44655447122`
 - Pages 正式部署工作流：`44655489477`
+- 部署开始（UTC）：`2026-11-20T01:41:50Z`
+- 部署完成（UTC）：`2026-11-20T01:43:44Z`
+- 可回退的上一版：Web `b87cfe181d0d84d035f916a021204b07ca47d5cc`
+  （Pages Run `44393247049`，成功）
 
 ## 部署结果
 
