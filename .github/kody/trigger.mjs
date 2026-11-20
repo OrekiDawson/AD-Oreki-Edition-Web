@@ -120,8 +120,10 @@ export function sharedTriggerQuotaEvidence(commentGroups, since) {
       }
       const key = `${repository}#${commentId}`;
       if (unique.has(key)) continue;
+      const pullMatch = String(comment.html_url ?? "").match(/\/pull\/(\d+)(?:[\/#?]|$)/);
       unique.set(key, {
         repository,
+        pr: pullMatch ? Number(pullMatch[1]) : null,
         commentId,
         url: comment.html_url ?? "",
         createdAt: new Date(createdAt).toISOString(),
@@ -461,15 +463,30 @@ export async function main() {
     }
     throw error;
   }
-  const attached = await attachKodyQuota(token, externalId, {
-    commentId: created.id,
-    commentUrl: created.html_url,
-  });
 
   writeOutput("kody_review_state", "trigger_posted");
   writeOutput("head_sha", headSha);
   writeOutput("comment_id", created.id);
   writeOutput("comment_url", created.html_url);
+  let attached = null;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      attached = await attachKodyQuota(token, externalId, {
+        commentId: created.id,
+        commentUrl: created.html_url,
+        now: quotaSnapshot.now,
+      });
+      break;
+    } catch (error) {
+      if (attempt === 3) {
+        throw new Error(
+          `trigger comment posted but quota attach failed; next run will recover ` +
+            `comment ${created.id}: ${error.message}`,
+        );
+      }
+      await sleep(attempt);
+    }
+  }
   writeSummary({
     status: "trigger_posted",
     reason: "comment_created",

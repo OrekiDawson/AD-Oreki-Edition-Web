@@ -103,6 +103,7 @@ const kodyAndroid = "OrekiDawson/AD-Oreki-Edition-Android";
 const kodyWeb = "OrekiDawson/AD-Oreki-Edition-Web";
 const kodyEvidence = (repository, ids) => ids.map(id => ({
   repository,
+  pr: 121,
   commentId: String(id),
   url: `https://example.test/${repository}/${id}`,
   createdAt: `2026-11-20T00:00:${String(id % 60).padStart(2, "0")}Z`,
@@ -163,6 +164,24 @@ const wrongDayEvidence = reserveKodyPure([], kodyCandidate("wrong-day", kodyWeb)
   evidence: kodyEvidence(kodyWeb, [4000]),
 });
 assert.equal(wrongDayEvidence.counts.used, 1);
+
+const orphanReservation = reserveKodyPure([], kodyCandidate("orphan", kodyAndroid), {
+  date: kodyDate,
+  now: "2026-11-20T00:04:00Z",
+}).records;
+const recoveredOrphan = reserveKodyPure(orphanReservation, kodyCandidate("orphan", kodyAndroid), {
+  date: kodyDate,
+  now: "2026-11-20T00:05:00Z",
+  evidence: [{
+    ...kodyEvidence(kodyAndroid, [5000])[0],
+    createdAt: "2026-11-20T00:04:30Z",
+  }],
+});
+assert.equal(recoveredOrphan.reason, "identity-recovered");
+assert.equal(recoveredOrphan.counts.used, 1);
+assert.equal(recoveredOrphan.record.commentId, "5000");
+assert.equal(recoveredOrphan.records.filter(record =>
+  record.kind === KODY_KIND && record.commentId === "5000").length, 1);
 
 const kodyDuplicate = reserveKodyPure(kodyAttached.records, kodyCandidate("trigger-b", kodyWeb), {
   date: kodyDate,

@@ -132,6 +132,11 @@ export function kodyQuotaCounts(records, date) {
 
 function importKodyEvidence(records, evidence, date, now) {
   const output = [...records];
+  const pending = output.filter(record =>
+    isKodyRecord(record) &&
+    record.date === date &&
+    record.status === "reserved" &&
+    !String(record.commentId ?? ""));
   const seen = new Set(
     output
       .filter(record => isKodyRecord(record) && record.date === date)
@@ -149,12 +154,18 @@ function importKodyEvidence(records, evidence, date, now) {
       throw new Error("Kody quota evidence requires a valid creation time");
     }
     if (shanghaiDate(createdAt) !== date) continue;
+    const matchesPending = pending.some(record =>
+      String(record.repository ?? "") === repository &&
+      Number(record.pr) === Number(item?.pr) &&
+      createdAt.getTime() >= Date.parse(String(record.reservedAt ?? "")));
+    if (matchesPending) continue;
     if (seen.has(commentId)) continue;
     seen.add(commentId);
     output.push({
       kind: KODY_KIND,
       identity: `kody-comment:${repository}#${commentId}`,
       repository,
+      pr: Number(item?.pr),
       commentId,
       commentUrl: String(item?.url ?? ""),
       source: "observed_comment",
@@ -185,6 +196,28 @@ export function reserveKodyPure(records, candidate, {
   const prior = output.find(record =>
     isActiveKodyRecord(record, date) && record.identity === identity);
   if (prior) {
+    if (prior.status === "reserved" && !String(prior.commentId ?? "")) {
+      const recovered = evidence.find(item =>
+        String(item?.repository ?? "") === String(prior.repository ?? "") &&
+        Number(item?.pr) === Number(prior.pr) &&
+        Date.parse(String(item?.createdAt ?? "")) >= Date.parse(String(prior.reservedAt ?? "")));
+      if (recovered) {
+        const attached = attachKodyCommand(output, {
+          identity,
+          commentId: recovered.commentId,
+          commentUrl: recovered.url,
+          now,
+        });
+        return {
+          allowed: false,
+          reused: true,
+          reason: "identity-recovered",
+          record: attached.record,
+          records: attached.records,
+          counts: attached.counts,
+        };
+      }
+    }
     return {
       allowed: false,
       reused: true,

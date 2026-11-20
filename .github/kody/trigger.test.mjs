@@ -114,7 +114,7 @@ function triggerComment(id, createdAt, overrides = {}) {
     user: { login: "OrekiDawson" },
     body: TRIGGER_BODY,
     created_at: createdAt,
-    html_url: `https://github.com/example/comment/${id}`,
+    html_url: `https://github.com/example/repo/pull/${id}#issuecomment-${id}`,
     ...overrides,
   };
 }
@@ -142,6 +142,10 @@ test("Android/Web 合计按唯一评论 ID 计数，Webhook 重试不重复计�
   assert.deepEqual(
     sharedTriggerQuotaEvidence(groups, since).map(item => item.commentId),
     ["1", "2", "3", "4"],
+  );
+  assert.deepEqual(
+    sharedTriggerQuotaEvidence(groups, since).map(item => item.pr),
+    [1, 2, 3, 4],
   );
 });
 
