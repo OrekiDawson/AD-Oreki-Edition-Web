@@ -10,7 +10,7 @@
 - `suggestionControl.severityLevelFilter=medium`，PR 摘要关闭，自动批准与 Request Changes 关闭，Committable Suggestion 开启；模型为 DeepSeek Flash、Thinking High。
 - Android/Web 两仓共用每个 UTC+8 自然日的 100 次全局计数池，不设仓库保留额度或单仓硬上限；80 次预警，100 次拒绝新增主动请求。仅按 GitHub 原始评论唯一 ID 统计有效 `@kody start-review` 指令，Webhook 重试不重复计数；回复、讨论、修复提交、Kody 回复和 Oreki-Audit 自有审查不计数。同一 PR 再次主动发送属于新请求。统计展示全局已用、全局剩余和两端实际用量。
 - 预占与扣减复用 Web 协调分支上的共享 CAS 状态，并发请求基于同一父版本提交，只有一个能成功且冲突方必须重读；支付/统计状态不换算成 Provider 模型调用硬上限。
-- Kody 付费审查当前继续暂停；配额统计与暂停状态相互独立，统计规则本身不构成恢复授权。未来恢复时仍只允许 Balanced，严禁 Heavy。
+- 用户已于 2026-11-20 明确恢复 Kody 审查；GitHub Actions 负责必要触发，Kodus 云端 `reviewCadence.type=manual`，避免平台自动审查与触发器重复。审查只允许 Balanced，严禁 Heavy。
 - `codex-deepseek-review.yml` 保留为回滚资产，`OREKI_AUDIT_ENABLED=false`；未经用户明确恢复，不调用 DeepSeek 或发布自制 Review。
 
 ## 历史决策（2026-11-17，已由 R120-01 替代）
