@@ -2,6 +2,10 @@
 
 ## R121-01 当前状态（2026-11-20，优先于下方历史记录）
 
+- **2026-11-21 最新用户指令：Kody 付费审查暂停。** Android/Web 触发器均改为
+  `disabled_manually`，禁止发送手动或自动 `@kody start-review`，后续验收使用
+  CI、真实运行与非 Kody 的项目内审查能力。本节以下 Kody 配额与恢复配置保留为
+  未来再次授权时的回滚/复用依据，当前不生效、不得触发。
 - GitHub Actions 的 `kody-trigger.yml` 只负责资格判断、5 分钟稳定窗口、预算、同 Head SHA 去重和精确评论 `@kody start-review`；真实审查由 Kodus GitHub App 完成。
 - 仅 OrekiDawson 同仓、`main`、非 Draft PR 自动进入；Fork、其他用户、Bot 跳过。触发 Job 固定检出任信 `main`，PAT 发送评论前核验 `/user` 身份。
 - `automatedReviewActive=false`、`reviewCadence.type=auto_pause`、`runOnDraft=false`；不新增自动触发器，不批量重审历史 PR。

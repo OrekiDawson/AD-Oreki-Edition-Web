@@ -17,11 +17,11 @@
 - 使用受保护分支、PR、Required Checks、签名/发布审批。不得强推、关闭 Ruleset、跳过 CI/人工审批或伪造验证。真实 Critical/P0/P1、阻塞性 Medium 必须修复或证据充分地判定误报；非阻塞意见记录合理处置。
 - **按风险分级审查**：依据实际 Diff 与影响范围判定，不按标题或扩展名机械分类。A 类为文档/非行为变更，快速检查事实、链接、版权、规范和敏感信息，不跑无关构建或游戏长跑；B 类为 CI、Actions、审查触发器、配额、构建与发布工具，定向检查并发、幂等、权限、状态一致性、边界、失败恢复和回滚，不得因未改游戏代码而视为低风险；C 类为 Kotlin/JS 业务、存档、结算、挑战、阶段门禁和自动购买器，执行完整风险审查及最小必要真实运行验证。混合 PR 采用最高等级，但按文件分配审查重点。
 - **审查读取与收口**：合并前检查最新 HEAD、完整 Diff、普通评论、Reviews、Review Threads、审查配置版本与 Required Checks。相同 HEAD 且同一适用审查范围已有有效结果时不再主动重复请求；集中修复一批问题并定向验证后统一复审，不在中间提交逐个发送 `@kody start-review`。Review Thread 只能因真实修复或充分反证解决。所有需解决线程、Critical/P0/P1 和阻塞性 Medium 已闭环，适用检查与定向验证通过，且权限和分支保护允许时才推进合并；非阻塞风格建议或额外优化应登记后独立处理，不得借此扩大扫描或无期限延迟。Kody 无可用 Provider 出现 `Skipped` / `BYOK Configuration Required` 表示 **KODY NOT RUN**，不是 PASS；不因缺密钥自行重接 Provider。
-- **Kody PR 审查（R121-01 已恢复）**：用户已明确授权恢复 Kody 审查；`kody-trigger.yml` 仅在 OrekiDawson 的同仓、`main`、非 Draft PR 上，经稳定窗口、作者白名单、同 Head 去重和预算门禁后，以 OrekiDawson 身份发送精确评论 `@kody start-review`；Kodus 云端自动审查保持关闭/自动暂停，避免与 Actions 触发器重复。Android/Web 共用每个 UTC+8 自然日的 100 次全局计数池，不设仓库保留额度或单仓上限；80 次预警，100 次拒绝新增。只按 GitHub 原始评论唯一 ID 统计有效主动指令，Webhook 重试去重，回复/讨论/修复提交/Bot 回复/Oreki-Audit 自有审查不计数；同一 PR 再次主动发送属于新请求。预占必须走共享 CAS。所有审查只允许 Balanced，严禁 Heavy；`KODY NOT RUN` / `Skipped` 如实记录为 NOT RUN。触发命令上限不等于 Provider 模型调用硬上限，不得夸大成本保证。
+- **Kody PR 审查（2026-11-21 起暂停）**：最新用户指令要求暂停 Kody 付费审查，禁止发送 `@kody start-review` 或通过任何入口间接触发；Android/Web 的 `kody-trigger.yml` 均保持 `disabled_manually`。共享 100 次配额实现保留供未来重新授权时复用，当前不产生新的 Kody 调用。未来获准恢复时仍须仅用 Balanced、严禁 Heavy、按原始评论唯一 ID 统计，并遵守 80/100 边界；当前审查改用 CI、真实运行、Oreki-Audit 的只读/非 Kody 能力及独立复核，`KODY NOT RUN` 如实记录。
 - **旧 Oreki Audit（备份）**：Android/Web 的 `codex-deepseek-review.yml` 与 `OREKI_AUDIT_ENABLED` 默认保持停用，仅保留回滚代码；未经用户明确恢复，不得调用 DeepSeek、发布自制 Review 或重新扩权。Oreki Audit App 不再是日常代码审查权威。
 - **替代合并门禁**：业务 PR 按工作区 `AGENTS.md` 执行：Required Checks、Ruleset、审批与分支保护全部通过；需解决 Review Threads 归零且普通评论逐条有结论；变更范围对应的真实运行验证（Web Playwright/Chromium 手机视口；未运行记 `NOT RUN`）；高风险改动（阶段门禁、存档、自动购买器、构建/部署链）完成独立定向复核。
 - **过渡边界**：工作区规则 PR 已合并后按替代门禁执行；不得借本节绕过真实 P0/P1、Ruleset、Required Checks 或既有审批。用户**明确逐次授权**的纯文档维护按其批准范围处理审查缺失，但必须保留记录，不得推广为业务/生产 PR 的常规豁免。
-- 只有授权开发会话内才主动处理 Issues/PR；不轮询空任务、不启用未经批准的持续监控或夜间 Agent。Kody 当前已按用户授权恢复，继续执行上述 Balanced、共享预算和最少必要审查规则，严禁 Heavy。
+- 只有授权开发会话内才主动处理 Issues/PR；不轮询空任务、不启用未经批准的持续监控或夜间 Agent。Kody 当前暂停，除非用户再次明确恢复，不得发送手动或自动审查请求。
 
 ## 3. Agent Response 及时反馈
 
