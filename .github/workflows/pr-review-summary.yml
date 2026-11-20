@@ -77,12 +77,9 @@ jobs:
                 String(err?.message||err).slice(0,200));
             }
             const taskText=[pr.title,pr.body||"",...commits.map(c=>c.commit.message)].join("\n");
-            const declaredTaskIds=[...new Set(taskText.match(
-              /\bR\d{2,3}-(?:\d{2,3}\b|[^\s，。；、,.;:：()（）\[\]*_\/]+)/g
-            )||[])];
-            const bareRounds=[...new Set(taskText.match(/\bR\d{2,3}\b(?!-)/g)||[])];
-            const taskIds=declaredTaskIds.length ? declaredTaskIds :
-              bareRounds.map(id=>id+'（未带子编号）');
+            // 新任务唯一合法格式是 ChatGPT 分配的单层 R整数。
+            // 历史复合编号可出现在说明或证据引用中，不得被当作新任务编号或“缺子编号”。
+            const taskIds=[...new Set(taskText.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
             const risk=platform==='Android' ? [
               ['AGP/R8/Gradle', /^(agp|gradle)\/|(^|\/)(build\.gradle(\.kts)?|proguard-rules\.pro)$/],
               ['CI/签名/正式发布', /^\.github\/workflows\/|^scripts\/(publish_|release_|enforce_agp)/],
