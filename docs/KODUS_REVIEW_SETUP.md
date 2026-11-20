@@ -8,8 +8,20 @@
 - 通用审查标准只维护在 Kodus Global Rules；当前唯一规则为 `Oreki 全局审查基线`（ID `6b9b0794-457a-427c-8a07-ff348a8574ce`）。Android/Web/Wiki 的 Repository 与 Directory Rules 均为空，不重复复制项目业务规则。
 - `repoInstructionsEnabled=true`，Kody 主动读取目标仓库的 `AGENTS.md`；Wiki 另参考 `content/wiki-rules.md`。`AGENTS.md` 是项目执行规范，Global Rules 是审查规范。
 - 自动规则生成关闭（三仓均不足官方要求的 3 个月审查历史），`kodyKnowledgeApproval.enabled=true`；未来启用时候选规则必须先审批，不得直接生效或自动提升为 Global。
-- `suggestionControl.severityLevelFilter=low`、`groupingMode=minimal`，各档上限为 low=3、medium=5、high=5；`summary.generatePRSummary=false`，不生成或覆盖 PR 摘要。`isRequestChangesActive=true`、`pullRequestApprovalActive=false`，保留真实阻塞能力但不让 Kody 自动批准。实际审查运行记录显示模型为 `deepseek-flash`；CLI 未提供可核对的 Thinking 档位字段，不为该字段作未经证据支持的声明。
-- 上述 **Global 级**配置最后核实于 2026-11-20：来源为 [Kodus Global 设置](https://app.kodus.io/settings/code-review/global/general)、[Global Rule `6b9b0794-457a-427c-8a07-ff348a8574ce`](https://app.kodus.io/settings/code-review/global/kody-rules/6b9b0794-457a-427c-8a07-ff348a8574ce?teamId=577e813f-b16f-49f6-9999-7c7b288b8e84) 与 [Kodus Token Usage](https://app.kodus.io/usage/tokens)。第 6～8 行的 `automatedReviewActive`、`reviewCadence`、`runOnDraft` 及 Repository/Directory Rules 是仓库级项，已于同日用 `kodus config remote show` 逐库读取，不由 Global 设置页单独证明。
+- 2026-11-20 从 [Kodus Global 设置](https://app.kodus.io/settings/code-review/global/general) 逐项读取：
+
+| 配置项 | 当前值 | 来源 |
+| --- | --- | --- |
+| `suggestionControl.severityLevelFilter` | `low` | [Global 设置](https://app.kodus.io/settings/code-review/global/general) |
+| `suggestionControl.groupingMode` | `minimal` | [Global 设置](https://app.kodus.io/settings/code-review/global/general) |
+| `suggestionControl.severityLimits` | `low=3 / medium=5 / high=5` | [Global 设置](https://app.kodus.io/settings/code-review/global/general) |
+| `summary.generatePRSummary` | `false` | [Global 设置](https://app.kodus.io/settings/code-review/global/general) |
+| `isRequestChangesActive` | `true` | [Global 设置](https://app.kodus.io/settings/code-review/global/general) |
+| `pullRequestApprovalActive` | `false` | [Global 设置](https://app.kodus.io/settings/code-review/global/general) |
+
+这些值保留真实阻塞能力，关闭 PR 摘要生成和自动批准。
+- 实际审查运行模型为 `deepseek-flash`；该结论来自 2026-11-20 的 [Kodus Token Usage](https://app.kodus.io/usage/tokens) 动态用量记录，不是固定配置证明。CLI 未提供可核对的 Thinking 档位字段，不为该字段作未经证据支持的声明。
+- 第 6～8 行的 `automatedReviewActive`、`reviewCadence`、`runOnDraft` 及 Repository/Directory Rules 是仓库级项，已于同日用 `kodus config remote show OrekiDawson/AD-Oreki-Edition-Android`、`...-Web` 和 `...-Wiki` 逐库读取；Global 设置页不能单独证明这些仓库级值。
 - Android 的自动触发实证为 `pull_request_target` 事件 [Run 44767526027](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/actions/runs/44767526027)：PR #206，Head `1d0b951324220c4923f46315f72634c055c5e2da`；工作流在共享配额实现合入 `main` 后启用。Web 工作流在 Web 实现合入后启用并按同样方式独立取证。云端设置或工作流启停状态变化时须重新读取并更新本段。
 - Android/Web 两仓共用每个 UTC+8 自然日的 100 次全局计数池，不设仓库保留额度或单仓硬上限；80 次预警，100 次拒绝新增主动请求。仅按 GitHub 原始评论唯一 ID 统计有效 `@kody start-review` 指令，Webhook 重试不重复计数；回复、讨论、修复提交、Kody 回复和 Oreki-Audit 自有审查不计数。同一 PR 再次主动发送属于新请求。统计展示全局已用、全局剩余和两端实际用量。
 - 预占与扣减复用 Web 协调分支上的共享 CAS 状态，并发请求基于同一父版本提交，只有一个能成功且冲突方必须重读；支付/统计状态不换算成 Provider 模型调用硬上限。
