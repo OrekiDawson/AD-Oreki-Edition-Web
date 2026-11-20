@@ -9,6 +9,7 @@
 - `repoInstructionsEnabled=true`，Kody 主动读取目标仓库的 `AGENTS.md`；Wiki 另参考 `content/wiki-rules.md`。`AGENTS.md` 是项目执行规范，Global Rules 是审查规范。
 - 自动规则生成关闭（三仓均不足官方要求的 3 个月审查历史），`kodyKnowledgeApproval.enabled=true`；未来启用时候选规则必须先审批，不得直接生效或自动提升为 Global。
 - `suggestionControl.severityLevelFilter=low`、`groupingMode=minimal`，各档上限为 low=3、medium=5、high=5；`summary.generatePRSummary=false`，不生成或覆盖 PR 摘要。`isRequestChangesActive=true`、`pullRequestApprovalActive=false`，保留真实阻塞能力但不让 Kody 自动批准。实际审查运行记录显示模型为 `deepseek-flash`；CLI 未提供可核对的 Thinking 档位字段，不为该字段作未经证据支持的声明。
+- 上述配置最后核实于 2026-11-20：来源为 [Kodus Global 设置](https://app.kodus.io/settings/code-review/global/general)、[Global Rule `6b9b0794-457a-427c-8a07-ff348a8574ce`](https://app.kodus.io/settings/code-review/global/kody-rules/6b9b0794-457a-427c-8a07-ff348a8574ce?teamId=577e813f-b16f-49f6-9999-7c7b288b8e84) 与 [Kodus Token Usage](https://app.kodus.io/usage/tokens)。恢复后的自动触发实证为 [Run 44767526027](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/actions/runs/44767526027)；云端设置变化时须重新读取并更新本日期。
 - Android/Web 两仓共用每个 UTC+8 自然日的 100 次全局计数池，不设仓库保留额度或单仓硬上限；80 次预警，100 次拒绝新增主动请求。仅按 GitHub 原始评论唯一 ID 统计有效 `@kody start-review` 指令，Webhook 重试不重复计数；回复、讨论、修复提交、Kody 回复和 Oreki-Audit 自有审查不计数。同一 PR 再次主动发送属于新请求。统计展示全局已用、全局剩余和两端实际用量。
 - 预占与扣减复用 Web 协调分支上的共享 CAS 状态，并发请求基于同一父版本提交，只有一个能成功且冲突方必须重读；支付/统计状态不换算成 Provider 模型调用硬上限。
 - 用户已于 2026-11-20 明确恢复 Kody 审查；GitHub Actions 负责必要触发，Kodus 云端 `automatedReviewActive=false`、`reviewCadence.type=auto_pause`，避免平台自动审查与触发器重复。审查只允许 Balanced，严禁 Heavy。
