@@ -1113,9 +1113,9 @@
       "headSha": "5341a94fa0d6db7f0c7b15166ecff9fce1ac7f16",
       "source": "automated_trigger",
       "date": "2026-11-21",
-      "status": "reserved",
-      "commentId": "",
-      "commentUrl": "",
+      "status": "posted",
+      "commentId": "7044239848",
+      "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Android/pull/206#issuecomment-7044239848",
       "reservedAt": "2026-11-20T16:03:54.574Z",
       "updatedAt": "2026-11-20T16:03:54.574Z"
     }
