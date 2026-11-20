@@ -2,9 +2,11 @@
 
 ## R121-01 当前状态（2026-11-20，优先于下方历史记录）
 
-- **2026-11-21 最新用户指令：Kody 恢复可用。** 先前的暂停事件只作为历史审计记录，
-  Android/Web 触发器恢复为启用状态。仍只允许 Balanced、严禁 Heavy，并继续遵守
-  Android/Web 共享 100 次、按原始评论唯一 ID 去重和同 Head 最少必要复审规则。
+- **2026-11-21 最新用户指令：Kody 恢复可用。** 先前的暂停事件只作为历史审计记录。
+  当日通过 `gh api repos/.../actions/workflows/kody-trigger.yml` 回读到 Android/Web
+  两个触发器的 `state=active`；可核对页面为 [Android 触发器](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/actions/workflows/kody-trigger.yml)
+  与 [Web 触发器](https://github.com/OrekiDawson/AD-Oreki-Edition-Web/actions/workflows/kody-trigger.yml)。
+  仍只允许 Balanced、严禁 Heavy，并继续遵守 Android/Web 共享 100 次、按原始评论唯一 ID 去重和同 Head 最少必要复审规则。
 - GitHub Actions 的 `kody-trigger.yml` 只负责资格判断、5 分钟稳定窗口、预算、同 Head SHA 去重和精确评论 `@kody start-review`；真实审查由 Kodus GitHub App 完成。
 - 仅 OrekiDawson 同仓、`main`、非 Draft PR 自动进入；Fork、其他用户、Bot 跳过。触发 Job 固定检出任信 `main`，PAT 发送评论前核验 `/user` 身份。
 - `automatedReviewActive=false`、`reviewCadence.type=auto_pause`、`runOnDraft=false`；不新增自动触发器，不批量重审历史 PR。
