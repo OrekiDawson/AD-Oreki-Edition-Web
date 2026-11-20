@@ -57,3 +57,10 @@
 - Web 已有真实终局 PASS 基线。
 - Android 最终 APK 正使用 KVM AVD 从全新存档验收，结论待运行结果。
 - 在 Android 结果完成前，不宣称双端终局已同时 PASS。
+
+## 审查门禁
+
+Kody 付费审查按用户令暂停。PR #93 创建时仓库既有触发器仍自动连接了
+Kody，事件与处置见 `incident-kody-trigger.md`。PR 已立即关闭，Web 与
+Android 的 `kody-trigger.yml` 工作流已禁用；本报告不把 Kody 状态记为
+PASS，也不声称可确认费用为 0。
