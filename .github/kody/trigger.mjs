@@ -228,9 +228,9 @@ function finishSkip(reason, pr = null, headSha = "", quotaCounts = null) {
   console.log(`Kody trigger skipped: ${safeReason}`);
 }
 
-async function releaseReservation(token, identity) {
+async function releaseReservation(token, identity, now) {
   try {
-    return await releaseKodyQuota(token, identity);
+    return await releaseKodyQuota(token, identity, { now });
   } catch (error) {
     console.error(`Kody quota release failed; reservation remains consumed: ${error.message}`);
     return null;
@@ -432,16 +432,16 @@ export async function main() {
   try {
     latest = await getPullRequest(repository, prNumber, token);
   } catch (error) {
-    await releaseReservation(token, externalId);
+    await releaseReservation(token, externalId, quotaSnapshot.now);
     throw error;
   }
   if (latest.state !== "open" || latest.merged_at != null) {
-    await releaseReservation(token, externalId);
+    await releaseReservation(token, externalId, quotaSnapshot.now);
     finishSkip("pr_not_open", latest, latest.head?.sha ?? "", quotaCounts);
     return;
   }
   if (latest.head?.sha !== headSha || latest.draft === true) {
-    await releaseReservation(token, externalId);
+    await releaseReservation(token, externalId, quotaSnapshot.now);
     finishSkip("head_changed_before_comment", latest, latest.head?.sha ?? "", quotaCounts);
     return;
   }
@@ -459,7 +459,7 @@ export async function main() {
   } catch (error) {
     // 4xx 明确表示请求被拒；5xx/网络断开的结果不确定，保守保留预占并等待人工核对。
     if (Number(error.status) >= 400 && Number(error.status) < 500) {
-      await releaseReservation(token, externalId);
+      await releaseReservation(token, externalId, quotaSnapshot.now);
     }
     throw error;
   }
@@ -474,6 +474,7 @@ export async function main() {
       attached = await attachKodyQuota(token, externalId, {
         commentId: created.id,
         commentUrl: created.html_url,
+        createdAt: created.created_at,
         now: quotaSnapshot.now,
       });
       break;

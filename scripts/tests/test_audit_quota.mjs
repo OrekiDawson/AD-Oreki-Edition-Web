@@ -183,6 +183,19 @@ assert.equal(recoveredOrphan.record.commentId, "5000");
 assert.equal(recoveredOrphan.records.filter(record =>
   record.kind === KODY_KIND && record.commentId === "5000").length, 1);
 
+const midnightReservation = reserveKodyPure([], kodyCandidate("midnight", kodyWeb), {
+  date: "2026-11-20",
+  now: "2026-11-20T15:59:59Z",
+}).records;
+const midnightAttached = attachKodyCommand(midnightReservation, {
+  identity: "midnight",
+  commentId: "6000",
+  createdAt: "2026-11-20T16:00:01Z",
+});
+assert.equal(midnightAttached.record.date, "2026-11-21");
+assert.equal(kodyQuotaCounts(midnightAttached.records, "2026-11-20").used, 0);
+assert.equal(kodyQuotaCounts(midnightAttached.records, "2026-11-21").used, 1);
+
 const kodyDuplicate = reserveKodyPure(kodyAttached.records, kodyCandidate("trigger-b", kodyWeb), {
   date: kodyDate,
   evidence: kodyEvidence(kodyAndroid, [1, 2]),
