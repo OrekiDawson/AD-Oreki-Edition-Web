@@ -155,7 +155,8 @@ test("original save round-trips through the storeless build without schema loss"
 
 test("storeless export round-trips through the frozen upstream original", async ({ page, browser }) => {
   const upstreamURL = process.env.UPSTREAM_INTEROP_URL;
-  test.skip(!upstreamURL, "UPSTREAM_INTEROP_URL 未提供；仅在本地/专项互通验证运行原版仓");
+  test.skip(!upstreamURL && !process.env.CI, "UPSTREAM_INTEROP_URL 未提供；本地轻量运行跳过原版实例");
+  expect(upstreamURL, "CI 发布门禁必须提供冻结上游原版地址").toBeTruthy();
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect.poll(() => page.evaluate(() => Boolean(window.GameUI?.initialized)), {

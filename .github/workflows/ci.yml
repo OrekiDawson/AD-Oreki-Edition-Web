@@ -161,8 +161,36 @@ jobs:
       # System libraries are still installed on each fresh GitHub-hosted runner.
       - name: 安装 Chromium 及运行时依赖
         run: npx playwright install --with-deps chromium
+      - name: 构建冻结上游原版用于双向存档门禁
+        env:
+          UPSTREAM_SHA: 5409e320cecef96a917cca1dfb68f1f183e499ca
+        run: |
+          set -euo pipefail
+          upstream="$RUNNER_TEMP/ad-upstream-original"
+          git clone --filter=blob:none --no-checkout \
+            https://github.com/IvarK/AntimatterDimensionsSourceCode.git "$upstream"
+          git -C "$upstream" checkout --detach "$UPSTREAM_SHA"
+          test "$(git -C "$upstream" rev-parse HEAD)" = "$UPSTREAM_SHA"
+          npm ci --prefix "$upstream" --ignore-scripts
+          npm run build:release --prefix "$upstream"
+          test -s "$upstream/dist/index.html"
       - name: 执行真实浏览器冒烟测试
-        run: npx playwright test --config=.github/playwright.config.mjs
+        run: |
+          set -euo pipefail
+          upstream="$RUNNER_TEMP/ad-upstream-original"
+          python3 -m http.server 8081 --bind 127.0.0.1 --directory "$upstream/dist" \
+            >"$RUNNER_TEMP/upstream-http.log" 2>&1 &
+          upstream_pid=$!
+          trap 'kill "$upstream_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error http://127.0.0.1:8081/ >/dev/null; then
+              break
+            fi
+            test "$attempt" -lt 30 || exit 1
+            sleep 1
+          done
+          UPSTREAM_INTEROP_URL=http://127.0.0.1:8081/ \
+            npx playwright test --config=.github/playwright.config.mjs
       - name: 上传失败 Trace 和截图证据
         if: failure()
         uses: actions/upload-artifact@v7
