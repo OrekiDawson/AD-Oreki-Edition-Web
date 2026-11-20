@@ -14,6 +14,8 @@
 **自 R51 起的强制要求**：每轮涉及 Web / Android 功能变化时，必须同步评估本文件是否需要更新。
 本文件是**双端一致性事实清单**，不是待办列表——过期结论必须删改，不得堆积。
 
+> **2026-11-21 用户新增硬门禁**：Android/Web MOD 均移除 STD/IAP 商店及全部商店/广告加成；**Android 原版 3.21.0 ↔ Android MOD、Web 原版冻结基线 ↔ Web MOD** 需要分别实际验证双向导入/导出。不得删除、清零或改写原版购买历史、原始资源/进度/成就/挑战/自动化及存档结构，`SAVE COMPATIBILITY FAIL` 阻断稳定版。历史文中“不要求互通”仅指 **Android ↔ Web 的原生存档载体不必直接互读**，不能作为各自 MOD 与原版不兼容的理由；跨平台转换需要独立实测，未验证不得报 PASS。
+
 ## 0. 怎么读这张表
 
 | 字段 | 取值约定 |
@@ -36,7 +38,7 @@
 
 | 功能模块 | Web | Android | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 |
 |---|---|---|---|---|---|---|---|
-| 正式五阶段节奏 | 0～30 / 30～75 / 75～130 / 130～165 / 165～180 分钟 | 同一五阶段目标 | 无差异 | 体验目标，不是按时钟解锁 | 内容顺序合法、关键阶段有实际过程，真实通关仍须 ≤180 分钟 | Web 新档 `PASS`，174.19 分钟；Android 组合源码终局长跑 `NOT RUN / BLOCKED` | `reports/R120-01/web-pacing-evidence.md`；[Web 长期节奏目标](docs/DELIVERY_RULES.md) §1 与本节（历史运行结果只作对应跑次证据） |
+| 正式五阶段节奏 | 0～30 / 30～75 / 75～130 / 130～165 / 165～180 分钟 | 同一五阶段目标 | 无差异 | 体验目标，不是按时钟解锁 | 内容顺序合法、关键阶段有实际过程，真实通关仍须 ≤180 分钟 | Web 174.19 分钟 ENDGAME PASS，但首次 Reality 约 56.85 分钟，PACING FAIL；Android `9e4571e8` 首次 Reality 约 47.3 分钟，PACING FAIL，ENDGAME NOT RUN | `reports/R120-01/web-pacing-evidence.md`；Android `reports/R121-01/avd-evidence/kvm-final-9e4571e8/` |
 | 调度周期 | 可配置 1～60 秒，默认 10 秒 | 同一范围与默认值 | 无差异 | 预期 | 非法值安全钳制；修改后安全重排唯一调度生命周期 | Web 周期夹具 `PASS`，完整新档以默认 10 秒完成；Android 边界测试 `PASS`，组合 APK 运行 `NOT RUN` | `reports/R120-01/web-final-3000-r2-20261120/summary.json`；Android `OrekiAutomationScheduler` |
 | 自动购买器控制权 | 受管配置由调度器当前策略独占 | 同一语义 | 无差异 | 预期 | 玩家修改后下一次调度 tick 统一恢复；不覆盖非受管设置；不提前启用未解锁自动器 | Web Node 25/25、Chromium 17/17 PASS；Android AGP/契约 PASS，最终组合运行 `NOT RUN` | Web `oreki-managed-autobuyer-state.js` 测试；Android `OrekiManagedAutobuyerAuthority` 测试 |
 | Kody 审查入口 | `kody-trigger.yml`，按 Head SHA 去重 | `kody-trigger.yml`，按 Head SHA 去重 | 平台实现差异 | 预期 | 仅 OrekiDawson 同仓 main 非 Draft；已审查 Head 不重复触发；精确评论 `@kody start-review` | 四个修复 PR 均有 Kody Review；重复触发按既有 Review 跳过 | [Web #74](https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/74#pullrequestreview-5983498790)、[Web #75](https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/75#pullrequestreview-5983256832)、[Android #185](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/pull/185#pullrequestreview-5983102446)、[Android #186](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/pull/186#pullrequestreview-5983717117) |
@@ -44,6 +46,8 @@
 | Android 业务语言 | 不适用 | 新业务逻辑必须 Kotlin，不新增 Java/Smali 业务 | 平台限制 | 预期 | DEX/Smali 仅作兼容入口 | 发布前按 AGP/AVD 门禁复核 | `AGENTS.md`；Kody Rule `Android Kotlin 业务` |
 
 **边界**：Actions 成功只表示触发评论已发出；Kody 完成审查、原生 Review Threads 和真实通关时间必须分别验证。Kody 一次审查可能产生多次 Provider 调用，每日 100 次触发命令上限不等于模型调用硬上限。
+
+**独立门禁**：`GAMEPLAY LEGALITY`、`PACING`、`ENDGAME`、`POST-ENDGAME STABILITY` 分别给出 `PASS / FAIL / BLOCKED / NOT RUN`。ENDGAME PASS 不能覆盖 PACING FAIL；PACING FAIL 安全留存证据后立即停止该候选无效长跑并修复根因。
 
 ### R120-01 Web 真实五阶段取证
 
@@ -62,7 +66,7 @@
 | Pelle 解锁并进入毁灭态 | 173 分 41 秒 |
 | 首次 `isGameEnd=true` | **174 分 11 秒** |
 
-门禁：`PASS`；通关后 180 秒确认无回退；页面错误、控制台错误和冻结告警均为 0。
+门禁：`ENDGAME PASS`、`POST-ENDGAME STABILITY PASS`、`PACING FAIL`；首次 Reality 56.85 分钟早于 75 分钟边界，超出 5 分钟容差。通关后 180 秒确认无回退；页面错误、控制台错误和冻结告警均为 0。
 动态速度只在首次 Reality 后因真实停滞升档，最终为 `100000×`、6 次升档。
 完整证据见 `reports/R120-01/web-pacing-evidence.md`。
 
@@ -140,7 +144,7 @@
 
 | 功能模块 | Web 实现 | Android 实现 | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 | 负责人/后续 |
 |---|---|---|---|---|---|---|---|---|
-| 存档载体 | `localStorage["dimensionSave"]`（JSON 字符串） | `SharedPreferences` + 自定义编码（`files/player.json` 为 root 下的可读副本） | 平台限制 | 预期（不可能互通） | **不要求互通**，只要求各自幂等 | 已验证（R39 AVD：重启不重复发奖） | `environment/测试环境记录.md` | — |
+| 存档载体 | `localStorage["dimensionSave"]`（JSON 字符串） | `SharedPreferences` + 自定义编码（`files/player.json` 为 root 下的可读副本） | 平台限制 | 预期（不可能互通） | **仅原生 Android ↔ Web 存档载体不要求直接互读**；各端与同平台原版双向互通为新硬门禁（见顶部） | 已验证（R39 AVD：重启不重复发奖） | `environment/测试环境记录.md` | — |
 | 旧存档时间换算 | 无（Web 是干净新档体系） | `[4e]` 三处 ×100 + 哨兵回落；`[4g]/[4i]/[4j]/[4m]` 把最速无限、最近十次无限/永恒/现实归一化 | 平台限制 | 预期（历史存档带旧单位） | 不把旧档读成错误时间 | 待验证 | Android 构建日志 `[4e]/[4g]/[4i]/[4j]/[4m]` | R41 |
 | 重置清空范围 | 现实重置清 EC 完成记录 / 时间定理 / 时间研究 / 膨胀研究（`reality.js:651/666/673`） | 原版同源行为 | 无差异 | — | 一致 | 待验证 | FACTS §C.11 | R41 |
 
