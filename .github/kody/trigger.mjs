@@ -85,6 +85,17 @@ export function sameShanghaiQuotaDay(now, snapshotNow) {
   return shanghaiDayStart(now).getTime() === shanghaiDayStart(snapshotNow).getTime();
 }
 
+export function quotaPostWindowOpen(now, snapshotNow, marginMs = 15_000) {
+  if (!sameShanghaiQuotaDay(now, snapshotNow)) return false;
+  const dayEnd = shanghaiDayStart(now).getTime() + 24 * 60 * 60 * 1000;
+  return dayEnd - now.getTime() > marginMs;
+}
+
+export function millisecondsUntilShanghaiMidnight(now) {
+  const dayEnd = shanghaiDayStart(now).getTime() + 24 * 60 * 60 * 1000;
+  return Math.max(0, dayEnd - now.getTime());
+}
+
 export function dailyCommentsPath(repository, since) {
   return `/repos/${repository}/issues/comments?since=${encodeURIComponent(since.toISOString())}&per_page=100`;
 }
@@ -242,9 +253,24 @@ async function releaseReservation(token, identity, now) {
 }
 
 async function releaseReservationOrThrow(token, identity, now) {
-  const released = await releaseReservation(token, identity, now);
+  let released = await releaseReservation(token, identity, now);
+  if (released?.ok === false && released.reason === "reservation-not-found") {
+    console.log("Kody quota reservation not found; treating release as idempotent");
+    return released;
+  }
   if (released?.ok !== true) {
-    throw new Error("failed to release Kody quota reservation");
+    // PATCH 可能已落地但响应丢失；重读同一 identity 再释放一次可识别该情况。
+    released = await releaseReservation(token, identity, now);
+  }
+  if (released?.ok === false && released.reason === "reservation-not-found") {
+    console.log("Kody quota reservation released before retry");
+    return released;
+  }
+  if (released?.ok !== true) {
+    throw new Error(
+      `failed to release Kody quota reservation for ${identity}: ` +
+        `${released?.reason ?? "transport-or-service-error"}`,
+    );
   }
   return released;
 }
@@ -344,6 +370,11 @@ async function createCompletedTriggerCheck(
   externalId,
   commentUrl,
   token,
+  {
+    conclusion = "success",
+    title = "Kody 审查触发已发送",
+    summary = `已以 OrekiDawson 身份发送触发评论。PR #${prNumber}，Head \`${headSha}\`，评论 ${commentUrl}。Kody 审查结果仍需独立核验。`,
+  } = {},
 ) {
   await requestJson(`/repos/${repository}/check-runs`, {
     method: "POST",
@@ -353,10 +384,10 @@ async function createCompletedTriggerCheck(
       head_sha: headSha,
       external_id: externalId,
       status: "completed",
-      conclusion: "success",
+      conclusion,
       output: {
-        title: "Kody 审查触发已发送",
-        summary: `已以 OrekiDawson 身份发送触发评论。PR #${prNumber}，Head \`${headSha}\`，评论 ${commentUrl}。Kody 审查结果仍需独立核验。`,
+        title,
+        summary,
       },
     },
   });
@@ -462,8 +493,12 @@ export async function main() {
       finishSkip("head_changed_before_comment", latest, latest.head?.sha ?? "", quotaCounts);
       return;
     }
-    if (sameShanghaiQuotaDay(new Date(), quotaSnapshot.now)) {
+    if (quotaPostWindowOpen(new Date(), quotaSnapshot.now)) {
       break;
+    }
+    const untilMidnight = millisecondsUntilShanghaiMidnight(new Date());
+    if (untilMidnight > 0) {
+      await sleep(Math.ceil(untilMidnight / 1000) + 1);
     }
     await releaseReservationOrThrow(token, externalId, quotaSnapshot.now);
     if (dayAttempt === 2) {
@@ -531,7 +566,24 @@ export async function main() {
             `identity=${externalId}: ${error.message}`,
         );
         writeOutput("quota_attach_state", "failed_after_comment");
-        break;
+        await createCompletedTriggerCheck(
+          repository,
+          prNumber,
+          headSha,
+          externalId,
+          created.html_url,
+          checkToken,
+          {
+            conclusion: "neutral",
+            title: "Kody 触发已发送，但配额回填失败",
+            summary: `评论 ${created.html_url} 已发送，但配额回填三次失败。` +
+              `Check Run 使用 neutral 阻止重复评论；请人工核对 ${externalId}。`,
+          },
+        );
+        throw new Error(
+          `trigger comment posted but quota attach failed for ${externalId}; ` +
+            `comment ${created.id}`,
+        );
       }
       await sleep(attempt);
     }

@@ -10,6 +10,8 @@ import {
   dailyCommentsPath,
   findKodyReviewForHead,
   findTriggerReservation,
+  millisecondsUntilShanghaiMidnight,
+  quotaPostWindowOpen,
   sameShanghaiQuotaDay,
   shanghaiDayStart,
   sharedDailyCommentsPaths,
@@ -115,6 +117,15 @@ test("UTC+08:00 自然日边界正确", () => {
     new Date("2026-11-20T16:00:00Z"),
     new Date("2026-11-20T15:59:59Z"),
   ), false);
+  assert.equal(quotaPostWindowOpen(
+    new Date("2026-11-20T15:59:50Z"),
+    new Date("2026-11-20T15:59:40Z"),
+  ), false);
+  assert.equal(quotaPostWindowOpen(
+    new Date("2026-11-20T15:59:30Z"),
+    new Date("2026-11-20T15:59:20Z"),
+  ), true);
+  assert.equal(millisecondsUntilShanghaiMidnight(new Date("2026-11-20T15:59:50Z")), 10000);
 });
 
 function triggerComment(id, createdAt, overrides = {}) {
