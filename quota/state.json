@@ -1547,24 +1547,11 @@
       "headSha": "633695b7279d1bd88cad4bcdeecc84a9dd4b3f4f",
       "source": "automated_trigger",
       "date": "2026-11-21",
-      "status": "reserved",
-      "commentId": "",
-      "commentUrl": "",
-      "reservedAt": "2026-11-20T23:32:37.261Z",
-      "updatedAt": "2026-11-20T23:32:37.261Z"
-    },
-    {
-      "kind": "kody_start_review",
-      "identity": "kody-comment:OrekiDawson/AD-Oreki-Edition-Web#7053236680",
-      "repository": "OrekiDawson/AD-Oreki-Edition-Web",
-      "pr": 105,
+      "status": "posted",
       "commentId": "7053236680",
       "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/105#issuecomment-7053236680",
-      "source": "observed_comment",
-      "date": "2026-11-21",
-      "status": "posted",
-      "createdAt": "2026-11-20T23:32:39.000Z",
-      "updatedAt": "2026-11-20T23:32:40.841Z"
+      "reservedAt": "2026-11-20T23:32:37.261Z",
+      "updatedAt": "2026-11-20T23:32:37.261Z"
     },
     {
       "kind": "kody_start_review",
