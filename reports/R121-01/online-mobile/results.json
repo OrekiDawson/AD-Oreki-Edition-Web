@@ -1,0 +1,62 @@
+{
+  "基础地址": "https://oreki.net/",
+  "开始时间": "2026-11-20T10:33:35.125Z",
+  "页面错误": [],
+  "控制台错误": [],
+  "网络失败": [],
+  "HTTP错误": [],
+  "导航取消请求": [
+    {
+      "url": "https://oreki.net/public/images/stars-bg.webm",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://oreki.net/public/stylesheets/XiaWuWenKai-Medium.ttf",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://oreki.net/public/stylesheets/XiaWuWenKai-Light.ttf",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://oreki.net/public/images/stars-bg.webm",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "检查": {
+    "入口": {
+      "状态": "PASS",
+      "http状态": 200,
+      "最终地址": "https://oreki.net/"
+    },
+    "新档默认速度": {
+      "状态": "PASS",
+      "值": {
+        "factor": 3000,
+        "stored": null,
+        "dynamic": true,
+        "label": "自动（当前 3000×）"
+      }
+    },
+    "新档边界": {
+      "状态": "PASS",
+      "值": {
+        "realities": 0,
+        "isGameEnd": false,
+        "doomed": false,
+        "tutorialActive": true
+      }
+    },
+    "合法倍率持久化": {
+      "状态": "PASS",
+      "值": {
+        "factor": 10000,
+        "stored": "10000",
+        "dynamic": true,
+        "label": "自动（当前 10000×）"
+      }
+    }
+  },
+  "结论": "PASS",
+  "结束时间": "2026-11-20T10:34:19.398Z"
+}
