@@ -282,15 +282,28 @@ export function attachKodyCommand(records, {
   createdAt = "",
   now = new Date().toISOString(),
 }) {
+  if (commentId == null || !String(commentId).trim()) {
+    throw new Error("Kody trigger comment id is missing");
+  }
+  const duplicateComment = String(commentId);
+  const alreadyPosted = records.findLastIndex(record =>
+    isKodyRecord(record) &&
+    record.identity === identity &&
+    record.status === "posted" &&
+    String(record.commentId ?? "") === duplicateComment);
+  if (alreadyPosted >= 0) {
+    return {
+      ok: true,
+      record: records[alreadyPosted],
+      records,
+      counts: kodyQuotaCounts(records, records[alreadyPosted].date),
+    };
+  }
   const index = records.findLastIndex(record =>
     isKodyRecord(record) &&
     record.identity === identity &&
     record.status === "reserved");
   if (index < 0) throw new Error(`active Kody quota reservation not found: ${identity}`);
-  if (commentId == null || !String(commentId).trim()) {
-    throw new Error("Kody trigger comment id is missing");
-  }
-  const duplicateComment = String(commentId);
   const current = records[index];
   const parsedCreatedAt = new Date(createdAt);
   const commentDate = Number.isFinite(parsedCreatedAt.getTime())

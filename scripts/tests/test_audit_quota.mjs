@@ -138,6 +138,14 @@ const kodyAttached = attachKodyCommand(kodyFirst.records, {
 });
 assert.equal(kodyAttached.record.status, "posted");
 assert.equal(kodyAttached.counts.used, 2);
+const kodyAttachedAgain = attachKodyCommand(kodyAttached.records, {
+  identity: "trigger-a",
+  commentId: "2",
+  commentUrl: "https://example.test/comment/2",
+});
+assert.equal(kodyAttachedAgain.ok, true);
+assert.equal(kodyAttachedAgain.counts.used, 2);
+assert.equal(kodyAttachedAgain.records.length, kodyAttached.records.length);
 
 const observedDuringAttach = [
   ...kodyFirst.records,
