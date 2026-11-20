@@ -15,6 +15,17 @@
 - 用户已于 2026-11-20 明确恢复 Kody 审查；GitHub Actions 负责必要触发，Kodus 云端 `automatedReviewActive=false`、`reviewCadence.type=auto_pause`，避免平台自动审查与触发器重复。审查只允许 Balanced，严禁 Heavy。
 - `codex-deepseek-review.yml` 保留为回滚资产，`OREKI_AUDIT_ENABLED=false`；未经用户明确恢复，不调用 DeepSeek 或发布自制 Review。
 
+### 旧项目级规则迁移映射
+
+项目级 Kody Rules 已清空，原有约束没有丢弃：
+
+- Android「真实进度/阶段门禁与调度器权威」→ `AGENTS.md` §4：阶段按真实状态解锁，禁止伪造资源、成就或结算；自动购买器的受管配置以合法阶段策略为权威，并按 `1～60` 秒、缺省 `10` 秒调度恢复。
+- Android「Kotlin 业务实现」→ `AGENTS.md` §4：新增或修改游戏业务只能使用 Kotlin，原版 DEX/Smali 仅作为已核实 ABI/兼容入口。
+- Web「真实进度/阶段门禁与调度器权威」→ `AGENTS.md` §4：禁止越过真实结算解锁或伪造状态；受调度器管理的自动购买器配置按合法阶段策略在下一 tick 校正。
+- 跨仓审查行为 → Kodus Global Rule `6b9b0794-457a-427c-8a07-ff348a8574ce`：读取仓库 `AGENTS.md`、按实际 Diff 分级、去重复审、优先真实缺陷并禁止 Heavy。
+
+因此，Repository/Directory Rules 为空不表示削减业务覆盖；业务执行规则由仓库 `AGENTS.md` 提供，通用审查方法由 Global Rule 提供。
+
 ## PR 审查效率基线（2026-11-20）
 
 - A 类（文档/非行为）：快速检查事实、链接、版权、规范、敏感信息和明显错误，不执行无关业务扫描、构建或游戏长跑。
