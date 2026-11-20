@@ -2,10 +2,9 @@
 
 ## R121-01 当前状态（2026-11-20，优先于下方历史记录）
 
-- **2026-11-21 最新用户指令：Kody 付费审查暂停。** Android/Web 触发器均改为
-  `disabled_manually`，禁止发送手动或自动 `@kody start-review`，后续验收使用
-  CI、真实运行与非 Kody 的项目内审查能力。本节以下 Kody 配额与恢复配置保留为
-  未来再次授权时的回滚/复用依据，当前不生效、不得触发。
+- **2026-11-21 最新用户指令：Kody 恢复可用。** 先前的暂停事件只作为历史审计记录，
+  Android/Web 触发器恢复为启用状态。仍只允许 Balanced、严禁 Heavy，并继续遵守
+  Android/Web 共享 100 次、按原始评论唯一 ID 去重和同 Head 最少必要复审规则。
 - GitHub Actions 的 `kody-trigger.yml` 只负责资格判断、5 分钟稳定窗口、预算、同 Head SHA 去重和精确评论 `@kody start-review`；真实审查由 Kodus GitHub App 完成。
 - 仅 OrekiDawson 同仓、`main`、非 Draft PR 自动进入；Fork、其他用户、Bot 跳过。触发 Job 固定检出任信 `main`，PAT 发送评论前核验 `/user` 身份。
 - `automatedReviewActive=false`、`reviewCadence.type=auto_pause`、`runOnDraft=false`；不新增自动触发器，不批量重审历史 PR。
@@ -26,10 +25,10 @@
 这些值保留真实阻塞能力，关闭 PR 摘要生成和自动批准。规则内容另见 2026-11-20 读取的 [Global Rule「Oreki 全局审查基线」](https://app.kodus.io/settings/code-review/global/kody-rules/6b9b0794-457a-427c-8a07-ff348a8574ce?teamId=577e813f-b16f-49f6-9999-7c7b288b8e84)（ID `6b9b0794-457a-427c-8a07-ff348a8574ce`），用于核对审查分级与禁止 Heavy 等基线内容。
 - 实际审查运行模型为 `deepseek-flash`；该结论来自 2026-11-20 的 [Kodus Token Usage](https://app.kodus.io/usage/tokens) 动态用量记录，不是固定配置证明。CLI 未提供可核对的 Thinking 档位字段，不为该字段作未经证据支持的声明。
 - 第 7 行的 `automatedReviewActive`、`reviewCadence`、`runOnDraft` 已于同日用 `kodus config remote show OrekiDawson/AD-Oreki-Edition-Android`、`...-Web` 和 `...-Wiki` 逐库读取。第 8 行的 Repository/Directory Rules 另用 `kodus rules view --json` 按三个 repository ID 核验，均返回 `[]`；Global 设置页不能单独证明这些仓库级值。
-- Android 的自动触发历史实证为 `pull_request_target` 事件 [Run 44767526027](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/actions/runs/44767526027)：PR #206，Head `1d0b951324220c4923f46315f72634c055c5e2da`。该记录只证明恢复期链路曾运行；当前工作流已由用户指令暂停为 `disabled_manually`。未来重新授权时须重新读取云端设置、工作流启停状态和共享配额状态，不得把历史运行当作当前可触发证据。
+- Android 的自动触发实证为 `pull_request_target` 事件 [Run 44767526027](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/actions/runs/44767526027)：PR #206，Head `1d0b951324220c4923f46315f72634c055c5e2da`。该链路在最新恢复授权后重新启用；每次启用或配置变化仍须回读云端设置、工作流状态和共享配额，不能只引用历史 Run。
 - Android/Web 两仓共用每个 UTC+8 自然日的 100 次全局计数池，不设仓库保留额度或单仓硬上限；80 次预警，100 次拒绝新增主动请求。仅按 GitHub 原始评论唯一 ID 统计有效 `@kody start-review` 指令，Webhook 重试不重复计数；回复、讨论、修复提交、Kody 回复和 Oreki-Audit 自有审查不计数。同一 PR 再次主动发送属于新请求。统计展示全局已用、全局剩余和两端实际用量。
 - 预占与扣减复用 Web 协调分支上的共享 CAS 状态，并发请求基于同一父版本提交，只有一个能成功且冲突方必须重读；支付/统计状态不换算成 Provider 模型调用硬上限。
-- Kody 付费审查当前暂停；未来获准恢复时，GitHub Actions 才负责必要触发，并继续保持 `automatedReviewActive=false`、`reviewCadence.type=auto_pause`，避免平台自动审查与触发器重复。任何恢复场景都只允许 Balanced，严禁 Heavy。
+- Kody 已恢复；GitHub Actions 负责必要触发，并保持 `automatedReviewActive=false`、`reviewCadence.type=auto_pause`，避免平台自动审查与触发器重复。所有场景都只允许 Balanced，严禁 Heavy。
 - `codex-deepseek-review.yml` 保留为回滚资产，`OREKI_AUDIT_ENABLED=false`；未经用户明确恢复，不调用 DeepSeek 或发布自制 Review。
 
 ### 旧项目级规则迁移映射
