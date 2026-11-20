@@ -227,7 +227,7 @@ const notClaimed = reserveKodyPure([...occupiedComment.records, ...staleReservat
   kodyCandidate("stale-head", kodyAndroid), {
   date: kodyDate,
   now: "2026-11-20T00:07:30Z",
-  evidence: [{ ...kodyEvidence(kodyAndroid, [5003])[0], createdAt: "2026-11-20T00:07:20Z" }],
+  evidence: [{ ...kodyEvidence(kodyAndroid, [5003])[0], createdAt: "2026-11-20T00:07:26Z" }],
 });
 assert.equal(notClaimed.reason, "identity-in-progress");
 assert.equal(notClaimed.counts.used, 2);
