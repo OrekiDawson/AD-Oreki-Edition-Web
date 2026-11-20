@@ -33,7 +33,6 @@ import RaTab from "./celestial-ra/RaTab.js";
 import RealityUpgradesTab from "./reality-upgrades/RealityUpgradesTab.js";
 import ReplicantiTab from "./replicanti/ReplicantiTab.js";
 import SecretAchievementTab from "./secret-achievements/SecretAchievementTab.js";
-import ShopTab from "./shop/ShopTab.js";
 import SpeedrunMilestonesTab from "./speedrun-milestones/SpeedrunMilestonesTab.js";
 import StatisticsTab from "./statistics/StatisticsTab.js";
 import TeresaTab from "./celestial-teresa/TeresaTab.js";
@@ -83,7 +82,6 @@ const TabComponents = {
   BlackHoleTab,
   AlchemyTab,
   CelestialNavigationTab,
-  ShopTab,
   MultiplierBreakdownTab
 };
 

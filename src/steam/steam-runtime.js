@@ -1,13 +1,7 @@
 /* eslint-disable no-console */
 import { RichPresenceInfo } from "../core/discord-parser.js";
 
-import {
-  hasPendingPurchaseConfirmations,
-  loginPlayFabWithSteam,
-  purchaseIAP,
-  purchaseShopItem,
-  validatePurchases
-} from "./steam-purchases.js";
+import { loginPlayFabWithSteam } from "./steam-purchases.js";
 
 import * as Greenworks from "./bindings/greenworks.js";
 
@@ -36,12 +30,6 @@ export const SteamRuntime = {
     loginFirebase(steamId);
 
     achievementNames = Greenworks.getAchievementNames();
-
-    Greenworks.on("micro-txn-authorization-response", (data, ordered, orderState) => {
-      if (orderState === true) {
-        validatePurchases();
-      }
-    });
 
     if (!MAC) {
       initializeDiscord();
@@ -76,45 +64,6 @@ export const SteamRuntime = {
     }
 
     Greenworks.activateAchievement(name);
-  },
-
-  async purchaseIAP(std) {
-    if (!this.isActive) {
-      return;
-    }
-
-    await purchaseIAP(std);
-  },
-
-  validatePurchases() {
-    if (!this.isActive) {
-      return;
-    }
-
-    validatePurchases();
-  },
-
-  async purchaseShopItem(key, cost, cosmeticId) {
-    if (!this.isActive) {
-      GameUI.notify.error("Shop purchases are not available.");
-      return false;
-    }
-
-    try {
-      await purchaseShopItem(key, cost, cosmeticId);
-      return true;
-    } catch (e) {
-      GameUI.notify.error(e.errorMessage ?? e);
-      return false;
-    }
-  },
-
-  get hasPendingPurchaseConfirmations() {
-    if (!this.isActive) {
-      return false;
-    }
-
-    return hasPendingPurchaseConfirmations();
   }
 };
 

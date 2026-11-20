@@ -483,7 +483,9 @@ export const tabs = [
     name: "商店",
     newUIClass: "shop",
     hideAt: 1.5,
-    condition: () => Cloud.isAvailable,
+    // Retained only so old save tab bits keep their original IDs. The store
+    // never unlocks and has no registered page component in Oreki Edition.
+    condition: () => false,
     id: 10,
     hidable: true,
     subtabs: [
@@ -491,7 +493,7 @@ export const tabs = [
         key: "shop",
         name: "商店",
         symbol: "$",
-        component: "ShopTab",
+        component: null,
         id: 0,
         hidable: true
       }

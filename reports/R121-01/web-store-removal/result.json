@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-11-20T21:51:30.338Z",
+  "state": {
+    "url": "http://127.0.0.1:8080/",
+    "title": "AD: Oreki Edition — 反物质维度",
+    "viewport": {
+      "width": 412,
+      "height": 915
+    },
+    "shopUnlocked": false,
+    "shopNavItems": 0,
+    "shopMultipliers": [
+      {
+        "key": "dimPurchases",
+        "current": 1
+      },
+      {
+        "key": "allDimPurchases",
+        "current": 1
+      },
+      {
+        "key": "IPPurchases",
+        "current": 1
+      },
+      {
+        "key": "replicantiPurchases",
+        "current": 1
+      },
+      {
+        "key": "EPPurchases",
+        "current": 1
+      },
+      {
+        "key": "dilatedTimePurchases",
+        "current": 1
+      },
+      {
+        "key": "RMPurchases",
+        "current": 1
+      },
+      {
+        "key": "smallTimeSkip",
+        "current": 1
+      },
+      {
+        "key": "bigTimeSkip",
+        "current": 1
+      },
+      {
+        "key": "singleCosmeticSet",
+        "current": 1
+      },
+      {
+        "key": "allCosmeticSets",
+        "current": 1
+      }
+    ],
+    "iapEnabled": false,
+    "paymentAPIs": {
+      "modal": false,
+      "respec": false
+    }
+  },
+  "pageErrors": [],
+  "paymentRequests": []
+}

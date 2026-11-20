@@ -135,6 +135,7 @@
 
 | 功能模块 | Web 实现 | Android 实现 | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 | 负责人/后续 |
 |---|---|---|---|---|---|---|---|---|
+| STD/IAP 商店（R121-01） | 已退役：无入口、无支付调用；旧 IAP 字段仅兼容读取，所有商店倍率固定 ×1，购买和时间跳跃 fail-closed | Android 商店移除为独立主线任务，未完成前不能引用本行冒充 Android 已完成 | 行为变更 | 预期 | Web 不得重新引入商店或商店增益；与原版 Web 存档双向互通 | **PASS**（手机 Chromium + 冻结上游原版往返） | `.github/tests/web-store-removal.spec.mjs`、`savestates/original/new-save.txt` | R121-01 |
 | 广告加成（十乘区） | 无此概念 | `t5.d/b/c` 三处改写：跳过时间与购买门槛（保留 Doomed）、十个乘区取真实数值、兜底不再抛 `NoSuchElementException` | 平台限制 | 预期（Android 有广告体系） | 不影响核心数值平衡 | 待验证 | Android 构建日志 `[5] Ad Bonus` | — |
 | 商店金币读取下限 | 无此概念 | `[4d]` `getStds` 读取边界钳制 ≥ 10000 | 平台限制 | 预期 | — | 待验证 | 同上 | — |
 | 时间研究购买（批量） | `TimeTheoremPurchaseType.*.purchase(true)` | 原版对应入口；R40B 补了 `purchaseUntil` 路径 | 逻辑 | 无差异 | 同成本、同前置 | 待验证 | — | R41 |

@@ -1,6 +1,5 @@
-import { STEAM } from "../../env.js";
-
-// NOTE: IF ANY COSTS ARE CHANGED HERE, THEY ALSO NEED TO BE CHANGED ON THE BACKEND TOO
+// Compatibility keys only. The store UI and purchase paths are removed; every
+// gameplay multiplier is therefore forced to its neutral value in core/shop.js.
 export const shopPurchases = {
   dimPurchases: {
     key: "dimPurchases",
@@ -71,32 +70,21 @@ export const shopPurchases = {
     cost: 10,
     description: "获得相当于 6 小时的离线产量。（自动购买器不会全速运行）",
     instantPurchase: true,
-    onPurchase: () => {
-      shop.purchaseTimeSkip();
-    }
+    onPurchase: () => false
   },
   bigTimeSkip: {
     key: "bigTimeSkip",
     cost: 20,
     description: "获得相当于 24 小时的离线产量。（自动购买器不会全速运行）",
     instantPurchase: true,
-    onPurchase: () => {
-      shop.purchaseLongerTimeSkip();
-    }
+    onPurchase: () => false
   },
   singleCosmeticSet: {
     key: "singleCosmeticSet",
     cost: 20,
     description: "解锁一套你选择的符文外观套装",
     instantPurchase: true,
-    onPurchase: () => {
-      // The actual unlocks are handled in the ShopPurchaseData object, so we just show notifications here
-      GameUI.notify.info(
-        `你已购买“${GlyphAppearanceHandler.chosenFromModal.name}”符文外观套装！`,
-        10000);
-      GlyphAppearanceHandler.chosenFromModal = null;
-      GlyphAppearanceHandler.applyNotification();
-    },
+    onPurchase: () => false,
     isUnlocked: () => PlayerProgress.realityUnlocked(),
     lockText: "现实",
   },
@@ -114,16 +102,8 @@ export const shopPurchases = {
     },
     description: "一次性解锁其余所有符文外观套装",
     instantPurchase: true,
-    onPurchase: () => {
-      // The actual unlocks are handled in the ShopPurchaseData object, so we just show notifications here
-      GameUI.notify.info(`你已解锁所有符文外观套装！`, 15000);
-      GlyphAppearanceHandler.applyNotification();
-    },
+    onPurchase: () => false,
     isUnlocked: () => PlayerProgress.realityUnlocked(),
     lockText: "现实",
   },
 };
-
-if (STEAM) {
-  delete shopPurchases.allCosmeticSets;
-}

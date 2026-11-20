@@ -24,8 +24,6 @@ import { SpeedrunMilestones } from "./core/speedrun.js";
 import { Cloud } from "./core/storage/index.js";
 import { supportedBrowsers } from "./supported-browsers.js";
 
-import Payments from "./core/payments.js";
-
 if (GlobalErrorHandler.handled) {
   throw new Error("Initialization failed");
 }
@@ -1774,7 +1772,6 @@ export function init() {
   // [R103-07] 恢复上次页签同样过阶段门禁：lastOpenTab 指向未解锁/被隐藏页签时退回维度页，
   // 避免手改或损坏的存档在未解锁阶段直达永恒/时间研究等内容。
   (Tabs.findRestorableTab(player.options.lastOpenTab) ?? Tab.dimensions).show(true);
-  Payments.init();
 }
 
 window.tweenTime = 0;

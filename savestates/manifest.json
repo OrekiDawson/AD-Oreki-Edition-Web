@@ -3,10 +3,11 @@
   "kind": "web-savestates",
   "note": "与 Android 同源；当前共享 Android 侧已验证样本，不重复存储",
   "shared_with": "../../android/AD_Oreki_Edition_Android/savestates/",
-  "samples": [],
+  "samples": [
+    "original/new-save.txt",
+    "regression/legal-eternity.txt"
+  ],
   "pending": [
-    "original/new-save.json",
-    "mod/after-bigcrunch.json",
-    "regression/legal-eternity.json"
+    "mod/after-bigcrunch.json"
   ]
 }
