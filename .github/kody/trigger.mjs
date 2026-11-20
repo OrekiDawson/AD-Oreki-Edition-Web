@@ -241,6 +241,14 @@ async function releaseReservation(token, identity, now) {
   }
 }
 
+async function releaseReservationOrThrow(token, identity, now) {
+  const released = await releaseReservation(token, identity, now);
+  if (released?.ok !== true) {
+    throw new Error("failed to release Kody quota reservation");
+  }
+  return released;
+}
+
 function emitQuotaEvidence(evidence) {
   for (const item of evidence) {
     console.log(
@@ -445,19 +453,19 @@ export async function main() {
       throw error;
     }
     if (latest.state !== "open" || latest.merged_at != null) {
-      await releaseReservation(token, externalId, quotaSnapshot.now);
+      await releaseReservationOrThrow(token, externalId, quotaSnapshot.now);
       finishSkip("pr_not_open", latest, latest.head?.sha ?? "", quotaCounts);
       return;
     }
     if (latest.head?.sha !== headSha || latest.draft === true) {
-      await releaseReservation(token, externalId, quotaSnapshot.now);
+      await releaseReservationOrThrow(token, externalId, quotaSnapshot.now);
       finishSkip("head_changed_before_comment", latest, latest.head?.sha ?? "", quotaCounts);
       return;
     }
     if (sameShanghaiQuotaDay(new Date(), quotaSnapshot.now)) {
       break;
     }
-    await releaseReservation(token, externalId, quotaSnapshot.now);
+    await releaseReservationOrThrow(token, externalId, quotaSnapshot.now);
     if (dayAttempt === 2) {
       throw new Error("UTC+8 quota day changed repeatedly before trigger POST");
     }
