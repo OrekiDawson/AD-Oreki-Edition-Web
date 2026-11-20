@@ -259,7 +259,9 @@ async function requestJson(path, { method = "GET", token, body } = {}) {
   });
   if (!response.ok) {
     const message = (await response.text()).slice(0, 500);
-    throw new Error(`GitHub API ${method} ${path} failed: ${response.status} ${message}`);
+    const error = new Error(`GitHub API ${method} ${path} failed: ${response.status} ${message}`);
+    error.status = response.status;
+    throw error;
   }
   return response;
 }
@@ -281,6 +283,28 @@ async function listAllPages(path, token, maxPages = 10) {
 async function getPullRequest(repository, number, token) {
   const response = await requestJson(`/repos/${repository}/pulls/${number}`, { token });
   return response.json();
+}
+
+async function loadStableSharedQuota(repository, token) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const startedAt = new Date();
+    const since = shanghaiDayStart(startedAt);
+    const commentGroups = [];
+    for (const source of sharedDailyCommentsPaths(repository, since)) {
+      commentGroups.push({
+        repository: source.repository,
+        comments: await listAllPages(source.path, token),
+      });
+    }
+    const finishedAt = new Date();
+    if (shanghaiDayStart(finishedAt).getTime() === since.getTime()) {
+      return {
+        evidence: sharedTriggerQuotaEvidence(commentGroups, since),
+        now: finishedAt,
+      };
+    }
+  }
+  throw new Error("UTC+8 quota day changed repeatedly while loading comments; retry later");
 }
 
 async function findTriggerCheck(repository, headSha, externalId, token) {
@@ -378,17 +402,9 @@ export async function main() {
     return;
   }
 
-  const since = shanghaiDayStart(new Date());
-  const commentGroups = [];
-  for (const source of sharedDailyCommentsPaths(repository, since)) {
-    commentGroups.push({
-      repository: source.repository,
-      comments: await listAllPages(source.path, token),
-    });
-  }
-  const quotaEvidence = sharedTriggerQuotaEvidence(commentGroups, since);
-  emitQuotaEvidence(quotaEvidence);
-  writeOutput("quota_evidence", JSON.stringify(quotaEvidence));
+  const quotaSnapshot = await loadStableSharedQuota(repository, token);
+  emitQuotaEvidence(quotaSnapshot.evidence);
+  writeOutput("quota_evidence", JSON.stringify(quotaSnapshot.evidence));
   const reservation = await reserveKodyQuota(
     token,
     {
@@ -397,7 +413,8 @@ export async function main() {
       pr: prNumber,
       headSha,
     },
-    quotaEvidence,
+    quotaSnapshot.evidence,
+    { now: quotaSnapshot.now },
   );
   const quotaCounts = reservation.counts;
   writeOutput("quota_warning", quotaCounts.warning);
@@ -409,7 +426,13 @@ export async function main() {
     return;
   }
 
-  const latest = await getPullRequest(repository, prNumber, token);
+  let latest;
+  try {
+    latest = await getPullRequest(repository, prNumber, token);
+  } catch (error) {
+    await releaseReservation(token, externalId);
+    throw error;
+  }
   if (latest.state !== "open" || latest.merged_at != null) {
     await releaseReservation(token, externalId);
     finishSkip("pr_not_open", latest, latest.head?.sha ?? "", quotaCounts);
@@ -421,14 +444,23 @@ export async function main() {
     return;
   }
 
-  const created = await (await requestJson(
-    `/repos/${repository}/issues/${prNumber}/comments`,
-    {
-      method: "POST",
-      token,
-      body: { body: TRIGGER_BODY },
-    },
-  )).json();
+  let created;
+  try {
+    created = await (await requestJson(
+      `/repos/${repository}/issues/${prNumber}/comments`,
+      {
+        method: "POST",
+        token,
+        body: { body: TRIGGER_BODY },
+      },
+    )).json();
+  } catch (error) {
+    // 4xx 明确表示请求被拒；5xx/网络断开的结果不确定，保守保留预占并等待人工核对。
+    if (Number(error.status) >= 400 && Number(error.status) < 500) {
+      await releaseReservation(token, externalId);
+    }
+    throw error;
+  }
   const attached = await attachKodyQuota(token, externalId, {
     commentId: created.id,
     commentUrl: created.html_url,

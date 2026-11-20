@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import {
   KODY_DAILY_LIMIT,
+  KODY_KIND,
   KODY_WARNING_AT,
   LIMIT,
   applyCas,
@@ -104,7 +105,7 @@ const kodyEvidence = (repository, ids) => ids.map(id => ({
   repository,
   commentId: String(id),
   url: `https://example.test/${repository}/${id}`,
-  createdAt: `2026-11-20T16:00:${String(id % 60).padStart(2, "0")}Z`,
+  createdAt: `2026-11-20T00:00:${String(id % 60).padStart(2, "0")}Z`,
 }));
 const kodyCandidate = (identity, repository) => ({
   identity,
@@ -136,6 +137,32 @@ const kodyAttached = attachKodyCommand(kodyFirst.records, {
 });
 assert.equal(kodyAttached.record.status, "posted");
 assert.equal(kodyAttached.counts.used, 2);
+
+const observedDuringAttach = [
+  ...kodyFirst.records,
+  {
+    kind: KODY_KIND,
+    identity: `kody-comment:${kodyAndroid}#2`,
+    repository: kodyAndroid,
+    commentId: "2",
+    source: "observed_comment",
+    date: kodyDate,
+    status: "posted",
+  },
+];
+const mergedAttach = attachKodyCommand(observedDuringAttach, {
+  identity: "trigger-a",
+  commentId: "2",
+  now: "2026-11-20T00:03:00Z",
+});
+assert.equal(mergedAttach.counts.used, 2);
+assert.equal(mergedAttach.records.filter(record =>
+  record.kind === KODY_KIND && record.commentId === "2").length, 1);
+const wrongDayEvidence = reserveKodyPure([], kodyCandidate("wrong-day", kodyWeb), {
+  date: "2026-11-21",
+  evidence: kodyEvidence(kodyWeb, [4000]),
+});
+assert.equal(wrongDayEvidence.counts.used, 1);
 
 const kodyDuplicate = reserveKodyPure(kodyAttached.records, kodyCandidate("trigger-b", kodyWeb), {
   date: kodyDate,

@@ -144,6 +144,11 @@ function importKodyEvidence(records, evidence, date, now) {
     if (!repository || !commentId) {
       throw new Error("Kody quota evidence requires repository and unique comment id");
     }
+    const createdAt = new Date(String(item?.createdAt ?? ""));
+    if (!Number.isFinite(createdAt.getTime())) {
+      throw new Error("Kody quota evidence requires a valid creation time");
+    }
+    if (shanghaiDate(createdAt) !== date) continue;
     if (seen.has(commentId)) continue;
     seen.add(commentId);
     output.push({
@@ -155,7 +160,7 @@ function importKodyEvidence(records, evidence, date, now) {
       source: "observed_comment",
       date,
       status: "posted",
-      createdAt: String(item?.createdAt ?? now),
+      createdAt: createdAt.toISOString(),
       updatedAt: now,
     });
   }
@@ -239,19 +244,30 @@ export function attachKodyCommand(records, {
   if (commentId == null || !String(commentId).trim()) {
     throw new Error("Kody trigger comment id is missing");
   }
-  const output = [...records];
-  output[index] = {
-    ...output[index],
+  const duplicateComment = String(commentId);
+  const current = records[index];
+  const output = records.filter((record, cursor) =>
+    cursor === index ||
+    !(isKodyRecord(record) &&
+      record.date === current.date &&
+      String(record.commentId ?? "") === duplicateComment));
+  const targetIndex = output.findLastIndex(record =>
+    isKodyRecord(record) &&
+    record.identity === identity &&
+    record.status === "reserved");
+  if (targetIndex < 0) throw new Error(`active Kody quota reservation not found: ${identity}`);
+  output[targetIndex] = {
+    ...output[targetIndex],
     status: "posted",
-    commentId: String(commentId),
+    commentId: duplicateComment,
     commentUrl: String(commentUrl),
     updatedAt: now,
   };
   return {
     ok: true,
-    record: output[index],
+    record: output[targetIndex],
     records: output,
-    counts: kodyQuotaCounts(output, output[index].date),
+    counts: kodyQuotaCounts(output, output[targetIndex].date),
   };
 }
 
