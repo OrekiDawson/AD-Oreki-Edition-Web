@@ -1,9 +1,11 @@
 import { RebuyableMechanicState } from "./game-mechanics/index.js";
-import { SteamRuntime } from "../steam/index.js";
-
-import Payments from "./payments.js";
 
 export const shop = {};
+
+// The STD/IAP store is retired for Oreki Edition.  Keep this compatibility
+// surface so old saves can still be read, but never let purchase history or
+// stale IAP flags affect gameplay.
+const NO_SHOP_EFFECT = 1;
 
 export const ShopPurchaseData = {
   totalSTD: 0,
@@ -17,7 +19,7 @@ export const ShopPurchaseData = {
   },
 
   get isIAPEnabled() {
-    return Cloud.loggedIn && this.availableSTD >= 0 && player.IAP.enabled;
+    return false;
   },
 
   // We also allow for respecs if it's been at least 3 days since the last one
@@ -27,7 +29,7 @@ export const ShopPurchaseData = {
   },
 
   get canRespec() {
-    return this.respecAvailable || this.timeUntilRespec.totalDays <= 0;
+    return false;
   },
 
   updateLocalSTD(newData) {
@@ -38,7 +40,6 @@ export const ShopPurchaseData = {
     this.unlockedCosmetics = [...(newData.unlockedCosmetics ?? [])];
     for (const key of Object.keys(GameDatabase.shopPurchases)) this[key] = newData[key] ?? 0;
     if (this.allCosmeticSets > 0) this.unlockedCosmetics = Object.keys(GameDatabase.reality.glyphCosmeticSets);
-    if (ShopPurchaseData.isIAPEnabled) Speedrun.setSTDUse(true);
     GameStorage.save();
   },
 
@@ -50,57 +51,15 @@ export const ShopPurchaseData = {
     for (const key of Object.keys(GameDatabase.shopPurchases)) this[key] = 0;
   },
 
-  // Reads STD props from the cloud and sets local cached values with the result
-  async syncSTD(showNotification = true, fetchedData = undefined) {
-    if (!Cloud.loggedIn) return;
-    let newSTDData;
-    if (fetchedData) {
-      newSTDData = fetchedData;
-    } else {
-      try {
-        const statusRes = await fetch(`${STD_BACKEND_URL}/STDData?user=${Cloud.user.id}`);
-        newSTDData = await statusRes.json();
-      } catch (e) {
-        GameUI.notify.error("Could not sync STD purchases!", 10000);
-        return;
-      }
-    }
-    if (showNotification && newSTDData.totalSTD > 0) GameUI.notify.info("STD purchases successfully loaded!", 10000);
-    this.updateLocalSTD(newSTDData);
+  // Legacy entry point retained for Steam login code. Store effects remain off.
+  async syncSTD() {
+    return;
   },
 
-  respecRequest() {
-    if (player.options.confirmations.respecIAP) {
-      Modal.respecIAP.show();
-    } else {
-      this.respecAll();
-    }
-  },
+  respecRequest() {},
 
   async respecAll() {
-    if (!this.canRespec) {
-      // This case only happens if the player is cheating and using the console to make the game think it has a respec
-      // when on the backend they don't. Nevertheless, responsive UI rarely hurts
-      GameUI.notify.error("You do not have a respec available", 10000);
-      return;
-    }
-    let res;
-    try {
-      res = await fetch(`${STD_BACKEND_URL}/respec`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ user: Cloud.user.id })
-      });
-    } catch (e) {
-      GameUI.notify.error("Unable to respec STD purchases!", 10000);
-      return;
-    }
-    const stdData = await res.json();
-    if (stdData.success) GameUI.notify.info("STD respec successful!", 10000);
-    else GameUI.notify.error("No purchases to respec!", 10000);
-    this.updateLocalSTD(stdData.data);
+    return false;
   },
 };
 
@@ -150,24 +109,19 @@ class ShopPurchaseState extends RebuyableMechanicState {
   }
 
   get currentMult() {
-    if (!this.shouldDisplayMult) return "";
-    return this.config.multiplier(ShopPurchaseData.isIAPEnabled ? this.purchases : 0);
+    return NO_SHOP_EFFECT;
   }
 
   get nextMult() {
-    if (!this.shouldDisplayMult) return "";
-    return this.config.multiplier(ShopPurchaseData.isIAPEnabled ? this.purchases + 1 : 0);
+    return NO_SHOP_EFFECT;
   }
 
-  // We want to still display the correct value in the button, so we need separate getters for it
   get currentMultForDisplay() {
-    if (!this.shouldDisplayMult) return "";
-    return this.config.multiplier(this.purchases);
+    return NO_SHOP_EFFECT;
   }
 
   get nextMultForDisplay() {
-    if (!this.shouldDisplayMult) return "";
-    return this.config.multiplier(this.purchases + 1);
+    return NO_SHOP_EFFECT;
   }
 
   formatEffect(effect) {
@@ -175,24 +129,7 @@ class ShopPurchaseState extends RebuyableMechanicState {
   }
 
   async purchase() {
-    if (!this.canBeBought) return false;
-    if (GameEnd.creditsEverClosed) return false;
-    if (this.config.instantPurchase && ui.$viewModel.modal.progressBar) return false;
-
-    const cosmeticId = this.config.key === "singleCosmeticSet"
-      ? GlyphAppearanceHandler.chosenFromModal?.id
-      : undefined;
-
-    // Contact the purchase provider to verify the purchase
-    const success = SteamRuntime.isActive
-      ? await SteamRuntime.purchaseShopItem(this.config.key, this.cost, cosmeticId)
-      : await Payments.buyUpgrade(this.config.key, cosmeticId);
-    if (!success) return false;
-
-    if (player.IAP.enabled) Speedrun.setSTDUse(true);
-    if (this.config.instantPurchase) this.config.onPurchase();
-    GameUI.update();
-    return true;
+    return false;
   }
 }
 
@@ -202,11 +139,9 @@ export const ShopPurchase = mapGameDataToObject(
 );
 
 shop.purchaseTimeSkip = function() {
-  Speedrun.setSTDUse(true);
-  simulateTime(3600 * 6);
+  return false;
 };
 
 shop.purchaseLongerTimeSkip = function() {
-  Speedrun.setSTDUse(true);
-  simulateTime(3600 * 24);
+  return false;
 };

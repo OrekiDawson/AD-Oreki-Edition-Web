@@ -505,8 +505,6 @@ window.PROGRESS_STAGE = {
   PELLE: 17,
 };
 
-window.STD_BACKEND_URL = "https://antimatterdimensionspayments.ew.r.appspot.com";
-
 window.SPEEDRUN_SEED_STATE = {
   UNKNOWN: 0,
   FIXED: 1,

@@ -10080,3 +10080,10 @@ r88 4/4、r90 7/7、r91 13/13、r87 13/13、r100 39/39、validate_tutorial、che
 - 三项修复（均在 feat/r108-01-web-reality-chain）：89dcd7d（IM 上限 300→3000）、bc45c18（莱特拉 tier 窗口
   30s→300s + 入场/压现实窗口）、6988b92（tier8 后压现实截取 DS6 帧买 IU25）。三项均被运行期验证。
 - 证据：reports/R108-01/web/{REPORT.md, run-fixed4/}；Web 默认设置全新档 180 分钟门禁由 FAIL 转为 PASS（31.1 min）。
+
+## R121-01 Web STD/IAP 商店退役与存档互通（2026-11-21）
+
+- 生产行为：删除商店页、STD 购买弹窗、IAP 重置弹窗、支付初始化与 Steam 购买入口；商店页签条件固定为不可解锁，组件不再注册。`core/shop.js` 保留旧购买键兼容读取，但 `isIAPEnabled`、复活/重分配和时间跳跃均 fail-closed，`ShopPurchase.currentMult` 全部固定为中性 `1`。
+- 存档兼容：玩家对象继续保留原版 `IAP.enabled`、`IAP.checkoutSession` 与 `options.confirmations.respecIAP` 字段；`GameDatabase.shopPurchases` 的原版键继续存在，历史值不恢复效果。
+- 原版互通夹具：由冻结上游 `5409e320cecef96a917cca1dfb68f1f183e499ca` 的真实新档导出，保存为 `savestates/original/new-save.txt`，SHA-256 `2dd3c80baf76570893ea6b829e3d964e30b7c3fce8289b14897ce77d1147509a`。
+- 真实浏览器验证：`.github/tests/web-store-removal.spec.mjs` 在 Pixel 7 手机上下文验证无商店入口、无支付请求、历史 IAP 开关与全部旧购买次数均不能恢复倍率、购买和时间跳跃；保存并重载后仍中性。另以冻结上游实际运行页面完成“原版存档 → 本版导出 → 原版导入 → 本版再导入”往返，双侧 `checkPlayerObject` 均为空错误。
