@@ -80,10 +80,11 @@ export const confirmationTypes = [
     option: "armageddon",
     isUnlocked: () => Pelle.isDoomed,
   }, {
-    // Keep the original player-save option in the schema, but never expose a
-    // removed store action in the options UI.
+    // Keep the original player-save option in the schema, but never expose or
+    // index a removed store action in the options UI.
     name: "重置内购",
     option: "respecIAP",
+    isRetired: true,
     isUnlocked: () => false
   }
 ];

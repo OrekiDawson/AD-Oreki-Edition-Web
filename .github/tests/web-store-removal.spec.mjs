@@ -31,6 +31,7 @@ test("Web store is removed and legacy purchase data cannot affect gameplay", asy
     // IAP enabled and every historic purchase count present.
     window.Cloud.loggedIn = true;
     window.player.IAP.enabled = true;
+    window.player.records.fullGameCompletions = 1;
     window.ShopPurchaseData.totalSTD = 10000;
     window.ShopPurchaseData.spentSTD = 4000;
     window.ShopPurchaseData.respecAvailable = true;
@@ -69,6 +70,13 @@ test("Web store is removed and legacy purchase data cannot affect gameplay", asy
       shopModalPresent: Boolean(window.Modal.shop),
       respecModalPresent: Boolean(window.Modal.respecIAP),
       paymentsObjectPresent: Boolean(window.Payments),
+      retiredConfirmationListed: window.ConfirmationTypes.index
+        .some(confirmation => confirmation.name === "重置内购"),
+      achievement33Description: window.SecretAchievements.all
+        .find(achievement => achievement.id === 33)?.config.description,
+      tutorialReferencesRemovedStore: JSON.stringify(
+        await (await fetch("/src/core/oreki-tutorial-data.json")).json()
+      ).includes("33 到商店"),
       ordinaryDimensionTabVisible: Boolean(window.Tab.dimensions.isAvailable),
     };
   });
@@ -105,6 +113,9 @@ test("Web store is removed and legacy purchase data cannot affect gameplay", asy
   expect(result.shopModalPresent).toBe(false);
   expect(result.respecModalPresent).toBe(false);
   expect(result.paymentsObjectPresent).toBe(false);
+  expect(result.retiredConfirmationListed).toBe(false);
+  expect(result.achievement33Description).toContain("不可达成");
+  expect(result.tutorialReferencesRemovedStore).toBe(false);
   expect(result.ordinaryDimensionTabVisible).toBe(true);
   expect(paymentRequests).toEqual([]);
 

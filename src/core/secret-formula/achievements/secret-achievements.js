@@ -116,7 +116,7 @@ export const secretAchievements = [
   {
     id: 33,
     name: "不错的财务决策。",
-    description: "点击“购买硬币”按钮。"
+    description: "本作已移除 STD/IAP 商店，该成就不可达成。"
   },
   {
     id: 34,
