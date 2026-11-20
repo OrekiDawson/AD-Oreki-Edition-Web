@@ -29,6 +29,14 @@
 条件，复验 PASS。该超时截图保留为
 `99-transient-load-timeout.png`，不用于冒充功能失败或成功。
 
+线上关键源码与当前 `origin/main` 逐字节一致：
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `src/game.js` | `7f41709211daa9e026b7601c81ca9a74f0aa9268e15c9e15a54c7829775a834d` |
+| `src/core/speed-config.js` | `2ef221b0e6dafef42f52e0efc79f0b5f411244ef4cd570e482eb2b40b6bf438a` |
+| `src/core/celestials/pelle/game-end.js` | `b5d899656cf1ad2a002a3ba46bffeafcde83d530151558bf2a153b91254be710` |
+
 证据：
 
 - `reports/R121-01/online-mobile-smoke.mjs`
