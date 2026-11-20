@@ -152,19 +152,40 @@ test("original saves round-trip through the storeless build without schema loss"
     }).toBe(true);
     imported.push(await page.evaluate(async path => {
       const encoded = (await (await fetch(path)).text()).trim();
+      const source = window.GameSaveSerializer.deserialize(encoded);
+      const expected = {
+        gameCreatedTime: source.records?.gameCreatedTime,
+        infinities: String(source.infinities),
+        eternities: String(source.eternities),
+        realities: Number(source.realities),
+      };
       window.GameStorage.import(encoded);
       const exported = window.GameStorage.exportModifiedSave();
       const decoded = window.GameSaveSerializer.deserialize(exported);
       const validation = window.GameStorage.checkPlayerObject(decoded);
+      const loaded = {
+        gameCreatedTime: window.player.records?.gameCreatedTime,
+        infinities: window.player.infinities.toString(),
+        eternities: window.player.eternities.toString(),
+        realities: Number(window.player.realities),
+      };
       window.GameStorage.import(exported);
       return {
         path,
+        expected,
         exported,
         validation,
         iapEnabled: decoded.IAP?.enabled,
         checkoutSessionPresent: Object.hasOwn(decoded.IAP ?? {}, "checkoutSession"),
         respecIAPPresent: typeof decoded.options?.confirmations?.respecIAP === "boolean",
         antimatter: decoded.antimatter,
+        loaded,
+        reexportedProgress: {
+          gameCreatedTime: decoded.records?.gameCreatedTime,
+          infinities: String(decoded.infinities),
+          eternities: String(decoded.eternities),
+          realities: Number(decoded.realities),
+        },
         reimportedIAPEnabled: window.player.IAP?.enabled,
         storeEffectCurrentMult: window.ShopPurchase.dimPurchases.currentMult,
       };
@@ -174,6 +195,8 @@ test("original saves round-trip through the storeless build without schema loss"
 
   for (const save of imported) {
     expect(save.validation, save.path).toBe("");
+    expect(save.loaded, save.path).toEqual(save.expected);
+    expect(save.reexportedProgress, save.path).toEqual(save.expected);
     expect(save.iapEnabled, save.path).toBe(false);
     expect(save.checkoutSessionPresent, save.path).toBe(true);
     expect(save.respecIAPPresent, save.path).toBe(true);
@@ -216,21 +239,36 @@ test("storeless export round-trips through the frozen upstream original", async 
       message: "原版 GameUI 未初始化",
     }).toBe(true);
     upstreamResults.push(await upstream.evaluate(modExport => {
+      const source = window.GameSaveSerializer.deserialize(modExport);
+      const expected = {
+        gameCreatedTime: source.records?.gameCreatedTime,
+        infinities: String(source.infinities),
+        eternities: String(source.eternities),
+        realities: Number(source.realities),
+      };
       window.GameStorage.import(modExport);
       const exported = window.GameStorage.exportModifiedSave();
       const decoded = window.GameSaveSerializer.deserialize(exported);
       return {
+        expected,
         exported,
         validation: window.GameStorage.checkPlayerObject(decoded),
         iapEnabled: decoded.IAP?.enabled,
         respecIAPPresent: typeof decoded.options?.confirmations?.respecIAP === "boolean",
         antimatter: decoded.antimatter,
+        reexportedProgress: {
+          gameCreatedTime: decoded.records?.gameCreatedTime,
+          infinities: String(decoded.infinities),
+          eternities: String(decoded.eternities),
+          realities: Number(decoded.realities),
+        },
       };
     }, modExport));
     await upstreamContext.close();
   }
   for (const result of upstreamResults) {
     expect(result.validation).toBe("");
+    expect(result.reexportedProgress).toEqual(result.expected);
     expect(result.iapEnabled).toBe(false);
     expect(result.respecIAPPresent).toBe(true);
     expect(typeof result.antimatter === "string" || typeof result.antimatter === "number").toBe(true);
@@ -247,17 +285,32 @@ test("storeless export round-trips through the frozen upstream original", async 
       message: "GameUI 未初始化",
     }).toBe(true);
     finalImports.push(await page.evaluate(originalExport => {
+      const source = window.GameSaveSerializer.deserialize(originalExport);
+      const expected = {
+        gameCreatedTime: source.records?.gameCreatedTime,
+        infinities: String(source.infinities),
+        eternities: String(source.eternities),
+        realities: Number(source.realities),
+      };
       window.GameStorage.import(originalExport);
       return {
+        expected,
         validation: window.GameStorage.checkPlayerObject(window.player),
         iapEnabled: window.player.IAP?.enabled,
         storeEffectsNeutral: window.ShopPurchase.all.every(purchase => purchase.currentMult === 1),
+        loaded: {
+          gameCreatedTime: window.player.records?.gameCreatedTime,
+          infinities: window.player.infinities.toString(),
+          eternities: window.player.eternities.toString(),
+          realities: Number(window.player.realities),
+        },
       };
     }, upstreamResult.exported));
     await context.close();
   }
   for (const finalImport of finalImports) {
     expect(finalImport.validation).toBe("");
+    expect(finalImport.loaded).toEqual(finalImport.expected);
     expect(finalImport.iapEnabled).toBe(false);
     expect(finalImport.storeEffectsNeutral).toBe(true);
   }
