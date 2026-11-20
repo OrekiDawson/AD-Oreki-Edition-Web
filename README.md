@@ -6,12 +6,12 @@
 
 ## 项目状态与开发成本（2026-11-20）
 
-**当前状态：`R120-01` 进行中。** 用户已明确恢复当前开发轮次，范围包括 Oreki Audit 迁移、Kody 审查、双端规则与游戏节奏校准；无关历史任务仍保持原状态。源码、PR、Issues、Release、测试证据和部署记录继续保留。
+**当前状态：`R121-01` 进行中。** 用户已明确恢复当前开发轮次，范围包括 Kody 共享配额、PR 审查效率、双端规则与游戏节奏校准；无关历史任务仍保持原状态。源码、PR、Issues、Release、测试证据和部署记录继续保留。
 
 - **费用门禁**：继续遵守既定人民币预算、80% 预警、100% 停止新增付费调用与 DeepSeek 余额低于 ¥10 暂停规则。禁止通过换 Key、模型或账号规避预算；无法可靠取得余额时不得声称余额充足。
-- **Kody / Kodus**：代码审查由 Kodus Manual + `.github/workflows/kody-trigger.yml` 驱动。触发器只对 `OrekiDawson` 的同仓、`main`、非 Draft PR 生效，按 Head SHA 去重并使用最小权限 PAT。`Skipped`、`KODY NOT RUN` 均不是 PASS。
+- **Kody / Kodus**：Kodus 平台自动审查关闭（`automatedReviewActive=false`、`reviewCadence.type=auto_pause`），由 `.github/workflows/kody-trigger.yml` 在稳定窗口、作者白名单、同 Head 去重和共享预算检查后发送精确指令。审查只允许 Balanced，严禁 Heavy；`Skipped`、`KODY NOT RUN` 均不是 PASS。
 - **旧 Oreki Audit**：`codex-deepseek-review.yml` 保留作回滚备份，`OREKI_AUDIT_ENABLED=false`；未经用户明确恢复，不调用 DeepSeek，也不发布自制 Review。
-- **自动化边界**：Kody Rules 初期最多 3 条并限定仓库路径；默认 Balanced、简体中文，不使用 Heavy。自动审查保持 Manual，不批量重审历史 PR。
+- **自动化边界**：通用审查方法只维护在 Kodus Global Rule；项目业务约束由各仓 `AGENTS.md` 提供，不重复创建 Repository/Directory Rules。Android/Web 共用 UTC+8 自然日 100 次主动审查计数池，80 次预警、100 次拒绝新增，不设单仓额度。
 - **当前线上版本**：`oreki.net` 已由 Pages 工作流部署源码 `de2626805965a24c852352fad6abcdb0f5173dc9`，
   复用 Web CI `44655186495`；线上移动 Chromium 冒烟为 `3000×`、动态速度开启、调度周期 10 秒，
   page/console error 均为 0。详见 `reports/R120-01/pages-deployment-evidence.md`。
