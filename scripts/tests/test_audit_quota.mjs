@@ -185,9 +185,9 @@ const recoveredOrphan = reserveKodyPure(orphanReservation, kodyCandidate("orphan
     createdAt: "2026-11-20T00:04:30Z",
   }],
 });
-assert.equal(recoveredOrphan.reason, "identity-recovered");
-assert.equal(recoveredOrphan.counts.used, 1);
-assert.equal(recoveredOrphan.record.commentId, "5000");
+assert.equal(recoveredOrphan.reason, "identity-in-progress");
+assert.equal(recoveredOrphan.counts.used, 2);
+assert.equal(recoveredOrphan.record.commentId, "");
 assert.equal(recoveredOrphan.records.filter(record =>
   record.kind === KODY_KIND && record.commentId === "5000").length, 1);
 
@@ -207,8 +207,8 @@ const laterComments = reserveKodyPure(
     ],
   },
 );
-assert.equal(laterComments.reason, "identity-recovered");
-assert.equal(laterComments.counts.used, 2);
+assert.equal(laterComments.reason, "identity-in-progress");
+assert.equal(laterComments.counts.used, 3);
 assert.equal(laterComments.records.filter(record =>
   record.kind === KODY_KIND && ["5001", "5002"].includes(record.commentId)).length, 2);
 
@@ -217,7 +217,7 @@ const occupiedComment = attachKodyCommand(
     date: kodyDate,
     now: "2026-11-20T00:07:10Z",
   }).records,
-  { identity: "other-head", commentId: "5003", createdAt: "2026-11-20T00:07:20Z" },
+  { identity: "other-head", commentId: "5003", createdAt: "2026-11-20T00:07:26Z" },
 );
 const staleReservation = reserveKodyPure([], kodyCandidate("stale-head", kodyAndroid), {
   date: kodyDate,
@@ -258,9 +258,9 @@ const midnightRecovered = reserveKodyPure(
     evidence: [{ ...kodyEvidence(kodyWeb, [6001])[0], createdAt: "2026-11-20T16:00:01Z" }],
   },
 );
-assert.equal(midnightRecovered.reason, "identity-recovered");
-assert.equal(midnightRecovered.record.date, "2026-11-21");
-assert.equal(kodyQuotaCounts(midnightRecovered.records, "2026-11-20").used, 0);
+assert.equal(midnightRecovered.reason, "identity-in-progress");
+assert.equal(midnightRecovered.record.date, "2026-11-20");
+assert.equal(kodyQuotaCounts(midnightRecovered.records, "2026-11-20").used, 1);
 assert.equal(kodyQuotaCounts(midnightRecovered.records, "2026-11-21").used, 1);
 
 const kodyDuplicate = reserveKodyPure(kodyAttached.records, kodyCandidate("trigger-b", kodyWeb), {

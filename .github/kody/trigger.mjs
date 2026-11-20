@@ -418,7 +418,7 @@ export async function main() {
     quotaSnapshot.evidence,
     { now: quotaSnapshot.now },
   );
-  const quotaCounts = reservation.counts;
+  let quotaCounts = reservation.counts;
   writeOutput("quota_warning", quotaCounts.warning);
   writeOutput("shared_trigger_used", quotaCounts.used);
   writeOutput("shared_trigger_remaining", quotaCounts.remaining);
@@ -480,21 +480,24 @@ export async function main() {
       break;
     } catch (error) {
       if (attempt === 3) {
-        throw new Error(
-          `trigger comment posted but quota attach failed; next run will recover ` +
-            `comment ${created.id}: ${error.message}`,
+        console.error(
+          `OREKI_KODY_QUOTA_ATTACH_FAILED comment=${created.id} ` +
+            `identity=${externalId}: ${error.message}`,
         );
+        writeOutput("quota_attach_state", "failed_after_comment");
+        break;
       }
       await sleep(attempt);
     }
   }
+  if (attached) quotaCounts = attached.counts;
   writeSummary({
     status: "trigger_posted",
     reason: "comment_created",
     pr,
     headSha,
     commentUrl: created.html_url,
-    quotaCounts: attached.counts,
+    quotaCounts,
   });
 
   let checkError = null;

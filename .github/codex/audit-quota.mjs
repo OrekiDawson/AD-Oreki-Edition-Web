@@ -132,17 +132,12 @@ export function kodyQuotaCounts(records, date) {
 
 function importKodyEvidence(records, evidence, date, now) {
   const output = [...records];
-  const pending = output.filter(record =>
-    isKodyRecord(record) &&
-    record.status === "reserved" &&
-    !String(record.commentId ?? ""));
   const seen = new Set(
     output
       .filter(record => isKodyRecord(record) && String(record.commentId ?? ""))
       .map(record => `${String(record.repository ?? "")}#${String(record.commentId ?? "")}`)
       .filter(Boolean),
   );
-  const matchedPending = new Set();
   for (const item of evidence) {
     const repository = String(item?.repository ?? "");
     const commentId = String(item?.commentId ?? "").trim();
@@ -156,15 +151,6 @@ function importKodyEvidence(records, evidence, date, now) {
     if (shanghaiDate(createdAt) !== date) continue;
     const commentKey = `${repository}#${commentId}`;
     if (seen.has(commentKey)) continue;
-    const pendingMatch = pending.find(record =>
-      !matchedPending.has(record.identity) &&
-      String(record.repository ?? "") === repository &&
-      Number(record.pr) === Number(item?.pr) &&
-      createdAt.getTime() >= Date.parse(String(record.reservedAt ?? "")));
-    if (pendingMatch) {
-      matchedPending.add(pendingMatch.identity);
-      continue;
-    }
     seen.add(commentKey);
     output.push({
       kind: KODY_KIND,
@@ -203,33 +189,6 @@ export function reserveKodyPure(records, candidate, {
     record.status !== "released" &&
     record.identity === identity);
   if (prior) {
-    if (prior.status === "reserved" && !String(prior.commentId ?? "")) {
-      const occupiedComments = new Set(output
-        .filter(record => isKodyRecord(record) && String(record.commentId ?? ""))
-        .map(record => `${String(record.repository ?? "")}#${String(record.commentId ?? "")}`));
-      const recovered = evidence.find(item =>
-        !occupiedComments.has(`${String(item?.repository ?? "")}#${String(item?.commentId ?? "")}`) &&
-        String(item?.repository ?? "") === String(prior.repository ?? "") &&
-        Number(item?.pr) === Number(prior.pr) &&
-        Date.parse(String(item?.createdAt ?? "")) >= Date.parse(String(prior.reservedAt ?? "")));
-      if (recovered) {
-        const attached = attachKodyCommand(output, {
-          identity,
-          commentId: recovered.commentId,
-          commentUrl: recovered.url,
-          createdAt: recovered.createdAt,
-          now,
-        });
-        return {
-          allowed: false,
-          reused: true,
-          reason: "identity-recovered",
-          record: attached.record,
-          records: attached.records,
-          counts: attached.counts,
-        };
-      }
-    }
     return {
       allowed: false,
       reused: true,
