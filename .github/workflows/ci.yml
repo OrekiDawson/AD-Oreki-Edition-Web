@@ -161,7 +161,15 @@ jobs:
       # System libraries are still installed on each fresh GitHub-hosted runner.
       - name: 安装 Chromium 及运行时依赖
         run: npx playwright install --with-deps chromium
+      - name: 恢复冻结上游原版构建缓存
+        id: upstream-cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/ad-upstream-original/dist
+          key: ad-upstream-${{ runner.os }}-${{ runner.arch }}-5409e320cecef96a917cca1dfb68f1f183e499ca-v1
       - name: 构建冻结上游原版用于双向存档门禁
+        if: steps.upstream-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
         env:
           UPSTREAM_SHA: 5409e320cecef96a917cca1dfb68f1f183e499ca
         run: |
@@ -175,6 +183,7 @@ jobs:
           npm run build:release --prefix "$upstream"
           test -s "$upstream/dist/index.html"
       - name: 执行真实浏览器冒烟测试
+        timeout-minutes: 15
         run: |
           set -euo pipefail
           upstream="$RUNNER_TEMP/ad-upstream-original"
