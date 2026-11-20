@@ -1,10 +1,22 @@
 import { readFileSync, appendFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import {
+  KODY_DAILY_LIMIT as DAILY_TRIGGER_LIMIT,
+  KODY_WARNING_AT as DAILY_TRIGGER_WARNING,
+  attachKodyQuota,
+  releaseKodyQuota,
+  reserveKodyQuota,
+} from "../codex/audit-quota.mjs";
 
 export const TRIGGER_AUTHOR = "OrekiDawson";
 export const TRIGGER_BODY = "@kody start-review";
 export const KODY_LOGIN = "kody-ai[bot]";
 export const CHECK_NAME = "Kody trigger";
+export const SHARED_QUOTA_REPOSITORIES = [
+  "AD-Oreki-Edition-Android",
+  "AD-Oreki-Edition-Web",
+];
+export { DAILY_TRIGGER_LIMIT, DAILY_TRIGGER_WARNING };
 
 export function validatePullRequest(pr, repositoryFullName) {
   if (!pr) return { allowed: false, reason: "missing_pull_request" };
@@ -69,17 +81,59 @@ export function shanghaiDayStart(now) {
   ) - 8 * 60 * 60 * 1000);
 }
 
-export function countTriggersSince(comments, since) {
-  const sinceMs = since.getTime();
-  return comments.filter(comment =>
-    isExactTriggerComment(comment) &&
-    Number.isFinite(Date.parse(comment.created_at)) &&
-    Date.parse(comment.created_at) >= sinceMs
-  ).length;
-}
-
 export function dailyCommentsPath(repository, since) {
   return `/repos/${repository}/issues/comments?since=${encodeURIComponent(since.toISOString())}&per_page=100`;
+}
+
+export function sharedDailyCommentsPaths(currentRepository, since) {
+  const owner = String(currentRepository).split("/")[0];
+  if (!owner) throw new Error("repository owner is missing");
+  return SHARED_QUOTA_REPOSITORIES.map(name => {
+    const repository = `${owner}/${name}`;
+    return { repository, path: dailyCommentsPath(repository, since) };
+  });
+}
+
+/**
+ * 只统计 OrekiDawson 主动发送的精确 start-review 评论。
+ *
+ * GitHub issue comment ID 是原始指令的可追溯唯一标识；同一 ID 在 API 重试或
+ * 两个输入集合中重复出现时只计一次。回复、讨论、Bot 消息和旧 Oreki Audit
+ * 摘要因正文不等于精确指令，不会被计入。
+ */
+export function sharedTriggerQuotaEvidence(commentGroups, since) {
+  const startMs = since.getTime();
+  const endMs = startMs + 24 * 60 * 60 * 1000;
+  const unique = new Map();
+  for (const group of commentGroups) {
+    const repository = String(group?.repository ?? "");
+    if (!repository) throw new Error("quota comment repository is missing");
+    for (const comment of group.comments ?? []) {
+      if (!isExactTriggerComment(comment)) continue;
+      const createdAt = Date.parse(comment.created_at);
+      if (!Number.isFinite(createdAt) || createdAt < startMs || createdAt >= endMs) {
+        continue;
+      }
+      const commentId = comment.id == null ? "" : String(comment.id).trim();
+      if (!commentId) {
+        throw new Error("start-review command lacks a traceable comment id");
+      }
+      const key = `${repository}#${commentId}`;
+      if (unique.has(key)) continue;
+      unique.set(key, {
+        repository,
+        commentId,
+        url: comment.html_url ?? "",
+        createdAt: new Date(createdAt).toISOString(),
+      });
+    }
+  }
+  return [...unique.values()].sort((left, right) =>
+    left.createdAt.localeCompare(right.createdAt));
+}
+
+export function countSharedTriggersSince(commentGroups, since) {
+  return sharedTriggerQuotaEvidence(commentGroups, since).length;
 }
 
 export function assertPaginationComplete(hasNextPage, pagesRead, maxPages) {
@@ -88,13 +142,28 @@ export function assertPaginationComplete(hasNextPage, pagesRead, maxPages) {
   }
 }
 
-export function budgetDecision(repoTriggerCount, perRepoLimit) {
-  if (!Number.isInteger(perRepoLimit) || perRepoLimit < 1) {
-    throw new Error("per-repo trigger limit must be a positive integer");
+export function budgetDecision(sharedTriggerCount, dailyLimit = DAILY_TRIGGER_LIMIT) {
+  if (!Number.isInteger(sharedTriggerCount) || sharedTriggerCount < 0) {
+    throw new Error("shared trigger count must be a non-negative integer");
   }
-  return repoTriggerCount < perRepoLimit
-    ? { allowed: true, reason: "budget_available" }
-    : { allowed: false, reason: "daily_trigger_cap_reached" };
+  if (!Number.isInteger(dailyLimit) || dailyLimit < 1) {
+    throw new Error("daily trigger limit must be a positive integer");
+  }
+  if (sharedTriggerCount >= dailyLimit) {
+    return {
+      allowed: false,
+      warning: true,
+      remaining: 0,
+      reason: "daily_trigger_cap_reached",
+    };
+  }
+  const warning = sharedTriggerCount >= DAILY_TRIGGER_WARNING;
+  return {
+    allowed: true,
+    warning,
+    remaining: dailyLimit - sharedTriggerCount,
+    reason: warning ? "daily_warning_reached" : "budget_available",
+  };
 }
 
 function requiredEnv(name) {
@@ -109,7 +178,14 @@ function writeOutput(key, value) {
   appendFileSync(outputPath, `${key}=${String(value).replaceAll("\n", " ")}\n`);
 }
 
-function writeSummary({ status, reason, pr, headSha, commentUrl, budgetCount }) {
+function writeSummary({
+  status,
+  reason,
+  pr,
+  headSha,
+  commentUrl,
+  quotaCounts,
+}) {
   const summaryPath = process.env.GITHUB_STEP_SUMMARY;
   if (!summaryPath) return;
   const lines = [
@@ -120,13 +196,23 @@ function writeSummary({ status, reason, pr, headSha, commentUrl, budgetCount }) 
   ];
   if (pr) lines.push(`- PR：${process.env.GITHUB_REPOSITORY}#${pr.number}`);
   if (headSha) lines.push(`- Head SHA：\`${headSha}\``);
-  if (Number.isInteger(budgetCount)) lines.push(`- 当前仓库当日已触发：${budgetCount}`);
+  if (quotaCounts) {
+    lines.push(`- 全局已用：${quotaCounts.used}/${DAILY_TRIGGER_LIMIT}`);
+    lines.push(`- 全局剩余：${quotaCounts.remaining}`);
+    for (const name of SHARED_QUOTA_REPOSITORIES) {
+      const repository = `${String(process.env.GITHUB_REPOSITORY).split("/")[0]}/${name}`;
+      lines.push(`- ${name} 实际用量：${quotaCounts.byRepository[repository] ?? 0}`);
+    }
+  }
+  if (quotaCounts?.warning) {
+    lines.push(`- 配额预警：已达到 ${DAILY_TRIGGER_WARNING} 次，新增请求仍可在 100 次前执行。`);
+  }
   if (commentUrl) lines.push(`- 触发评论：${commentUrl}`);
   lines.push("- Kody 审查结果：未验证；发送触发命令不等于审查完成。");
   appendFileSync(summaryPath, `${lines.join("\n")}\n`);
 }
 
-function finishSkip(reason, pr = null, headSha = "", budgetCount = null) {
+function finishSkip(reason, pr = null, headSha = "", quotaCounts = null) {
   const safeReason = String(reason).replaceAll(/[^a-zA-Z0-9_-]/g, "_");
   writeOutput("kody_review_state", "skipped");
   writeOutput("skip_reason", safeReason);
@@ -135,9 +221,27 @@ function finishSkip(reason, pr = null, headSha = "", budgetCount = null) {
     reason: safeReason,
     pr,
     headSha,
-    budgetCount,
+    quotaCounts,
   });
   console.log(`Kody trigger skipped: ${safeReason}`);
+}
+
+async function releaseReservation(token, identity) {
+  try {
+    return await releaseKodyQuota(token, identity);
+  } catch (error) {
+    console.error(`Kody quota release failed; reservation remains consumed: ${error.message}`);
+    return null;
+  }
+}
+
+function emitQuotaEvidence(evidence) {
+  for (const item of evidence) {
+    console.log(
+      `OREKI_KODY_QUOTA_COMMAND repo=${item.repository} id=${item.commentId} ` +
+        `created_at=${item.createdAt} url=${item.url}`,
+    );
+  }
 }
 
 async function requestJson(path, { method = "GET", token, body } = {}) {
@@ -275,28 +379,45 @@ export async function main() {
   }
 
   const since = shanghaiDayStart(new Date());
-  const dailyComments = await listAllPages(
-    dailyCommentsPath(repository, since),
+  const commentGroups = [];
+  for (const source of sharedDailyCommentsPaths(repository, since)) {
+    commentGroups.push({
+      repository: source.repository,
+      comments: await listAllPages(source.path, token),
+    });
+  }
+  const quotaEvidence = sharedTriggerQuotaEvidence(commentGroups, since);
+  emitQuotaEvidence(quotaEvidence);
+  writeOutput("quota_evidence", JSON.stringify(quotaEvidence));
+  const reservation = await reserveKodyQuota(
     token,
+    {
+      identity: externalId,
+      repository,
+      pr: prNumber,
+      headSha,
+    },
+    quotaEvidence,
   );
-  const repoTriggerCount = countTriggersSince(dailyComments, since);
-  const perRepoLimit = Number.parseInt(
-    process.env.MAX_TRIGGERS_PER_REPO_PER_DAY ?? "50",
-    10,
-  );
-  const budget = budgetDecision(repoTriggerCount, perRepoLimit);
-  if (!budget.allowed) {
-    finishSkip(budget.reason, pr, headSha, repoTriggerCount);
+  const quotaCounts = reservation.counts;
+  writeOutput("quota_warning", quotaCounts.warning);
+  writeOutput("shared_trigger_used", quotaCounts.used);
+  writeOutput("shared_trigger_remaining", quotaCounts.remaining);
+  writeOutput("shared_trigger_by_repo", JSON.stringify(quotaCounts.byRepository));
+  if (!reservation.allowed) {
+    finishSkip(reservation.reason, pr, headSha, quotaCounts);
     return;
   }
 
   const latest = await getPullRequest(repository, prNumber, token);
   if (latest.state !== "open" || latest.merged_at != null) {
-    finishSkip("pr_not_open", latest, latest.head?.sha ?? "", repoTriggerCount);
+    await releaseReservation(token, externalId);
+    finishSkip("pr_not_open", latest, latest.head?.sha ?? "", quotaCounts);
     return;
   }
   if (latest.head?.sha !== headSha || latest.draft === true) {
-    finishSkip("head_changed_before_comment", latest, latest.head?.sha ?? "", repoTriggerCount);
+    await releaseReservation(token, externalId);
+    finishSkip("head_changed_before_comment", latest, latest.head?.sha ?? "", quotaCounts);
     return;
   }
 
@@ -308,6 +429,10 @@ export async function main() {
       body: { body: TRIGGER_BODY },
     },
   )).json();
+  const attached = await attachKodyQuota(token, externalId, {
+    commentId: created.id,
+    commentUrl: created.html_url,
+  });
 
   writeOutput("kody_review_state", "trigger_posted");
   writeOutput("head_sha", headSha);
@@ -319,7 +444,7 @@ export async function main() {
     pr,
     headSha,
     commentUrl: created.html_url,
-    budgetCount: repoTriggerCount + 1,
+    quotaCounts: attached.counts,
   });
 
   let checkError = null;

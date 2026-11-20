@@ -95,6 +95,5 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           INPUT_PR_NUMBER: ${{ inputs.pr_number }}
           STABILIZATION_SECONDS: "0"
-          MAX_TRIGGERS_PER_REPO_PER_DAY: "50"
         shell: bash
         run: node .github/kody/trigger.mjs
