@@ -1840,6 +1840,20 @@
       "commentUrl": "",
       "reservedAt": "2026-11-21T08:01:27.788Z",
       "updatedAt": "2026-11-21T08:01:27.788Z"
+    },
+    {
+      "kind": "kody_start_review",
+      "identity": "kody-trigger:OrekiDawson/AD-Oreki-Edition-Android#228@c91ad7c5c155332678c478ff20d634536490ac74",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Android",
+      "pr": 228,
+      "headSha": "c91ad7c5c155332678c478ff20d634536490ac74",
+      "source": "automated_trigger",
+      "date": "2026-11-21",
+      "status": "reserved",
+      "commentId": "",
+      "commentUrl": "",
+      "reservedAt": "2026-11-21T11:04:36.742Z",
+      "updatedAt": "2026-11-21T11:04:36.742Z"
     }
   ]
 }
