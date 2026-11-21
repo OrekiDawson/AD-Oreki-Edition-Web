@@ -37,10 +37,11 @@ export function kodySkipPullRequests(event) {
       pr: number,
       headSha: check.head_sha,
       checkRunId: check.id,
+      checkStartedAt: check.started_at ?? "",
       checkUrl: check.html_url ?? "",
     });
   }
-  return output;
+  return output.length === 1 ? output : [];
 }
 
 /** 安全补查 check_run.pull_requests 为空的同仓 PR，仅接受唯一 HEAD 命中。 */
@@ -55,20 +56,6 @@ async function githubJson(path, token) {
   });
   if (!response.ok) throw new Error(`GitHub API ${response.status} for ${path}`);
   return response.json();
-}
-
-export function hadEarlierRealKodyReview(current, checks) {
-  const completedAt = Date.parse(current?.completed_at ?? "");
-  return checks.some(check =>
-    check?.app?.slug === "kody-ai" &&
-    check?.name === "Kody Code Review" &&
-    check?.status === "completed" &&
-    ["success", "failure"].includes(check?.conclusion) &&
-    check?.id !== current?.id &&
-    Number.isFinite(Date.parse(check?.completed_at ?? "")) &&
-    Number.isFinite(completedAt) &&
-    Date.parse(check.completed_at) <= completedAt
-  );
 }
 
 async function resolvedKodySkipCandidates(event, token) {
@@ -91,6 +78,7 @@ async function resolvedKodySkipCandidates(event, token) {
     pr: matching[0].number,
     headSha: sha,
     checkRunId: event.check_run.id,
+    checkStartedAt: event.check_run.started_at ?? "",
     checkUrl: event.check_run.html_url ?? "",
   }];
 }
@@ -107,20 +95,8 @@ export async function main() {
     console.log("Kody skip: 无可靠 PR 关联，保留原始计数等待核对。");
     return;
   }
-  const repository = event.repository.full_name;
-  const sha = event.check_run.head_sha;
-  const checks = await githubJson(
-    `/repos/${repository}/commits/${sha}/check-runs?check_name=Kody%20Code%20Review&filter=all&per_page=100`,
-    token,
-  );
-  if ((checks.total_count ?? 0) > (checks.check_runs?.length ?? 0)) {
-    throw new Error("Kody Check 证据分页不完整，拒绝自动退额");
-  }
-  if (hadEarlierRealKodyReview(event.check_run, checks.check_runs ?? [])) {
-    console.log("Kody skip: 同一 HEAD 已存在 Kody 实际完成的审查，保守保留用量。");
-    return;
-  }
   for (const match of matches) {
+    match.checkStartedAt = event.check_run.started_at ?? "";
     const result = await markKodySkippedQuota(token, match);
     console.log(
       `Kody skip: ${match.repository}#${match.pr}@${match.headSha} ` +

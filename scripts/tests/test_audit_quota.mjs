@@ -169,6 +169,63 @@ const skippedAgain = markKodySkippedPure(verifiedSkip.records, {
 assert.equal(skippedAgain.reason, "already-skipped");
 assert.equal(skippedAgain.records, verifiedSkip.records); // 幂等：不产生新提交
 assert.equal(skippedAgain.counts.used, 1);
+
+const skipFirst = attachKodyCommand(
+  reserveKodyPure([], kodyCandidate("same-head-first", kodyAndroid), {
+    date: kodyDate,
+    now: "2026-11-20T00:00:05Z",
+  }).records,
+  {
+    identity: "same-head-first",
+    commentId: "9001",
+    createdAt: "2026-11-20T00:00:10Z",
+  },
+);
+const skipSecond = attachKodyCommand(
+  reserveKodyPure(skipFirst.records, kodyCandidate("same-head-second", kodyAndroid), {
+    date: kodyDate,
+    now: "2026-11-20T00:00:15Z",
+  }).records,
+  {
+    identity: "same-head-second",
+    commentId: "9002",
+    createdAt: "2026-11-20T00:00:20Z",
+  },
+);
+const oneSkipRefund = markKodySkippedPure(skipSecond.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98125,
+  checkStartedAt: "2026-11-20T00:00:30Z",
+});
+assert.equal(oneSkipRefund.ok, true);
+assert.equal(oneSkipRefund.records.find(record => record.commentId === "9001").status, "posted");
+assert.equal(oneSkipRefund.records.find(record => record.commentId === "9002").status, "skipped");
+assert.equal(oneSkipRefund.counts.used, 1);
+
+const skipThird = attachKodyCommand(
+  reserveKodyPure(oneSkipRefund.records, kodyCandidate("same-head-third", kodyAndroid), {
+    date: kodyDate,
+    now: "2026-11-20T00:00:35Z",
+  }).records,
+  {
+    identity: "same-head-third",
+    commentId: "9003",
+    createdAt: "2026-11-20T00:00:40Z",
+  },
+);
+const replayedSkip = markKodySkippedPure(skipThird.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98125,
+  checkStartedAt: "2026-11-20T00:00:30Z",
+});
+assert.equal(replayedSkip.reason, "already-skipped");
+assert.equal(replayedSkip.records, skipThird.records);
+assert.equal(replayedSkip.records.find(record => record.commentId === "9003").status, "posted");
+
 assert.throws(() => markKodySkippedPure(kodyAttached.records, {
   repository: kodyAndroid, pr: 121, headSha: "invalid", checkRunId: 98123,
 }), /invalid verified/u);

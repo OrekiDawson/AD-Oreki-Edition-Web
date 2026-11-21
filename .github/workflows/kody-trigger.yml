@@ -32,8 +32,7 @@ jobs:
     permissions:
       contents: read
     concurrency:
-      group: kody-skip-reconcile-${{ github.repository }}
-      queue: max
+      group: kody-skip-reconcile-${{ github.repository }}-${{ github.event.check_run.id }}
       cancel-in-progress: false
     steps:
       - name: 读取受信任 main 上的配额脚本
@@ -103,9 +102,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
-      # 串行段仅覆盖预算检查与评论写入；稳定等待已在上一 Job 完成。
-      group: kody-trigger-budget-${{ github.repository }}
-      queue: max
+      # 同一 PR 只保留一个预算检查/评论写入；不同 PR 不互相阻塞。
+      group: kody-trigger-budget-${{ github.repository }}-${{ github.event.pull_request.number || inputs.pr_number }}
       cancel-in-progress: false
     permissions:
       checks: write

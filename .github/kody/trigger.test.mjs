@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 
 import {
   DAILY_TRIGGER_LIMIT,
@@ -22,9 +23,21 @@ import {
   validateTriggerIdentity,
 } from "./trigger.mjs";
 
-import { confirmedKodySkip, hadEarlierRealKodyReview, kodySkipPullRequests } from "./skip-reconcile.mjs";
+import { confirmedKodySkip, kodySkipPullRequests } from "./skip-reconcile.mjs";
 
 const repository = "OrekiDawson/AD-Oreki-Edition-Android";
+const workflow = readFileSync(
+  new URL("../workflows/kody-trigger.yml", import.meta.url),
+  "utf8",
+);
+
+test("Kody 工作流只使用合法并发键，并按事件身份隔离", () => {
+  assert.doesNotMatch(workflow, /^\s+queue:\s*/m);
+  assert.match(workflow,
+    /group: kody-skip-reconcile-\$\{\{ github\.repository \}\}-\$\{\{ github\.event\.check_run\.id \}\}/);
+  assert.match(workflow,
+    /group: kody-trigger-budget-\$\{\{ github\.repository \}\}-\$\{\{ github\.event\.pull_request\.number \|\| inputs\.pr_number \}\}/);
+});
 
 function pr(overrides = {}) {
   return {
@@ -263,6 +276,7 @@ test("只有 Kody 官方 completed/skipped Check 才能退额", () => {
       status: "completed",
       conclusion: "skipped",
       head_sha: "a".repeat(40),
+      started_at: "2026-11-21T12:59:00Z",
       app: { slug: "kody-ai" },
       pull_requests: [{ number: 42 }, { number: 42 }],
       html_url: "https://example.test/checks/9871",
@@ -271,6 +285,7 @@ test("只有 Kody 官方 completed/skipped Check 才能退额", () => {
   assert.equal(confirmedKodySkip(event), true);
   assert.equal(kodySkipPullRequests(event).length, 1);
   assert.equal(kodySkipPullRequests(event)[0].pr, 42);
+  assert.equal(kodySkipPullRequests(event)[0].checkStartedAt, "2026-11-21T12:59:00Z");
   assert.equal(confirmedKodySkip({
     ...event, check_run: { ...event.check_run, conclusion: "success" },
   }), false); // 无问题的正常审查依然计入
@@ -286,29 +301,7 @@ test("只有 Kody 官方 completed/skipped Check 才能退额", () => {
   assert.deepEqual(kodySkipPullRequests({ ...event, check_run: {
     ...event.check_run, pull_requests: [],
   } }), []); // 关联不明时不误退款
-});
-
-test("同一 HEAD 已有实际 Kody Review 时不得因后续 skipped 误退", () => {
-  const current = { id: 200, completed_at: "2026-11-21T13:00:00Z" };
-  const earlier = {
-    id: 100,
-    app: { slug: "kody-ai" },
-    name: "Kody Code Review",
-    status: "completed",
-    conclusion: "success",
-    completed_at: "2026-11-21T12:00:00Z",
-  };
-  assert.equal(hadEarlierRealKodyReview(current, [earlier]), true);
-  assert.equal(hadEarlierRealKodyReview(current, [
-    { ...earlier, conclusion: "failure" },
-  ]), true);
-  assert.equal(hadEarlierRealKodyReview(current, [
-    { ...earlier, conclusion: "skipped" },
-  ]), false);
-  assert.equal(hadEarlierRealKodyReview(current, [
-    { ...earlier, app: { slug: "github-actions" } },
-  ]), false);
-  assert.equal(hadEarlierRealKodyReview(current, [
-    { ...earlier, completed_at: "2026-11-21T14:00:00Z" },
-  ]), false);
+  assert.deepEqual(kodySkipPullRequests({ ...event, check_run: {
+    ...event.check_run, pull_requests: [{ number: 42 }, { number: 43 }],
+  } }), []); // 单个 Check 关联多个 PR 时无法证明归属
 });

@@ -291,6 +291,9 @@ export function attachKodyCommand(records, {
   const commentDate = Number.isFinite(parsedCreatedAt.getTime())
     ? shanghaiDate(parsedCreatedAt)
     : current.date;
+  const commentCreatedAt = Number.isFinite(parsedCreatedAt.getTime())
+    ? parsedCreatedAt.toISOString()
+    : String(current.createdAt ?? current.reservedAt ?? now);
   const output = records.filter((record, cursor) =>
     cursor === index ||
     !(isKodyRecord(record) &&
@@ -305,6 +308,7 @@ export function attachKodyCommand(records, {
     ...output[targetIndex],
     status: "posted",
     date: commentDate,
+    createdAt: commentCreatedAt,
     commentId: duplicateComment,
     commentUrl: String(commentUrl),
     updatedAt: now,
@@ -351,6 +355,7 @@ export function markKodySkippedPure(records, {
   pr,
   headSha,
   checkRunId,
+  checkStartedAt = "",
   checkUrl = "",
   now = new Date().toISOString(),
 }) {
@@ -364,42 +369,52 @@ export function markKodySkippedPure(records, {
       !/^[1-9][0-9]*$/u.test(runId)) {
     throw new Error("invalid verified Kody skipped check identity");
   }
+  const alreadyRefunded = records.find(record =>
+    isKodyRecord(record) &&
+    String(record.skipCheckRunId ?? "") === runId);
+  if (alreadyRefunded) {
+    return {
+      ok: true,
+      reason: "already-skipped",
+      records,
+      counts: kodyQuotaCounts(records, alreadyRefunded.date),
+    };
+  }
   const matches = records.filter(record =>
     isKodyRecord(record) &&
     record.repository === repo &&
     Number(record.pr) === number &&
     record.headSha === sha &&
-    ["reserved", "posted", "skipped"].includes(record.status));
+    ["reserved", "posted"].includes(record.status));
   if (matches.length === 0) {
     return { ok: false, reason: "no-matching-kody-trigger", records };
   }
-  const matchedComments = new Set(matches.map(record => String(record.commentId ?? "")).filter(Boolean));
-  let changed = false;
-  const output = records.map(record => {
-    const matchesHead = isKodyRecord(record) &&
-      record.repository === repo &&
-      Number(record.pr) === number &&
-      record.headSha === sha;
-    const matchesComment = isKodyRecord(record) &&
-      record.repository === repo &&
-      matchedComments.has(String(record.commentId ?? "")) &&
-      String(record.commentId ?? "") !== "";
-    if (!(matchesHead || matchesComment) ||
-        ["released", "skipped"].includes(record.status)) return record;
-    changed = true;
-    return {
-      ...record,
-      status: "skipped",
-      skipCheckRunId: runId,
-      skipCheckUrl: String(checkUrl),
-      updatedAt: now,
-    };
-  });
+  const recordTime = record => Date.parse(
+    String(record.createdAt ?? record.reservedAt ?? record.updatedAt ?? ""),
+  );
+  const checkStartedMs = Date.parse(String(checkStartedAt));
+  let target = null;
+  if (Number.isFinite(checkStartedMs)) {
+    target = matches
+      .filter(record => Number.isFinite(recordTime(record)) && recordTime(record) <= checkStartedMs)
+      .sort((left, right) => recordTime(right) - recordTime(left))[0] ?? null;
+  }
+  // 无时间关联时保守退最早的一笔，而不是把同一 HEAD 的全部请求一起退掉。
+  target ??= matches.sort((left, right) => recordTime(left) - recordTime(right))[0];
+  const targetIndex = records.indexOf(target);
+  const output = [...records];
+  output[targetIndex] = {
+    ...target,
+    status: "skipped",
+    skipCheckRunId: runId,
+    skipCheckUrl: String(checkUrl),
+    updatedAt: now,
+  };
   return {
     ok: true,
-    reason: changed ? "kody-skipped-refunded" : "already-skipped",
-    records: changed ? output : records,
-    counts: kodyQuotaCounts(changed ? output : records, matches[0].date),
+    reason: "kody-skipped-refunded",
+    records: output,
+    counts: kodyQuotaCounts(output, target.date),
   };
 }
 
