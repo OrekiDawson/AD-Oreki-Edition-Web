@@ -9,6 +9,7 @@ import {
   SHARED_QUOTA_REPOSITORIES,
   applyCas,
   attachKodyCommand,
+  clearPendingKodySkip,
   consumedCount,
   importKodyEvidence,
   isSharedQuotaRepository,
@@ -271,6 +272,26 @@ assert.equal(futureHeadSkip.ok, false);
 assert.equal(futureHeadSkip.records[0].status, "posted");
 assert.equal(futureHeadSkip.records[0].headSha, undefined);
 
+const timelineAttributedComment = {
+  ...oldHeadObserved,
+  identity: `kody-comment:${kodyAndroid}#9105`,
+  commentId: "9105",
+  headSha: "c".repeat(40),
+  createdAt: "2026-11-20T16:40:00Z",
+};
+const timelineAttributedSkip = markKodySkippedPure([timelineAttributedComment], {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "c".repeat(40),
+  checkRunId: 98143,
+  checkStartedAt: "2026-11-20T17:00:00Z",
+  headCommittedAt: "2026-11-20T16:00:00Z",
+  currentPullRequestHeadSha: "d".repeat(40),
+  currentPullRequestHeadCommittedAt: "2026-11-20T16:30:00Z",
+});
+assert.equal(timelineAttributedSkip.ok, true);
+assert.equal(timelineAttributedSkip.records[0].status, "skipped");
+
 const racedReservation = reserveKodyPure([], kodyCandidate("raced-attach", kodyAndroid), {
   date: kodyDate,
   now: "2026-11-20T16:04:10Z",
@@ -369,6 +390,7 @@ assert.equal(kodyQuotaCounts(pendingOnce, kodyDate).used, 0);
 const pendingTwice = queuePendingKodySkip(pendingOnce, pendingIdentity,
   "unattributed-trigger", "2026-11-20T06:00:02Z");
 assert.equal(pendingTwice, pendingOnce);
+assert.equal(clearPendingKodySkip(pendingOnce, "missing"), pendingOnce);
 
 const shadowReservation = reserveKodyPure([], kodyCandidate("shadow-reservation", kodyAndroid), {
   date: kodyDate,
@@ -401,6 +423,7 @@ assert.equal(newerManualSkip.records.find(record => record.commentId === "9201")
   "posted");
 assert.equal(newerManualSkip.records.find(record => record.commentId === "9202").status,
   "skipped");
+assert.equal(newerManualSkip.counts.used, 2);
 const automaticAttachAfterManualSkip = attachKodyCommand(newerManualSkip.records, {
   identity: "shadow-reservation",
   commentId: "9201",

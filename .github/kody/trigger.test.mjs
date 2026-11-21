@@ -37,6 +37,8 @@ import {
   kodySkipPullRequests,
   main as reconcileKodySkip,
   realKodyReviews,
+  resolvedKodySkipCandidates,
+  triggerCommentHeadShas,
 } from "./skip-reconcile.mjs";
 
 const repository = "OrekiDawson/AD-Oreki-Edition-Android";
@@ -472,7 +474,7 @@ test("已完成、运行中或排队 Kody Review 关联到启动前最近请求"
     { startedAt: "2026-11-21T12:58:00Z", commentId: "70" },
     { startedAt: "2026-11-21T12:58:40Z", commentId: "71" },
     { startedAt: "2026-11-21T12:58:50Z", commentId: "71" },
-    { startedAt: "2026-11-21T12:59:00Z", commentId: "71" },
+    { startedAt: "2026-11-21T12:59:00Z", commentId: "" },
   ]);
 });
 
@@ -500,4 +502,68 @@ test("skipped Check 到达时可从 PR 评论补齐精确触发证据", () => {
     url: "https://example.test/pull/7#issuecomment-77",
     createdAt: "2026-11-21T12:58:30Z",
   }]);
+});
+
+test("按 PR timeline 顺序为触发评论绑定当时的 Head", () => {
+  const headA = "a".repeat(40);
+  const headB = "b".repeat(40);
+  const heads = triggerCommentHeadShas([
+    { event: "committed", sha: headA },
+    { event: "commented", id: 70 },
+    { event: "committed", sha: headB },
+    { event: "commented", id: 71 },
+  ]);
+  assert.equal(heads.get("70"), headA);
+  assert.equal(heads.get("71"), headB);
+  assert.deepEqual(
+    kodyTriggerCommentEvidence([
+      {
+        id: 70,
+        user: { login: "OrekiDawson" },
+        body: TRIGGER_BODY,
+        created_at: "2026-11-21T12:57:50Z",
+        html_url: "https://example.test/70",
+      },
+    ], repository, 42, heads).map(item => item.headSha),
+    [headA],
+  );
+});
+
+test("真实 Kody Check 按创建时间绑定请求，启动延迟不改变触发评论", () => {
+  const checks = [{
+    id: 8,
+    app: { slug: "kody-ai" },
+    name: "Kody Code Review",
+    status: "completed",
+    conclusion: "success",
+    created_at: "2026-11-21T12:58:10Z",
+    started_at: "2026-11-21T12:59:00Z",
+    pull_requests: [{ number: 42 }],
+  }];
+  const evidence = [
+    { commentId: "70", createdAt: "2026-11-21T12:58:00Z" },
+    { commentId: "71", createdAt: "2026-11-21T12:58:20Z" },
+  ];
+  assert.deepEqual(realKodyReviews(checks, 99, evidence, 42), [{
+    startedAt: "2026-11-21T12:59:00Z",
+    commentId: "70",
+  }]);
+});
+
+test("Check 明确关联多个 PR 时不使用 commits 到 pulls 兜底", async () => {
+  const event = {
+    action: "completed",
+    repository: { full_name: repository },
+    check_run: {
+      id: 9901,
+      name: "Kody Code Review",
+      status: "completed",
+      conclusion: "skipped",
+      head_sha: "a".repeat(40),
+      started_at: "2026-11-21T12:59:00Z",
+      app: { slug: "kody-ai" },
+      pull_requests: [{ number: 42 }, { number: 43 }],
+    },
+  };
+  assert.deepEqual(await resolvedKodySkipCandidates(event, "unused"), []);
 });

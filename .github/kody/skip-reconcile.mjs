@@ -45,7 +45,22 @@ export function kodySkipPullRequests(event) {
   return output.length === 1 ? output : [];
 }
 
-export function kodyTriggerCommentEvidence(comments, repository, pr) {
+export function triggerCommentHeadShas(timeline) {
+  const heads = new Map();
+  let currentHeadSha = "";
+  for (const event of timeline) {
+    if (event?.event === "committed" && /^[a-f0-9]{40}$/iu.test(String(event.sha ?? ""))) {
+      currentHeadSha = event.sha;
+      continue;
+    }
+    if (event?.event === "commented" && currentHeadSha && event.id != null) {
+      heads.set(String(event.id), currentHeadSha);
+    }
+  }
+  return heads;
+}
+
+export function kodyTriggerCommentEvidence(comments, repository, pr, commentHeads = null) {
   return comments
     .filter(isExactTriggerComment)
     .map(comment => ({
@@ -54,6 +69,9 @@ export function kodyTriggerCommentEvidence(comments, repository, pr) {
       commentId: String(comment.id),
       url: comment.html_url ?? "",
       createdAt: comment.created_at,
+      ...(commentHeads?.get(String(comment.id))
+        ? { headSha: String(commentHeads.get(String(comment.id))) }
+        : {}),
     }))
     .filter(item =>
       item.commentId &&
@@ -86,13 +104,13 @@ export function realKodyReviews(checks, currentCheckId, evidence = [],
     })
     .map(check => {
       const startedAt = check.started_at ?? check.created_at;
-      const startedMs = Date.parse(String(startedAt ?? ""));
+      const createdMs = Date.parse(String(check.created_at ?? startedAt ?? ""));
       const trigger = triggerTimes
-        .filter(item => item.at <= startedMs)
+        .filter(item => item.at <= createdMs)
         .sort((left, right) => right.at - left.at)[0] ?? null;
       return {
         startedAt,
-        commentId: trigger?.commentId ?? "",
+        commentId: check?.pull_requests?.length ? trigger?.commentId ?? "" : "",
       };
     });
 }
@@ -135,7 +153,16 @@ export async function githubListAll(path, token, maxPages = 10) {
   return output;
 }
 
-async function resolvedKodySkipCandidates(event, token) {
+export async function resolvedKodySkipCandidates(event, token) {
+  const explicitPullRequests = [...new Set(
+    (event.check_run.pull_requests ?? [])
+      .map(pr => Number(pr?.number))
+      .filter(number => Number.isSafeInteger(number) && number > 0),
+  )];
+  if (explicitPullRequests.length > 1) {
+    console.log("Kody skip: Check 明确关联多个 PR，禁止按 commits→pulls 兜底。");
+    return [];
+  }
   const direct = kodySkipPullRequests(event);
   if (direct.length) return direct;
   if (!confirmedKodySkip(event)) return [];
@@ -234,7 +261,9 @@ export async function main() {
       }
     }
     let commentsFetchFailed = false;
+    let timelineFetchFailed = false;
     let comments = [];
+    let timeline = [];
     try {
       comments = await githubListAll(
         `/repos/${repository}/issues/${match.pr}/comments?sort=created&direction=desc&per_page=100`,
@@ -247,11 +276,28 @@ export async function main() {
         `exact-head records only: ${error.message}`,
       );
     }
+    try {
+      timeline = await githubListAll(
+        `/repos/${repository}/issues/${match.pr}/timeline?per_page=100`,
+        token,
+      );
+    } catch (error) {
+      timelineFetchFailed = true;
+      console.warn(
+        `Kody skip: PR #${match.pr} timeline evidence unavailable; ` +
+        `headless records use conservative time windows: ${error.message}`,
+      );
+    }
     match.checkStartedAt = event.check_run.started_at ?? event.check_run.created_at ?? "";
     match.headCommittedAt = headCommittedAt;
     match.currentPullRequestHeadSha = currentPullRequestHeadSha;
     match.currentPullRequestHeadCommittedAt = currentPullRequestHeadCommittedAt;
-    match.evidence = kodyTriggerCommentEvidence(comments, repository, match.pr);
+    match.evidence = kodyTriggerCommentEvidence(
+      comments,
+      repository,
+      match.pr,
+      timelineFetchFailed ? null : triggerCommentHeadShas(timeline),
+    );
     match.priorRealReviews = realKodyReviews(
       checks.check_runs ?? [],
       event.check_run.id,
@@ -265,6 +311,15 @@ export async function main() {
     if (!result.ok &&
         commentsFetchFailed &&
         result.reason === "no-matching-kody-trigger") {
+      throw new Error(
+        `Kody skip: ${match.repository}#${match.pr} requires retry: ${result.reason}`,
+      );
+    }
+    if (["unattributed-trigger", "missing-check-start-time"].includes(result.reason)) {
+      console.warn(
+        `::warning::Kody skip ${match.repository}#${match.pr}@${match.headSha} ` +
+        `待归因（${result.reason}）；请使用 workflow_dispatch 和 check_run_id=${match.checkRunId} 重核。`,
+      );
       throw new Error(
         `Kody skip: ${match.repository}#${match.pr} requires retry: ${result.reason}`,
       );

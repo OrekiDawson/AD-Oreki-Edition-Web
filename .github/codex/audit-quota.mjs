@@ -177,6 +177,9 @@ export function importKodyEvidence(records, evidence, date, now) {
       pr: Number(item?.pr),
       commentId,
       commentUrl: String(item?.url ?? ""),
+      ...(String(item?.headSha ?? "").trim()
+        ? { headSha: String(item.headSha) }
+        : {}),
       source: "observed_comment",
       date,
       status: "posted",
@@ -453,27 +456,6 @@ export function markKodySkippedPure(records, {
   if (!target) {
     return { ok: false, reason: "trigger-after-check", records };
   }
-  let mergeReservation = null;
-  if (!target.headSha) {
-    const targetMs = recordTime(target);
-    const reservations = exactMatches
-      .filter(record =>
-        record.status === "reserved" &&
-        !String(record.commentId ?? "").trim() &&
-        Number.isFinite(recordTime(record)) &&
-        recordTime(record) <= targetMs)
-      .sort((left, right) => recordTime(right) - recordTime(left));
-    for (const reservation of reservations) {
-      const earliestObservation = latest(
-        headlessMatches.filter(record => recordTime(record) >= recordTime(reservation)),
-        false,
-      );
-      if (earliestObservation === target) {
-        mergeReservation = reservation;
-        break;
-      }
-    }
-  }
   const targetRecordMs = recordTime(target);
   const targetCommentId = String(target.commentId ?? "");
   const priorRealReview = priorRealReviews.find(review => {
@@ -495,25 +477,12 @@ export function markKodySkippedPure(records, {
       counts: kodyQuotaCounts(records, target.date),
     };
   }
-  const observedCommentId = mergeReservation ? targetCommentId : "";
-  const skipTarget = mergeReservation ?? target;
-  const output = records.filter(record =>
-    record !== (mergeReservation ? target : null) &&
-    !(observedCommentId &&
-      isKodyRecord(record) &&
-      String(record.repository ?? "") === String(skipTarget.repository ?? "") &&
-      String(record.commentId ?? "") === observedCommentId &&
-      record !== skipTarget));
-  const outputTargetIndex = output.indexOf(skipTarget);
+  const output = [...records];
+  const outputTargetIndex = output.indexOf(target);
   output[outputTargetIndex] = {
-    ...skipTarget,
-    headSha: skipTarget.headSha || sha,
+    ...target,
+    headSha: target.headSha || sha,
     status: "skipped",
-    ...(mergeReservation ? {
-      commentId: observedCommentId,
-      commentUrl: String(target.commentUrl ?? ""),
-      createdAt: target.createdAt,
-    } : {}),
     skipCheckRunId: runId,
     skipCheckUrl: String(checkUrl),
     updatedAt: now,
@@ -522,7 +491,7 @@ export function markKodySkippedPure(records, {
     ok: true,
     reason: "kody-skipped-refunded",
     records: output,
-    counts: kodyQuotaCounts(output, skipTarget.date),
+    counts: kodyQuotaCounts(output, target.date),
   };
 }
 
@@ -554,6 +523,14 @@ export function queuePendingKodySkip(records, checkIdentity, reason,
   }];
 }
 
+export function clearPendingKodySkip(records, pendingIdentity) {
+  const hasPending = records.some(record =>
+    record?.kind === KODY_SKIP_PENDING_KIND && record.identity === pendingIdentity);
+  if (!hasPending) return records;
+  return records.filter(record =>
+    !(record?.kind === KODY_SKIP_PENDING_KIND && record.identity === pendingIdentity));
+}
+
 export async function markKodySkippedQuota(token, checkEvidence, { now = new Date() } = {}) {
   const date = shanghaiDate(now);
   const {
@@ -571,10 +548,8 @@ export async function markKodySkippedQuota(token, checkEvidence, { now = new Dat
       `#${Number(skipIdentity.pr)}@${String(skipIdentity.headSha ?? "")}` +
       `:${String(skipIdentity.checkRunId ?? "")}`;
     if (result.ok) {
-      const cleaned = result.records.filter(record =>
-        !(record?.kind === KODY_SKIP_PENDING_KIND &&
-          record.identity === pendingIdentity));
-      return { ...result, records: cleaned };
+      const records = clearPendingKodySkip(result.records, pendingIdentity);
+      return records === result.records ? result : { ...result, records };
     }
     if (["unattributed-trigger", "missing-check-start-time"].includes(result.reason)) {
       const pending = queuePendingKodySkip(
