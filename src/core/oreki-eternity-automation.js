@@ -1010,6 +1010,24 @@ export const OrekiEternityAutomation = {
     return null;
   },
 
+  /** 当前永恒段真实时间；用于识别永恒结算把自动永恒开关复位，而非玩家手动关闭。 */
+  _thisEternityRealTime() {
+    try {
+      const v = player?.records?.thisEternity?.realTime;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
+  /** 永恒进度稳定令牌；真实永恒结算必须让其变化。 */
+  _eternitiesToken() {
+    try {
+      const v = player?.eternities;
+      return v === undefined || v === null ? null : String(v);
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
   /** 存档身份：Web 真实字段 records.gameCreatedTime（player.js:275 / storage.js:434）。 */
   _saveIdentity() {
     try {
@@ -1037,6 +1055,8 @@ export const OrekiEternityAutomation = {
     this._eternityAutoUserClosed = false;
     this._eternityAutoEnabledAtRealities = null;
     this._eternityAutoEnabledAtRealTime = null;
+    this._eternityAutoEnabledAtEternityRealTime = null;
+    this._eternityAutoEnabledAtEternities = null;
     this._eternityAutoLastSeenActive = undefined;
     // [R116-01] 首次永恒驻留的「曾永恒」latch 同样按存档身份失效。
     this._firstEternityEverSeen = false;
@@ -1053,12 +1073,16 @@ export const OrekiEternityAutomation = {
       const active = player.auto.eternity.isActive === true;
       const realities = this._realitiesValue();
       const realTime = this._thisRealityRealTime();
+      const eternityRealTime = this._thisEternityRealTime();
+      const eternities = this._eternitiesToken();
       if (active) {
         // 玩家（或上一会话）真实开着 ⇒ 本会话视为已接管，恢复链路成立。
         this._eternityAutobuyerAdopted = true;
         this._eternityAutoUserClosed = false;
         this._eternityAutoEnabledAtRealities = realities;
         this._eternityAutoEnabledAtRealTime = realTime;
+        this._eternityAutoEnabledAtEternityRealTime = eternityRealTime;
+        this._eternityAutoEnabledAtEternities = eternities;
         this._eternityAutoLastSeenActive = true;
         return;
       }
@@ -1075,8 +1099,16 @@ export const OrekiEternityAutomation = {
             realities !== null && realities > this._eternityAutoEnabledAtRealities;
           const realTimeReset = this._eternityAutoEnabledAtRealTime !== null &&
             realTime !== null && realTime < this._eternityAutoEnabledAtRealTime;
-          if (realitiesReset || realTimeReset) {
-            // 原版 Reality 复位：不判玩家关闭，交给接管逻辑补回 true。
+          const eternityRealTimeReset =
+            this._eternityAutoEnabledAtEternityRealTime !== null &&
+            eternityRealTime !== null &&
+            eternityRealTime < this._eternityAutoEnabledAtEternityRealTime;
+          const eternitiesChanged =
+            this._eternityAutoEnabledAtEternities !== null &&
+            eternities !== null &&
+            eternities !== this._eternityAutoEnabledAtEternities;
+          if (realitiesReset || realTimeReset || eternityRealTimeReset || eternitiesChanged) {
+            // 原版 Reality/永恒结算复位：不判玩家关闭，交给接管逻辑补回 true。
             this._eternityAutoUserClosed = false;
           } else if (realities !== null && realTime !== null) {
             // 同现实内被关：判玩家手动关闭（粘滞，尊重）。

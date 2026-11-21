@@ -1076,6 +1076,16 @@ try {
       const activeIdx = tickBody.indexOf("if (!this.eternityResetActive) return false;");
       const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
       const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
+      const observeBody = src.split("_observeEternityAutobuyerSwitch() {")[1]
+        ?.split("_eternityBootstrapActive() {")[0] || "";
+      check("[R121] 自动永恒开关观察记录本永恒真实时间",
+        observeBody.includes("this._eternityAutoEnabledAtEternityRealTime = eternityRealTime"));
+      check("[R121] 自动永恒开关观察记录永恒进度令牌",
+        observeBody.includes("this._eternityAutoEnabledAtEternities = eternities"));
+      check("[R121] 永恒进度变化不被误判为玩家手动关闭",
+        observeBody.includes("eternityRealTimeReset") &&
+        observeBody.includes("eternitiesChanged") &&
+        observeBody.includes("realitiesReset || realTimeReset || eternityRealTimeReset || eternitiesChanged"));
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
         "sample=" + sampleIdx + " dwell=" + dwellIdx);
