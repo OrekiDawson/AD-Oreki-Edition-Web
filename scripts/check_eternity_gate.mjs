@@ -332,10 +332,10 @@ try {
   }
 }
 
-// ---------------- ⑪ R96：TT 购买收益 ×500（与 Android 同语义） ----------------
+// ---------------- ⑪ TT 购买收益保持原版 ×1 ----------------
 {
   const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
-  check("倍率常量 = 500", src.includes("const TT_REWARD_MULTIPLIER = 500;"));
+  check("倍率常量 = 1", src.includes("const TT_REWARD_MULTIPLIER = 1;"));
   check("totalPurchased 结果按真实类型处理（number 不再调 toNumber）",
     src.includes('typeof raw === "number" ? raw : raw.toNumber()'));
   check("禁止把 totalPurchased() 直接当 Decimal 调 toNumber",
@@ -380,14 +380,14 @@ try {
     total = 3;
     check("无新购买时不发奖", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 4;
-    check("新增 1 次购买 → 补发 499 TT", A2.settleTimeTheoremReward() === 499 && added === 499);
+    check("新增 1 次购买 → 不补发 TT", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 4;
-    check("同一笔购买不会被重复补发", A2.settleTimeTheoremReward() === 0 && added === 499);
+    check("同一笔购买不会被重复补发", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 6;
-    check("批量新增 2 次 → 补发 998 TT", A2.settleTimeTheoremReward() === 998 && added === 1497);
+    check("批量新增 2 次 → 不补发 TT", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 2_400_000;
-    check("[R104 P1] 高倍率单拍真实大额购买 delta=2.4e6 → 按 ×500 补发（不再当换档丢弃）",
-      A2.settleTimeTheoremReward() === (2_400_000 - 6) * 499);
+    check("[R104 P1] 高倍率单拍真实大额购买 delta=2.4e6 → 不补发 TT",
+      A2.settleTimeTheoremReward() === 0);
     const addedAfterBig = added;
     total = 2_400_000 + 200_000_000;
     check("超过 1e8 的换档级跳变仍只重设基线、不发奖",
@@ -1073,13 +1073,24 @@ try {
     {
       const tickBody = src.split("tickEternity() {")[1]?.split('this._err("tickEternity"')[0] || "";
       const sampleIdx = tickBody.indexOf("this._sampleFreshSession()");
-      const activeIdx = tickBody.indexOf("if (!this.active) return false;");
+      const activeIdx = tickBody.indexOf("if (!this.eternityResetActive) return false;");
       const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
       const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
+      const observeBody = src.split("_observeEternityAutobuyerSwitch() {")[1]
+        ?.split("_eternityBootstrapActive() {")[0] || "";
+      check("[R121] 自动永恒开关观察记录本永恒真实时间",
+        observeBody.includes("this._eternityAutoEnabledAtEternityRealTime = eternityRealTime"));
+      check("[R121] 自动永恒开关观察记录永恒进度令牌",
+        observeBody.includes("this._eternityAutoEnabledAtEternities = eternities"));
+      check("[R121] 永恒进度变化不被误判为玩家手动关闭",
+        observeBody.includes("eternityRealTimeReset") &&
+        observeBody.includes("eternitiesChanged") &&
+        observeBody.includes("eternityRealTime === null && eternitiesChanged") &&
+        observeBody.includes("realitiesReset || realTimeReset || eternityReset"));
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
         "sample=" + sampleIdx + " dwell=" + dwellIdx);
-      check("[R116 review] latch 采样与 active 解耦（在 !active early return 之前）",
+      check("[R116 review] latch 采样与永恒重置门禁解耦",
         sampleIdx >= 0 && activeIdx > sampleIdx,
         "sample=" + sampleIdx + " active=" + activeIdx);
       check("[R116 review] dwell gate 仍在接管开关之前",

@@ -57,25 +57,26 @@ const STUDY_TICK_INTERVAL = 30;
 const RESERVE_REACHABLE_LOG10 = 2.0;
 
 /**
- * [R96] MOD 平衡参数「TT 购买收益 ×500」（用户 2026-11-09 正式裁决）。
+ * TT 购买收益保持原版 ×1。
  *
- * 原版每次成功购买给 1 TT；这里按 500 发放，但**成本曲线、购买资格、资源扣费
- * 与真实购买结算全部沿用原版**。实现方式是对账：
+ * 旧 MOD 曾把每次真实购买补发到 500 TT，这会让时间研究链、
+ * 永恒挑战和首次现实明显提前。五阶段节奏规则生效后，购买收益恢复原版 ×1；
+ * 成本曲线、购买资格、资源扣费与真实购买结算仍全部沿用原版。对账逻辑保留，
+ * 以避免存档或手动购买路径绕过统一口径：
  *   · 每帧读 `TimeTheorems.totalPurchased()`（= amBought + ipBought + epBought 之和）；
  *   · 与上一次基线比较，增量 Δ 就是「本帧真实发生的购买次数」；
- *   · 补发 Δ×(500−1) TT 走原版 `Currency.timeTheorems.add`，随后立刻推进基线。
+ *   · 补发 Δ×(1−1) TT（即 0）走原版 `Currency.timeTheorems.add`，随后立刻推进基线。
  * 这样手动点击、原版自动购买、MOD 自动购买、单次/批量购买**全部覆盖**，
  * 且同一笔购买不可能被发两次（基线在发奖后立即前进）。
  */
-const TT_REWARD_MULTIPLIER = 500;
+const TT_REWARD_MULTIPLIER = 1;
 
 /**
  * [R104 P1] 单帧购买次数上限：只用于拦截**数量级异常的换档跳变**（例如会话内导入更高进度存档）。
  *
  * 原值 50 的设定前提是 tick 每帧都被调用；但 R104 起 tick 走统一节拍（实测 ~45 s 才被服务一次），
- * 100000× 下每次服务都会真实购买数十万 TT ⇒ delta 恒 > 50，×500 奖励**一次都不会发**
- * （pass7 实测 _lastError 长期为 "delta 134/2.4e6 超出单帧上限 50"），TT 加速链断裂，
- * EP 卡在 e3682.74 到不了 isRealityAvailable 要求的 e4000。
+ * 高倍率下每次服务都可能真实购买数十万 TT；旧的小上限会把合法批量购买误判成换档，
+ * 从而让时间研究链停滞。这里因此保留数量级级保护，而不是限制正常购买。
  * 合法真实购买量远小于 1e8；只有换档级跳变才会超过它。
  */
 const TT_REWARD_MAX_DELTA_PER_TICK = 1e8;
@@ -202,6 +203,24 @@ export const OrekiEternityAutomation = {
   },
 
   /**
+   * 永恒重置的独立门禁。
+   *
+   * `active` 还负责时间维度、TT 与时间研究购买；挑战中必须关闭这些经济动作。
+   * 但永恒挑战的完成只能由“达到原版目标后的真实永恒”产生，不能把重置本身一起停掉。
+   * 因此只在 EC 内额外放行重置入口；普通/无限挑战与 Pelle 毁灭态仍不接管。
+   */
+  get eternityResetActive() {
+    try {
+      if (player.auto.autobuyersOn === false || Pelle.isDoomed) return false;
+      if (EternityChallenge.isRunning) return true;
+      return this.active;
+    } catch (e) {
+      this._err("eternityResetActive", e);
+      return false;
+    }
+  },
+
+  /**
    * A) 用 EP 买时间维度 1~8。
    *
    * [Oreki R25] 原来只买到 4 级。但膨胀研究 6（`TimeStudy.reality`）的第一条要求是
@@ -307,7 +326,7 @@ export const OrekiEternityAutomation = {
   },
 
   /**
-   * [R96] TT 购买收益 ×500 的唯一发奖点（每帧调用，幂等）。
+   * TT 购买收益对账点（当前为原版 ×1，每帧调用且幂等）。
    *
    * 边界：
    *   · 首次调用只建立基线（`_ttSettled === null`），不为历史购买补发；
@@ -575,8 +594,8 @@ export const OrekiEternityAutomation = {
    * （secret-formula/eternity/time-studies/dilation-time-studies.js:19），
    * 而膨胀研究 6（= TimeStudy.reality）还要求全部 pre-Reality 成就。
    *
-   * 进入挑战后由既有的 core/oreki-instant-challenges.js「进入即完成」接管，
-   * 这里只负责按下「开始」那一下，不重复实现完成逻辑。
+   * 这里只负责按下「开始」那一下；挑战中的资源目标、完成次数与奖励
+   * 仍由原版挑战和永恒结算自然产生，不写完成位或补发资源。
    */
   /**
    * [Oreki R37-A] 删除了死变量 `_ecTarget`（恒为 1，中间没有任何赋值）。
@@ -604,7 +623,7 @@ export const OrekiEternityAutomation = {
    *    补齐该 EC 需要的研究路径再重试购买；EC11/12 还补 191/193。
    *
    * 本方法一关一关推进，每步都走原版真实路径：
-   *   - 挑战在跑 → 不插手（交给「进入即完成」模块）
+   *   - 挑战在跑 → 不重复进入（完成由原版挑战目标与真实永恒结算决定）
    *   - 当前关没满 5 次 → start(true)
    *   - 当前关已满 → respecTimeStudies(true) 清 unlocked 并退款
    *   - unlocked === 0 → 对目标关 purchaseUntil()，买上了立刻 start(true)
@@ -665,7 +684,7 @@ export const OrekiEternityAutomation = {
         }
       }
 
-      // 2) 已有挑战在跑就不插手（完成逻辑交给 oreki-instant-challenges）
+      // 2) 已有挑战在跑就不重复进入；完成仍由原版挑战机制产生。
       if (EternityChallenge.isRunning) return false;
 
       // 3) 进入当前已解锁的那一关
@@ -991,6 +1010,24 @@ export const OrekiEternityAutomation = {
     return null;
   },
 
+  /** 当前永恒段真实时间；用于识别永恒结算把自动永恒开关复位，而非玩家手动关闭。 */
+  _thisEternityRealTime() {
+    try {
+      const v = player?.records?.thisEternity?.realTime;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
+  /** 永恒进度稳定令牌；真实永恒结算必须让其变化。 */
+  _eternitiesToken() {
+    try {
+      const v = player?.eternities;
+      return v === undefined || v === null ? null : String(v);
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
   /** 存档身份：Web 真实字段 records.gameCreatedTime（player.js:275 / storage.js:434）。 */
   _saveIdentity() {
     try {
@@ -1018,6 +1055,8 @@ export const OrekiEternityAutomation = {
     this._eternityAutoUserClosed = false;
     this._eternityAutoEnabledAtRealities = null;
     this._eternityAutoEnabledAtRealTime = null;
+    this._eternityAutoEnabledAtEternityRealTime = null;
+    this._eternityAutoEnabledAtEternities = null;
     this._eternityAutoLastSeenActive = undefined;
     // [R116-01] 首次永恒驻留的「曾永恒」latch 同样按存档身份失效。
     this._firstEternityEverSeen = false;
@@ -1034,12 +1073,16 @@ export const OrekiEternityAutomation = {
       const active = player.auto.eternity.isActive === true;
       const realities = this._realitiesValue();
       const realTime = this._thisRealityRealTime();
+      const eternityRealTime = this._thisEternityRealTime();
+      const eternities = this._eternitiesToken();
       if (active) {
         // 玩家（或上一会话）真实开着 ⇒ 本会话视为已接管，恢复链路成立。
         this._eternityAutobuyerAdopted = true;
         this._eternityAutoUserClosed = false;
         this._eternityAutoEnabledAtRealities = realities;
         this._eternityAutoEnabledAtRealTime = realTime;
+        this._eternityAutoEnabledAtEternityRealTime = eternityRealTime;
+        this._eternityAutoEnabledAtEternities = eternities;
         this._eternityAutoLastSeenActive = true;
         return;
       }
@@ -1056,8 +1099,20 @@ export const OrekiEternityAutomation = {
             realities !== null && realities > this._eternityAutoEnabledAtRealities;
           const realTimeReset = this._eternityAutoEnabledAtRealTime !== null &&
             realTime !== null && realTime < this._eternityAutoEnabledAtRealTime;
-          if (realitiesReset || realTimeReset) {
-            // 原版 Reality 复位：不判玩家关闭，交给接管逻辑补回 true。
+          const eternityRealTimeReset =
+            this._eternityAutoEnabledAtEternityRealTime !== null &&
+            eternityRealTime !== null &&
+            eternityRealTime < this._eternityAutoEnabledAtEternityRealTime;
+          const eternitiesChanged =
+            this._eternityAutoEnabledAtEternities !== null &&
+            eternities !== null &&
+            eternities !== this._eternityAutoEnabledAtEternities;
+          // 本永恒真实时间回退是结算的直接证据。仅在时间不可读时才退回永恒计数变化，
+          // 避免“玩家消费永恒次数”和手动关闭同帧发生时把关闭误判为原版复位。
+          const eternityReset = eternityRealTimeReset ||
+            (eternityRealTime === null && eternitiesChanged);
+          if (realitiesReset || realTimeReset || eternityReset) {
+            // 原版 Reality/永恒结算复位：不判玩家关闭，交给接管逻辑补回 true。
             this._eternityAutoUserClosed = false;
           } else if (realities !== null && realTime !== null) {
             // 同现实内被关：判玩家手动关闭（粘滞，尊重）。
@@ -1371,7 +1426,7 @@ export const OrekiEternityAutomation = {
       // 之后所有 MOD 自动永恒。与 _observeEternityAutobuyerSwitch() 同级，按本会话首次
       // 观测到的存档 eternities 固化结论（换档时 _bindSaveIdentity 会清掉重新采样）。
       this._sampleFreshSession();
-      if (!this.active) return false;
+      if (!this.eternityResetActive) return false;
       // [R116-01 P0] 首次永恒驻留：玩家未亲自开启自动永恒时，MOD 不得在 canEternity
       // 出现的首个合法帧就替玩家结算首次永恒。驻留仍必须在
       // _adoptEternityAutobuyerIfNeeded() 之前，否则「同帧接管并打开开关」会把驻留旁路。
@@ -1417,6 +1472,14 @@ export const OrekiEternityAutomation = {
       if (this.holdForRealityUpgrade10()) return false;
       // 入口保护：只在「主研究已买、只差资源」时生效，不拖慢 EC1/EC2 的永恒次数增长
       if (this.ecEntryPending()) return false;
+      // EC 中完成次数只能由真实目标达成后触发的原版永恒结算产生。
+      // 不用全局 EP×1 门槛压住挑战退出，否则达标后仍可能长期不结算；
+      // `canBeCompleted` 同时覆盖原版目标与 EC4/EC12 的限制条件。
+      if (EternityChallenge.isRunning) {
+        const challenge = EternityChallenge.current;
+        if (!challenge || !challenge.canBeCompleted) return false;
+        return eternity(false, true) === true;
+      }
       // [R96 第五轮] 永恒结算门槛 ×10 → ×1：收益只要让 EP 翻倍（gained ≥ 当前 EP）就结算。
       //
       // 实测缺陷（平台期 bigE=3、EP=2.16、maxIP 1e593、maxAM 1e124044）：×10 门槛要求
@@ -1621,10 +1684,9 @@ export const OrekiEternityAutomation = {
   },
 
   tick() {
-    // [R96] TT ×500：**先**对账（建基线/结算上一帧的真实购买），**再**买。
+    // TT 收益对账：**先**结算上一帧的真实购买，**再**买，避免首帧漏发。
     // 顺序反了会让首帧的购买被当成历史购买而漏发。
-    // 且这一步与 `active` 无关：玩家关掉自动后手动买同样要按 ×500 结算 ——
-    // 它是「真实购买后的奖励口径」，不是自动动作。
+    // 且这一步与 `active` 无关：手动购买与自动购买共用同一套对账口径。
     this.settleTimeTheoremReward();
 
     if (!this.active) return { dims: false, tt: false, studies: 0, dilation: 0, ec: false };

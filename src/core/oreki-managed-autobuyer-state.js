@@ -6,7 +6,8 @@
 //      与玩家配置的 1～60 秒周期严格同步；同一 tick 不重复写。
 //   2. 每个有效 Tick 都按**当前阶段最新状态**重新计算启用目标：
 //      玩家手动改动启停后，本 Tick 内允许保留其操作，下一次有效 Tick 恢复目标。
-//   3. 启停目标：反物质维度 ×8、计数频率、维度提升、星系、献祭、无限点数倍率恒开；
+//   3. 启停目标：反物质维度 ×8、无限维度 ×8、计数频率、维度提升、星系、献祭、
+//      无限点数倍率恒开；
 //      大坍缩严格跟随当帧策略的 true/false，策略要求关闭时下一 Tick 关闭，
 //      一次性 release 由调用方以 true 明确传入。
 //   4. **单一所有者**：本模块托管启用状态、基础购买模式、限制项及大坍缩
@@ -17,7 +18,7 @@
 //      整体不接管，不写配置，也不消费 Tick；关闭 MOD 时按 saveId 写回首次接管前
 //      的原值（若玩家在最后一次托管写入后再次手改，则保留玩家最新值）。
 //   6. IU15 冲刺整体让路（冲刺模块有意关闭 ID 自动器）；佩勒毁灭态只让大坍缩目标
-//      保持关闭，其余 13 项仍按目标对账（与 Android 旧实现一致，避免玩家关闭后
+//      保持关闭，其余 21 项仍按目标对账（与 Android 旧实现一致，避免玩家关闭后
 //      整个阶段无法恢复）。
 //   7. 只写启用状态，不调用购买/tick/结算接口；「配置已恢复」≠「真实购买已执行」。
 //   8. 换存档/阶段重置后不保留旧目标：每次 Tick 都按当前真实字段重新计算。
@@ -34,6 +35,8 @@ const ORIGINAL_STORAGE_KEY = "oreki.managedAutobuyerOriginals";
 /** 受托管项的固定键序（用于自检/面板展示；读写仍按实际枚举）。 */
 export const MANAGED_KEYS = Object.freeze([
   "dim1", "dim2", "dim3", "dim4", "dim5", "dim6", "dim7", "dim8",
+  "infinityDim1", "infinityDim2", "infinityDim3", "infinityDim4",
+  "infinityDim5", "infinityDim6", "infinityDim7", "infinityDim8",
   "tickspeed", "dimboost", "galaxy", "sacrifice", "crunch", "ipmult",
 ]);
 
@@ -397,6 +400,31 @@ export function applyAll({
     dimensionItems.push({ key: `dim${tier}.mode`, item: dim });
   }
 
+  // 无限维度自动器与反物质维度分开登记。原版 Eternity/Reality reset 会把每层
+  // `isActive` 重置为 false；若只托管反物质维度，EC1 等真实挑战会因 ID 不再购买
+  // 而长期停在低层，资源目标无法自然达到。
+  const infinityDims = root.infinityDimension;
+  try {
+    if (infinityDims && infinityDims.isActive !== true) {
+      rememberManagedWrite("infinityDimGroup", infinityDims.isActive, true);
+      infinityDims.isActive = true;
+      wrote += 1;
+      STATE.writes += 1;
+      restored.push("infinityDim1");
+    }
+  } catch (e) { /* 组级写入失败不阻断逐层 */ }
+  for (let tier = 1; tier <= 8; tier += 1) {
+    let dimension = null;
+    try {
+      dimension = typeof infinityDims === "function"
+        ? infinityDims(tier)
+        : (infinityDims && (infinityDims[tier - 1] || infinityDims[tier])) || null;
+    } catch (e) {
+      dimension = null;
+    }
+    each(`infinityDim${tier}`, dimension, true);
+  }
+
   each("tickspeed", root.tickspeed, true);
   each("dimboost", root.dimboost, true);
   each("galaxy", root.galaxy, true);
@@ -521,6 +549,15 @@ export function releaseAll({ autobuyers = null } = {}) {
     const item = typeof dims === "function" ? dims(tier) : (dims && (dims[tier - 1] || dims[tier]));
     release(`dim${tier}`, () => item && item.isActive, value => { item.isActive = value; });
     release(`dim${tier}.mode`, () => item && item.mode, value => { item.mode = value; });
+  }
+  const infinityDims = root.infinityDimension;
+  release("infinityDimGroup", () => infinityDims && infinityDims.isActive,
+    value => { infinityDims.isActive = value; });
+  for (let tier = 1; tier <= 8; tier += 1) {
+    const item = typeof infinityDims === "function"
+      ? infinityDims(tier)
+      : (infinityDims && (infinityDims[tier - 1] || infinityDims[tier]));
+    release(`infinityDim${tier}`, () => item && item.isActive, value => { item.isActive = value; });
   }
   for (const key of ["tickspeed", "dimboost", "galaxy", "sacrifice", "crunch", "ipmult"]) {
     const item = key === "crunch" ? root.bigCrunch : root[key];

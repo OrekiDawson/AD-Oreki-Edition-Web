@@ -360,7 +360,7 @@ const defaultIntervalSec = Number(EXECUTOR_SRC.match(
   /const INTERVAL_DEFAULT_SEC = (\d+);/)[1]);
 
 check("17. 原版自动购买器的有效间隔 = interval / F（高倍率下按游戏时间触发）", () => {
-  assert.equal(gameSpeedDefault, 3000, "默认倍率应为 3000×");
+  assert.equal(gameSpeedDefault, 1000, "新档 Break 前默认倍率应为 1000×");
   assert.match(AUTOBUYER_SRC,
     /get effectiveInterval\(\) \{\s*\n\s*return this\.interval \/ Math\.max\(1, getGlobalSpeedFactor\(\)\);/);
 });
@@ -392,8 +392,8 @@ check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买�
     ...adIntervals.map((ms, i) => [`反物质维度 ${i + 1}`, ms]),
   ].map(([name, interval]) => {
     const effective = interval / gameSpeedDefault;
-    assert.ok(effective < frameMs,
-      `${name} 的有效间隔 ${effective}ms 不小于一帧 ${frameMs.toFixed(2)}ms`);
+    assert.ok(effective <= 50,
+      `${name} 的有效间隔 ${effective}ms 超过亚秒级上界 50ms（一帧 ${frameMs.toFixed(2)}ms）`);
     return `${name} ${interval}ms→${effective}ms`;
   });
   // 证据落到测试输出里，报告可直接引用

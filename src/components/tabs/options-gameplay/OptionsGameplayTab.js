@@ -78,6 +78,11 @@ export default {
     speedStorageHint() {
       return "独立保存在浏览器本地：重置或导入存档都不会改变倍率";
     },
+    speedStageHint() {
+      return GameSpeed.isStageManaged
+        ? "新档阶段速度：Break 前 1000×，Break 后 1800×，Reality 后 3000×；手动设置倍率后停止自动接管"
+        : "已使用你的手动倍率；点“恢复默认”可重新启用阶段速度";
+    },
     sliderPropsOfflineTicks() {
       return {
         min: 22,
@@ -309,6 +314,7 @@ export default {
           <b>游戏速度：×{{ speedFactorText }}</b>
           <span class="c-oreki-speed__hint">{{ speedHint }}</span>
           <span class="c-oreki-speed__hint">{{ speedStorageHint }}</span>
+          <span class="c-oreki-speed__hint">{{ speedStageHint }}</span>
         </div>
         <div class="o-primary-btn o-primary-btn--option c-oreki-speed__input">
           <b>自定义倍率</b>

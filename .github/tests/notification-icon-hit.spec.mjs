@@ -54,7 +54,8 @@ test("notification toasts must not cover the floating help/info buttons on mobil
 
   const hits = await page.evaluate(() => {
     const findButton = text => [...document.querySelectorAll(".l-help-me")]
-      .find(el => el.textContent.trim() === text);
+      .find(el => [...el.childNodes].some(node =>
+        node.nodeType === Node.TEXT_NODE && node.textContent.trim() === text));
     const result = {};
     for (const [key, text] of [["help", "?"], ["info", "i"]]) {
       const el = findButton(text);
@@ -82,7 +83,8 @@ test("notification toasts must not cover the floating help/info buttons on mobil
     () => document.getElementById("notification-container").children.length,
   );
   const center = await page.evaluate(() => {
-    const el = [...document.querySelectorAll(".l-help-me")].find(item => item.textContent.trim() === "?");
+    const el = [...document.querySelectorAll(".l-help-me")].find(item =>
+      [...item.childNodes].some(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim() === "?"));
     const rect = el.getBoundingClientRect();
     return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
   });
