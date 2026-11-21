@@ -75,9 +75,8 @@ const TT_REWARD_MULTIPLIER = 1;
  * [R104 P1] 单帧购买次数上限：只用于拦截**数量级异常的换档跳变**（例如会话内导入更高进度存档）。
  *
  * 原值 50 的设定前提是 tick 每帧都被调用；但 R104 起 tick 走统一节拍（实测 ~45 s 才被服务一次），
- * 100000× 下每次服务都会真实购买数十万 TT ⇒ delta 恒 > 50，×500 奖励**一次都不会发**
- * （pass7 实测 _lastError 长期为 "delta 134/2.4e6 超出单帧上限 50"），TT 加速链断裂，
- * EP 卡在 e3682.74 到不了 isRealityAvailable 要求的 e4000。
+ * 高倍率下每次服务都可能真实购买数十万 TT；旧的小上限会把合法批量购买误判成换档，
+ * 从而让时间研究链停滞。这里因此保留数量级级保护，而不是限制正常购买。
  * 合法真实购买量远小于 1e8；只有换档级跳变才会超过它。
  */
 const TT_REWARD_MAX_DELTA_PER_TICK = 1e8;
@@ -309,7 +308,7 @@ export const OrekiEternityAutomation = {
   },
 
   /**
-   * [R96] TT 购买收益 ×500 的唯一发奖点（每帧调用，幂等）。
+   * TT 购买收益对账点（当前为原版 ×1，每帧调用且幂等）。
    *
    * 边界：
    *   · 首次调用只建立基线（`_ttSettled === null`），不为历史购买补发；
@@ -1623,10 +1622,9 @@ export const OrekiEternityAutomation = {
   },
 
   tick() {
-    // [R96] TT ×500：**先**对账（建基线/结算上一帧的真实购买），**再**买。
+    // TT 收益对账：**先**结算上一帧的真实购买，**再**买，避免首帧漏发。
     // 顺序反了会让首帧的购买被当成历史购买而漏发。
-    // 且这一步与 `active` 无关：玩家关掉自动后手动买同样要按 ×500 结算 ——
-    // 它是「真实购买后的奖励口径」，不是自动动作。
+    // 且这一步与 `active` 无关：手动购买与自动购买共用同一套对账口径。
     this.settleTimeTheoremReward();
 
     if (!this.active) return { dims: false, tt: false, studies: 0, dilation: 0, ec: false };
