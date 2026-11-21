@@ -22,6 +22,8 @@ import {
   validateTriggerIdentity,
 } from "./trigger.mjs";
 
+import { confirmedKodySkip, kodySkipPullRequests } from "./skip-reconcile.mjs";
+
 const repository = "OrekiDawson/AD-Oreki-Edition-Android";
 
 function pr(overrides = {}) {
@@ -249,4 +251,39 @@ test("分页仍有下一页且达到上限时拒绝使用不完整数据", () =>
   assert.doesNotThrow(() => assertPaginationComplete(false, 10, 10));
   assert.doesNotThrow(() => assertPaginationComplete(true, 9, 10));
   assert.throws(() => assertPaginationComplete(true, 10, 10), /incomplete/);
+});
+
+test("只有 Kody 官方 completed/skipped Check 才能退额", () => {
+  const event = {
+    action: "completed",
+    repository: { full_name: repository },
+    check_run: {
+      id: 9871,
+      name: "Kody Code Review",
+      status: "completed",
+      conclusion: "skipped",
+      head_sha: "a".repeat(40),
+      app: { slug: "kody-ai" },
+      pull_requests: [{ number: 42 }, { number: 42 }],
+      html_url: "https://example.test/checks/9871",
+    },
+  };
+  assert.equal(confirmedKodySkip(event), true);
+  assert.equal(kodySkipPullRequests(event).length, 1);
+  assert.equal(kodySkipPullRequests(event)[0].pr, 42);
+  assert.equal(confirmedKodySkip({
+    ...event, check_run: { ...event.check_run, conclusion: "success" },
+  }), false); // 无问题的正常审查依然计入
+  assert.equal(confirmedKodySkip({
+    ...event, check_run: { ...event.check_run, app: { slug: "github-actions" } },
+  }), false); // 普通 GitHub Workflow Skipped 不可冒充
+  assert.equal(confirmedKodySkip({
+    ...event, check_run: { ...event.check_run, name: "Kody trigger" },
+  }), false);
+  assert.equal(confirmedKodySkip({
+    ...event, repository: { full_name: "OrekiDawson/AD-Oreki-Wiki" },
+  }), false); // Wiki 不属于 Android/Web 共享额度
+  assert.deepEqual(kodySkipPullRequests({ ...event, check_run: {
+    ...event.check_run, pull_requests: [],
+  } }), []); // 关联不明时不误退款
 });
