@@ -36,6 +36,9 @@ assert.doesNotMatch(eternity, /ReplicantiUpgrade\.(?:chance|interval|galaxies)\.
 assert.equal(fs.existsSync(path.join(ROOT, "src/core/oreki-instant-challenges.js")), false);
 assert.doesNotMatch(game, /tryInstantCompleteChallenges|oreki-instant-challenges/);
 assert.equal(tutorialText.includes("阶段速度"), true);
-assert.doesNotMatch(tutorialText, /进入.{0,2}即完成|点进去就完成|瞬时完成|一口气补满/);
+assert.doesNotMatch(
+  tutorialText,
+  /进入.{0,2}(?:即|就)完成|点进去就完成|瞬时完成|一口气补满|下一帧.{0,8}(?:结算|发奖|完成)|各点一次|至少给它一帧时间再退出|补满并结算/,
+);
 
 console.log("PASS  R120-01 新档节奏：默认 3000×、动态升档保留、教程同步");
