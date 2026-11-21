@@ -202,6 +202,24 @@ export const OrekiEternityAutomation = {
   },
 
   /**
+   * 永恒重置的独立门禁。
+   *
+   * `active` 还负责时间维度、TT 与时间研究购买；挑战中必须关闭这些经济动作。
+   * 但永恒挑战的完成只能由“达到原版目标后的真实永恒”产生，不能把重置本身一起停掉。
+   * 因此只在 EC 内额外放行重置入口；普通/无限挑战与 Pelle 毁灭态仍不接管。
+   */
+  get eternityResetActive() {
+    try {
+      if (player.auto.autobuyersOn === false || Pelle.isDoomed) return false;
+      if (EternityChallenge.isRunning) return true;
+      return this.active;
+    } catch (e) {
+      this._err("eternityResetActive", e);
+      return false;
+    }
+  },
+
+  /**
    * A) 用 EP 买时间维度 1~8。
    *
    * [Oreki R25] 原来只买到 4 级。但膨胀研究 6（`TimeStudy.reality`）的第一条要求是
@@ -575,8 +593,8 @@ export const OrekiEternityAutomation = {
    * （secret-formula/eternity/time-studies/dilation-time-studies.js:19），
    * 而膨胀研究 6（= TimeStudy.reality）还要求全部 pre-Reality 成就。
    *
-   * 进入挑战后由既有的 core/oreki-instant-challenges.js「进入即完成」接管，
-   * 这里只负责按下「开始」那一下，不重复实现完成逻辑。
+   * 这里只负责按下「开始」那一下；挑战中的资源目标、完成次数与奖励
+   * 仍由原版挑战和永恒结算自然产生，不写完成位或补发资源。
    */
   /**
    * [Oreki R37-A] 删除了死变量 `_ecTarget`（恒为 1，中间没有任何赋值）。
@@ -604,7 +622,7 @@ export const OrekiEternityAutomation = {
    *    补齐该 EC 需要的研究路径再重试购买；EC11/12 还补 191/193。
    *
    * 本方法一关一关推进，每步都走原版真实路径：
-   *   - 挑战在跑 → 不插手（交给「进入即完成」模块）
+   *   - 挑战在跑 → 不重复进入（完成由原版挑战目标与真实永恒结算决定）
    *   - 当前关没满 5 次 → start(true)
    *   - 当前关已满 → respecTimeStudies(true) 清 unlocked 并退款
    *   - unlocked === 0 → 对目标关 purchaseUntil()，买上了立刻 start(true)
@@ -665,7 +683,7 @@ export const OrekiEternityAutomation = {
         }
       }
 
-      // 2) 已有挑战在跑就不插手（完成逻辑交给 oreki-instant-challenges）
+      // 2) 已有挑战在跑就不重复进入；完成仍由原版挑战机制产生。
       if (EternityChallenge.isRunning) return false;
 
       // 3) 进入当前已解锁的那一关
@@ -1057,7 +1075,7 @@ export const OrekiEternityAutomation = {
           const realTimeReset = this._eternityAutoEnabledAtRealTime !== null &&
             realTime !== null && realTime < this._eternityAutoEnabledAtRealTime;
           if (realitiesReset || realTimeReset) {
-            // 原版 Reality 复位：不判玩家关闭，交给接管逻辑补回 true。
+            // 原版 Reality/永恒结算复位：不判玩家关闭，交给接管逻辑补回 true。
             this._eternityAutoUserClosed = false;
           } else if (realities !== null && realTime !== null) {
             // 同现实内被关：判玩家手动关闭（粘滞，尊重）。
@@ -1371,7 +1389,7 @@ export const OrekiEternityAutomation = {
       // 之后所有 MOD 自动永恒。与 _observeEternityAutobuyerSwitch() 同级，按本会话首次
       // 观测到的存档 eternities 固化结论（换档时 _bindSaveIdentity 会清掉重新采样）。
       this._sampleFreshSession();
-      if (!this.active) return false;
+      if (!this.eternityResetActive) return false;
       // [R116-01 P0] 首次永恒驻留：玩家未亲自开启自动永恒时，MOD 不得在 canEternity
       // 出现的首个合法帧就替玩家结算首次永恒。驻留仍必须在
       // _adoptEternityAutobuyerIfNeeded() 之前，否则「同帧接管并打开开关」会把驻留旁路。
@@ -1417,6 +1435,14 @@ export const OrekiEternityAutomation = {
       if (this.holdForRealityUpgrade10()) return false;
       // 入口保护：只在「主研究已买、只差资源」时生效，不拖慢 EC1/EC2 的永恒次数增长
       if (this.ecEntryPending()) return false;
+      // EC 中完成次数只能由真实目标达成后触发的原版永恒结算产生。
+      // 不用全局 EP×1 门槛压住挑战退出，否则达标后仍可能长期不结算；
+      // `canBeCompleted` 同时覆盖原版目标与 EC4/EC12 的限制条件。
+      if (EternityChallenge.isRunning) {
+        const challenge = EternityChallenge.current;
+        if (!challenge || !challenge.canBeCompleted) return false;
+        return eternity(false, true) === true;
+      }
       // [R96 第五轮] 永恒结算门槛 ×10 → ×1：收益只要让 EP 翻倍（gained ≥ 当前 EP）就结算。
       //
       // 实测缺陷（平台期 bigE=3、EP=2.16、maxIP 1e593、maxAM 1e124044）：×10 门槛要求
@@ -1620,6 +1646,80 @@ export const OrekiEternityAutomation = {
     }
   },
 
+  /**
+   * EC8 的原版规则禁止 Infinity Dimension 与 Replicanti Upgrade 自动购买器，
+   * 但挑战本身仍分别允许最多 50 / 40 次手动购买。即时完成模块退役后，
+   * 必须补上这条受限购买链，否则进入 EC8 会清空无限维度并永久停在原地。
+   *
+   * 这里只调用原版购买入口：
+   *   · 仍有维度未完成首次购买时，逐次调用 `buySingle()`，并为每个未首购维度
+   *     保留一次额度；维度可能已解锁但当前 IP 尚买不起；
+   *   · 八维都至少购买一次后才调用 `buyMax()`；
+   *   · `ReplicantiUpgrade.*.purchase()` 自己按 `player.eterc8repl` 截断并递减。
+   * 不调用绕过 EC8 计数的 `autobuyerTick()`，不写任何购买次数或完成状态。
+   */
+  tryEternityChallenge8Purchases() {
+    try {
+      if (Pelle.isDoomed) return false;
+      const challenge = EternityChallenge(8);
+      if (!challenge?.isRunning || !player.auto.autobuyersOn) return false;
+      if (player.auto.eternity.isActive !== true && !this._eternityBootstrapActive()) return false;
+      let acted = false;
+      if (InfinityDimensions.canBuy()) {
+        const dimensions = InfinityDimensions.all;
+        for (const dimension of dimensions) dimension.unlock();
+        const unpurchasedCount = dimensions.filter(dimension => dimension.purchases === 0).length;
+        if (unpurchasedCount === 0) {
+          const before = dimensions.reduce((sum, dimension) => sum + dimension.purchases, 0);
+          InfinityDimensions.buyMax();
+          const after = dimensions.reduce((sum, dimension) => sum + dimension.purchases, 0);
+          acted = after > before || acted;
+        } else {
+          // 普通「全部购买」会优先把低价 ID1 买到上限；EC8 只有不可恢复的
+          // 50 次额度，提前花光会让尚未首购的 ID 永久无法获得生产倍率。
+          // 已解锁但暂时买不起的高阶维度也必须计入保留额度。预留额度先允许
+          // 未首购维度自己使用；只有重复购买才必须停在剩余未首购数之外。
+          const purchasable = dimensions.filter(dimension => dimension.isUnlocked);
+          while (player.eterc8ids > 0) {
+            let boughtThisPass = false;
+            for (const dimension of purchasable.slice().reverse()) {
+              if (player.eterc8ids <= 0) break;
+              if (dimension.purchases !== 0 ||
+                !dimension.isAvailableForPurchase ||
+                !dimension.buySingle()) continue;
+              acted = true;
+              boughtThisPass = true;
+            }
+            const reserve = dimensions.filter(dimension => dimension.purchases === 0).length;
+            for (const dimension of purchasable.slice().reverse()) {
+              if (player.eterc8ids <= reserve) break;
+              if (!dimension.isAvailableForPurchase || !dimension.buySingle()) continue;
+              acted = true;
+              boughtThisPass = true;
+            }
+            if (!boughtThisPass) break;
+          }
+        }
+      }
+      for (const upgrade of [
+        ReplicantiUpgrade.chance,
+        ReplicantiUpgrade.interval,
+        ReplicantiUpgrade.galaxies,
+      ]) {
+        while (upgrade.canBeBought && player.eterc8repl > 0) {
+          const before = upgrade.value;
+          upgrade.purchase();
+          if (upgrade.value === before) break;
+          acted = true;
+        }
+      }
+      return acted;
+    } catch (e) {
+      this._err("tryEternityChallenge8Purchases", e);
+      return false;
+    }
+  },
+
   tick() {
     // [R96] TT ×500：**先**对账（建基线/结算上一帧的真实购买），**再**买。
     // 顺序反了会让首帧的购买被当成历史购买而漏发。
@@ -1627,7 +1727,10 @@ export const OrekiEternityAutomation = {
     // 它是「真实购买后的奖励口径」，不是自动动作。
     this.settleTimeTheoremReward();
 
-    if (!this.active) return { dims: false, tt: false, studies: 0, dilation: 0, ec: false };
+    // EC8 内常规 `active` 必须关闭，以免购买 TD/TT/研究；但挑战允许的
+    // 50 次无限维度与 40 次复制器升级仍需由调度任务合法推进。
+    const ec8 = this.tryEternityChallenge8Purchases();
+    if (!this.active) return { dims: false, tt: false, studies: 0, dilation: 0, ec: false, ec8 };
     // [R118-01 #69] EC 入口等待期间压住原版 EternityAutobuyer（它不经过 tickEternity 门禁）。
     this._manageEternityHoldForEcEntry();
     // [R96] 顺序修正：TD1 已买时**先买永恒升级**（乘数优先），再考虑时间维度；
@@ -1662,7 +1765,7 @@ export const OrekiEternityAutomation = {
       this._lastEcTickAt = nowMs;
       ec = this.buyEcStudiesAndStart();
     }
-    return { dims, tt, upgrades, studies, dilation, ec };
+    return { dims, tt, upgrades, studies, dilation, ec, ec8 };
   },
 };
 

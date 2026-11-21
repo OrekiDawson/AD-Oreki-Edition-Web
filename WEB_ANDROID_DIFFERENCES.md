@@ -96,7 +96,7 @@
 
 | 功能模块 | Web 实现 | Android 实现 | 差异类型 | 是否预期 | 一致性要求 | 验证状态 | 证据 | 负责人/后续 |
 |---|---|---|---|---|---|---|---|---|
-| 「进入即完成」 | `oreki-instant-challenges.js`：进入后按原版结算路径补满 | `OrekiInstantChallenge.smali`（挂在 `Challenges.update` 入口）+ `patch_instant_challenge_rewards()` 真实补发 IP / 无限次数 / EP 并更新最速记录 | 逻辑 | 预期（实现语言不同） | 进入即完成、奖励真实结算、幂等 | 待验证（IC1 已在 R39 实测；EC 全链未实测） | Android `reports/r39a/R39A-Android-IC1.md`；Web `src/core/oreki-instant-challenges.js` | R41 |
+| 挑战真实结算 | 已删除 `oreki-instant-challenges.js`；C/IC 由原版大坍缩完成，EC 达标后走原版 `eternity(false, true)` | Android C9 已用专用 StageAuto 与真实 `bigCrunchReset` 结算链 | 逻辑 | 两端都必须遵守原版目标与结算入口 | 不补写完成位、不临时抬高完成记录 | Web 静态与门禁测试 PASS；Android C9 真新档 PASS | `reports/R123/Web即时挑战退役-2026-11-21.md`；`reports/R123/Web挑战真实结算门禁-2026-11-21.md` | R123 后续 Playwright 定向运行 |
 | IC 自动进入的极性 | `b.K()Z` 语义「已完成」→ 未完成才 start | R39 修 4 处极性 + 构建期三连断言；R40 仍在用 | 逻辑 | — | 未完成才进入，已完成绝不重进 | 已验证（R39 AVD：IC1 进入即完成、IP 28→97、30 s 不重入） | Android `6d7f089`；`check_challenge_auto_polarity()` | 回归已纳入构建期断言 |
 | EC 前置时间研究的购买入口 | `buyEcStudiesAndStart()` 用 `study.purchaseUntil()`（会 `commitToGameState(buyStudiesUntil(...))` 补齐整条前置） | 原来只调 `purchase()`（`fp3.D`）⇒ 链式前置买不上、该关永远买不上；R40B 改为失败后调 `c;->N(Continuation)`（= `NormalTimeStudyState.purchaseUntil`） | 逻辑 | 需修复（已修） | 同一入口语义 | 部分实测（AVD：EC12 完成次数 **0→5**，同期 `eternities` ×1700~3500、`infinities` +9~10 个数量级 ⇒ **走的是真实永恒重置，不是写完成位**；**但「前置链由 `purchaseUntil` 补齐」未确认**——B3 去掉 233/234 后 EC12 照样 0→5，而跑完树上仍无 233）；变异自测 11/11 | `reports/r40b/R40B-Android-验收.md` §3；`ec_run_b3.jsonl` | R41：打临时日志确认 `purchaseUntil` 是否真被调用 |
 | EC 互斥时间研究分叉 | R40A 新增 `dimensionPathId()`：**EC11 已满且 EC12 未满 → 73，否则 71**；原实现按 `nextUnfinishedEcId()===12` 判定 → 与 `oreki-dilation-automation._targetEc()` 互斥要求打架，每 6.2 s respec 一次 | 没有「选分叉」概念，改为检测 `b.p`（forbiddenStudies）冲突：`A()==0 && z()==1 && O()==0` 时走原版 `respecTimeStudies(auto=true)`，6 s 冷却 / 全程 32 次上限；EC11/12 才触发，EC1~EC10 的 `b.p` 为空数组故不触发 | 逻辑 | 预期（平台机制不同：Web 有整棵树的可用性判定，Android 只有冲突检测） | 两端都能把 EC11/12 打满 | 未验证（AVD 夹具 B2 保留了 71/72，跑完 `studies` 仍是 60 条、71 仍在树上 ⇒ **该分支本轮根本没触发**，既不能证真也不能证伪） | Web：改前 EC1~12 全 5/5 `75.2 s` → 改后 `27.8 s`；Android `reports/r40b/R40B-Android-验收.md` §3.3 | R41：造一个必定冲突的夹具再测 |
@@ -104,7 +104,7 @@
 | EC 重复进入 / 重复发奖 | `EternityChallenge.isRunning` 守卫 + 完成位 | `b.K()Z` 完成位守卫 | 逻辑 | 无差异（语义对齐） | 幂等 | 已验证（R39 AVD：重启不重复发奖） | R39 报告 | — |
 | EC 资源门槛 | 见 §1「EC 入口资源门槛缩放」 | 未确认 | 数值 | 需修复（若未同步） | 同值 | 未验证 | — | R41 |
 | EC12 限时判定 | 按倍率还原（`inGameSecondsOf`） | `[Oreki EC12]` 已改为按倍率还原 | 逻辑 | 预期 | 同一还原口径 | 待验证 | Android 构建日志 | R41 |
-| 挑战界面「进入即完成」提示 | `FailableEcText.js` 等文案 | 中文文案（Android 官方简体中文） | UI | 预期 | 术语一致 | 待验证 | — | R41 文案对照 |
+| 挑战真实完成提示 | 教程明确要求达到原版目标后再结算 | 中文文案（Android 官方简体中文） | UI | 预期 | 不宣称挑战可瞬时跳过 | 教程 JSON 与生成模块校验 PASS | `scripts/validate_tutorial.mjs` | R123 教程复审 |
 
 ## 4. 无限 / 永恒 / 现实 / 天神 / 终局
 
@@ -286,14 +286,14 @@ cmp WEB_ANDROID_DIFFERENCES.md web/AD-Oreki-Edition/WEB_ANDROID_DIFFERENCES.md \
 
 | # | 主题 | 标签 | Web 位置 | Android 位置 | 当前事实与证据 | 后续任务 |
 |---|---|---|---|---|---|---|
-| 1 | 挑战「启动即完成」 | 【实现差异】+【待验证】 | `src/core/oreki-instant-challenges.js`（225 行，进入后按原版出口结算） | `OrekiInstantChallenge.smali`（挂 `Challenges.update` 入口）+ `patch_instant_challenge_rewards()` | 语义一致（进入→原版结算→发奖→幂等）。**IC1 有 AVD 实测**（IP 28→97、30 s 不重入）；**EC 全链无本轮实测**，最近一次是 R40B 的 EC12 完成次数 0→5 | R51-03：Web/Android 各自跑一遍 IC + EC，记录完成数与奖励 |
+| 1 | 挑战真实结算 | 【已解决】（Web 源码） | 删除 `oreki-instant-challenges.js`；EC 仅在 `canBeCompleted` 后走原版永恒；EC8 使用受限原版购买链并保留未首购额度 | Android C9 已由真实大坍缩结算（[#236 新档证据](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/pull/236#issuecomment-7064893051)），其他挑战的运行验收仍按独立矩阵执行 | 不再有“进入即完成”旁路；未达成目标不会补写完成次数或奖励；Web Node、教程 2189 项与 Pixel 7 Chromium 定向测试 3/3 PASS；完整 C/IC/EC 链仍为 NOT RUN | R123：完成 C/IC/EC 全链真实运行验收 |
 | 2 | 智能调度器 | 【功能缺口】（**未接线**） | `src/core/oreki-smart-executor.js`（1185 行，唯一调度器，默认 3 s） | `oreki/OrekiAutomationScheduler.smali`（1352 行，设置页 + 持久化键齐备） | **A27 实测**：logcat 有 `OREKI_SCHED: init 调度：已启用 · 间隔 1 秒`，但 `OrekiStageAuto.smali` 与 `build_mod.py` **均无任何 `OrekiAutomationScheduler` 引用** ⇒ 调度器只初始化，**没有管辖任何动作**，从未出现 `OREKI_SCHED act` | R51-SCHED-01：接线 + 十项运行期验收 |
 | 3 | 教程 | 【已解决】（Web 侧待复核） | `src/core/oreki-tutorial-data.json`（唯一正文源） | 构建期生成 `assets/oreki_tutorial.txt`（A28 构建实测 167445 字节） | 单源已成立：Android 资产由 Web JSON 生成，不手写第二份。运行时渲染**未做逐页验收** | R51-05：Android 运行时逐页渲染 + 术语核对 |
 | 4 | 默认科学记数法 | 【已解决】 | 默认 Scientific，且**不覆盖**玩家已选 | `build_mod.py:4864` 起「默认科学记数法」补丁组 | 补丁存在且有构建期断言；**未做「玩家先改成 Emoji 再重启，记数法是否被覆盖」的运行期实测** | R51-05：补一条「改过记数法后重启不被覆盖」的实测 |
 | 5 | Android 深色模式 | 【设计差异】 | 深色主题（`public/stylesheets/oreki.css`） | 构建日志 `[DARK] activity ok(Theme.DeviceDefault → Theme.Material 固定深色)` | 原创页面统一深色，属平台设计选择；Web 是网页深色主题，实现不同但观感目标一致 | — |
 | 6 | Web 移动端适配 | 【待验证】 | 视口 320/360/393/411/980/1280 与安全区 | 原生布局，无此问题 | R51 正在做（`web/reports/_r51/`）。**此前从未完成六视口全量验收**，仅有 R40C 的定向修复 | R51-WEB-01 |
 | 7 | 终局判定 | 【实现差异】+【待验证】 | `src/core/celestials/pelle/game-end.js`：`OFFSET=1`／`TARGET=1000`，`endState>=1 ⟺ 反物质指数 ≥1000` | `celestials/pelle/b.smali` 常量镜像为 `1.0`／`1001.0`（`720f145`）；`OrekiPelleRecord.smali`（R42）补 `PelleRecords.totalAntimatter` 写入 | 常量等价已用位模式复核；`OrekiPelleRecord.tick()` 由构建期断言强制挂在 `onAutoBuyerTick`。**但从未跑到佩勒**，`endState` 仍恒 0 ⇒ 判据物理不可达 | R51-AND-01：推进到佩勒后再验 |
-| 8 | 挑战奖励结算 | 【实现差异】 | 原版结算路径 + 最速记录 | `patch_instant_challenge_rewards()` 补发 IP / 无限次数 / EP 并更新最速记录 | 走原版结算，不写完成位；幂等性有 R39 重启实测 | R51-03 |
+| 8 | 挑战奖励结算 | 【已解决】（Web 源码） | 删除即时奖励补发；C/IC 走 `bigCrunchReset`，EC 走 `eternity` 的原版奖励与最速记录 | Android 以原版结算入口为准 | 奖励仅由原版结算产生，不临时抬高 `maxAM` / `maxIP` | Web Node 门禁 PASS；真实挑战结算运行待补 | R123 手机视口定向运行 |
 
 ### 15.2 R51 中发现并已消除的差异
 
@@ -395,7 +395,7 @@ Teresa 不浇；实测 `upgradeBits` 在现实后**仍为 0xFFFFF**（RU 是一�
 | 4 | 智能策略识别 | 未改：仍由 `OrekiStageAuto` 分流，**未接 `oreki-smart-strategy.json`** | 已接：JSON 为唯一策略源，`OrekiSmartStrategy.evaluate()` 只读解释 | 读码 |
 | 5 | 自动化调度 | **本轮才真正生效**：`noteActed`/`noteNoop` 的 `if-gez` 极性错误修好前，记账恒空转（无 `act` 日志、间隔恒放行）。修复后 logcat 出现 `OREKI_SCHED: act breakShop @…`，`dbg` 行显示 `idx=11 iv=1` | `runCycle()` 单时钟 + `didAct()` 判定 | logcat 原文见 FACTS C.112 |
 | 6 | 动作间隔 | 间隔读取正确（`iv=1`）、节拍记账正确；**但启动瞬间 8 条升级仍被连买（12~39 ms）**，稳态无候选可买，无法再取间隔正例 → **记为未解释缺陷** | 间隔闸门 R50 起生效，本轮 A/B 两段实测按节拍放行 | 见「未完成」 |
-| 7 | 挑战启动即完成 | 未改动（沿用 R4 的 `OrekiChallengeAuto` / `OrekiInstantChallenge` 注入点） | 未改动（`tryInstantCompleteChallenges()` 仍在 `EternityChallenge(12).tryFail()` 之前） | **本轮未做运行期取证** |
+| 7 | 挑战真实结算 | C9 已由 Android 真实原版大坍缩结算；其余挑战保留独立验收矩阵 | 已删除 `oreki-instant-challenges.js`；C/IC 只走原版大坍缩，EC 仅在 `canBeCompleted` 后调用原版永恒 | Web 2 条真实 Chromium 门禁 + EC8 额度保留门禁 PASS；Android C9 新档 PASS（PR #236）；完整挑战链 NOT RUN |
 | 8 | 教程覆盖 | 由 `oreki_tutorial_gen.py` 从同一 JSON 生成，构建期回读校验通过 | 同源直读 | 构建日志 `oreki_tutorial.txt: 170291 字节` |
 
 ### 15.5 本轮**消除**的一条旧差异
