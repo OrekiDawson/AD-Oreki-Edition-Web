@@ -11,7 +11,11 @@ name: Kody PR 审查触发器
     inputs:
       pr_number:
         description: 要检查的 PR 编号
-        required: true
+        required: false
+        type: string
+      check_run_id:
+        description: 要重新核对的 Kody Code Review Check Run ID
+        required: false
         type: string
 
 permissions:
@@ -22,11 +26,12 @@ jobs:
   reconcile_skipped:
     name: Kody 确认跳过后退还配额
     if: >-
-      github.event_name == 'check_run' &&
+      (github.event_name == 'workflow_dispatch' && inputs.check_run_id != '') ||
+      (github.event_name == 'check_run' &&
       github.event.check_run.status == 'completed' &&
       github.event.check_run.conclusion == 'skipped' &&
       github.event.check_run.name == 'Kody Code Review' &&
-      github.event.check_run.app.slug == 'kody-ai'
+      github.event.check_run.app.slug == 'kody-ai')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -45,13 +50,14 @@ jobs:
       - name: 使用 Kody 官方 skipped Check 证据退额
         env:
           GH_TOKEN: ${{ secrets.KODY_TRIGGER_PAT }}
+          INPUT_CHECK_RUN_ID: ${{ inputs.check_run_id }}
         shell: bash
         run: node .github/kody/skip-reconcile.mjs
 
   stabilize:
     name: 等待并复核 PR Head
     if: >-
-      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_dispatch' && inputs.pr_number != '') ||
       (github.event_name == 'pull_request_target' &&
       github.event.pull_request.user.login == 'OrekiDawson' &&
       github.event.pull_request.head.repo.full_name == github.repository &&

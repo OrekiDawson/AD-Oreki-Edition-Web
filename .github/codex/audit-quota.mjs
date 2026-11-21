@@ -15,6 +15,7 @@ const OWNER = "OrekiDawson";
 
 export const LIMIT = 100;
 export const KODY_KIND = "kody_start_review";
+export const KODY_SKIP_PENDING_KIND = "kody_skip_pending";
 export const KODY_DAILY_LIMIT = 100;
 export const KODY_WARNING_AT = 80;
 export const COORDINATOR_REPO = "AD-Oreki-Edition-Web";
@@ -525,6 +526,34 @@ export function markKodySkippedPure(records, {
   };
 }
 
+export function queuePendingKodySkip(records, checkIdentity, reason,
+  now = new Date().toISOString()) {
+  const identity =
+    `kody-skip-pending:${String(checkIdentity.repository ?? "")}` +
+    `#${Number(checkIdentity.pr)}@${String(checkIdentity.headSha ?? "")}` +
+    `:${String(checkIdentity.checkRunId ?? "")}`;
+  const existing = records.find(record =>
+    record?.kind === KODY_SKIP_PENDING_KIND && record.identity === identity);
+  if (existing) return records;
+  return [...records, {
+    kind: KODY_SKIP_PENDING_KIND,
+    identity,
+    repository: String(checkIdentity.repository ?? ""),
+    pr: Number(checkIdentity.pr),
+    headSha: String(checkIdentity.headSha ?? ""),
+    checkRunId: String(checkIdentity.checkRunId ?? ""),
+    checkStartedAt: String(checkIdentity.checkStartedAt ?? ""),
+    headCommittedAt: String(checkIdentity.headCommittedAt ?? ""),
+    currentPullRequestHeadSha: String(checkIdentity.currentPullRequestHeadSha ?? ""),
+    currentPullRequestHeadCommittedAt:
+      String(checkIdentity.currentPullRequestHeadCommittedAt ?? ""),
+    status: "pending_attribution",
+    reason: String(reason),
+    date: shanghaiDate(new Date(now)),
+    updatedAt: now,
+  }];
+}
+
 export async function markKodySkippedQuota(token, checkEvidence, { now = new Date() } = {}) {
   const date = shanghaiDate(now);
   const {
@@ -533,10 +562,34 @@ export async function markKodySkippedQuota(token, checkEvidence, { now = new Dat
   } = checkEvidence;
   return mutate(token, date, records => {
     const imported = importKodyEvidence(records, evidence, date, now.toISOString());
-    return markKodySkippedPure(imported, {
+    const result = markKodySkippedPure(imported, {
       ...skipIdentity,
       now: now.toISOString(),
     });
+    const pendingIdentity =
+      `kody-skip-pending:${String(skipIdentity.repository ?? "")}` +
+      `#${Number(skipIdentity.pr)}@${String(skipIdentity.headSha ?? "")}` +
+      `:${String(skipIdentity.checkRunId ?? "")}`;
+    if (result.ok) {
+      const cleaned = result.records.filter(record =>
+        !(record?.kind === KODY_SKIP_PENDING_KIND &&
+          record.identity === pendingIdentity));
+      return { ...result, records: cleaned };
+    }
+    if (["unattributed-trigger", "missing-check-start-time"].includes(result.reason)) {
+      const pending = queuePendingKodySkip(
+        result.records,
+        skipIdentity,
+        result.reason,
+        now.toISOString(),
+      );
+      return {
+        ...result,
+        pendingQueued: pending !== result.records,
+        records: pending,
+      };
+    }
+    return result;
   });
 }
 

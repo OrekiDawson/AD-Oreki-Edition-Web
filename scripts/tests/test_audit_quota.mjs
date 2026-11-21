@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   KODY_DAILY_LIMIT,
   KODY_KIND,
+  KODY_SKIP_PENDING_KIND,
   KODY_WARNING_AT,
   LIMIT,
   SHARED_QUOTA_REPOSITORIES,
@@ -13,6 +14,7 @@ import {
   isSharedQuotaRepository,
   kodyQuotaCounts,
   markKodySkippedPure,
+  queuePendingKodySkip,
   releaseKodyCommand,
   reserveKodyPure,
   reservePure,
@@ -251,6 +253,24 @@ const delayedOldHeadSkip = markKodySkippedPure([delayedOldHeadComment], {
 assert.equal(delayedOldHeadSkip.ok, true);
 assert.equal(delayedOldHeadSkip.records[0].headSha, "c".repeat(40));
 
+const futureHeadComment = {
+  ...oldHeadObserved,
+  createdAt: "2026-11-20T16:40:00Z",
+};
+const futureHeadSkip = markKodySkippedPure([futureHeadComment], {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "c".repeat(40),
+  checkRunId: 98139,
+  checkStartedAt: "2026-11-20T17:00:00Z",
+  headCommittedAt: "2026-11-20T16:00:00Z",
+  currentPullRequestHeadSha: "d".repeat(40),
+  currentPullRequestHeadCommittedAt: "2026-11-20T16:30:00Z",
+});
+assert.equal(futureHeadSkip.ok, false);
+assert.equal(futureHeadSkip.records[0].status, "posted");
+assert.equal(futureHeadSkip.records[0].headSha, undefined);
+
 const racedReservation = reserveKodyPure([], kodyCandidate("raced-attach", kodyAndroid), {
   date: kodyDate,
   now: "2026-11-20T16:04:10Z",
@@ -332,6 +352,23 @@ assert.equal(importedOnce.length, 1);
 const importedTwice = importKodyEvidence(importedOnce, idempotentEvidence, kodyDate,
   "2026-11-20T03:06:02Z");
 assert.equal(importedTwice, importedOnce);
+
+const pendingIdentity = {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98140,
+  checkStartedAt: "2026-11-20T06:00:00Z",
+};
+const pendingOnce = queuePendingKodySkip([], pendingIdentity, "unattributed-trigger",
+  "2026-11-20T06:00:01Z");
+assert.equal(pendingOnce.length, 1);
+assert.equal(pendingOnce[0].kind, KODY_SKIP_PENDING_KIND);
+assert.equal(pendingOnce[0].status, "pending_attribution");
+assert.equal(kodyQuotaCounts(pendingOnce, kodyDate).used, 0);
+const pendingTwice = queuePendingKodySkip(pendingOnce, pendingIdentity,
+  "unattributed-trigger", "2026-11-20T06:00:02Z");
+assert.equal(pendingTwice, pendingOnce);
 
 const shadowReservation = reserveKodyPure([], kodyCandidate("shadow-reservation", kodyAndroid), {
   date: kodyDate,
