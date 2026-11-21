@@ -5,6 +5,8 @@ name: Kody PR 审查触发器
   pull_request_target:
     branches: [main]
     types: [opened, reopened, ready_for_review, synchronize]
+  check_run:
+    types: [completed]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -17,6 +19,34 @@ permissions:
   pull-requests: read
 
 jobs:
+  reconcile_skipped:
+    name: Kody 确认跳过后退还配额
+    if: >-
+      github.event_name == 'check_run' &&
+      github.event.check_run.status == 'completed' &&
+      github.event.check_run.conclusion == 'skipped' &&
+      github.event.check_run.name == 'Kody Code Review' &&
+      github.event.check_run.app.slug == 'kody-ai'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    concurrency:
+      group: kody-skip-reconcile-${{ github.repository }}
+      queue: max
+      cancel-in-progress: false
+    steps:
+      - name: 读取受信任 main 上的配额脚本
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          persist-credentials: false
+      - name: 使用 Kody 官方 skipped Check 证据退额
+        env:
+          GH_TOKEN: ${{ secrets.KODY_TRIGGER_PAT }}
+        shell: bash
+        run: node .github/kody/skip-reconcile.mjs
+
   stabilize:
     name: 等待并复核 PR Head
     if: >-
