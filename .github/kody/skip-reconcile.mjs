@@ -70,9 +70,9 @@ export function realKodyReviewStarts(checks, currentCheckId) {
         check?.name === "Kody Code Review" &&
         realOrRunning &&
         String(check?.id ?? "") !== String(currentCheckId ?? "") &&
-        Number.isFinite(Date.parse(String(check?.started_at ?? "")));
+        Number.isFinite(Date.parse(String(check?.started_at ?? check?.created_at ?? "")));
     })
-    .map(check => check.started_at);
+    .map(check => check.started_at ?? check.created_at);
 }
 
 /** 安全补查 check_run.pull_requests 为空的同仓 PR，仅接受唯一 HEAD 命中。 */
@@ -177,6 +177,19 @@ export async function main() {
     event.check_run.id,
   );
   for (const match of matches) {
+    let currentPullRequestHeadSha = "";
+    try {
+      const currentPr = await githubJson(
+        `/repos/${repository}/pulls/${match.pr}`,
+        token,
+      );
+      currentPullRequestHeadSha = currentPr?.head?.sha ?? "";
+    } catch (error) {
+      console.warn(
+        `Kody skip: PR #${match.pr} current head unavailable; ` +
+        `headless trigger attribution disabled: ${error.message}`,
+      );
+    }
     let comments = [];
     try {
       comments = await githubListAll(
@@ -191,6 +204,7 @@ export async function main() {
     }
     match.checkStartedAt = event.check_run.started_at ?? event.check_run.created_at ?? "";
     match.headCommittedAt = headCommittedAt;
+    match.currentPullRequestHeadSha = currentPullRequestHeadSha;
     match.priorRealReviewStarts = priorRealReviewStarts;
     match.evidence = kodyTriggerCommentEvidence(comments, repository, match.pr);
     const startedMs = Date.parse(String(match.checkStartedAt ?? ""));

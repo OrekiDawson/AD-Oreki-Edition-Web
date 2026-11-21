@@ -140,8 +140,9 @@ export function kodyQuotaCounts(records, date) {
   };
 }
 
-function importKodyEvidence(records, evidence, date, now) {
+export function importKodyEvidence(records, evidence, date, now) {
   const output = [...records];
+  let changed = false;
   const seen = new Set(
     output
       .filter(record => isKodyRecord(record) && String(record.commentId ?? ""))
@@ -167,6 +168,7 @@ function importKodyEvidence(records, evidence, date, now) {
     const commentKey = `${repository}#${commentId}`;
     if (seen.has(commentKey)) continue;
     seen.add(commentKey);
+    changed = true;
     output.push({
       kind: KODY_KIND,
       identity: `kody-comment:${repository}#${commentId}`,
@@ -181,7 +183,7 @@ function importKodyEvidence(records, evidence, date, now) {
       updatedAt: now,
     });
   }
-  return output;
+  return changed ? output : records;
 }
 
 /**
@@ -375,6 +377,7 @@ export function markKodySkippedPure(records, {
   checkRunId,
   checkStartedAt = "",
   headCommittedAt = "",
+  currentPullRequestHeadSha = "",
   priorRealReviewStarts = [],
   checkUrl = "",
   now = new Date().toISOString(),
@@ -404,18 +407,28 @@ export function markKodySkippedPure(records, {
     String(record.createdAt ?? record.reservedAt ?? record.updatedAt ?? ""),
   );
   const headCommittedMs = Date.parse(String(headCommittedAt));
-  const matches = records.filter(record =>
+  const activeRecords = records.filter(record =>
     isKodyRecord(record) &&
     record.repository === repo &&
     Number(record.pr) === number &&
-    (record.headSha === sha ||
-      (!record.headSha &&
-        String(record.commentId ?? "").trim() !== "" &&
-        Number.isFinite(headCommittedMs) &&
-        Number.isFinite(recordTime(record)) &&
-        recordTime(record) >= headCommittedMs)) &&
     ["reserved", "posted"].includes(record.status));
-  if (matches.length === 0) {
+  const exactMatches = activeRecords.filter(record => record.headSha === sha);
+  const canAttributeHeadless =
+    String(currentPullRequestHeadSha ?? "") === sha &&
+    Number.isFinite(headCommittedMs);
+  const headlessMatches = canAttributeHeadless
+    ? activeRecords.filter(record =>
+      !record.headSha &&
+      String(record.commentId ?? "").trim() !== "" &&
+      Number.isFinite(recordTime(record)) &&
+      recordTime(record) >= headCommittedMs)
+    : [];
+  const potentialHeadless = activeRecords.filter(record =>
+    !record.headSha && String(record.commentId ?? "").trim() !== "");
+  if (exactMatches.length === 0 && headlessMatches.length === 0) {
+    if (potentialHeadless.length > 0) {
+      return { ok: false, reason: "unattributed-trigger", records };
+    }
     return { ok: false, reason: "no-matching-kody-trigger", records };
   }
   const checkStartedMs = Date.parse(String(checkStartedAt));
@@ -423,9 +436,23 @@ export function markKodySkippedPure(records, {
     return { ok: false, reason: "missing-check-start-time", records };
   }
   let target = null;
-  target = matches
-    .filter(record => Number.isFinite(recordTime(record)) && recordTime(record) <= checkStartedMs)
-    .sort((left, right) => recordTime(right) - recordTime(left))[0] ?? null;
+  const priorToCheck = record =>
+    Number.isFinite(recordTime(record)) && recordTime(record) <= checkStartedMs;
+  const latest = (items, reverse = true) => items
+    .filter(priorToCheck)
+    .sort((left, right) =>
+      (recordTime(right) - recordTime(left)) * (reverse ? 1 : -1))[0] ?? null;
+  target = latest(exactMatches);
+  let observedEvidence = null;
+  if (target) {
+    if (!String(target.commentId ?? "").trim()) {
+      const targetMs = recordTime(target);
+      observedEvidence = latest(headlessMatches.filter(record =>
+        !Number.isFinite(targetMs) || recordTime(record) >= targetMs));
+    }
+  } else {
+    target = latest(headlessMatches);
+  }
   if (!target) {
     return { ok: false, reason: "trigger-after-check", records };
   }
@@ -445,12 +472,24 @@ export function markKodySkippedPure(records, {
       counts: kodyQuotaCounts(records, target.date),
     };
   }
-  const targetIndex = records.indexOf(target);
-  const output = [...records];
-  output[targetIndex] = {
+  const observedCommentId = String(observedEvidence?.commentId ?? "");
+  const output = records.filter(record =>
+    record !== observedEvidence &&
+    !(observedCommentId &&
+      isKodyRecord(record) &&
+      String(record.repository ?? "") === String(target.repository ?? "") &&
+      String(record.commentId ?? "") === observedCommentId &&
+      record !== target));
+  const outputTargetIndex = output.indexOf(target);
+  output[outputTargetIndex] = {
     ...target,
     headSha: target.headSha || sha,
     status: "skipped",
+    ...(observedEvidence ? {
+      commentId: observedCommentId,
+      commentUrl: String(observedEvidence.commentUrl ?? ""),
+      createdAt: observedEvidence.createdAt,
+    } : {}),
     skipCheckRunId: runId,
     skipCheckUrl: String(checkUrl),
     updatedAt: now,

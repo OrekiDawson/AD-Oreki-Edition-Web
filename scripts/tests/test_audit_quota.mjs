@@ -9,6 +9,7 @@ import {
   applyCas,
   attachKodyCommand,
   consumedCount,
+  importKodyEvidence,
   isSharedQuotaRepository,
   kodyQuotaCounts,
   markKodySkippedPure,
@@ -191,6 +192,7 @@ const observedSkip = markKodySkippedPure(observedRecords, {
   checkRunId: 98127,
   checkStartedAt: "2026-11-20T16:04:30Z",
   headCommittedAt: "2026-11-20T15:00:00Z",
+  currentPullRequestHeadSha: "b".repeat(40),
 });
 assert.equal(observedSkip.ok, true);
 assert.equal(observedSkip.records[0].status, "skipped");
@@ -203,6 +205,7 @@ const lateRequest = markKodySkippedPure(observedRecords, {
   checkRunId: 98128,
   checkStartedAt: "2026-11-20T16:03:00Z",
   headCommittedAt: "2026-11-20T15:00:00Z",
+  currentPullRequestHeadSha: "b".repeat(40),
 });
 assert.equal(lateRequest.ok, false);
 assert.equal(lateRequest.reason, "trigger-after-check");
@@ -221,9 +224,10 @@ const oldHeadSkip = markKodySkippedPure([oldHeadObserved], {
   checkRunId: 98131,
   checkStartedAt: "2026-11-20T17:00:00Z",
   headCommittedAt: "2026-11-20T16:00:00Z",
+  currentPullRequestHeadSha: "d".repeat(40),
 });
 assert.equal(oldHeadSkip.ok, false);
-assert.equal(oldHeadSkip.reason, "no-matching-kody-trigger");
+assert.equal(oldHeadSkip.reason, "unattributed-trigger");
 assert.equal(oldHeadSkip.records[0].status, "posted");
 assert.equal(oldHeadSkip.records[0].headSha, undefined);
 
@@ -294,6 +298,19 @@ const missingStart = markKodySkippedPure(racedReservation, {
 assert.equal(missingStart.ok, false);
 assert.equal(missingStart.reason, "missing-check-start-time");
 assert.equal(missingStart.records, racedReservation);
+
+const idempotentEvidence = [{
+  repository: kodyAndroid,
+  pr: 121,
+  commentId: "9200",
+  url: "https://example.test/comment/9200",
+  createdAt: "2026-11-20T16:06:00Z",
+}];
+const importedOnce = importKodyEvidence([], idempotentEvidence, kodyDate,
+  "2026-11-20T16:06:01Z");
+const importedTwice = importKodyEvidence(importedOnce, idempotentEvidence, kodyDate,
+  "2026-11-20T16:06:02Z");
+assert.equal(importedTwice, importedOnce);
 
 const skipFirst = attachKodyCommand(
   reserveKodyPure([], kodyCandidate("same-head-first", kodyAndroid), {

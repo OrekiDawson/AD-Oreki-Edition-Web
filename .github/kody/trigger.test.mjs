@@ -334,7 +334,7 @@ test("只有 Kody 官方 completed/skipped Check 才能退额", () => {
   } }), []); // 单个 Check 关联多个 PR 时无法证明归属
 });
 
-test("只提取当前 skipped Check 之外的已完成 Kody Review 启动时间", () => {
+test("只提取当前 skipped Check 之外的已完成、运行中或排队 Kody Review 时间", () => {
   const checks = [
     {
       id: 1,
@@ -368,10 +368,20 @@ test("只提取当前 skipped Check 之外的已完成 Kody Review 启动时间"
       conclusion: null,
       started_at: "2026-11-21T12:58:40Z",
     },
+    {
+      id: 5,
+      app: { slug: "kody-ai" },
+      name: "Kody Code Review",
+      status: "queued",
+      conclusion: null,
+      started_at: null,
+      created_at: "2026-11-21T12:58:50Z",
+    },
   ];
   assert.deepEqual(realKodyReviewStarts(checks, 2), [
     "2026-11-21T12:58:00Z",
     "2026-11-21T12:58:40Z",
+    "2026-11-21T12:58:50Z",
   ]);
 });
 
