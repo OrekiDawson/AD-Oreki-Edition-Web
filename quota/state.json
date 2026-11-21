@@ -2021,6 +2021,20 @@
       "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Android/pull/226#issuecomment-7063634673",
       "reservedAt": "2026-11-21T13:51:28.822Z",
       "updatedAt": "2026-11-21T13:51:28.822Z"
+    },
+    {
+      "kind": "kody_start_review",
+      "identity": "kody-trigger:OrekiDawson/AD-Oreki-Edition-Android#221@365176f1aad42133321c2021ff9f6d3c0ede69b2",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Android",
+      "pr": 221,
+      "headSha": "365176f1aad42133321c2021ff9f6d3c0ede69b2",
+      "source": "automated_trigger",
+      "date": "2026-11-21",
+      "status": "reserved",
+      "commentId": "",
+      "commentUrl": "",
+      "reservedAt": "2026-11-21T13:51:59.309Z",
+      "updatedAt": "2026-11-21T13:51:59.309Z"
     }
   ]
 }
