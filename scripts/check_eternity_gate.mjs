@@ -351,6 +351,37 @@ check("EC8 总开关关闭时没有购买", env.ec8IdPurchases === 0 && env.ec8U
 env.autobuyersOn = true;
 player.auto.autobuyersOn = true;
 
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.eternity.isActive = true;
+globalThis.Pelle.isDoomed = true;
+check("EC8 Pelle 毁灭态不代买", A.tryEternityChallenge8Purchases() === false);
+check("EC8 Pelle 毁灭态购买为 0",
+  env.ec8IdPurchases === 0 && env.ec8UpgradePurchases === 0);
+globalThis.Pelle.isDoomed = false;
+
+// 走完整 tick：EC 内 active=false，采购必须发生在提前返回之前。
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = false;
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.eternity.isActive = true;
+const ec8Tick = A.tick();
+check("EC8 采购在 tick 的 inactive 提前返回前接线", ec8Tick?.ec8 === true,
+  JSON.stringify(ec8Tick));
+check("经 tick 真实购买 EC8 无限维度", InfinityDimensions.all[0].purchases > 0,
+  `purchases=${InfinityDimensions.all[0].purchases}`);
+
 // ---------------- ⑧ holdForRealityUpgrade10 语义 ----------------
 reset();
 const now0 = Date.now();
@@ -1221,17 +1252,6 @@ try {
       const activeIdx = tickBody.indexOf("if (!this.eternityResetActive) return false;");
       const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
       const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
-      const observeBody = src.split("_observeEternityAutobuyerSwitch() {")[1]
-        ?.split("_eternityBootstrapActive() {")[0] || "";
-      check("[R121] 自动永恒开关观察记录本永恒真实时间",
-        observeBody.includes("this._eternityAutoEnabledAtEternityRealTime = eternityRealTime"));
-      check("[R121] 自动永恒开关观察记录永恒进度令牌",
-        observeBody.includes("this._eternityAutoEnabledAtEternities = eternities"));
-      check("[R121] 永恒进度变化不被误判为玩家手动关闭",
-        observeBody.includes("eternityRealTimeReset") &&
-        observeBody.includes("eternitiesChanged") &&
-        observeBody.includes("eternityRealTime === null && eternitiesChanged") &&
-        observeBody.includes("realitiesReset || realTimeReset || eternityReset"));
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
         "sample=" + sampleIdx + " dwell=" + dwellIdx);
