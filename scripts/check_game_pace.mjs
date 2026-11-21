@@ -19,6 +19,7 @@ const eternity = fs.readFileSync(
   path.join(ROOT, "src/core/oreki-eternity-automation.js"),
   "utf8",
 );
+const game = fs.readFileSync(path.join(ROOT, "src/game.js"), "utf8");
 
 assert.match(speed, /export const GAME_SPEED_DEFAULT = 1000;/);
 assert.match(speed, /export const GAME_SPEED_POST_BREAK = 1800;/);
@@ -35,7 +36,12 @@ assert.match(
 );
 assert.doesNotMatch(reality, /player\.partSimulatedReality - 1 \+ 4;/);
 assert.match(eternity, /const TT_REWARD_MULTIPLIER = 1;/);
+assert.equal(fs.existsSync(path.join(ROOT, "src/core/oreki-instant-challenges.js")), false);
+assert.doesNotMatch(game, /tryInstantCompleteChallenges|oreki-instant-challenges/);
 assert.equal(tutorialText.includes("默认 10000×"), false);
 assert.equal(tutorialText.includes("阶段速度"), true);
+assert.equal(tutorialText.includes("进入即完成"), false);
+assert.equal(tutorialText.includes("一口气补满"), false);
+assert.equal(tutorialText.includes("瞬时完成"), false);
 
 console.log("PASS  R121-01 新档节奏：1000×/1800×/3000× 阶段速度、无额外现实模拟、TT 收益恢复原版");

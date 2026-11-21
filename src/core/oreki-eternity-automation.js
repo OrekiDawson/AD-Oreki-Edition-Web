@@ -576,8 +576,8 @@ export const OrekiEternityAutomation = {
    * （secret-formula/eternity/time-studies/dilation-time-studies.js:19），
    * 而膨胀研究 6（= TimeStudy.reality）还要求全部 pre-Reality 成就。
    *
-   * 进入挑战后由既有的 core/oreki-instant-challenges.js「进入即完成」接管，
-   * 这里只负责按下「开始」那一下，不重复实现完成逻辑。
+   * 这里只负责按下「开始」那一下；挑战中的资源目标、完成次数与奖励
+   * 仍由原版挑战和永恒结算自然产生，不写完成位或补发资源。
    */
   /**
    * [Oreki R37-A] 删除了死变量 `_ecTarget`（恒为 1，中间没有任何赋值）。
@@ -605,7 +605,7 @@ export const OrekiEternityAutomation = {
    *    补齐该 EC 需要的研究路径再重试购买；EC11/12 还补 191/193。
    *
    * 本方法一关一关推进，每步都走原版真实路径：
-   *   - 挑战在跑 → 不插手（交给「进入即完成」模块）
+   *   - 挑战在跑 → 不重复进入（完成由原版挑战目标与真实永恒结算决定）
    *   - 当前关没满 5 次 → start(true)
    *   - 当前关已满 → respecTimeStudies(true) 清 unlocked 并退款
    *   - unlocked === 0 → 对目标关 purchaseUntil()，买上了立刻 start(true)
@@ -666,7 +666,7 @@ export const OrekiEternityAutomation = {
         }
       }
 
-      // 2) 已有挑战在跑就不插手（完成逻辑交给 oreki-instant-challenges）
+      // 2) 已有挑战在跑就不重复进入；完成仍由原版挑战机制产生。
       if (EternityChallenge.isRunning) return false;
 
       // 3) 进入当前已解锁的那一关

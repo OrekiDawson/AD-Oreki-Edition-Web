@@ -3,7 +3,6 @@ import TWEEN from "../modules/tween.js";
 import { ElectronRuntime, SteamRuntime } from "./steam/index.js";
 
 import { DC } from "./core/constants.js";
-import { tryInstantCompleteChallenges } from "./core/oreki-instant-challenges.js";
 import { OrekiManagedCrunchInterval } from "./core/oreki-managed-crunch-interval.js";
 import { OrekiCrunchPolicy } from "./core/oreki-crunch-policy.js";
 import * as OrekiManagedAutobuyerState from "./core/oreki-managed-autobuyer-state.js";
@@ -1062,10 +1061,6 @@ export function gameLoop(passDiff, options = {}) {
 
   updateNormalAndInfinityChallenges(diff);
 
-  // 挑战进入即完成（Oreki）：必须在挑战状态建立之后、EternityChallenge(12).tryFail() 之前，
-  // 否则 EC12 可能在同一帧里先被限时判定判失败。详见 core/oreki-instant-challenges.js。
-  tryInstantCompleteChallenges();
-
   // ── [Oreki R50 web · 九修] 统一调度：所有 mod 主动发起的自动动作走同一条节拍 ──────────
   //
   // 用户令（2026-11-01）：mod 主动发起的自动操作必须经过**同一个调度器**，
@@ -1079,8 +1074,6 @@ export function gameLoop(passDiff, options = {}) {
   // 防止某个每拍都能买的任务饿死后面的模块。
   //
   // 刻意**不**放进队列的三处（都是只读判据或规则内判定，不是"买/按"动作）：
-  //   · `tryInstantCompleteChallenges()`：挑战"进入即完成"是规则的一部分，
-  //     必须与 `EternityChallenge(12).tryFail()` 同帧同序（见其上方注释），节流会让 EC12 判失败；
   //   · `shouldHoldReset()` / `shouldHoldCrunch()`：只回答是/否，节流会让闸门失去时效性；
   //   · `OrekiSmartStrategy.evaluate()`：只读解释器，不按任何键。
   // [R82] 首次永恒前的 ID1 收购窗口：把 `early` 暂时提到最前。
