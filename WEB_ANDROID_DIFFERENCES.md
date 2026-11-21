@@ -286,7 +286,7 @@ cmp WEB_ANDROID_DIFFERENCES.md web/AD-Oreki-Edition/WEB_ANDROID_DIFFERENCES.md \
 
 | # | 主题 | 标签 | Web 位置 | Android 位置 | 当前事实与证据 | 后续任务 |
 |---|---|---|---|---|---|---|
-| 1 | 挑战真实结算 | 【已解决】（Web 源码） | 删除 `oreki-instant-challenges.js`；EC 仅在 `canBeCompleted` 后走原版永恒 | Android C9 已由真实大坍缩结算，其他挑战的运行验收仍按独立矩阵执行 | 不再有“进入即完成”旁路；未达成目标不会补写完成次数或奖励 | Web Node 门禁与教程校验 PASS；真实 Playwright 挑战短程仍待运行 | R123：手机视口定向验证 C/IC/EC 至少一条真实结算 |
+| 1 | 挑战真实结算 | 【已解决】（Web 源码） | 删除 `oreki-instant-challenges.js`；EC 仅在 `canBeCompleted` 后走原版永恒；EC8 使用受限原版购买链并保留未首购额度 | Android C9 已由真实大坍缩结算（[#236 新档证据](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/pull/236#issuecomment-7064893051)），其他挑战的运行验收仍按独立矩阵执行 | 不再有“进入即完成”旁路；未达成目标不会补写完成次数或奖励 | Web Node、教程 2189 项与 Pixel 7 Chromium 定向测试 3/3 PASS | 完整 C/IC/EC 链仍为 NOT RUN |
 | 2 | 智能调度器 | 【功能缺口】（**未接线**） | `src/core/oreki-smart-executor.js`（1185 行，唯一调度器，默认 3 s） | `oreki/OrekiAutomationScheduler.smali`（1352 行，设置页 + 持久化键齐备） | **A27 实测**：logcat 有 `OREKI_SCHED: init 调度：已启用 · 间隔 1 秒`，但 `OrekiStageAuto.smali` 与 `build_mod.py` **均无任何 `OrekiAutomationScheduler` 引用** ⇒ 调度器只初始化，**没有管辖任何动作**，从未出现 `OREKI_SCHED act` | R51-SCHED-01：接线 + 十项运行期验收 |
 | 3 | 教程 | 【已解决】（Web 侧待复核） | `src/core/oreki-tutorial-data.json`（唯一正文源） | 构建期生成 `assets/oreki_tutorial.txt`（A28 构建实测 167445 字节） | 单源已成立：Android 资产由 Web JSON 生成，不手写第二份。运行时渲染**未做逐页验收** | R51-05：Android 运行时逐页渲染 + 术语核对 |
 | 4 | 默认科学记数法 | 【已解决】 | 默认 Scientific，且**不覆盖**玩家已选 | `build_mod.py:4864` 起「默认科学记数法」补丁组 | 补丁存在且有构建期断言；**未做「玩家先改成 Emoji 再重启，记数法是否被覆盖」的运行期实测** | R51-05：补一条「改过记数法后重启不被覆盖」的实测 |
@@ -395,7 +395,7 @@ Teresa 不浇；实测 `upgradeBits` 在现实后**仍为 0xFFFFF**（RU 是一�
 | 4 | 智能策略识别 | 未改：仍由 `OrekiStageAuto` 分流，**未接 `oreki-smart-strategy.json`** | 已接：JSON 为唯一策略源，`OrekiSmartStrategy.evaluate()` 只读解释 | 读码 |
 | 5 | 自动化调度 | **本轮才真正生效**：`noteActed`/`noteNoop` 的 `if-gez` 极性错误修好前，记账恒空转（无 `act` 日志、间隔恒放行）。修复后 logcat 出现 `OREKI_SCHED: act breakShop @…`，`dbg` 行显示 `idx=11 iv=1` | `runCycle()` 单时钟 + `didAct()` 判定 | logcat 原文见 FACTS C.112 |
 | 6 | 动作间隔 | 间隔读取正确（`iv=1`）、节拍记账正确；**但启动瞬间 8 条升级仍被连买（12~39 ms）**，稳态无候选可买，无法再取间隔正例 → **记为未解释缺陷** | 间隔闸门 R50 起生效，本轮 A/B 两段实测按节拍放行 | 见「未完成」 |
-| 7 | 挑战启动即完成 | 未改动（沿用 R4 的 `OrekiChallengeAuto` / `OrekiInstantChallenge` 注入点） | 未改动（`tryInstantCompleteChallenges()` 仍在 `EternityChallenge(12).tryFail()` 之前） | **本轮未做运行期取证** |
+| 7 | 挑战真实结算 | 已删除 Web `oreki-instant-challenges.js`；C/IC 只走原版大坍缩，EC 仅在 `canBeCompleted` 后调用原版永恒 | C9 已由 Android 真实原版大坍缩结算；其余挑战保留独立验收矩阵 | Web 2 条真实 Chromium 门禁 + EC8 额度保留门禁 PASS；Android C9 新档 PASS（PR #236）；完整挑战链 NOT RUN |
 | 8 | 教程覆盖 | 由 `oreki_tutorial_gen.py` 从同一 JSON 生成，构建期回读校验通过 | 同源直读 | 构建日志 `oreki_tutorial.txt: 170291 字节` |
 
 ### 15.5 本轮**消除**的一条旧差异
