@@ -152,6 +152,7 @@ const verifiedSkip = markKodySkippedPure(kodyAttached.records, {
   pr: 121,
   headSha: "a".repeat(40),
   checkRunId: 98123,
+  checkStartedAt: "2026-11-20T16:03:00Z",
   checkUrl: "https://example.test/check/98123",
   now: "2026-11-20T16:04:00Z",
 });
@@ -169,6 +170,63 @@ const skippedAgain = markKodySkippedPure(verifiedSkip.records, {
 assert.equal(skippedAgain.reason, "already-skipped");
 assert.equal(skippedAgain.records, verifiedSkip.records); // 幂等：不产生新提交
 assert.equal(skippedAgain.counts.used, 1);
+
+const observedOnly = {
+  kind: KODY_KIND,
+  identity: `kody-comment:${kodyAndroid}#9101`,
+  repository: kodyAndroid,
+  pr: 121,
+  commentId: "9101",
+  source: "observed_comment",
+  date: kodyDate,
+  status: "posted",
+  createdAt: "2026-11-20T16:04:00Z",
+  updatedAt: "2026-11-20T16:04:00Z",
+};
+const observedRecords = [observedOnly];
+const observedSkip = markKodySkippedPure(observedRecords, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "b".repeat(40),
+  checkRunId: 98127,
+  checkStartedAt: "2026-11-20T16:04:30Z",
+});
+assert.equal(observedSkip.ok, true);
+assert.equal(observedSkip.records[0].status, "skipped");
+assert.equal(observedSkip.records[0].headSha, "b".repeat(40));
+
+const lateRequest = markKodySkippedPure(observedRecords, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "b".repeat(40),
+  checkRunId: 98128,
+  checkStartedAt: "2026-11-20T16:03:00Z",
+});
+assert.equal(lateRequest.ok, false);
+assert.equal(lateRequest.reason, "trigger-after-check");
+assert.equal(lateRequest.records, observedRecords);
+
+const racedReservation = reserveKodyPure([], kodyCandidate("raced-attach", kodyAndroid), {
+  date: kodyDate,
+  now: "2026-11-20T16:04:10Z",
+}).records;
+const racedSkip = markKodySkippedPure(racedReservation, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98129,
+  checkStartedAt: "2026-11-20T16:04:20Z",
+});
+const racedAttach = attachKodyCommand(racedSkip.records, {
+  identity: "raced-attach",
+  commentId: "9102",
+  commentUrl: "https://example.test/comment/9102",
+  createdAt: "2026-11-20T16:04:15Z",
+  now: "2026-11-20T16:04:30Z",
+});
+assert.equal(racedAttach.record.status, "skipped");
+assert.equal(racedAttach.record.commentId, "9102");
+assert.equal(racedAttach.counts.used, 0);
 
 const skipFirst = attachKodyCommand(
   reserveKodyPure([], kodyCandidate("same-head-first", kodyAndroid), {
@@ -470,6 +528,16 @@ assert.equal(wikiWhenSharedPoolFull.allowed, false);
 assert.equal(wikiWhenSharedPoolFull.reason, "not-shared-quota-repository");
 assert.equal(wikiWhenSharedPoolFull.counts.used, KODY_DAILY_LIMIT);
 assert.equal(wikiWhenSharedPoolFull.records.length, sharedWithWikiHistory.records.length);
+assert.throws(() => reserveKodyPure([], kodyCandidate("bad-evidence", kodyWeb), {
+  date: kodyDate,
+  evidence: [{
+    repository: "unknown/repository",
+    pr: 121,
+    commentId: "9999",
+    url: "https://example.test/9999",
+    createdAt: "2026-11-20T00:00:00Z",
+  }],
+}), /unrecognized Kody quota evidence repository/u);
 
 const kodyBase = reserveKodyPure([], kodyCandidate("cas-seed", kodyWeb), {
   date: kodyDate,

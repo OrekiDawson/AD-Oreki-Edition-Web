@@ -151,10 +151,13 @@ function importKodyEvidence(records, evidence, date, now) {
   for (const item of evidence) {
     const repository = String(item?.repository ?? "");
     const commentId = String(item?.commentId ?? "").trim();
-    // Wiki 使用独立审查统计，绝不写入 Android/Web 共享池。
-    if (!isSharedQuotaRepository(repository)) continue;
-    if (!repository || !commentId) {
+    if (!/^[^/\s]+\/[^/\s]+$/u.test(repository) || !commentId) {
       throw new Error("Kody quota evidence requires repository and unique comment id");
+    }
+    // Wiki 使用独立审查统计，绝不写入 Android/Web 共享池。
+    if (!isSharedQuotaRepository(repository)) {
+      if (repository === `${OWNER}/AD-Oreki-Wiki`) continue;
+      throw new Error(`unrecognized Kody quota evidence repository: ${repository}`);
     }
     const createdAt = new Date(String(item?.createdAt ?? ""));
     if (!Number.isFinite(createdAt.getTime())) {
@@ -271,7 +274,7 @@ export function attachKodyCommand(records, {
   const alreadyPosted = records.findLastIndex(record =>
     isKodyRecord(record) &&
     record.identity === identity &&
-    record.status === "posted" &&
+    ["posted", "skipped"].includes(record.status) &&
     String(record.commentId ?? "") === duplicateComment);
   if (alreadyPosted >= 0) {
     return {
@@ -284,7 +287,8 @@ export function attachKodyCommand(records, {
   const index = records.findLastIndex(record =>
     isKodyRecord(record) &&
     record.identity === identity &&
-    record.status === "reserved");
+    (record.status === "reserved" ||
+      (record.status === "skipped" && !String(record.commentId ?? "").trim())));
   if (index < 0) throw new Error(`active Kody quota reservation not found: ${identity}`);
   const current = records[index];
   const parsedCreatedAt = new Date(createdAt);
@@ -302,11 +306,12 @@ export function attachKodyCommand(records, {
   const targetIndex = output.findLastIndex(record =>
     isKodyRecord(record) &&
     record.identity === identity &&
-    record.status === "reserved");
+    (record.status === "reserved" ||
+      (record.status === "skipped" && !String(record.commentId ?? "").trim())));
   if (targetIndex < 0) throw new Error(`active Kody quota reservation not found: ${identity}`);
   output[targetIndex] = {
     ...output[targetIndex],
-    status: "posted",
+    status: output[targetIndex].status === "skipped" ? "skipped" : "posted",
     date: commentDate,
     createdAt: commentCreatedAt,
     commentId: duplicateComment,
@@ -385,7 +390,8 @@ export function markKodySkippedPure(records, {
     isKodyRecord(record) &&
     record.repository === repo &&
     Number(record.pr) === number &&
-    record.headSha === sha &&
+    (record.headSha === sha ||
+      (!record.headSha && String(record.commentId ?? "").trim() !== "")) &&
     ["reserved", "posted"].includes(record.status));
   if (matches.length === 0) {
     return { ok: false, reason: "no-matching-kody-trigger", records };
@@ -399,9 +405,15 @@ export function markKodySkippedPure(records, {
     target = matches
       .filter(record => Number.isFinite(recordTime(record)) && recordTime(record) <= checkStartedMs)
       .sort((left, right) => recordTime(right) - recordTime(left))[0] ?? null;
+    if (!target) {
+      return { ok: false, reason: "trigger-after-check", records };
+    }
+  } else {
+    // 没有 Check 启动时间时保守退最早的一笔，而不是把同一 HEAD 的全部请求一起退掉。
+    target = matches
+      .filter(record => Number.isFinite(recordTime(record)))
+      .sort((left, right) => recordTime(left) - recordTime(right))[0] ?? matches[0];
   }
-  // 无时间关联时保守退最早的一笔，而不是把同一 HEAD 的全部请求一起退掉。
-  target ??= matches.sort((left, right) => recordTime(left) - recordTime(right))[0];
   const targetRecordMs = recordTime(target);
   const priorRealReview = priorRealReviewStarts
     .map(value => Date.parse(String(value ?? "")))
@@ -423,6 +435,7 @@ export function markKodySkippedPure(records, {
   const output = [...records];
   output[targetIndex] = {
     ...target,
+    headSha: target.headSha || sha,
     status: "skipped",
     skipCheckRunId: runId,
     skipCheckUrl: String(checkUrl),
