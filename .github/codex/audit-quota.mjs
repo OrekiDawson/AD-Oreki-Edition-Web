@@ -448,22 +448,33 @@ export function markKodySkippedPure(records, {
     .filter(priorToCheck)
     .sort((left, right) =>
       (recordTime(right) - recordTime(left)) * (reverse ? 1 : -1))[0] ?? null;
-  target = latest(exactMatches);
-  let observedEvidence = null;
-  if (target) {
-    if (!String(target.commentId ?? "").trim()) {
-      const targetMs = recordTime(target);
-      observedEvidence = latest(headlessMatches.filter(record =>
-        !Number.isFinite(targetMs) || recordTime(record) >= targetMs));
-    }
-  } else {
-    target = latest(headlessMatches);
-  }
+  target = latest([...exactMatches, ...headlessMatches]);
   if (!target) {
     return { ok: false, reason: "trigger-after-check", records };
   }
+  let mergeReservation = null;
+  if (!target.headSha) {
+    const targetMs = recordTime(target);
+    const reservations = exactMatches
+      .filter(record =>
+        record.status === "reserved" &&
+        !String(record.commentId ?? "").trim() &&
+        Number.isFinite(recordTime(record)) &&
+        recordTime(record) <= targetMs)
+      .sort((left, right) => recordTime(right) - recordTime(left));
+    for (const reservation of reservations) {
+      const earliestObservation = latest(
+        headlessMatches.filter(record => recordTime(record) >= recordTime(reservation)),
+        false,
+      );
+      if (earliestObservation === target) {
+        mergeReservation = reservation;
+        break;
+      }
+    }
+  }
   const targetRecordMs = recordTime(target);
-  const targetCommentId = String(observedEvidence?.commentId ?? target.commentId ?? "");
+  const targetCommentId = String(target.commentId ?? "");
   const priorRealReview = priorRealReviews.find(review => {
     const startedMs = Date.parse(String(review?.startedAt ?? ""));
     if (!Number.isFinite(startedMs)) return false;
@@ -483,23 +494,24 @@ export function markKodySkippedPure(records, {
       counts: kodyQuotaCounts(records, target.date),
     };
   }
-  const observedCommentId = String(observedEvidence?.commentId ?? "");
+  const observedCommentId = mergeReservation ? targetCommentId : "";
+  const skipTarget = mergeReservation ?? target;
   const output = records.filter(record =>
-    record !== observedEvidence &&
+    record !== (mergeReservation ? target : null) &&
     !(observedCommentId &&
       isKodyRecord(record) &&
-      String(record.repository ?? "") === String(target.repository ?? "") &&
+      String(record.repository ?? "") === String(skipTarget.repository ?? "") &&
       String(record.commentId ?? "") === observedCommentId &&
-      record !== target));
-  const outputTargetIndex = output.indexOf(target);
+      record !== skipTarget));
+  const outputTargetIndex = output.indexOf(skipTarget);
   output[outputTargetIndex] = {
-    ...target,
-    headSha: target.headSha || sha,
+    ...skipTarget,
+    headSha: skipTarget.headSha || sha,
     status: "skipped",
-    ...(observedEvidence ? {
+    ...(mergeReservation ? {
       commentId: observedCommentId,
-      commentUrl: String(observedEvidence.commentUrl ?? ""),
-      createdAt: observedEvidence.createdAt,
+      commentUrl: String(target.commentUrl ?? ""),
+      createdAt: target.createdAt,
     } : {}),
     skipCheckRunId: runId,
     skipCheckUrl: String(checkUrl),
@@ -509,7 +521,7 @@ export function markKodySkippedPure(records, {
     ok: true,
     reason: "kody-skipped-refunded",
     records: output,
-    counts: kodyQuotaCounts(output, target.date),
+    counts: kodyQuotaCounts(output, skipTarget.date),
   };
 }
 

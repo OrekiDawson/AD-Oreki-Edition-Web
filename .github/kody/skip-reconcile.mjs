@@ -60,7 +60,7 @@ export function kodyTriggerCommentEvidence(comments, repository, pr) {
       Number.isFinite(Date.parse(String(item.createdAt ?? ""))));
 }
 
-export function realKodyReviews(checks, currentCheckId, evidence = []) {
+export function realKodyReviews(checks, currentCheckId, evidence = [], targetPr = null) {
   const triggerTimes = evidence
     .map(item => ({
       commentId: String(item.commentId ?? ""),
@@ -76,6 +76,8 @@ export function realKodyReviews(checks, currentCheckId, evidence = []) {
       return check?.app?.slug === "kody-ai" &&
         check?.name === "Kody Code Review" &&
         realOrRunning &&
+        (targetPr == null ||
+          check?.pull_requests?.some(pr => Number(pr?.number) === Number(targetPr))) &&
         String(check?.id ?? "") !== String(currentCheckId ?? "") &&
         Number.isFinite(Date.parse(String(check?.started_at ?? check?.created_at ?? "")));
     })
@@ -124,8 +126,7 @@ export async function githubListAll(path, token, maxPages = 10) {
     const match = link.match(/<([^>]+)>;\s*rel="next"/);
     next = match ? match[1].replace("https://api.github.com", "") : "";
     if (next && page + 1 >= maxPages) {
-      console.warn("Kody skip: comment evidence pagination limit reached; using fetched pages.");
-      break;
+      throw new Error("Kody skip comment evidence pagination incomplete");
     }
   }
   return output;
@@ -235,6 +236,7 @@ export async function main() {
       checks.check_runs ?? [],
       event.check_run.id,
       match.evidence,
+      match.pr,
     );
     const startedMs = Date.parse(String(match.checkStartedAt ?? ""));
     const result = await markKodySkippedQuota(token, match, {

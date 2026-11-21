@@ -324,13 +324,91 @@ const idempotentEvidence = [{
   pr: 121,
   commentId: "9200",
   url: "https://example.test/comment/9200",
-  createdAt: "2026-11-20T16:06:00Z",
+  createdAt: "2026-11-20T03:06:00Z",
 }];
 const importedOnce = importKodyEvidence([], idempotentEvidence, kodyDate,
-  "2026-11-20T16:06:01Z");
+  "2026-11-20T03:06:01Z");
+assert.equal(importedOnce.length, 1);
 const importedTwice = importKodyEvidence(importedOnce, idempotentEvidence, kodyDate,
-  "2026-11-20T16:06:02Z");
+  "2026-11-20T03:06:02Z");
 assert.equal(importedTwice, importedOnce);
+
+const shadowReservation = reserveKodyPure([], kodyCandidate("shadow-reservation", kodyAndroid), {
+  date: kodyDate,
+  now: "2026-11-20T06:06:00Z",
+}).records;
+const shadowEvidence = reserveKodyPure(shadowReservation,
+  kodyCandidate("shadow-reservation", kodyAndroid), {
+    date: kodyDate,
+    now: "2026-11-20T06:06:05Z",
+    evidence: [
+      { ...kodyEvidence(kodyAndroid, [9201])[0], createdAt: "2026-11-20T06:06:05Z" },
+      { ...kodyEvidence(kodyAndroid, [9202])[0], createdAt: "2026-11-20T06:07:00Z" },
+    ],
+  });
+const newerManualSkip = markKodySkippedPure(shadowEvidence.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98137,
+  checkStartedAt: "2026-11-20T06:07:10Z",
+  headCommittedAt: "2026-11-20T05:00:00Z",
+  currentPullRequestHeadSha: "a".repeat(40),
+  priorRealReviews: [{
+    startedAt: "2026-11-20T06:06:30Z",
+    commentId: "9201",
+  }],
+});
+assert.equal(newerManualSkip.ok, true, newerManualSkip.reason);
+assert.equal(newerManualSkip.records.find(record => record.commentId === "9201").status,
+  "posted");
+assert.equal(newerManualSkip.records.find(record => record.commentId === "9202").status,
+  "skipped");
+const automaticAttachAfterManualSkip = attachKodyCommand(newerManualSkip.records, {
+  identity: "shadow-reservation",
+  commentId: "9201",
+  commentUrl: "https://example.test/comment/9201",
+  createdAt: "2026-11-20T06:06:05Z",
+  now: "2026-11-20T06:07:20Z",
+});
+assert.equal(automaticAttachAfterManualSkip.record.status, "posted");
+assert.equal(automaticAttachAfterManualSkip.counts.used, 1);
+
+const oldAutomaticRequest = {
+  ...observedOnly,
+  identity: `kody-trigger:${kodyAndroid}#121@${"a".repeat(40)}`,
+  headSha: "a".repeat(40),
+  commentId: "9300",
+  source: "automated_trigger",
+  createdAt: "2026-11-20T04:00:00Z",
+};
+const newerManualRequest = {
+  ...observedOnly,
+  identity: `kody-comment:${kodyAndroid}#9301`,
+  commentId: "9301",
+  createdAt: "2026-11-20T04:05:00Z",
+};
+const manualNotShadowed = markKodySkippedPure(
+  [oldAutomaticRequest, newerManualRequest],
+  {
+    repository: kodyAndroid,
+    pr: 121,
+    headSha: "a".repeat(40),
+    checkRunId: 98138,
+    checkStartedAt: "2026-11-20T04:06:00Z",
+    headCommittedAt: "2026-11-20T03:00:00Z",
+    currentPullRequestHeadSha: "a".repeat(40),
+    priorRealReviews: [{
+      startedAt: "2026-11-20T04:01:00Z",
+      commentId: "9300",
+    }],
+  },
+);
+assert.equal(manualNotShadowed.ok, true);
+assert.equal(manualNotShadowed.records.find(record => record.commentId === "9300").status,
+  "posted");
+assert.equal(manualNotShadowed.records.find(record => record.commentId === "9301").status,
+  "skipped");
 
 const skipFirst = attachKodyCommand(
   reserveKodyPure([], kodyCandidate("same-head-first", kodyAndroid), {
