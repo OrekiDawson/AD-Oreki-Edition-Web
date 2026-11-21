@@ -48,6 +48,15 @@ const env = {
   ru10Bought: false,
   eternityCalls: [],
   infinities: 0,
+  ecRunning: false,
+  ecCanComplete: false,
+  ec8Running: false,
+  ec8Ids: 0,
+  ec8Repl: 0,
+  ec8UnlockedTiers: 8,
+  ec8AffordableTiers: 8,
+  ec8IdPurchases: 0,
+  ec8UpgradePurchases: 0,
 };
 
 globalThis.player = {
@@ -61,7 +70,69 @@ globalThis.player = {
 globalThis.Player = { get canEternity() { return env.canEternity; } };
 globalThis.NormalChallenge = { isRunning: false };
 globalThis.InfinityChallenge = { isRunning: false };
-globalThis.EternityChallenge = { isRunning: false };
+{
+  const challengeAccessor = id => ({
+    id,
+    get isRunning() { return env.ec8Running && id === 8; },
+  });
+  Object.defineProperties(challengeAccessor, {
+    isRunning: {
+      get() { return env.ecRunning; },
+    },
+    current: {
+      get() {
+        return env.ecRunning ? { canBeCompleted: env.ecCanComplete } : undefined;
+      },
+    },
+  });
+  globalThis.EternityChallenge = challengeAccessor;
+}
+const infinityDimensionMocks = Array.from({ length: 8 }, (_, index) => {
+  const tier = index + 1;
+  return {
+    tier,
+    purchases: 0,
+    get isUnlocked() { return tier <= env.ec8UnlockedTiers; },
+    unlock() { return this.isUnlocked; },
+    get isAvailableForPurchase() {
+      return this.isUnlocked && tier <= env.ec8AffordableTiers && env.ec8Ids > 0;
+    },
+    buySingle() {
+      if (!this.isAvailableForPurchase) return false;
+      this.purchases += 1;
+      env.ec8Ids -= 1;
+      player.eterc8ids -= 1;
+      env.ec8IdPurchases += 1;
+      return true;
+    },
+  };
+});
+globalThis.InfinityDimensions = {
+  all: infinityDimensionMocks,
+  canBuy() { return env.ec8Ids > 0; },
+  buyMax() {
+    if (env.ec8Ids <= 0) return;
+    this.all[0].purchases += env.ec8Ids;
+    env.ec8IdPurchases += env.ec8Ids;
+    env.ec8Ids = 0;
+    player.eterc8ids = 0;
+  },
+};
+const makeReplicantiUpgrade = () => ({
+  value: 0,
+  get canBeBought() { return env.ec8Repl > 0; },
+  purchase() {
+    if (!this.canBeBought) return;
+    this.value += 1;
+    env.ec8Repl -= 1;
+    env.ec8UpgradePurchases += 1;
+  },
+});
+globalThis.ReplicantiUpgrade = {
+  chance: makeReplicantiUpgrade(),
+  interval: makeReplicantiUpgrade(),
+  galaxies: makeReplicantiUpgrade(),
+};
 globalThis.Pelle = { isDoomed: false };
 globalThis.Currency = {
   eternityPoints: { value: { times: (n) => env.ep * n } },
@@ -103,6 +174,19 @@ function reset() {
   env.gained = 0;
   env.ep = 0;
   env.eternityCalls = [];
+  env.ecRunning = false;
+  env.ecCanComplete = false;
+  env.ec8Running = false;
+  env.ec8Ids = 0;
+  env.ec8Repl = 0;
+  env.ec8UnlockedTiers = 8;
+  env.ec8AffordableTiers = 8;
+  env.ec8IdPurchases = 0;
+  env.ec8UpgradePurchases = 0;
+  player.eterc8ids = 0;
+  player.eterc8repl = 0;
+  for (const dimension of InfinityDimensions.all) dimension.purchases = 0;
+  for (const upgrade of Object.values(ReplicantiUpgrade)) upgrade.value = 0;
   delete globalThis.OrekiIu15Sprint;
   A.holdForRealityUpgrade10 = ORIG_HOLD;
   A.ecEntryPending = ORIG_EC;
@@ -205,6 +289,191 @@ env.gained = 1;
 globalThis.OrekiIu15Sprint = { freezeResets: true };
 check("IU15 冲刺期间不发起永恒", A.tickEternity() === false);
 check("IU15 期间 eternity 调用 0 次", env.eternityCalls.length === 0);
+
+// ---------------- ⑦b EC 只按原版真实目标结算 ----------------
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = false;
+env.canEternity = true;
+env.ep = 0;
+env.gained = 1;
+check("EC 未达到原版目标时不永恒", A.tickEternity() === false);
+check("EC 未达标时 eternity 调用 0 次", env.eternityCalls.length === 0);
+
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = true;
+env.canEternity = true;
+env.ep = 1e100;
+env.gained = 0;
+check("EC 达到原版目标时立即真实结算", A.tickEternity() === true);
+check("EC 达标只调用一次原版 eternity(false,true)",
+  env.eternityCalls.length === 1 &&
+  env.eternityCalls[0][0] === false && env.eternityCalls[0][1] === true,
+  JSON.stringify(env.eternityCalls));
+
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = true;
+env.canEternity = true;
+env.autobuyersOn = false;
+player.auto.autobuyersOn = false;
+check("EC 中关闭自动化后不真实结算", A.tickEternity() === false);
+check("EC 关闭自动化时 eternity 调用 0 次", env.eternityCalls.length === 0);
+env.autobuyersOn = true;
+player.auto.autobuyersOn = true;
+
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = true;
+env.canEternity = true;
+globalThis.Pelle.isDoomed = true;
+check("EC 中 Pelle 毁灭态不真实结算", A.tickEternity() === false);
+globalThis.Pelle.isDoomed = false;
+
+// ---------------- ⑦c EC8 专用购买只消耗原版限额 ----------------
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+for (const dimension of InfinityDimensions.all) dimension.purchases = 1;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.eternity.isActive = true;
+check("EC8 专用购买有真实动作", A.tryEternityChallenge8Purchases() === true);
+check("EC8 无限维度购买遵守剩余次数", env.ec8IdPurchases === 2 && env.ec8Ids === 0);
+check("EC8 复制器升级购买遵守剩余次数",
+  env.ec8UpgradePurchases === 2 && env.ec8Repl === 0,
+  `purchases=${env.ec8UpgradePurchases} remaining=${env.ec8Repl}`);
+
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.eternity.isActive = false;
+check("EC8 自动永恒关闭时不代买", A.tryEternityChallenge8Purchases() === false);
+check("EC8 自动永恒关闭时无限维度购买为 0", env.ec8IdPurchases === 0);
+check("EC8 自动永恒关闭时复制器升级购买为 0", env.ec8UpgradePurchases === 0);
+
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.autobuyersOn = false;
+env.autobuyersOn = false;
+check("EC8 总开关关闭时不代买", A.tryEternityChallenge8Purchases() === false);
+check("EC8 总开关关闭时没有购买", env.ec8IdPurchases === 0 && env.ec8UpgradePurchases === 0);
+env.autobuyersOn = true;
+player.auto.autobuyersOn = true;
+
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.eternity.isActive = true;
+globalThis.Pelle.isDoomed = true;
+check("EC8 Pelle 毁灭态不代买", A.tryEternityChallenge8Purchases() === false);
+check("EC8 Pelle 毁灭态购买为 0",
+  env.ec8IdPurchases === 0 && env.ec8UpgradePurchases === 0);
+globalThis.Pelle.isDoomed = false;
+
+reset();
+arm();
+env.ec8Running = true;
+env.ec8UnlockedTiers = 3;
+env.ec8Ids = 50;
+env.ec8Repl = 0;
+player.eterc8ids = 50;
+player.eterc8repl = 0;
+player.auto.eternity.isActive = true;
+check("EC8 部分维度解锁时仍会推进", A.tryEternityChallenge8Purchases() === true);
+check("EC8 为每个尚未首购的维度保留重复购买额度", env.ec8Ids === 5,
+  `remaining=${env.ec8Ids}`);
+check("EC8 尚未解锁的 ID4~ID8 未被提前购买",
+  InfinityDimensions.all.slice(3).every(dimension => dimension.purchases === 0));
+check("EC8 已解锁维度均获得真实购买",
+  InfinityDimensions.all.slice(0, 3).every(dimension => dimension.purchases > 0));
+
+env.ec8UnlockedTiers = 4;
+check("EC8 后续解锁 ID4 后仍能继续购买",
+  A.tryEternityChallenge8Purchases() === true);
+check("EC8 解锁更高维度后仍为剩余未首购维度保留额度", env.ec8Ids >= 4,
+  `remaining=${env.ec8Ids}`);
+check("EC8 ID4 解锁后获得真实购买", InfinityDimensions.all[3].purchases > 0);
+
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 50;
+env.ec8Repl = 0;
+env.ec8UnlockedTiers = 8;
+env.ec8AffordableTiers = 4;
+player.eterc8ids = 50;
+player.eterc8repl = 0;
+player.auto.eternity.isActive = true;
+check("EC8 已解锁但高阶维度未首购时仍会推进",
+  A.tryEternityChallenge8Purchases() === true);
+check("EC8 为已解锁但未首购的高阶维度保留额度", env.ec8Ids >= 4,
+  `remaining=${env.ec8Ids}`);
+check("EC8 买不起的 ID5~ID8 未被写入购买",
+  InfinityDimensions.all.slice(4).every(dimension => dimension.purchases === 0));
+
+env.ec8AffordableTiers = 8;
+check("EC8 高阶维度变为买得起后继续购买",
+  A.tryEternityChallenge8Purchases() === true);
+check("EC8 高阶维度变为买得起后获得真实购买",
+  InfinityDimensions.all.slice(4).every(dimension => dimension.purchases > 0));
+
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 5;
+env.ec8Repl = 0;
+env.ec8UnlockedTiers = 8;
+env.ec8AffordableTiers = 3;
+for (let tier = 1; tier <= 3; tier++) InfinityDimensions.all[tier - 1].purchases = 1;
+player.eterc8ids = 5;
+player.eterc8repl = 0;
+player.auto.eternity.isActive = true;
+check("EC8 连续调度后仍能用预留额度推进", A.tryEternityChallenge8Purchases() === false);
+env.ec8AffordableTiers = 8;
+check("EC8 高阶买得起后允许未首购维度使用预留额度",
+  A.tryEternityChallenge8Purchases() === true);
+check("EC8 连续调度后高阶维度完成首购",
+  InfinityDimensions.all.slice(3).every(dimension => dimension.purchases > 0),
+  JSON.stringify(InfinityDimensions.all.map(dimension => dimension.purchases)));
+
+// 走完整 tick：EC 内 active=false，采购必须发生在提前返回之前。
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = false;
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+for (const dimension of InfinityDimensions.all) dimension.purchases = 1;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.eternity.isActive = true;
+const ec8Tick = A.tick();
+check("EC8 采购在 tick 的 inactive 提前返回前接线", ec8Tick?.ec8 === true,
+  JSON.stringify(ec8Tick));
+check("经 tick 真实购买 EC8 无限维度", InfinityDimensions.all[0].purchases > 0,
+  `purchases=${InfinityDimensions.all[0].purchases}`);
 
 // ---------------- ⑧ holdForRealityUpgrade10 语义 ----------------
 reset();
@@ -1073,13 +1342,13 @@ try {
     {
       const tickBody = src.split("tickEternity() {")[1]?.split('this._err("tickEternity"')[0] || "";
       const sampleIdx = tickBody.indexOf("this._sampleFreshSession()");
-      const activeIdx = tickBody.indexOf("if (!this.active) return false;");
+      const activeIdx = tickBody.indexOf("if (!this.eternityResetActive) return false;");
       const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
       const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
         "sample=" + sampleIdx + " dwell=" + dwellIdx);
-      check("[R116 review] latch 采样与 active 解耦（在 !active early return 之前）",
+      check("[R116 review] latch 采样与永恒重置门禁解耦",
         sampleIdx >= 0 && activeIdx > sampleIdx,
         "sample=" + sampleIdx + " active=" + activeIdx);
       check("[R116 review] dwell gate 仍在接管开关之前",

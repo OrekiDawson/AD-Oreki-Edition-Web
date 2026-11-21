@@ -49,7 +49,7 @@
 //   `OrekiEndgameAutomation.driveDoomed()` 的相位机与末日间隔是实测调出来的
 //   （20 s 冷却、残迹收益停滞判据、先买后末日顺序），执行层再插一手只会打乱相位。
 // · 不做挑战内购买顺序（`challengeSpecificOrder` 等）：挑战规则由
-//   `oreki-eternity-automation.js` 与 `oreki-instant-challenges.js` 按挑战逐条处理。
+//   `oreki-eternity-automation.js` 只负责合法购买与进入，完成由原版挑战机制产生。
 // · 不做天神（`celestialSpecificOrder` 等）：`OrekiCelestialAutomation.tick()` 内部按天神分派，
 //   这里再调一次等于递归。
 //
@@ -211,7 +211,7 @@ const VERBS = {
   },
   runChallengeIfRewardBlocks: {
     policy: "delegated", source: "eternity", label: "按需打挑战",
-    why: "由 OrekiEternityAutomation.buyEcStudiesAndStart 与 oreki-instant-challenges.js 判定"
+    why: "由 OrekiEternityAutomation 购买并进入，原版挑战目标与结算负责完成"
   },
 
   // ── 现实（OrekiRealityAutomation）──
@@ -230,17 +230,15 @@ const VERBS = {
   buyRealityPerk: { policy: "owned", source: "perk", method: "buyPerks", label: "买复兴节点" },
 
   // ── 挑战（归阶段模块）──
-  // [Oreki R45] 原来这三条写的是「由 oreki-instant-challenges.js / OrekiEternityAutomation
+  // [Oreki R45] 原来这三条描述的是旧的即时完成模块与 OrekiEternityAutomation
   // 按挑战规则处理」，说得比实际宽。真实情况分两种，逐条写清：
-  //   · NC / IC：进挑战的当帧就被 `oreki-instant-challenges.js` 用原版结算出口
-  //     （`challenge.complete()` + 原版收益函数）做完并退出，**根本不进入战斗期**，
-  //     所以「挑战内购买顺序 / 只买允许项 / 完成后坍缩」在 Web 端不需要动作；
-  //     挑战期间照常跑的只有原版自己的维度/计数频率自动购买器。
+  //   · NC / IC：挑战内继续按原版目标推进，达到目标后再走原版结算；
+  //     挑战期间照常运行原版与调度器允许的购买器。
   //   · EC：入口与挑战内购买由 `OrekiEternityAutomation`（`buyEcStudiesAndStart`）
   //     与 `OrekiDilationAutomation` 按挑战逐条处理。
   challengeSpecificOrder: {
     policy: "delegated", label: "挑战专项顺序",
-    why: "NC/IC 由 oreki-instant-challenges.js 当帧按原版出口结算、无战斗期；EC 内顺序由 OrekiEternityAutomation / OrekiDilationAutomation 处理"
+    why: "NC/IC/EC 均需按原版目标真实推进并在达到条件后结算；EC 内顺序由 OrekiEternityAutomation / OrekiDilationAutomation 处理"
   },
   buyAllowedOnly: {
     policy: "delegated", label: "只买挑战允许项",
