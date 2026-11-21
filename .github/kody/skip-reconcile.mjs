@@ -60,7 +60,14 @@ export function kodyTriggerCommentEvidence(comments, repository, pr) {
       Number.isFinite(Date.parse(String(item.createdAt ?? ""))));
 }
 
-export function realKodyReviewStarts(checks, currentCheckId) {
+export function realKodyReviews(checks, currentCheckId, evidence = []) {
+  const triggerTimes = evidence
+    .map(item => ({
+      commentId: String(item.commentId ?? ""),
+      at: Date.parse(String(item.createdAt ?? "")),
+    }))
+    .filter(item => item.commentId && Number.isFinite(item.at))
+    .sort((left, right) => left.at - right.at);
   return checks
     .filter(check => {
       const realOrRunning =
@@ -72,7 +79,17 @@ export function realKodyReviewStarts(checks, currentCheckId) {
         String(check?.id ?? "") !== String(currentCheckId ?? "") &&
         Number.isFinite(Date.parse(String(check?.started_at ?? check?.created_at ?? "")));
     })
-    .map(check => check.started_at ?? check.created_at);
+    .map(check => {
+      const startedAt = check.started_at ?? check.created_at;
+      const startedMs = Date.parse(String(startedAt ?? ""));
+      const trigger = triggerTimes
+        .filter(item => item.at <= startedMs)
+        .sort((left, right) => right.at - left.at)[0] ?? null;
+      return {
+        startedAt,
+        commentId: trigger?.commentId ?? "",
+      };
+    });
 }
 
 /** 安全补查 check_run.pull_requests 为空的同仓 PR，仅接受唯一 HEAD 命中。 */
@@ -172,10 +189,6 @@ export async function main() {
   if ((checks.total_count ?? 0) > (checks.check_runs?.length ?? 0)) {
     throw new Error("Kody Check 证据分页不完整，拒绝自动退额");
   }
-  const priorRealReviewStarts = realKodyReviewStarts(
-    checks.check_runs ?? [],
-    event.check_run.id,
-  );
   for (const match of matches) {
     let currentPullRequestHeadSha = "";
     try {
@@ -205,8 +218,12 @@ export async function main() {
     match.checkStartedAt = event.check_run.started_at ?? event.check_run.created_at ?? "";
     match.headCommittedAt = headCommittedAt;
     match.currentPullRequestHeadSha = currentPullRequestHeadSha;
-    match.priorRealReviewStarts = priorRealReviewStarts;
     match.evidence = kodyTriggerCommentEvidence(comments, repository, match.pr);
+    match.priorRealReviews = realKodyReviews(
+      checks.check_runs ?? [],
+      event.check_run.id,
+      match.evidence,
+    );
     const startedMs = Date.parse(String(match.checkStartedAt ?? ""));
     const result = await markKodySkippedQuota(token, match, {
       now: Number.isFinite(startedMs) ? new Date(startedMs) : new Date(),

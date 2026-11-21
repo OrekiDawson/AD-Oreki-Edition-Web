@@ -28,7 +28,7 @@ import {
   githubListAll,
   kodyTriggerCommentEvidence,
   kodySkipPullRequests,
-  realKodyReviewStarts,
+  realKodyReviews,
 } from "./skip-reconcile.mjs";
 
 const repository = "OrekiDawson/AD-Oreki-Edition-Android";
@@ -334,7 +334,7 @@ test("只有 Kody 官方 completed/skipped Check 才能退额", () => {
   } }), []); // 单个 Check 关联多个 PR 时无法证明归属
 });
 
-test("只提取当前 skipped Check 之外的已完成、运行中或排队 Kody Review 时间", () => {
+test("已完成、运行中或排队 Kody Review 关联到启动前最近请求", () => {
   const checks = [
     {
       id: 1,
@@ -378,10 +378,14 @@ test("只提取当前 skipped Check 之外的已完成、运行中或排队 Kody
       created_at: "2026-11-21T12:58:50Z",
     },
   ];
-  assert.deepEqual(realKodyReviewStarts(checks, 2), [
-    "2026-11-21T12:58:00Z",
-    "2026-11-21T12:58:40Z",
-    "2026-11-21T12:58:50Z",
+  const evidence = [
+    { commentId: "70", createdAt: "2026-11-21T12:57:50Z" },
+    { commentId: "71", createdAt: "2026-11-21T12:58:20Z" },
+  ];
+  assert.deepEqual(realKodyReviews(checks, 2, evidence), [
+    { startedAt: "2026-11-21T12:58:00Z", commentId: "70" },
+    { startedAt: "2026-11-21T12:58:40Z", commentId: "71" },
+    { startedAt: "2026-11-21T12:58:50Z", commentId: "71" },
   ]);
 });
 

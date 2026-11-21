@@ -374,7 +374,10 @@ const reviewedBeforeSkip = markKodySkippedPure(skipFirst.records, {
   headSha: "a".repeat(40),
   checkRunId: 98126,
   checkStartedAt: "2026-11-20T00:00:30Z",
-  priorRealReviewStarts: ["2026-11-20T00:00:15Z"],
+  priorRealReviews: [{
+    startedAt: "2026-11-20T00:00:15Z",
+    commentId: "9001",
+  }],
 });
 assert.equal(reviewedBeforeSkip.ok, false);
 assert.equal(reviewedBeforeSkip.reason, "prior-real-kody-review");
@@ -386,10 +389,30 @@ const sameTimeReview = markKodySkippedPure(skipFirst.records, {
   headSha: "a".repeat(40),
   checkRunId: 98133,
   checkStartedAt: "2026-11-20T00:00:30Z",
-  priorRealReviewStarts: ["2026-11-20T00:00:10Z"],
+  priorRealReviews: [{
+    startedAt: "2026-11-20T00:00:10Z",
+    commentId: "9001",
+  }],
 });
 assert.equal(sameTimeReview.ok, false);
 assert.equal(sameTimeReview.reason, "prior-real-kody-review");
+
+const otherRequestStillRefunds = markKodySkippedPure(skipSecond.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98134,
+  checkStartedAt: "2026-11-20T00:00:30Z",
+  priorRealReviews: [{
+    startedAt: "2026-11-20T00:00:15Z",
+    commentId: "9001",
+  }],
+});
+assert.equal(otherRequestStillRefunds.ok, true);
+assert.equal(
+  otherRequestStillRefunds.records.find(record => record.commentId === "9002").status,
+  "skipped",
+);
 
 assert.throws(() => markKodySkippedPure(kodyAttached.records, {
   repository: kodyAndroid, pr: 121, headSha: "invalid", checkRunId: 98123,

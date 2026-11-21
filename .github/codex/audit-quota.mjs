@@ -378,7 +378,7 @@ export function markKodySkippedPure(records, {
   checkStartedAt = "",
   headCommittedAt = "",
   currentPullRequestHeadSha = "",
-  priorRealReviewStarts = [],
+  priorRealReviews = [],
   checkUrl = "",
   now = new Date().toISOString(),
 }) {
@@ -457,13 +457,18 @@ export function markKodySkippedPure(records, {
     return { ok: false, reason: "trigger-after-check", records };
   }
   const targetRecordMs = recordTime(target);
-  const priorRealReview = priorRealReviewStarts
-    .map(value => Date.parse(String(value ?? "")))
-    .find(startedMs =>
-      Number.isFinite(targetRecordMs) &&
-      Number.isFinite(startedMs) &&
+  const targetCommentId = String(observedEvidence?.commentId ?? target.commentId ?? "");
+  const priorRealReview = priorRealReviews.find(review => {
+    const startedMs = Date.parse(String(review?.startedAt ?? ""));
+    if (!Number.isFinite(startedMs)) return false;
+    const reviewCommentId = String(review?.commentId ?? "");
+    if (targetCommentId && reviewCommentId) {
+      return reviewCommentId === targetCommentId;
+    }
+    return Number.isFinite(targetRecordMs) &&
       startedMs >= targetRecordMs &&
-      startedMs <= checkStartedMs);
+      startedMs <= checkStartedMs;
+  });
   if (priorRealReview) {
     return {
       ok: false,
