@@ -193,6 +193,7 @@ const observedSkip = markKodySkippedPure(observedRecords, {
   checkStartedAt: "2026-11-20T16:04:30Z",
   headCommittedAt: "2026-11-20T15:00:00Z",
   currentPullRequestHeadSha: "b".repeat(40),
+  currentPullRequestHeadCommittedAt: "2026-11-20T16:00:00Z",
 });
 assert.equal(observedSkip.ok, true);
 assert.equal(observedSkip.records[0].status, "skipped");
@@ -206,6 +207,7 @@ const lateRequest = markKodySkippedPure(observedRecords, {
   checkStartedAt: "2026-11-20T16:03:00Z",
   headCommittedAt: "2026-11-20T15:00:00Z",
   currentPullRequestHeadSha: "b".repeat(40),
+  currentPullRequestHeadCommittedAt: "2026-11-20T16:00:00Z",
 });
 assert.equal(lateRequest.ok, false);
 assert.equal(lateRequest.reason, "trigger-after-check");
@@ -225,11 +227,29 @@ const oldHeadSkip = markKodySkippedPure([oldHeadObserved], {
   checkStartedAt: "2026-11-20T17:00:00Z",
   headCommittedAt: "2026-11-20T16:00:00Z",
   currentPullRequestHeadSha: "d".repeat(40),
+  currentPullRequestHeadCommittedAt: "2026-11-20T16:30:00Z",
 });
 assert.equal(oldHeadSkip.ok, false);
 assert.equal(oldHeadSkip.reason, "unattributed-trigger");
 assert.equal(oldHeadSkip.records[0].status, "posted");
 assert.equal(oldHeadSkip.records[0].headSha, undefined);
+
+const delayedOldHeadComment = {
+  ...oldHeadObserved,
+  createdAt: "2026-11-20T16:10:00Z",
+};
+const delayedOldHeadSkip = markKodySkippedPure([delayedOldHeadComment], {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "c".repeat(40),
+  checkRunId: 98136,
+  checkStartedAt: "2026-11-20T17:00:00Z",
+  headCommittedAt: "2026-11-20T16:00:00Z",
+  currentPullRequestHeadSha: "d".repeat(40),
+  currentPullRequestHeadCommittedAt: "2026-11-20T16:30:00Z",
+});
+assert.equal(delayedOldHeadSkip.ok, true);
+assert.equal(delayedOldHeadSkip.records[0].headSha, "c".repeat(40));
 
 const racedReservation = reserveKodyPure([], kodyCandidate("raced-attach", kodyAndroid), {
   date: kodyDate,

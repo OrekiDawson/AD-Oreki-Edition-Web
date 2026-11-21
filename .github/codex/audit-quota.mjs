@@ -378,6 +378,7 @@ export function markKodySkippedPure(records, {
   checkStartedAt = "",
   headCommittedAt = "",
   currentPullRequestHeadSha = "",
+  currentPullRequestHeadCommittedAt = "",
   priorRealReviews = [],
   checkUrl = "",
   now = new Date().toISOString(),
@@ -407,6 +408,8 @@ export function markKodySkippedPure(records, {
     String(record.createdAt ?? record.reservedAt ?? record.updatedAt ?? ""),
   );
   const headCommittedMs = Date.parse(String(headCommittedAt));
+  const currentHeadCommittedMs = Date.parse(String(currentPullRequestHeadCommittedAt));
+  const currentHeadMatches = String(currentPullRequestHeadSha ?? "") === sha;
   const activeRecords = records.filter(record =>
     isKodyRecord(record) &&
     record.repository === repo &&
@@ -414,14 +417,17 @@ export function markKodySkippedPure(records, {
     ["reserved", "posted"].includes(record.status));
   const exactMatches = activeRecords.filter(record => record.headSha === sha);
   const canAttributeHeadless =
-    String(currentPullRequestHeadSha ?? "") === sha &&
-    Number.isFinite(headCommittedMs);
+    String(currentPullRequestHeadSha ?? "").trim() !== "" &&
+    Number.isFinite(headCommittedMs) &&
+    (currentHeadMatches ||
+      (Number.isFinite(currentHeadCommittedMs) && currentHeadCommittedMs > headCommittedMs));
   const headlessMatches = canAttributeHeadless
     ? activeRecords.filter(record =>
       !record.headSha &&
       String(record.commentId ?? "").trim() !== "" &&
       Number.isFinite(recordTime(record)) &&
-      recordTime(record) >= headCommittedMs)
+      recordTime(record) >= headCommittedMs &&
+      (currentHeadMatches || recordTime(record) < currentHeadCommittedMs))
     : [];
   const potentialHeadless = activeRecords.filter(record =>
     !record.headSha && String(record.commentId ?? "").trim() !== "");

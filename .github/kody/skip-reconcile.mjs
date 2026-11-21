@@ -190,19 +190,29 @@ export async function main() {
     throw new Error("Kody Check 证据分页不完整，拒绝自动退额");
   }
   for (const match of matches) {
-    let currentPullRequestHeadSha = "";
-    try {
-      const currentPr = await githubJson(
-        `/repos/${repository}/pulls/${match.pr}`,
+    const currentPr = await githubJson(
+      `/repos/${repository}/pulls/${match.pr}`,
+      token,
+    );
+    const currentPullRequestHeadSha = currentPr?.head?.sha ?? "";
+    if (!currentPullRequestHeadSha) {
+      throw new Error(`Kody skip: PR #${match.pr} current head is unavailable`);
+    }
+    let currentPullRequestHeadCommittedAt = headCommittedAt;
+    if (currentPullRequestHeadSha !== sha) {
+      const currentHeadCommit = await githubJson(
+        `/repos/${repository}/commits/${currentPullRequestHeadSha}`,
         token,
       );
-      currentPullRequestHeadSha = currentPr?.head?.sha ?? "";
-    } catch (error) {
-      console.warn(
-        `Kody skip: PR #${match.pr} current head unavailable; ` +
-        `headless trigger attribution disabled: ${error.message}`,
-      );
+      currentPullRequestHeadCommittedAt =
+        currentHeadCommit?.commit?.committer?.date ??
+        currentHeadCommit?.commit?.author?.date ??
+        "";
+      if (!Number.isFinite(Date.parse(String(currentPullRequestHeadCommittedAt)))) {
+        throw new Error(`Kody skip: PR #${match.pr} current head time is unavailable`);
+      }
     }
+    let commentsFetchFailed = false;
     let comments = [];
     try {
       comments = await githubListAll(
@@ -210,6 +220,7 @@ export async function main() {
         token,
       );
     } catch (error) {
+      commentsFetchFailed = true;
       console.warn(
         `Kody skip: PR #${match.pr} comment evidence unavailable; ` +
         `exact-head records only: ${error.message}`,
@@ -218,6 +229,7 @@ export async function main() {
     match.checkStartedAt = event.check_run.started_at ?? event.check_run.created_at ?? "";
     match.headCommittedAt = headCommittedAt;
     match.currentPullRequestHeadSha = currentPullRequestHeadSha;
+    match.currentPullRequestHeadCommittedAt = currentPullRequestHeadCommittedAt;
     match.evidence = kodyTriggerCommentEvidence(comments, repository, match.pr);
     match.priorRealReviews = realKodyReviews(
       checks.check_runs ?? [],
@@ -228,6 +240,13 @@ export async function main() {
     const result = await markKodySkippedQuota(token, match, {
       now: Number.isFinite(startedMs) ? new Date(startedMs) : new Date(),
     });
+    if (!result.ok &&
+        (["unattributed-trigger", "missing-check-start-time"].includes(result.reason) ||
+          (commentsFetchFailed && result.reason === "no-matching-kody-trigger"))) {
+      throw new Error(
+        `Kody skip: ${match.repository}#${match.pr} requires retry: ${result.reason}`,
+      );
+    }
     console.log(
       `Kody skip: ${match.repository}#${match.pr}@${match.headSha} ` +
       `CheckRun=${match.checkRunId} => ${result.reason}; ` +
