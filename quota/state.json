@@ -1771,6 +1771,33 @@
       "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/105#issuecomment-7054355043",
       "reservedAt": "2026-11-21T00:41:00.943Z",
       "updatedAt": "2026-11-21T00:41:00.943Z"
+    },
+    {
+      "kind": "kody_start_review",
+      "identity": "kody-comment:OrekiDawson/AD-Oreki-Edition-Web#7054395074",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Web",
+      "pr": 105,
+      "commentId": "7054395074",
+      "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/105#issuecomment-7054395074",
+      "source": "observed_comment",
+      "date": "2026-11-21",
+      "status": "posted",
+      "createdAt": "2026-11-21T00:43:15.000Z",
+      "updatedAt": "2026-11-21T00:48:38.002Z"
+    },
+    {
+      "kind": "kody_start_review",
+      "identity": "kody-trigger:OrekiDawson/AD-Oreki-Edition-Web#105@3c607761170b1ccd00aab59762be6ee71d44870b",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Web",
+      "pr": 105,
+      "headSha": "3c607761170b1ccd00aab59762be6ee71d44870b",
+      "source": "automated_trigger",
+      "date": "2026-11-21",
+      "status": "reserved",
+      "commentId": "",
+      "commentUrl": "",
+      "reservedAt": "2026-11-21T00:48:38.002Z",
+      "updatedAt": "2026-11-21T00:48:38.002Z"
     }
   ]
 }
