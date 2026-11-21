@@ -89,7 +89,7 @@ async function githubJson(path, token) {
   return response.json();
 }
 
-async function githubListAll(path, token, maxPages = 10) {
+export async function githubListAll(path, token, maxPages = 10) {
   const output = [];
   let next = path;
   for (let page = 0; next && page < maxPages; page += 1) {
@@ -107,7 +107,8 @@ async function githubListAll(path, token, maxPages = 10) {
     const match = link.match(/<([^>]+)>;\s*rel="next"/);
     next = match ? match[1].replace("https://api.github.com", "") : "";
     if (next && page + 1 >= maxPages) {
-      throw new Error("Kody skip comment evidence pagination incomplete");
+      console.warn("Kody skip: comment evidence pagination limit reached; using fetched pages.");
+      break;
     }
   }
   return output;
@@ -152,11 +153,18 @@ export async function main() {
   }
   const repository = event.repository.full_name;
   const sha = event.check_run.head_sha;
-  const headCommit = await githubJson(`/repos/${repository}/commits/${sha}`, token);
-  const headCommittedAt =
-    headCommit?.commit?.committer?.date ??
-    headCommit?.commit?.author?.date ??
-    "";
+  let headCommittedAt = "";
+  try {
+    const headCommit = await githubJson(`/repos/${repository}/commits/${sha}`, token);
+    headCommittedAt =
+      headCommit?.commit?.committer?.date ??
+      headCommit?.commit?.author?.date ??
+      "";
+  } catch (error) {
+    console.warn(
+      `Kody skip: head commit metadata unavailable; exact-head records only: ${error.message}`,
+    );
+  }
   const checks = await githubJson(
     `/repos/${repository}/commits/${sha}/check-runs?check_name=Kody%20Code%20Review&filter=all&per_page=100`,
     token,
@@ -169,10 +177,18 @@ export async function main() {
     event.check_run.id,
   );
   for (const match of matches) {
-    const comments = await githubListAll(
-      `/repos/${repository}/issues/${match.pr}/comments?per_page=100`,
-      token,
-    );
+    let comments = [];
+    try {
+      comments = await githubListAll(
+        `/repos/${repository}/issues/${match.pr}/comments?sort=created&direction=desc&per_page=100`,
+        token,
+      );
+    } catch (error) {
+      console.warn(
+        `Kody skip: PR #${match.pr} comment evidence unavailable; ` +
+        `exact-head records only: ${error.message}`,
+      );
+    }
     match.checkStartedAt = event.check_run.started_at ?? event.check_run.created_at ?? "";
     match.headCommittedAt = headCommittedAt;
     match.priorRealReviewStarts = priorRealReviewStarts;

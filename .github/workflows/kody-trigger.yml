@@ -31,6 +31,8 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
+      issues: read
+      pull-requests: read
     concurrency:
       group: kody-skip-reconcile-${{ github.repository }}-${{ github.event.check_run.id }}
       cancel-in-progress: false

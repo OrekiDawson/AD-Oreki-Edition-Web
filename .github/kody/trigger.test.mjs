@@ -25,6 +25,7 @@ import {
 
 import {
   confirmedKodySkip,
+  githubListAll,
   kodyTriggerCommentEvidence,
   kodySkipPullRequests,
   realKodyReviewStarts,
@@ -42,6 +43,28 @@ test("Kody 工作流只使用合法并发键，并按事件身份隔离", () => 
     /group: kody-skip-reconcile-\$\{\{ github\.repository \}\}-\$\{\{ github\.event\.check_run\.id \}\}/);
   assert.match(workflow,
     /group: kody-trigger-budget-\$\{\{ github\.repository \}\}-\$\{\{ github\.event\.pull_request\.number \|\| inputs\.pr_number \}\}/);
+  assert.match(workflow, /contents: read/);
+  assert.match(workflow, /issues: read/);
+  assert.match(workflow, /pull-requests: read/);
+});
+
+test("评论证据超过分页上限时返回已取页面并告警", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalWarn = console.warn;
+  let warned = false;
+  globalThis.fetch = async () => ({
+    ok: true,
+    async json() { return [{ id: 1 }]; },
+    headers: { get: () => '<https://api.github.com/next-page>; rel="next"' },
+  });
+  console.warn = () => { warned = true; };
+  try {
+    assert.deepEqual(await githubListAll("/comments", "token", 1), [{ id: 1 }]);
+    assert.equal(warned, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+    console.warn = originalWarn;
+  }
 });
 
 function pr(overrides = {}) {
