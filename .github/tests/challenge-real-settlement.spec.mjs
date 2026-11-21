@@ -107,4 +107,19 @@ test("EC8 automation preserves purchases for unlocked but unaffordable dimension
   expect(result.remaining).toBeGreaterThanOrEqual(4);
   expect(result.purchases.slice(4)).toEqual([0, 0, 0, 0]);
   expect(pageErrors, "Unhandled browser errors").toEqual([]);
+
+  const afterUnlockAffordability = await page.evaluate(() => {
+    Currency.infinityPoints.value = Decimal.pow(10, 1000);
+    const acted = OrekiEternityAutomation.tryEternityChallenge8Purchases();
+    return {
+      acted,
+      purchases: InfinityDimensions.all.map(dimension => dimension.purchases),
+    };
+  });
+
+  expect(afterUnlockAffordability.acted).toBe(true);
+  expect(
+    afterUnlockAffordability.purchases.slice(4).every(purchases => purchases > 0),
+  ).toBe(true);
+  expect(pageErrors, "Unhandled browser errors").toEqual([]);
 });

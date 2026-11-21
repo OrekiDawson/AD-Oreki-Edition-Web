@@ -1677,11 +1677,20 @@ export const OrekiEternityAutomation = {
         } else {
           // 普通「全部购买」会优先把低价 ID1 买到上限；EC8 只有不可恢复的
           // 50 次额度，提前花光会让尚未首购的 ID 永久无法获得生产倍率。
-          // 已解锁但暂时买不起的高阶维度也必须计入保留额度。
-          const reserve = Math.min(player.eterc8ids, unpurchasedCount);
+          // 已解锁但暂时买不起的高阶维度也必须计入保留额度。预留额度先允许
+          // 未首购维度自己使用；只有重复购买才必须停在剩余未首购数之外。
           const purchasable = dimensions.filter(dimension => dimension.isUnlocked);
-          while (player.eterc8ids > reserve) {
+          while (player.eterc8ids > 0) {
             let boughtThisPass = false;
+            for (const dimension of purchasable.slice().reverse()) {
+              if (player.eterc8ids <= 0) break;
+              if (dimension.purchases !== 0 ||
+                !dimension.isAvailableForPurchase ||
+                !dimension.buySingle()) continue;
+              acted = true;
+              boughtThisPass = true;
+            }
+            const reserve = dimensions.filter(dimension => dimension.purchases === 0).length;
             for (const dimension of purchasable.slice().reverse()) {
               if (player.eterc8ids <= reserve) break;
               if (!dimension.isAvailableForPurchase || !dimension.buySingle()) continue;
