@@ -62,13 +62,16 @@ export function kodyTriggerCommentEvidence(comments, repository, pr) {
 
 export function realKodyReviewStarts(checks, currentCheckId) {
   return checks
-    .filter(check =>
-      check?.app?.slug === "kody-ai" &&
-      check?.name === "Kody Code Review" &&
-      check?.status === "completed" &&
-      ["success", "failure"].includes(check?.conclusion) &&
-      String(check?.id ?? "") !== String(currentCheckId ?? "") &&
-      Number.isFinite(Date.parse(String(check?.started_at ?? ""))))
+    .filter(check => {
+      const realOrRunning =
+        ["queued", "in_progress"].includes(check?.status) ||
+        (check?.status === "completed" && ["success", "failure"].includes(check?.conclusion));
+      return check?.app?.slug === "kody-ai" &&
+        check?.name === "Kody Code Review" &&
+        realOrRunning &&
+        String(check?.id ?? "") !== String(currentCheckId ?? "") &&
+        Number.isFinite(Date.parse(String(check?.started_at ?? "")));
+    })
     .map(check => check.started_at);
 }
 

@@ -337,8 +337,19 @@ test("只提取当前 skipped Check 之外的已完成 Kody Review 启动时间"
       conclusion: "success",
       started_at: "2026-11-21T12:58:30Z",
     },
+    {
+      id: 4,
+      app: { slug: "kody-ai" },
+      name: "Kody Code Review",
+      status: "in_progress",
+      conclusion: null,
+      started_at: "2026-11-21T12:58:40Z",
+    },
   ];
-  assert.deepEqual(realKodyReviewStarts(checks, 2), ["2026-11-21T12:58:00Z"]);
+  assert.deepEqual(realKodyReviewStarts(checks, 2), [
+    "2026-11-21T12:58:00Z",
+    "2026-11-21T12:58:40Z",
+  ]);
 });
 
 test("skipped Check 到达时可从 PR 评论补齐精确触发证据", () => {
