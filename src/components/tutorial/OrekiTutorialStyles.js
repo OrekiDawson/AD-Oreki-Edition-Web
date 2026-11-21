@@ -168,7 +168,7 @@ const CSS = `
 .c-oreki-tut__trap,
 .c-oreki-tut__done,
 .c-oreki-tut__placeholder-body { overflow-wrap: anywhere; }
-/* 正文里的西文长标识符（如 1e10500、oreki-instant-challenges.js）不给任何元素
+/* 正文里的西文长标识符（如 1e10500、挑战完成规则）不给任何元素
    撑宽容器的机会：教程容器本身也裁掉横向溢出，纵向滚动不受影响。
    __scroll 必须单独写：overflow-y: auto 会把 overflow-x 一并算成 auto，
    内容一旦超宽就会出现横向滚动条（360px 实测 ch02/ch03 各有一条）。 */

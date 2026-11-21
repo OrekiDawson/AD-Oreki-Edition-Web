@@ -48,6 +48,8 @@ const env = {
   ru10Bought: false,
   eternityCalls: [],
   infinities: 0,
+  ecRunning: false,
+  ecCanComplete: false,
 };
 
 globalThis.player = {
@@ -61,7 +63,12 @@ globalThis.player = {
 globalThis.Player = { get canEternity() { return env.canEternity; } };
 globalThis.NormalChallenge = { isRunning: false };
 globalThis.InfinityChallenge = { isRunning: false };
-globalThis.EternityChallenge = { isRunning: false };
+globalThis.EternityChallenge = {
+  get isRunning() { return env.ecRunning; },
+  get current() {
+    return env.ecRunning ? { canBeCompleted: env.ecCanComplete } : undefined;
+  },
+};
 globalThis.Pelle = { isDoomed: false };
 globalThis.Currency = {
   eternityPoints: { value: { times: (n) => env.ep * n } },
@@ -103,6 +110,8 @@ function reset() {
   env.gained = 0;
   env.ep = 0;
   env.eternityCalls = [];
+  env.ecRunning = false;
+  env.ecCanComplete = false;
   delete globalThis.OrekiIu15Sprint;
   A.holdForRealityUpgrade10 = ORIG_HOLD;
   A.ecEntryPending = ORIG_EC;
@@ -205,6 +214,51 @@ env.gained = 1;
 globalThis.OrekiIu15Sprint = { freezeResets: true };
 check("IU15 冲刺期间不发起永恒", A.tickEternity() === false);
 check("IU15 期间 eternity 调用 0 次", env.eternityCalls.length === 0);
+
+// ---------------- ⑦b EC 只按原版真实目标结算 ----------------
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = false;
+env.canEternity = true;
+env.ep = 0;
+env.gained = 1;
+check("EC 未达到原版目标时不永恒", A.tickEternity() === false);
+check("EC 未达标时 eternity 调用 0 次", env.eternityCalls.length === 0);
+
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = true;
+env.canEternity = true;
+env.ep = 1e100;
+env.gained = 0;
+check("EC 达到原版目标时立即真实结算", A.tickEternity() === true);
+check("EC 达标只调用一次原版 eternity(false,true)",
+  env.eternityCalls.length === 1 &&
+  env.eternityCalls[0][0] === false && env.eternityCalls[0][1] === true,
+  JSON.stringify(env.eternityCalls));
+
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = true;
+env.canEternity = true;
+env.autobuyersOn = false;
+player.auto.autobuyersOn = false;
+check("EC 中关闭自动化后不真实结算", A.tickEternity() === false);
+check("EC 关闭自动化时 eternity 调用 0 次", env.eternityCalls.length === 0);
+env.autobuyersOn = true;
+player.auto.autobuyersOn = true;
+
+reset();
+arm();
+env.ecRunning = true;
+env.ecCanComplete = true;
+env.canEternity = true;
+globalThis.Pelle.isDoomed = true;
+check("EC 中 Pelle 毁灭态不真实结算", A.tickEternity() === false);
+globalThis.Pelle.isDoomed = false;
 
 // ---------------- ⑧ holdForRealityUpgrade10 语义 ----------------
 reset();
@@ -1073,13 +1127,24 @@ try {
     {
       const tickBody = src.split("tickEternity() {")[1]?.split('this._err("tickEternity"')[0] || "";
       const sampleIdx = tickBody.indexOf("this._sampleFreshSession()");
-      const activeIdx = tickBody.indexOf("if (!this.active) return false;");
+      const activeIdx = tickBody.indexOf("if (!this.eternityResetActive) return false;");
       const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
       const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
+      const observeBody = src.split("_observeEternityAutobuyerSwitch() {")[1]
+        ?.split("_eternityBootstrapActive() {")[0] || "";
+      check("[R121] 自动永恒开关观察记录本永恒真实时间",
+        observeBody.includes("this._eternityAutoEnabledAtEternityRealTime = eternityRealTime"));
+      check("[R121] 自动永恒开关观察记录永恒进度令牌",
+        observeBody.includes("this._eternityAutoEnabledAtEternities = eternities"));
+      check("[R121] 永恒进度变化不被误判为玩家手动关闭",
+        observeBody.includes("eternityRealTimeReset") &&
+        observeBody.includes("eternitiesChanged") &&
+        observeBody.includes("eternityRealTime === null && eternitiesChanged") &&
+        observeBody.includes("realitiesReset || realTimeReset || eternityReset"));
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
         "sample=" + sampleIdx + " dwell=" + dwellIdx);
-      check("[R116 review] latch 采样与 active 解耦（在 !active early return 之前）",
+      check("[R116 review] latch 采样与永恒重置门禁解耦",
         sampleIdx >= 0 && activeIdx > sampleIdx,
         "sample=" + sampleIdx + " active=" + activeIdx);
       check("[R116 review] dwell gate 仍在接管开关之前",

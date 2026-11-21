@@ -202,6 +202,24 @@ export const OrekiEternityAutomation = {
   },
 
   /**
+   * 永恒重置的独立门禁。
+   *
+   * `active` 还负责时间维度、TT 与时间研究购买；挑战中必须关闭这些经济动作。
+   * 但永恒挑战的完成只能由“达到原版目标后的真实永恒”产生，不能把重置本身一起停掉。
+   * 因此只在 EC 内额外放行重置入口；普通/无限挑战与 Pelle 毁灭态仍不接管。
+   */
+  get eternityResetActive() {
+    try {
+      if (player.auto.autobuyersOn === false || Pelle.isDoomed) return false;
+      if (EternityChallenge.isRunning) return true;
+      return this.active;
+    } catch (e) {
+      this._err("eternityResetActive", e);
+      return false;
+    }
+  },
+
+  /**
    * A) 用 EP 买时间维度 1~8。
    *
    * [Oreki R25] 原来只买到 4 级。但膨胀研究 6（`TimeStudy.reality`）的第一条要求是
@@ -575,8 +593,8 @@ export const OrekiEternityAutomation = {
    * （secret-formula/eternity/time-studies/dilation-time-studies.js:19），
    * 而膨胀研究 6（= TimeStudy.reality）还要求全部 pre-Reality 成就。
    *
-   * 进入挑战后由既有的 core/oreki-instant-challenges.js「进入即完成」接管，
-   * 这里只负责按下「开始」那一下，不重复实现完成逻辑。
+   * 这里只负责按下「开始」那一下；挑战中的资源目标、完成次数与奖励
+   * 仍由原版挑战和永恒结算自然产生，不写完成位或补发资源。
    */
   /**
    * [Oreki R37-A] 删除了死变量 `_ecTarget`（恒为 1，中间没有任何赋值）。
@@ -604,7 +622,7 @@ export const OrekiEternityAutomation = {
    *    补齐该 EC 需要的研究路径再重试购买；EC11/12 还补 191/193。
    *
    * 本方法一关一关推进，每步都走原版真实路径：
-   *   - 挑战在跑 → 不插手（交给「进入即完成」模块）
+   *   - 挑战在跑 → 不重复进入（完成由原版挑战目标与真实永恒结算决定）
    *   - 当前关没满 5 次 → start(true)
    *   - 当前关已满 → respecTimeStudies(true) 清 unlocked 并退款
    *   - unlocked === 0 → 对目标关 purchaseUntil()，买上了立刻 start(true)
@@ -665,7 +683,7 @@ export const OrekiEternityAutomation = {
         }
       }
 
-      // 2) 已有挑战在跑就不插手（完成逻辑交给 oreki-instant-challenges）
+      // 2) 已有挑战在跑就不重复进入；完成仍由原版挑战机制产生。
       if (EternityChallenge.isRunning) return false;
 
       // 3) 进入当前已解锁的那一关
@@ -991,6 +1009,24 @@ export const OrekiEternityAutomation = {
     return null;
   },
 
+  /** 当前永恒段真实时间；用于识别永恒结算把自动永恒开关复位，而非玩家手动关闭。 */
+  _thisEternityRealTime() {
+    try {
+      const v = player?.records?.thisEternity?.realTime;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
+  /** 永恒进度稳定令牌；真实永恒结算必须让其变化。 */
+  _eternitiesToken() {
+    try {
+      const v = player?.eternities;
+      return v === undefined || v === null ? null : String(v);
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
   /** 存档身份：Web 真实字段 records.gameCreatedTime（player.js:275 / storage.js:434）。 */
   _saveIdentity() {
     try {
@@ -1018,6 +1054,8 @@ export const OrekiEternityAutomation = {
     this._eternityAutoUserClosed = false;
     this._eternityAutoEnabledAtRealities = null;
     this._eternityAutoEnabledAtRealTime = null;
+    this._eternityAutoEnabledAtEternityRealTime = null;
+    this._eternityAutoEnabledAtEternities = null;
     this._eternityAutoLastSeenActive = undefined;
     // [R116-01] 首次永恒驻留的「曾永恒」latch 同样按存档身份失效。
     this._firstEternityEverSeen = false;
@@ -1034,12 +1072,16 @@ export const OrekiEternityAutomation = {
       const active = player.auto.eternity.isActive === true;
       const realities = this._realitiesValue();
       const realTime = this._thisRealityRealTime();
+      const eternityRealTime = this._thisEternityRealTime();
+      const eternities = this._eternitiesToken();
       if (active) {
         // 玩家（或上一会话）真实开着 ⇒ 本会话视为已接管，恢复链路成立。
         this._eternityAutobuyerAdopted = true;
         this._eternityAutoUserClosed = false;
         this._eternityAutoEnabledAtRealities = realities;
         this._eternityAutoEnabledAtRealTime = realTime;
+        this._eternityAutoEnabledAtEternityRealTime = eternityRealTime;
+        this._eternityAutoEnabledAtEternities = eternities;
         this._eternityAutoLastSeenActive = true;
         return;
       }
@@ -1056,8 +1098,20 @@ export const OrekiEternityAutomation = {
             realities !== null && realities > this._eternityAutoEnabledAtRealities;
           const realTimeReset = this._eternityAutoEnabledAtRealTime !== null &&
             realTime !== null && realTime < this._eternityAutoEnabledAtRealTime;
-          if (realitiesReset || realTimeReset) {
-            // 原版 Reality 复位：不判玩家关闭，交给接管逻辑补回 true。
+          const eternityRealTimeReset =
+            this._eternityAutoEnabledAtEternityRealTime !== null &&
+            eternityRealTime !== null &&
+            eternityRealTime < this._eternityAutoEnabledAtEternityRealTime;
+          const eternitiesChanged =
+            this._eternityAutoEnabledAtEternities !== null &&
+            eternities !== null &&
+            eternities !== this._eternityAutoEnabledAtEternities;
+          // 本永恒真实时间回退是结算的直接证据。仅在时间不可读时才退回永恒计数变化，
+          // 避免“玩家消费永恒次数”和手动关闭同帧发生时把关闭误判为原版复位。
+          const eternityReset = eternityRealTimeReset ||
+            (eternityRealTime === null && eternitiesChanged);
+          if (realitiesReset || realTimeReset || eternityReset) {
+            // 原版 Reality/永恒结算复位：不判玩家关闭，交给接管逻辑补回 true。
             this._eternityAutoUserClosed = false;
           } else if (realities !== null && realTime !== null) {
             // 同现实内被关：判玩家手动关闭（粘滞，尊重）。
@@ -1371,7 +1425,7 @@ export const OrekiEternityAutomation = {
       // 之后所有 MOD 自动永恒。与 _observeEternityAutobuyerSwitch() 同级，按本会话首次
       // 观测到的存档 eternities 固化结论（换档时 _bindSaveIdentity 会清掉重新采样）。
       this._sampleFreshSession();
-      if (!this.active) return false;
+      if (!this.eternityResetActive) return false;
       // [R116-01 P0] 首次永恒驻留：玩家未亲自开启自动永恒时，MOD 不得在 canEternity
       // 出现的首个合法帧就替玩家结算首次永恒。驻留仍必须在
       // _adoptEternityAutobuyerIfNeeded() 之前，否则「同帧接管并打开开关」会把驻留旁路。
@@ -1417,6 +1471,14 @@ export const OrekiEternityAutomation = {
       if (this.holdForRealityUpgrade10()) return false;
       // 入口保护：只在「主研究已买、只差资源」时生效，不拖慢 EC1/EC2 的永恒次数增长
       if (this.ecEntryPending()) return false;
+      // EC 中完成次数只能由真实目标达成后触发的原版永恒结算产生。
+      // 不用全局 EP×1 门槛压住挑战退出，否则达标后仍可能长期不结算；
+      // `canBeCompleted` 同时覆盖原版目标与 EC4/EC12 的限制条件。
+      if (EternityChallenge.isRunning) {
+        const challenge = EternityChallenge.current;
+        if (!challenge || !challenge.canBeCompleted) return false;
+        return eternity(false, true) === true;
+      }
       // [R96 第五轮] 永恒结算门槛 ×10 → ×1：收益只要让 EP 翻倍（gained ≥ 当前 EP）就结算。
       //
       // 实测缺陷（平台期 bigE=3、EP=2.16、maxIP 1e593、maxAM 1e124044）：×10 门槛要求

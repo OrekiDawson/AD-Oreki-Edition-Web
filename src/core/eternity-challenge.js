@@ -335,9 +335,9 @@ export const EternityChallenges = {
       // R48 语义修正：这里绝不再「凭空补完成次数」。
       // 原实现（含 Ra 的即时 EC 分支）会在玩家根本没开始挑战的情况下
       // 直接 addCompletion()，等于「未开始就自动完成」。
-      // 现在自动化的唯一动作是 start() 下一个未完成的 EC，
-      // 而「开始 → 完成」由 OrekiInstantChallenge（进入即完成）在下一帧
-      // 按正常结算路径处理，因此这里的语义是「自动开始」，不是「自动完成」。
+      // 现在自动化的唯一动作是 start() 下一个未完成的 EC。
+      // 进入后仍由原版永恒结算按本期最高 IP 与限制条件逐次完成，
+      // 因此这里的语义仅是「自动开始」，不会补写完成次数或奖励。
       if (EternityChallenge.isRunning) return;
       const nextChallenge = this.nextChallenge;
       if (nextChallenge === undefined) return;

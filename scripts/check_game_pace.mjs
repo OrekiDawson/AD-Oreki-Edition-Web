@@ -14,6 +14,11 @@ const tutorial = JSON.parse(fs.readFileSync(
   path.join(ROOT, "src/core/oreki-tutorial-data.json"), "utf8",
 ));
 const tutorialText = JSON.stringify(tutorial);
+const game = fs.readFileSync(path.join(ROOT, "src/game.js"), "utf8");
+const eternity = fs.readFileSync(
+  path.join(ROOT, "src/core/oreki-eternity-automation.js"),
+  "utf8",
+);
 
 assert.match(speed, /export const GAME_SPEED_DEFAULT = 3000;/);
 assert.match(speed, /export const GAME_SPEED_MAX = 100000;/);
@@ -21,5 +26,14 @@ assert.match(speed, /let dynamicEnabled = readStoredFlag\(DYNAMIC_KEY, true\);/)
 assert.match(options, /speedPresets: \[1, 10, 100, 1000, 3000, 10000, 100000\]/);
 assert.equal(tutorialText.includes("默认 10000×"), false);
 assert.equal(tutorialText.includes("默认 3000×"), true);
+assert.match(eternity, /get eternityResetActive\(\)/);
+assert.match(eternity, /tickEternity\(\) \{[\s\S]*?if \(!this\.eternityResetActive\) return false;/);
+assert.match(eternity, /if \(EternityChallenge\.isRunning\) \{[\s\S]*?challenge\.canBeCompleted/);
+assert.equal(fs.existsSync(path.join(ROOT, "src/core/oreki-instant-challenges.js")), false);
+assert.doesNotMatch(game, /tryInstantCompleteChallenges|oreki-instant-challenges/);
+assert.equal(tutorialText.includes("阶段速度"), true);
+assert.equal(tutorialText.includes("进入即完成"), false);
+assert.equal(tutorialText.includes("一口气补满"), false);
+assert.equal(tutorialText.includes("瞬时完成"), false);
 
 console.log("PASS  R120-01 新档节奏：默认 3000×、动态升档保留、教程同步");
