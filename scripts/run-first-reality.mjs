@@ -15,8 +15,8 @@
 //  - 上限 180 分钟真实墙钟。
 //
 // 用法：
-//   node r104-web-run.mjs --mode full    --out <dir> [--max-min 180] [--sample-ms 10000] [--shot-ms 60000] [--confirm-ms 180000]
-//   node r104-web-run.mjs --mode control --out <dir> [--max-min 3]   [--sample-ms 5000]  [--shot-ms 30000]
+//   node scripts/run-first-reality.mjs --mode full    --out <dir> [--max-min 180] [--sample-ms 10000] [--shot-ms 60000] [--confirm-ms 180000]
+//   node scripts/run-first-reality.mjs --mode control --out <dir> [--max-min 3]   [--sample-ms 5000]  [--shot-ms 30000]
 //
 // 说明：headless Chromium 不存在“可见窗口”，为规避 Chromium Page Lifecycle 冻结
 // （web/_tools/lib/edge-launch.mjs 记录过该问题：页面被判定 hidden 后整页定时器停止），
@@ -34,7 +34,7 @@ import { fileURLToPath } from "node:url";
 
 const WORKSPACE = "/home/oreki/AD-Oreki-Edition";
 // Runner 可能位于任意隔离工作树；源码根必须由脚本位置解析，避免验证了另一分支。
-const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 // ── 参数解析 ───────────────────────────────────────────────────────────────
 function arg(name, def) {
