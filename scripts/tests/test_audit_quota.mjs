@@ -226,6 +226,18 @@ assert.equal(replayedSkip.reason, "already-skipped");
 assert.equal(replayedSkip.records, skipThird.records);
 assert.equal(replayedSkip.records.find(record => record.commentId === "9003").status, "posted");
 
+const reviewedBeforeSkip = markKodySkippedPure(skipFirst.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98126,
+  checkStartedAt: "2026-11-20T00:00:30Z",
+  priorRealReviewStarts: ["2026-11-20T00:00:15Z"],
+});
+assert.equal(reviewedBeforeSkip.ok, false);
+assert.equal(reviewedBeforeSkip.reason, "prior-real-kody-review");
+assert.equal(reviewedBeforeSkip.records, skipFirst.records);
+
 assert.throws(() => markKodySkippedPure(kodyAttached.records, {
   repository: kodyAndroid, pr: 121, headSha: "invalid", checkRunId: 98123,
 }), /invalid verified/u);

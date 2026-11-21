@@ -44,6 +44,18 @@ export function kodySkipPullRequests(event) {
   return output.length === 1 ? output : [];
 }
 
+export function realKodyReviewStarts(checks, currentCheckId) {
+  return checks
+    .filter(check =>
+      check?.app?.slug === "kody-ai" &&
+      check?.name === "Kody Code Review" &&
+      check?.status === "completed" &&
+      ["success", "failure"].includes(check?.conclusion) &&
+      String(check?.id ?? "") !== String(currentCheckId ?? "") &&
+      Number.isFinite(Date.parse(String(check?.started_at ?? ""))))
+    .map(check => check.started_at);
+}
+
 /** 安全补查 check_run.pull_requests 为空的同仓 PR，仅接受唯一 HEAD 命中。 */
 async function githubJson(path, token) {
   const response = await fetch(`https://api.github.com${path}`, {
@@ -95,8 +107,22 @@ export async function main() {
     console.log("Kody skip: 无可靠 PR 关联，保留原始计数等待核对。");
     return;
   }
+  const repository = event.repository.full_name;
+  const sha = event.check_run.head_sha;
+  const checks = await githubJson(
+    `/repos/${repository}/commits/${sha}/check-runs?check_name=Kody%20Code%20Review&filter=all&per_page=100`,
+    token,
+  );
+  if ((checks.total_count ?? 0) > (checks.check_runs?.length ?? 0)) {
+    throw new Error("Kody Check 证据分页不完整，拒绝自动退额");
+  }
+  const priorRealReviewStarts = realKodyReviewStarts(
+    checks.check_runs ?? [],
+    event.check_run.id,
+  );
   for (const match of matches) {
     match.checkStartedAt = event.check_run.started_at ?? "";
+    match.priorRealReviewStarts = priorRealReviewStarts;
     const result = await markKodySkippedQuota(token, match);
     console.log(
       `Kody skip: ${match.repository}#${match.pr}@${match.headSha} ` +

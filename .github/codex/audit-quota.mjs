@@ -356,6 +356,7 @@ export function markKodySkippedPure(records, {
   headSha,
   checkRunId,
   checkStartedAt = "",
+  priorRealReviewStarts = [],
   checkUrl = "",
   now = new Date().toISOString(),
 }) {
@@ -401,6 +402,23 @@ export function markKodySkippedPure(records, {
   }
   // 无时间关联时保守退最早的一笔，而不是把同一 HEAD 的全部请求一起退掉。
   target ??= matches.sort((left, right) => recordTime(left) - recordTime(right))[0];
+  const targetRecordMs = recordTime(target);
+  const priorRealReview = priorRealReviewStarts
+    .map(value => Date.parse(String(value ?? "")))
+    .find(startedMs =>
+      Number.isFinite(targetRecordMs) &&
+      Number.isFinite(checkStartedMs) &&
+      Number.isFinite(startedMs) &&
+      startedMs > targetRecordMs &&
+      startedMs <= checkStartedMs);
+  if (priorRealReview) {
+    return {
+      ok: false,
+      reason: "prior-real-kody-review",
+      records,
+      counts: kodyQuotaCounts(records, target.date),
+    };
+  }
   const targetIndex = records.indexOf(target);
   const output = [...records];
   output[targetIndex] = {

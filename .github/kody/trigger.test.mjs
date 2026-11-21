@@ -23,7 +23,11 @@ import {
   validateTriggerIdentity,
 } from "./trigger.mjs";
 
-import { confirmedKodySkip, kodySkipPullRequests } from "./skip-reconcile.mjs";
+import {
+  confirmedKodySkip,
+  kodySkipPullRequests,
+  realKodyReviewStarts,
+} from "./skip-reconcile.mjs";
 
 const repository = "OrekiDawson/AD-Oreki-Edition-Android";
 const workflow = readFileSync(
@@ -304,4 +308,34 @@ test("只有 Kody 官方 completed/skipped Check 才能退额", () => {
   assert.deepEqual(kodySkipPullRequests({ ...event, check_run: {
     ...event.check_run, pull_requests: [{ number: 42 }, { number: 43 }],
   } }), []); // 单个 Check 关联多个 PR 时无法证明归属
+});
+
+test("只提取当前 skipped Check 之外的已完成 Kody Review 启动时间", () => {
+  const checks = [
+    {
+      id: 1,
+      app: { slug: "kody-ai" },
+      name: "Kody Code Review",
+      status: "completed",
+      conclusion: "success",
+      started_at: "2026-11-21T12:58:00Z",
+    },
+    {
+      id: 2,
+      app: { slug: "kody-ai" },
+      name: "Kody Code Review",
+      status: "completed",
+      conclusion: "skipped",
+      started_at: "2026-11-21T12:59:00Z",
+    },
+    {
+      id: 3,
+      app: { slug: "github-actions" },
+      name: "Kody Code Review",
+      status: "completed",
+      conclusion: "success",
+      started_at: "2026-11-21T12:58:30Z",
+    },
+  ];
+  assert.deepEqual(realKodyReviewStarts(checks, 2), ["2026-11-21T12:58:00Z"]);
 });
