@@ -511,6 +511,32 @@ async function shot(name) {
   }
 }
 
+/**
+ * 只关闭原版 MessageModal 的“嗯呐”确认框。
+ *
+ * 新档在首次无限/永恒后会打开纯说明弹窗；真实玩家会点击继续。脚本若不处理，
+ * 后续截图会被遮挡，但游戏内部仍在运行，容易把“界面不可见”误当成正常 GUI 证据。
+ * 选择器限定 `.c-modal-message`，不会点击挑战重试、放弃、现实中确认等决策按钮。
+ */
+async function dismissMessageModal() {
+  try {
+    const modal = page.locator(".c-modal-message");
+    if (!(await modal.isVisible())) return false;
+    const button = modal.locator(".c-modal__confirm-btn").last();
+    if (!(await button.isVisible())) return false;
+    const text = (await modal.locator(".c-modal-message__text").first().innerText().catch(() => "")).slice(0, 160);
+    await button.click({ timeout: 3000 });
+    const rec = { at: iso(), wall_sec: wallSec(), text };
+    (summary.anomalies.modal_dismissals = summary.anomalies.modal_dismissals || []).push(rec);
+    summary.anomalies.modal_dismissals = summary.anomalies.modal_dismissals.slice(-20);
+    rlog("[modal-dismiss]", JSON.stringify(rec));
+    return true;
+  } catch (e) {
+    rlog("[modal-dismiss-error]", String((e && e.message) || e));
+    return false;
+  }
+}
+
 function addEvent(tag, key, value, extra) {
   eventSeq++;
   const ev = {
@@ -598,6 +624,7 @@ function tagValue(s, key) {
 async function takeSample() {
   const nodeNow = Date.now();
   const mono = performance.now();
+  await dismissMessageModal();
   let s;
   try {
     s = await page.evaluate(sampleInPage);

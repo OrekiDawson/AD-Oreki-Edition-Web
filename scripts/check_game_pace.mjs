@@ -20,6 +20,7 @@ const eternity = fs.readFileSync(
   "utf8",
 );
 const game = fs.readFileSync(path.join(ROOT, "src/game.js"), "utf8");
+const runner = fs.readFileSync(path.join(ROOT, "scripts/run-first-reality.mjs"), "utf8");
 
 assert.match(speed, /export const GAME_SPEED_DEFAULT = 1000;/);
 assert.match(speed, /export const GAME_SPEED_POST_BREAK = 1800;/);
@@ -39,6 +40,8 @@ assert.match(eternity, /const TT_REWARD_MULTIPLIER = 1;/);
 assert.match(eternity, /get eternityResetActive\(\)/);
 assert.match(eternity, /tickEternity\(\) \{[\s\S]*?if \(!this\.eternityResetActive\) return false;/);
 assert.match(eternity, /if \(EternityChallenge\.isRunning\) \{[\s\S]*?challenge\.canBeCompleted/);
+assert.match(runner, /async function dismissMessageModal\(\)/);
+assert.match(runner, /\.c-modal-message[\s\S]*?\.c-modal__confirm-btn/);
 assert.equal(fs.existsSync(path.join(ROOT, "src/core/oreki-instant-challenges.js")), false);
 assert.doesNotMatch(game, /tryInstantCompleteChallenges|oreki-instant-challenges/);
 assert.equal(tutorialText.includes("默认 10000×"), false);
