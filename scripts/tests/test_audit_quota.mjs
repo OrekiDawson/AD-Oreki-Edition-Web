@@ -11,6 +11,7 @@ import {
   consumedCount,
   isSharedQuotaRepository,
   kodyQuotaCounts,
+  markKodySkippedPure,
   releaseKodyCommand,
   reserveKodyPure,
   reservePure,
@@ -145,6 +146,42 @@ const kodyAttached = attachKodyCommand(kodyFirst.records, {
 });
 assert.equal(kodyAttached.record.status, "posted");
 assert.equal(kodyAttached.counts.used, 2);
+// Kody 明确 skipped 的审查不计入配额；成功触发评论不等于成功审查。
+const verifiedSkip = markKodySkippedPure(kodyAttached.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98123,
+  checkUrl: "https://example.test/check/98123",
+  now: "2026-11-20T16:04:00Z",
+});
+assert.equal(verifiedSkip.ok, true);
+assert.equal(verifiedSkip.reason, "kody-skipped-refunded");
+assert.equal(verifiedSkip.counts.used, 1); // 保留无关、未确认跳过的评论 #1
+assert.equal(verifiedSkip.records.find(item => item.commentId === "2").status, "skipped");
+assert.equal(verifiedSkip.records.find(item => item.commentId === "1").status, "posted");
+const skippedAgain = markKodySkippedPure(verifiedSkip.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98123,
+});
+assert.equal(skippedAgain.reason, "already-skipped");
+assert.equal(skippedAgain.records, verifiedSkip.records); // 幂等：不产生新提交
+assert.equal(skippedAgain.counts.used, 1);
+assert.throws(() => markKodySkippedPure(kodyAttached.records, {
+  repository: kodyAndroid, pr: 121, headSha: "invalid", checkRunId: 98123,
+}), /invalid verified/u);
+const unrelatedSkip = markKodySkippedPure(verifiedSkip.records, {
+  repository: kodyWeb, pr: 121, headSha: "a".repeat(40), checkRunId: 98124,
+});
+assert.equal(unrelatedSkip.ok, false);
+assert.equal(unrelatedSkip.records, verifiedSkip.records);
+assert.equal(kodyQuotaCounts(kodyAttached.records, kodyDate).used, 2); // 真实未跳过的审查仍占位
+const refundedCapacity = reserveKodyPure(verifiedSkip.records,
+  kodyCandidate("after-skip", kodyWeb), { date: kodyDate });
+assert.equal(refundedCapacity.counts.used, 2); // 退额后可重新申请
+
 const kodyAttachedAgain = attachKodyCommand(kodyAttached.records, {
   identity: "trigger-a",
   commentId: "2",
