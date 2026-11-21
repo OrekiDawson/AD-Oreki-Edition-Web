@@ -121,7 +121,7 @@ function isActiveKodyRecord(record, date) {
   return isKodyRecord(record) &&
     isSharedQuotaRepository(record.repository) &&
     record.date === date &&
-    record.status !== "released";
+    !["released", "skipped"].includes(record.status);
 }
 
 export function kodyQuotaCounts(records, date) {
@@ -209,7 +209,7 @@ export function reserveKodyPure(records, candidate, {
   }
   const prior = output.find(record =>
     isKodyRecord(record) &&
-    record.status !== "released" &&
+    !["released", "skipped"].includes(record.status) &&
     record.identity === identity);
   if (prior) {
     return {
@@ -341,6 +341,76 @@ export function releaseKodyCommand(records, {
   };
 }
 
+/**
+ * 仅在 Kody GitHub App 的真实 Check Run 明确以 skipped 结束后退额。
+ * 触发评论本身以及其他 CI 的 skipped 不构成退额证据。
+ * 重复事件幂等，不改变原始评论与审查证据。
+ */
+export function markKodySkippedPure(records, {
+  repository,
+  pr,
+  headSha,
+  checkRunId,
+  checkUrl = "",
+  now = new Date().toISOString(),
+}) {
+  const repo = String(repository ?? "");
+  const number = Number(pr);
+  const sha = String(headSha ?? "");
+  const runId = String(checkRunId ?? "");
+  if (!isSharedQuotaRepository(repo) ||
+      !Number.isSafeInteger(number) || number <= 0 ||
+      !/^[a-f0-9]{40}$/iu.test(sha) ||
+      !/^[1-9][0-9]*$/u.test(runId)) {
+    throw new Error("invalid verified Kody skipped check identity");
+  }
+  const matches = records.filter(record =>
+    isKodyRecord(record) &&
+    record.repository === repo &&
+    Number(record.pr) === number &&
+    record.headSha === sha &&
+    ["reserved", "posted", "skipped"].includes(record.status));
+  if (matches.length === 0) {
+    return { ok: false, reason: "no-matching-kody-trigger", records };
+  }
+  const matchedComments = new Set(matches.map(record => String(record.commentId ?? "")).filter(Boolean));
+  let changed = false;
+  const output = records.map(record => {
+    const matchesHead = isKodyRecord(record) &&
+      record.repository === repo &&
+      Number(record.pr) === number &&
+      record.headSha === sha;
+    const matchesComment = isKodyRecord(record) &&
+      record.repository === repo &&
+      matchedComments.has(String(record.commentId ?? "")) &&
+      String(record.commentId ?? "") !== "";
+    if (!(matchesHead || matchesComment) ||
+        ["released", "skipped"].includes(record.status)) return record;
+    changed = true;
+    return {
+      ...record,
+      status: "skipped",
+      skipCheckRunId: runId,
+      skipCheckUrl: String(checkUrl),
+      updatedAt: now,
+    };
+  });
+  return {
+    ok: true,
+    reason: changed ? "kody-skipped-refunded" : "already-skipped",
+    records: changed ? output : records,
+    counts: kodyQuotaCounts(changed ? output : records, matches[0].date),
+  };
+}
+
+export async function markKodySkippedQuota(token, evidence, { now = new Date() } = {}) {
+  const date = shanghaiDate(now);
+  return mutate(token, date, records => markKodySkippedPure(records, {
+    ...evidence,
+    now: now.toISOString(),
+  }));
+}
+
 export function applyCas(records, expectedVersion, currentVersion, transform) {
   if (expectedVersion !== currentVersion) throw new Error("quota conflict");
   return transform(records);
@@ -416,6 +486,7 @@ async function readState(token, ref, date) {
 async function updateState(token, state, transform, date) {
   const result = applyCas(state.records, state.version, state.version, records => transform(records));
   const output = result.records || result;
+  if (output === state.records) return result; // 幂等事件不产生新提交
   const dates = [...new Set(output.map(record => record.date))].sort();
   const retain = new Set(dates.slice(-RETAIN_DAYS));
   const pruned = output.filter(record => retain.has(record.date) || record.date === date);
