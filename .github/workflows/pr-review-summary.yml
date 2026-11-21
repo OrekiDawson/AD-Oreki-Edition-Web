@@ -67,22 +67,46 @@ jobs:
               }
             }
             const effectiveFiles=files.filter(f=>!mechanicalFile(f.filename)).length;
-            let commits=[];
-            try {
-              commits=await github.paginate(github.rest.pulls.listCommits,{
-                owner,repo,pull_number:pr.number,per_page:100
-              });
-            } catch (err) {
-              core.info('Cannot list PR commits; continuing without commit messages: '+
-                String(err?.message||err).slice(0,200));
-            }
-            const taskText=[pr.title,pr.body||"",...commits.map(c=>c.commit.message)].join("\n");
-            const declaredTaskIds=[...new Set(taskText.match(
-              /\bR\d{2,3}-(?:\d{2,3}\b|[^\s，。；、,.;:：()（）\[\]*_\/]+)/g
+            // 新任务唯一合法格式是 ChatGPT 分配的单层 R整数。
+            // 标题优先，正文和提交信息中的历史轮次引用不得触发多任务告警。
+            const titleSingleTasks=[...new Set(pr.title.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
+            const titleHistoricalTaskIds=[...new Set(pr.title.match(
+              /\bR\d{2,3}-(?:\d+|[A-Za-z][A-Za-z0-9._-]*)\b/g
             )||[])];
-            const bareRounds=[...new Set(taskText.match(/\bR\d{2,3}\b(?!-)/g)||[])];
-            const taskIds=declaredTaskIds.length ? declaredTaskIds :
-              bareRounds.map(id=>id+'（未带子编号）');
+            const bodyText=(pr.body||"").replace(/\*\*|__/g,"");
+            let declaredTaskField="";
+            const bodyLines=bodyText.split(/\r?\n/);
+            for(let i=0;i<bodyLines.length;i++){
+              const normalized=bodyLines[i].trim()
+                .replace(/^\|\s*/,"")
+                .replace(/^[-*]\s*/,"")
+                .replace(/^#{1,6}\s*/,"");
+              if(normalized==="任务编号"){
+                const nextLine=(bodyLines[i+1]||"").trim();
+                if(/^R\d{2,3}(?:[-.]\w+)?\b/.test(nextLine)){
+                  declaredTaskField=nextLine;
+                  break;
+                }
+                continue;
+              }
+              const inline=normalized.match(/^任务编号[^\n:：|]*[:：|]\s*(.+)$/i);
+              if(inline){
+                const value=inline[1].split("|")[0].trim();
+                if(/\bR\d{2,3}\b/.test(value)){
+                  declaredTaskField=value;
+                  break;
+                }
+              }
+            }
+            const bodySingleTasks=[...new Set(declaredTaskField.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
+            const bodyHistoricalTaskIds=[...new Set(declaredTaskField.match(
+              /\bR\d{2,3}-(?:\d+|[A-Za-z][A-Za-z0-9._-]*)\b/g
+            )||[])];
+            // 展示顺序：标题单层 → 标题历史 → 正文声明单层 → 正文声明历史；不扫描自由文本。
+            const taskIds=titleSingleTasks.length ? titleSingleTasks :
+              (titleHistoricalTaskIds.length ? titleHistoricalTaskIds :
+                (bodySingleTasks.length ? bodySingleTasks : bodyHistoricalTaskIds));
+            const hasMultipleSingleTasks=titleSingleTasks.length>1;
             const risk=platform==='Android' ? [
               ['AGP/R8/Gradle', /^(agp|gradle)\/|(^|\/)(build\.gradle(\.kts)?|proguard-rules\.pro)$/],
               ['CI/签名/正式发布', /^\.github\/workflows\/|^scripts\/(publish_|release_|enforce_agp)/],
@@ -97,7 +121,7 @@ jobs:
             const touched=risk.map(([title,re])=>[title,files.filter(f=>re.test(f.filename)).length])
               .filter(([,n])=>n>0).map(([t,n])=>t+'（'+n+' 文件）');
             const warnings=[];
-            if(taskIds.length>1) warnings.push('检测到多个任务编号 '+taskIds.join('、')+'；请证明属于同一不可拆分目标，否则拆分后再进入正式审查/合并');
+            if(hasMultipleSingleTasks) warnings.push('检测到多个标题单层任务编号 '+titleSingleTasks.join('、')+'；请证明属于同一不可拆分目标，否则拆分后再进入正式审查/合并');
             if(effectiveFiles>15) warnings.push('有效修改文件超过目标阈值 15 个');
             if(effectiveChanges>400) warnings.push('有效变更超过目标阈值 400 行');
             if(effectiveChanges>800) warnings.push('有效变更超过 800 行；默认拆分，或记录不可拆分的原子理由');
