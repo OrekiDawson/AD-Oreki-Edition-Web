@@ -39,6 +39,7 @@ export function kodySkipPullRequests(event) {
       headSha: check.head_sha,
       checkRunId: check.id,
       checkStartedAt: check.started_at ?? check.created_at ?? "",
+      checkCreatedAt: check.created_at ?? check.started_at ?? "",
       checkUrl: check.html_url ?? "",
     });
   }
@@ -84,6 +85,7 @@ export function realKodyReviews(checks, currentCheckId, evidence = [],
     .map(item => ({
       commentId: String(item.commentId ?? ""),
       at: Date.parse(String(item.createdAt ?? "")),
+      headSha: String(item.headSha ?? ""),
     }))
     .filter(item => item.commentId && Number.isFinite(item.at))
     .sort((left, right) => left.at - right.at);
@@ -105,8 +107,16 @@ export function realKodyReviews(checks, currentCheckId, evidence = [],
     .map(check => {
       const startedAt = check.started_at ?? check.created_at;
       const createdMs = Date.parse(String(check.created_at ?? startedAt ?? ""));
-      const trigger = triggerTimes
-        .filter(item => item.at <= createdMs)
+      const beforeCreation = triggerTimes.filter(item => item.at <= createdMs);
+      const sameHead = check?.head_sha
+        ? beforeCreation.filter(item => item.headSha === check.head_sha)
+        : [];
+      const eligible = check?.head_sha
+        ? (sameHead.length
+          ? sameHead
+          : beforeCreation.filter(item => !item.headSha))
+        : beforeCreation;
+      const trigger = eligible
         .sort((left, right) => right.at - left.at)[0] ?? null;
       return {
         startedAt,
@@ -183,6 +193,7 @@ export async function resolvedKodySkipCandidates(event, token) {
     headSha: sha,
     checkRunId: event.check_run.id,
     checkStartedAt: event.check_run.started_at ?? event.check_run.created_at ?? "",
+    checkCreatedAt: event.check_run.created_at ?? event.check_run.started_at ?? "",
     checkUrl: event.check_run.html_url ?? "",
   }];
 }
@@ -289,6 +300,7 @@ export async function main() {
       );
     }
     match.checkStartedAt = event.check_run.started_at ?? event.check_run.created_at ?? "";
+    match.checkCreatedAt = event.check_run.created_at ?? event.check_run.started_at ?? "";
     match.headCommittedAt = headCommittedAt;
     match.currentPullRequestHeadSha = currentPullRequestHeadSha;
     match.currentPullRequestHeadCommittedAt = currentPullRequestHeadCommittedAt;
@@ -315,7 +327,8 @@ export async function main() {
         `Kody skip: ${match.repository}#${match.pr} requires retry: ${result.reason}`,
       );
     }
-    if (["unattributed-trigger", "missing-check-start-time"].includes(result.reason)) {
+    if (["unattributed-trigger", "missing-check-start-time", "missing-check-created-time"]
+      .includes(result.reason)) {
       console.warn(
         `::warning::Kody skip ${match.repository}#${match.pr}@${match.headSha} ` +
         `待归因（${result.reason}）；请使用 workflow_dispatch 和 check_run_id=${match.checkRunId} 重核。`,

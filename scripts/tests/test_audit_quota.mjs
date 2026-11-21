@@ -359,6 +359,16 @@ const missingStart = markKodySkippedPure(racedReservation, {
 assert.equal(missingStart.ok, false);
 assert.equal(missingStart.reason, "missing-check-start-time");
 assert.equal(missingStart.records, racedReservation);
+const missingCreated = markKodySkippedPure(racedReservation, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98145,
+  checkCreatedAt: "",
+  checkStartedAt: "2026-11-20T16:04:30Z",
+});
+assert.equal(missingCreated.ok, false);
+assert.equal(missingCreated.reason, "missing-check-created-time");
 
 const idempotentEvidence = [{
   repository: kodyAndroid,
@@ -373,6 +383,12 @@ assert.equal(importedOnce.length, 1);
 const importedTwice = importKodyEvidence(importedOnce, idempotentEvidence, kodyDate,
   "2026-11-20T03:06:02Z");
 assert.equal(importedTwice, importedOnce);
+const backfilled = importKodyEvidence(importedOnce, [{
+  ...idempotentEvidence[0],
+  headSha: "c".repeat(40),
+}], kodyDate, "2026-11-20T03:06:03Z");
+assert.equal(backfilled.length, 1);
+assert.equal(backfilled[0].headSha, "c".repeat(40));
 
 const pendingIdentity = {
   repository: kodyAndroid,
@@ -480,6 +496,34 @@ const skipFirst = attachKodyCommand(
     commentId: "9001",
     createdAt: "2026-11-20T00:00:10Z",
   },
+);
+const skipLater = attachKodyCommand(
+  reserveKodyPure(skipFirst.records, kodyCandidate("same-head-later", kodyAndroid), {
+    date: kodyDate,
+    now: "2026-11-20T00:00:15Z",
+  }).records,
+  {
+    identity: "same-head-later",
+    commentId: "9004",
+    createdAt: "2026-11-20T00:00:20Z",
+  },
+);
+const createdBeforeLaterRequest = markKodySkippedPure(skipLater.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98144,
+  checkCreatedAt: "2026-11-20T00:00:15Z",
+  checkStartedAt: "2026-11-20T00:00:30Z",
+});
+assert.equal(createdBeforeLaterRequest.ok, true);
+assert.equal(
+  createdBeforeLaterRequest.records.find(record => record.commentId === "9001").status,
+  "skipped",
+);
+assert.equal(
+  createdBeforeLaterRequest.records.find(record => record.commentId === "9004").status,
+  "posted",
 );
 const skipSecond = attachKodyCommand(
   reserveKodyPure(skipFirst.records, kodyCandidate("same-head-second", kodyAndroid), {

@@ -550,6 +550,36 @@ test("真实 Kody Check 按创建时间绑定请求，启动延迟不改变触�
   }]);
 });
 
+test("真实 Kody Check 只绑定与自身 Head 一致的触发评论", () => {
+  const checks = [{
+    id: 9,
+    app: { slug: "kody-ai" },
+    name: "Kody Code Review",
+    status: "completed",
+    conclusion: "success",
+    head_sha: "a".repeat(40),
+    created_at: "2026-11-21T13:00:00Z",
+    started_at: "2026-11-21T13:01:00Z",
+    pull_requests: [{ number: 42 }],
+  }];
+  const evidence = [
+    {
+      commentId: "70",
+      createdAt: "2026-11-21T12:58:00Z",
+      headSha: "a".repeat(40),
+    },
+    {
+      commentId: "71",
+      createdAt: "2026-11-21T12:59:00Z",
+      headSha: "b".repeat(40),
+    },
+  ];
+  assert.deepEqual(realKodyReviews(checks, 99, evidence, 42), [{
+    startedAt: "2026-11-21T13:01:00Z",
+    commentId: "70",
+  }]);
+});
+
 test("Check 明确关联多个 PR 时不使用 commits 到 pulls 兜底", async () => {
   const event = {
     action: "completed",

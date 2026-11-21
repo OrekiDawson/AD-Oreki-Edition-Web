@@ -144,12 +144,12 @@ export function kodyQuotaCounts(records, date) {
 export function importKodyEvidence(records, evidence, date, now) {
   const output = [...records];
   let changed = false;
-  const seen = new Set(
-    output
-      .filter(record => isKodyRecord(record) && String(record.commentId ?? ""))
-      .map(record => `${String(record.repository ?? "")}#${String(record.commentId ?? "")}`)
-      .filter(Boolean),
-  );
+  const recordIndexByComment = new Map();
+  output.forEach((record, index) => {
+    if (!isKodyRecord(record) || !String(record.commentId ?? "")) return;
+    const key = `${String(record.repository ?? "")}#${String(record.commentId ?? "")}`;
+    recordIndexByComment.set(key, index);
+  });
   for (const item of evidence) {
     const repository = String(item?.repository ?? "");
     const commentId = String(item?.commentId ?? "").trim();
@@ -167,9 +167,22 @@ export function importKodyEvidence(records, evidence, date, now) {
     }
     if (shanghaiDate(createdAt) !== date) continue;
     const commentKey = `${repository}#${commentId}`;
-    if (seen.has(commentKey)) continue;
-    seen.add(commentKey);
+    const existingIndex = recordIndexByComment.get(commentKey);
+    if (existingIndex !== undefined) {
+      const existing = output[existingIndex];
+      const headSha = String(item?.headSha ?? "").trim();
+      if (!existing.headSha && /^[a-f0-9]{40}$/iu.test(headSha)) {
+        output[existingIndex] = {
+          ...existing,
+          headSha,
+          updatedAt: now,
+        };
+        changed = true;
+      }
+      continue;
+    }
     changed = true;
+    recordIndexByComment.set(commentKey, output.length);
     output.push({
       kind: KODY_KIND,
       identity: `kody-comment:${repository}#${commentId}`,
@@ -380,6 +393,7 @@ export function markKodySkippedPure(records, {
   headSha,
   checkRunId,
   checkStartedAt = "",
+  checkCreatedAt = checkStartedAt,
   headCommittedAt = "",
   currentPullRequestHeadSha = "",
   currentPullRequestHeadCommittedAt = "",
@@ -445,9 +459,13 @@ export function markKodySkippedPure(records, {
   if (!Number.isFinite(checkStartedMs)) {
     return { ok: false, reason: "missing-check-start-time", records };
   }
+  const checkCreatedMs = Date.parse(String(checkCreatedAt));
+  if (!Number.isFinite(checkCreatedMs)) {
+    return { ok: false, reason: "missing-check-created-time", records };
+  }
   let target = null;
   const priorToCheck = record =>
-    Number.isFinite(recordTime(record)) && recordTime(record) <= checkStartedMs;
+    Number.isFinite(recordTime(record)) && recordTime(record) <= checkCreatedMs;
   const latest = (items, reverse = true) => items
     .filter(priorToCheck)
     .sort((left, right) =>
@@ -512,6 +530,7 @@ export function queuePendingKodySkip(records, checkIdentity, reason,
     headSha: String(checkIdentity.headSha ?? ""),
     checkRunId: String(checkIdentity.checkRunId ?? ""),
     checkStartedAt: String(checkIdentity.checkStartedAt ?? ""),
+    checkCreatedAt: String(checkIdentity.checkCreatedAt ?? ""),
     headCommittedAt: String(checkIdentity.headCommittedAt ?? ""),
     currentPullRequestHeadSha: String(checkIdentity.currentPullRequestHeadSha ?? ""),
     currentPullRequestHeadCommittedAt:
@@ -551,7 +570,8 @@ export async function markKodySkippedQuota(token, checkEvidence, { now = new Dat
       const records = clearPendingKodySkip(result.records, pendingIdentity);
       return records === result.records ? result : { ...result, records };
     }
-    if (["unattributed-trigger", "missing-check-start-time"].includes(result.reason)) {
+    if (["unattributed-trigger", "missing-check-start-time", "missing-check-created-time"]
+      .includes(result.reason)) {
       const pending = queuePendingKodySkip(
         result.records,
         skipIdentity,
