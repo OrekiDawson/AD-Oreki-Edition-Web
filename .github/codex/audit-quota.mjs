@@ -303,6 +303,12 @@ export function attachKodyCommand(records, {
     !(isKodyRecord(record) &&
       String(record.repository ?? "") === String(current.repository ?? "") &&
       String(record.commentId ?? "") === duplicateComment));
+  const duplicateSkipped = records.find(record =>
+    isKodyRecord(record) &&
+    record !== current &&
+    String(record.repository ?? "") === String(current.repository ?? "") &&
+    String(record.commentId ?? "") === duplicateComment &&
+    record.status === "skipped");
   const targetIndex = output.findLastIndex(record =>
     isKodyRecord(record) &&
     record.identity === identity &&
@@ -311,11 +317,18 @@ export function attachKodyCommand(records, {
   if (targetIndex < 0) throw new Error(`active Kody quota reservation not found: ${identity}`);
   output[targetIndex] = {
     ...output[targetIndex],
-    status: output[targetIndex].status === "skipped" ? "skipped" : "posted",
+    status: output[targetIndex].status === "skipped" || duplicateSkipped
+      ? "skipped"
+      : "posted",
     date: commentDate,
     createdAt: commentCreatedAt,
     commentId: duplicateComment,
     commentUrl: String(commentUrl),
+    ...(duplicateSkipped ? {
+      skipCheckRunId: duplicateSkipped.skipCheckRunId,
+      skipCheckUrl: duplicateSkipped.skipCheckUrl,
+      headSha: output[targetIndex].headSha || duplicateSkipped.headSha,
+    } : {}),
     updatedAt: now,
   };
   return {
@@ -361,6 +374,7 @@ export function markKodySkippedPure(records, {
   headSha,
   checkRunId,
   checkStartedAt = "",
+  headCommittedAt = "",
   priorRealReviewStarts = [],
   checkUrl = "",
   now = new Date().toISOString(),
@@ -386,40 +400,40 @@ export function markKodySkippedPure(records, {
       counts: kodyQuotaCounts(records, alreadyRefunded.date),
     };
   }
+  const recordTime = record => Date.parse(
+    String(record.createdAt ?? record.reservedAt ?? record.updatedAt ?? ""),
+  );
+  const headCommittedMs = Date.parse(String(headCommittedAt));
   const matches = records.filter(record =>
     isKodyRecord(record) &&
     record.repository === repo &&
     Number(record.pr) === number &&
     (record.headSha === sha ||
-      (!record.headSha && String(record.commentId ?? "").trim() !== "")) &&
+      (!record.headSha &&
+        String(record.commentId ?? "").trim() !== "" &&
+        Number.isFinite(headCommittedMs) &&
+        Number.isFinite(recordTime(record)) &&
+        recordTime(record) >= headCommittedMs)) &&
     ["reserved", "posted"].includes(record.status));
   if (matches.length === 0) {
     return { ok: false, reason: "no-matching-kody-trigger", records };
   }
-  const recordTime = record => Date.parse(
-    String(record.createdAt ?? record.reservedAt ?? record.updatedAt ?? ""),
-  );
   const checkStartedMs = Date.parse(String(checkStartedAt));
+  if (!Number.isFinite(checkStartedMs)) {
+    return { ok: false, reason: "missing-check-start-time", records };
+  }
   let target = null;
-  if (Number.isFinite(checkStartedMs)) {
-    target = matches
-      .filter(record => Number.isFinite(recordTime(record)) && recordTime(record) <= checkStartedMs)
-      .sort((left, right) => recordTime(right) - recordTime(left))[0] ?? null;
-    if (!target) {
-      return { ok: false, reason: "trigger-after-check", records };
-    }
-  } else {
-    // 没有 Check 启动时间时保守退最早的一笔，而不是把同一 HEAD 的全部请求一起退掉。
-    target = matches
-      .filter(record => Number.isFinite(recordTime(record)))
-      .sort((left, right) => recordTime(left) - recordTime(right))[0] ?? matches[0];
+  target = matches
+    .filter(record => Number.isFinite(recordTime(record)) && recordTime(record) <= checkStartedMs)
+    .sort((left, right) => recordTime(right) - recordTime(left))[0] ?? null;
+  if (!target) {
+    return { ok: false, reason: "trigger-after-check", records };
   }
   const targetRecordMs = recordTime(target);
   const priorRealReview = priorRealReviewStarts
     .map(value => Date.parse(String(value ?? "")))
     .find(startedMs =>
       Number.isFinite(targetRecordMs) &&
-      Number.isFinite(checkStartedMs) &&
       Number.isFinite(startedMs) &&
       startedMs > targetRecordMs &&
       startedMs <= checkStartedMs);
@@ -449,12 +463,19 @@ export function markKodySkippedPure(records, {
   };
 }
 
-export async function markKodySkippedQuota(token, evidence, { now = new Date() } = {}) {
+export async function markKodySkippedQuota(token, checkEvidence, { now = new Date() } = {}) {
   const date = shanghaiDate(now);
-  return mutate(token, date, records => markKodySkippedPure(records, {
-    ...evidence,
-    now: now.toISOString(),
-  }));
+  const {
+    evidence = [],
+    ...skipIdentity
+  } = checkEvidence;
+  return mutate(token, date, records => {
+    const imported = importKodyEvidence(records, evidence, date, now.toISOString());
+    return markKodySkippedPure(imported, {
+      ...skipIdentity,
+      now: now.toISOString(),
+    });
+  });
 }
 
 export function applyCas(records, expectedVersion, currentVersion, transform) {

@@ -9,6 +9,7 @@ import {
   SHARED_QUOTA_REPOSITORIES,
   markKodySkippedQuota,
 } from "../codex/audit-quota.mjs";
+import { isExactTriggerComment } from "./trigger.mjs";
 
 export function confirmedKodySkip(event) {
   const check = event?.check_run;
@@ -37,11 +38,26 @@ export function kodySkipPullRequests(event) {
       pr: number,
       headSha: check.head_sha,
       checkRunId: check.id,
-      checkStartedAt: check.started_at ?? "",
+      checkStartedAt: check.started_at ?? check.created_at ?? "",
       checkUrl: check.html_url ?? "",
     });
   }
   return output.length === 1 ? output : [];
+}
+
+export function kodyTriggerCommentEvidence(comments, repository, pr) {
+  return comments
+    .filter(isExactTriggerComment)
+    .map(comment => ({
+      repository,
+      pr,
+      commentId: String(comment.id),
+      url: comment.html_url ?? "",
+      createdAt: comment.created_at,
+    }))
+    .filter(item =>
+      item.commentId &&
+      Number.isFinite(Date.parse(String(item.createdAt ?? ""))));
 }
 
 export function realKodyReviewStarts(checks, currentCheckId) {
@@ -70,6 +86,30 @@ async function githubJson(path, token) {
   return response.json();
 }
 
+async function githubListAll(path, token, maxPages = 10) {
+  const output = [];
+  let next = path;
+  for (let page = 0; next && page < maxPages; page += 1) {
+    const response = await fetch(`https://api.github.com${next}`, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "oreki-kody-skip-reconcile",
+      },
+    });
+    if (!response.ok) throw new Error(`GitHub API ${response.status} for ${next}`);
+    output.push(...await response.json());
+    const link = response.headers.get("link") ?? "";
+    const match = link.match(/<([^>]+)>;\s*rel="next"/);
+    next = match ? match[1].replace("https://api.github.com", "") : "";
+    if (next && page + 1 >= maxPages) {
+      throw new Error("Kody skip comment evidence pagination incomplete");
+    }
+  }
+  return output;
+}
+
 async function resolvedKodySkipCandidates(event, token) {
   const direct = kodySkipPullRequests(event);
   if (direct.length) return direct;
@@ -90,7 +130,7 @@ async function resolvedKodySkipCandidates(event, token) {
     pr: matching[0].number,
     headSha: sha,
     checkRunId: event.check_run.id,
-    checkStartedAt: event.check_run.started_at ?? "",
+    checkStartedAt: event.check_run.started_at ?? event.check_run.created_at ?? "",
     checkUrl: event.check_run.html_url ?? "",
   }];
 }
@@ -109,6 +149,11 @@ export async function main() {
   }
   const repository = event.repository.full_name;
   const sha = event.check_run.head_sha;
+  const headCommit = await githubJson(`/repos/${repository}/commits/${sha}`, token);
+  const headCommittedAt =
+    headCommit?.commit?.committer?.date ??
+    headCommit?.commit?.author?.date ??
+    "";
   const checks = await githubJson(
     `/repos/${repository}/commits/${sha}/check-runs?check_name=Kody%20Code%20Review&filter=all&per_page=100`,
     token,
@@ -121,9 +166,18 @@ export async function main() {
     event.check_run.id,
   );
   for (const match of matches) {
-    match.checkStartedAt = event.check_run.started_at ?? "";
+    const comments = await githubListAll(
+      `/repos/${repository}/issues/${match.pr}/comments?per_page=100`,
+      token,
+    );
+    match.checkStartedAt = event.check_run.started_at ?? event.check_run.created_at ?? "";
+    match.headCommittedAt = headCommittedAt;
     match.priorRealReviewStarts = priorRealReviewStarts;
-    const result = await markKodySkippedQuota(token, match);
+    match.evidence = kodyTriggerCommentEvidence(comments, repository, match.pr);
+    const startedMs = Date.parse(String(match.checkStartedAt ?? ""));
+    const result = await markKodySkippedQuota(token, match, {
+      now: Number.isFinite(startedMs) ? new Date(startedMs) : new Date(),
+    });
     console.log(
       `Kody skip: ${match.repository}#${match.pr}@${match.headSha} ` +
       `CheckRun=${match.checkRunId} => ${result.reason}; ` +

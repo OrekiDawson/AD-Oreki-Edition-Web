@@ -25,6 +25,7 @@ import {
 
 import {
   confirmedKodySkip,
+  kodyTriggerCommentEvidence,
   kodySkipPullRequests,
   realKodyReviewStarts,
 } from "./skip-reconcile.mjs";
@@ -338,4 +339,30 @@ test("只提取当前 skipped Check 之外的已完成 Kody Review 启动时间"
     },
   ];
   assert.deepEqual(realKodyReviewStarts(checks, 2), ["2026-11-21T12:58:00Z"]);
+});
+
+test("skipped Check 到达时可从 PR 评论补齐精确触发证据", () => {
+  const comments = [
+    {
+      id: 77,
+      user: { login: "OrekiDawson" },
+      body: "@kody start-review",
+      html_url: "https://example.test/pull/7#issuecomment-77",
+      created_at: "2026-11-21T12:58:30Z",
+    },
+    {
+      id: 78,
+      user: { login: "OrekiDawson" },
+      body: "@kody start-review please",
+      html_url: "https://example.test/pull/7#issuecomment-78",
+      created_at: "2026-11-21T12:58:40Z",
+    },
+  ];
+  assert.deepEqual(kodyTriggerCommentEvidence(comments, repository, 7), [{
+    repository,
+    pr: 7,
+    commentId: "77",
+    url: "https://example.test/pull/7#issuecomment-77",
+    createdAt: "2026-11-21T12:58:30Z",
+  }]);
 });
