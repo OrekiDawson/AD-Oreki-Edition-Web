@@ -470,9 +470,21 @@ export function markKodySkippedPure(records, {
     .filter(priorToCheck)
     .sort((left, right) =>
       (recordTime(right) - recordTime(left)) * (reverse ? 1 : -1))[0] ?? null;
-  target = latest([...exactMatches, ...headlessMatches]);
+  const candidates = [...exactMatches, ...headlessMatches];
+  target = latest(candidates);
   if (!target) {
     return { ok: false, reason: "trigger-after-check", records };
+  }
+  if (target.status === "reserved" && !String(target.commentId ?? "").trim()) {
+    const targetMs = recordTime(target);
+    const earlierComment = candidates.some(record =>
+      record !== target &&
+      String(record.commentId ?? "").trim() !== "" &&
+      Number.isFinite(recordTime(record)) &&
+      recordTime(record) < targetMs);
+    if (earlierComment) {
+      return { ok: false, reason: "ambiguous-reservation-and-comment", records };
+    }
   }
   const targetRecordMs = recordTime(target);
   const targetCommentId = String(target.commentId ?? "");
@@ -570,8 +582,12 @@ export async function markKodySkippedQuota(token, checkEvidence, { now = new Dat
       const records = clearPendingKodySkip(result.records, pendingIdentity);
       return records === result.records ? result : { ...result, records };
     }
-    if (["unattributed-trigger", "missing-check-start-time", "missing-check-created-time"]
-      .includes(result.reason)) {
+    if ([
+      "unattributed-trigger",
+      "missing-check-start-time",
+      "missing-check-created-time",
+      "ambiguous-reservation-and-comment",
+    ].includes(result.reason)) {
       const pending = queuePendingKodySkip(
         result.records,
         skipIdentity,

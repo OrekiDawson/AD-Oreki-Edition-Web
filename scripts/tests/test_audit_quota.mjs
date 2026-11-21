@@ -525,6 +525,29 @@ assert.equal(
   createdBeforeLaterRequest.records.find(record => record.commentId === "9004").status,
   "posted",
 );
+const manualBeforeReservation = {
+  ...observedOnly,
+  identity: `kody-comment:${kodyAndroid}#9501`,
+  headSha: "a".repeat(40),
+  commentId: "9501",
+  createdAt: "2026-11-20T00:00:10Z",
+};
+const mixedReservation = reserveKodyPure(
+  [manualBeforeReservation],
+  kodyCandidate("same-head-unlinked-reservation", kodyAndroid),
+  { date: kodyDate, now: "2026-11-20T00:00:15Z" },
+);
+const ambiguousReservation = markKodySkippedPure(mixedReservation.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98146,
+  checkCreatedAt: "2026-11-20T00:00:20Z",
+  checkStartedAt: "2026-11-20T00:00:30Z",
+});
+assert.equal(ambiguousReservation.ok, false);
+assert.equal(ambiguousReservation.reason, "ambiguous-reservation-and-comment");
+assert.equal(ambiguousReservation.records, mixedReservation.records);
 const skipSecond = attachKodyCommand(
   reserveKodyPure(skipFirst.records, kodyCandidate("same-head-second", kodyAndroid), {
     date: kodyDate,

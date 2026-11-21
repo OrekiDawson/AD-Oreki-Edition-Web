@@ -327,8 +327,12 @@ export async function main() {
         `Kody skip: ${match.repository}#${match.pr} requires retry: ${result.reason}`,
       );
     }
-    if (["unattributed-trigger", "missing-check-start-time", "missing-check-created-time"]
-      .includes(result.reason)) {
+    if ([
+      "unattributed-trigger",
+      "missing-check-start-time",
+      "missing-check-created-time",
+      "ambiguous-reservation-and-comment",
+    ].includes(result.reason)) {
       console.warn(
         `::warning::Kody skip ${match.repository}#${match.pr}@${match.headSha} ` +
         `待归因（${result.reason}）；请使用 workflow_dispatch 和 check_run_id=${match.checkRunId} 重核。`,
