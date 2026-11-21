@@ -1652,8 +1652,9 @@ export const OrekiEternityAutomation = {
    * 必须补上这条受限购买链，否则进入 EC8 会清空无限维度并永久停在原地。
    *
    * 这里只调用原版购买入口：
-   *   · 未解锁全部八维时，逐次调用 `buySingle()`，并为每个锁定维度保留一次额度；
-   *   · 八维全部解锁后才调用 `buyMax()`；
+   *   · 仍有维度未完成首次购买时，逐次调用 `buySingle()`，并为每个未首购维度
+   *     保留一次额度；维度可能已解锁但当前 IP 尚买不起；
+   *   · 八维都至少购买一次后才调用 `buyMax()`；
    *   · `ReplicantiUpgrade.*.purchase()` 自己按 `player.eterc8repl` 截断并递减。
    * 不调用绕过 EC8 计数的 `autobuyerTick()`，不写任何购买次数或完成状态。
    */
@@ -1667,21 +1668,21 @@ export const OrekiEternityAutomation = {
       if (InfinityDimensions.canBuy()) {
         const dimensions = InfinityDimensions.all;
         for (const dimension of dimensions) dimension.unlock();
-        const lockedCount = dimensions.filter(dimension => !dimension.isUnlocked).length;
-        if (lockedCount === 0) {
+        const unpurchasedCount = dimensions.filter(dimension => dimension.purchases === 0).length;
+        if (unpurchasedCount === 0) {
           const before = dimensions.reduce((sum, dimension) => sum + dimension.purchases, 0);
           InfinityDimensions.buyMax();
           const after = dimensions.reduce((sum, dimension) => sum + dimension.purchases, 0);
           acted = after > before || acted;
         } else {
           // 普通「全部购买」会优先把低价 ID1 买到上限；EC8 只有不可恢复的
-          // 50 次额度，提前花光会让之后解锁的 ID 永久无法购买。锁定额度
-          // 同时保留当前挑战继续推进所需的轮转购买，不直接写 player 计数。
-          const reserve = Math.min(player.eterc8ids, lockedCount);
-          const unlocked = dimensions.filter(dimension => dimension.isUnlocked);
+          // 50 次额度，提前花光会让尚未首购的 ID 永久无法获得生产倍率。
+          // 已解锁但暂时买不起的高阶维度也必须计入保留额度。
+          const reserve = Math.min(player.eterc8ids, unpurchasedCount);
+          const purchasable = dimensions.filter(dimension => dimension.isUnlocked);
           while (player.eterc8ids > reserve) {
             let boughtThisPass = false;
-            for (const dimension of unlocked.slice().reverse()) {
+            for (const dimension of purchasable.slice().reverse()) {
               if (player.eterc8ids <= reserve) break;
               if (!dimension.isAvailableForPurchase || !dimension.buySingle()) continue;
               acted = true;
