@@ -1085,7 +1085,8 @@ try {
       check("[R121] 永恒进度变化不被误判为玩家手动关闭",
         observeBody.includes("eternityRealTimeReset") &&
         observeBody.includes("eternitiesChanged") &&
-        observeBody.includes("realitiesReset || realTimeReset || eternityRealTimeReset || eternitiesChanged"));
+        observeBody.includes("eternityRealTime === null && eternitiesChanged") &&
+        observeBody.includes("realitiesReset || realTimeReset || eternityReset"));
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
         "sample=" + sampleIdx + " dwell=" + dwellIdx);

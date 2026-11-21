@@ -1107,7 +1107,11 @@ export const OrekiEternityAutomation = {
             this._eternityAutoEnabledAtEternities !== null &&
             eternities !== null &&
             eternities !== this._eternityAutoEnabledAtEternities;
-          if (realitiesReset || realTimeReset || eternityRealTimeReset || eternitiesChanged) {
+          // 本永恒真实时间回退是结算的直接证据。仅在时间不可读时才退回永恒计数变化，
+          // 避免“玩家消费永恒次数”和手动关闭同帧发生时把关闭误判为原版复位。
+          const eternityReset = eternityRealTimeReset ||
+            (eternityRealTime === null && eternitiesChanged);
+          if (realitiesReset || realTimeReset || eternityReset) {
             // 原版 Reality/永恒结算复位：不判玩家关闭，交给接管逻辑补回 true。
             this._eternityAutoUserClosed = false;
           } else if (realities !== null && realTime !== null) {
