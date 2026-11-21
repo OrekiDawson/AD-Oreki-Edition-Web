@@ -11,13 +11,18 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
+const OWNER = "OrekiDawson";
+
 export const LIMIT = 100;
 export const KODY_KIND = "kody_start_review";
 export const KODY_DAILY_LIMIT = 100;
 export const KODY_WARNING_AT = 80;
 export const COORDINATOR_REPO = "AD-Oreki-Edition-Web";
 export const QUOTA_BRANCH = "oreki-audit-quota";
-const OWNER = "OrekiDawson";
+export const SHARED_QUOTA_REPOSITORIES = [
+  `${OWNER}/AD-Oreki-Edition-Android`,
+  `${OWNER}/AD-Oreki-Edition-Web`,
+];
 const API = "https://api.github.com";
 const RETAIN_DAYS = 8;
 const STATE_PATH = "quota/state.json";
@@ -108,8 +113,13 @@ function isKodyRecord(record) {
   return record?.kind === KODY_KIND;
 }
 
+export function isSharedQuotaRepository(repository) {
+  return SHARED_QUOTA_REPOSITORIES.includes(String(repository ?? ""));
+}
+
 function isActiveKodyRecord(record, date) {
   return isKodyRecord(record) &&
+    isSharedQuotaRepository(record.repository) &&
     record.date === date &&
     record.status !== "released";
 }
@@ -141,6 +151,8 @@ function importKodyEvidence(records, evidence, date, now) {
   for (const item of evidence) {
     const repository = String(item?.repository ?? "");
     const commentId = String(item?.commentId ?? "").trim();
+    // Wiki 使用独立审查统计，绝不写入 Android/Web 共享池。
+    if (!isSharedQuotaRepository(repository)) continue;
     if (!repository || !commentId) {
       throw new Error("Kody quota evidence requires repository and unique comment id");
     }
@@ -184,6 +196,17 @@ export function reserveKodyPure(records, candidate, {
   const output = importKodyEvidence(records, evidence, date, now);
   const identity = String(candidate?.identity ?? "");
   if (!identity) throw new Error("Kody quota identity is required");
+  const repository = String(candidate?.repository ?? "");
+  if (!isSharedQuotaRepository(repository)) {
+    return {
+      allowed: false,
+      reused: false,
+      reason: "not-shared-quota-repository",
+      record: null,
+      records: output,
+      counts: kodyQuotaCounts(output, date),
+    };
+  }
   const prior = output.find(record =>
     isKodyRecord(record) &&
     record.status !== "released" &&
@@ -212,7 +235,7 @@ export function reserveKodyPure(records, candidate, {
   const record = {
     kind: KODY_KIND,
     identity,
-    repository: String(candidate.repository ?? ""),
+    repository,
     pr: Number(candidate.pr),
     headSha: String(candidate.headSha ?? ""),
     source: "automated_trigger",

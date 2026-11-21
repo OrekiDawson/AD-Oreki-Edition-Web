@@ -5,9 +5,11 @@ import {
   KODY_KIND,
   KODY_WARNING_AT,
   LIMIT,
+  SHARED_QUOTA_REPOSITORIES,
   applyCas,
   attachKodyCommand,
   consumedCount,
+  isSharedQuotaRepository,
   kodyQuotaCounts,
   releaseKodyCommand,
   reserveKodyPure,
@@ -101,6 +103,11 @@ assert.equal(shanghaiDate(new Date("2026-11-19T16:00:00Z")), "2026-11-20");
 const kodyDate = "2026-11-20";
 const kodyAndroid = "OrekiDawson/AD-Oreki-Edition-Android";
 const kodyWeb = "OrekiDawson/AD-Oreki-Edition-Web";
+const kodyWiki = "OrekiDawson/AD-Oreki-Wiki";
+assert.deepEqual(SHARED_QUOTA_REPOSITORIES, [kodyAndroid, kodyWeb]);
+assert.equal(isSharedQuotaRepository(kodyAndroid), true);
+assert.equal(isSharedQuotaRepository(kodyWeb), true);
+assert.equal(isSharedQuotaRepository(kodyWiki), false);
 const kodyEvidence = (repository, ids) => ids.map(id => ({
   repository,
   pr: 121,
@@ -313,6 +320,50 @@ const blocked = reserveKodyPure(full.records, kodyCandidate("boundary-blocked", 
 assert.equal(blocked.allowed, false);
 assert.equal(blocked.reason, "daily-quota-exhausted");
 assert.equal(blocked.counts.used, KODY_DAILY_LIMIT);
+
+const wikiOnly = reserveKodyPure([], kodyCandidate("wiki-only", kodyWiki), {
+  date: kodyDate,
+  evidence: kodyEvidence(kodyWiki, [7000, 7001]),
+});
+assert.equal(wikiOnly.allowed, false);
+assert.equal(wikiOnly.reason, "not-shared-quota-repository");
+assert.equal(wikiOnly.counts.used, 0);
+assert.equal(wikiOnly.records.some(record => record.repository === kodyWiki), false);
+
+// 历史状态中即使存在误入的 Wiki 记录，也必须保留原记录但不从共享池扣减。
+const wikiHistoricalRecord = {
+  kind: KODY_KIND,
+  identity: `kody-comment:${kodyWiki}#8000`,
+  repository: kodyWiki,
+  pr: 121,
+  commentId: "8000",
+  source: "observed_comment",
+  date: kodyDate,
+  status: "posted",
+};
+const sharedWithWikiHistory = reserveKodyPure(
+  [wikiHistoricalRecord],
+  kodyCandidate("shared-last-slot", kodyWeb),
+  {
+    date: kodyDate,
+    evidence: kodyEvidence(kodyAndroid, Array.from({ length: 99 }, (_, index) => 7100 + index)),
+  },
+);
+assert.equal(sharedWithWikiHistory.allowed, true);
+assert.equal(sharedWithWikiHistory.counts.used, KODY_DAILY_LIMIT);
+assert.equal(sharedWithWikiHistory.counts.byRepository[kodyWiki], undefined);
+assert.equal(sharedWithWikiHistory.records.some(record =>
+  record.identity === wikiHistoricalRecord.identity), true);
+
+const wikiWhenSharedPoolFull = reserveKodyPure(
+  sharedWithWikiHistory.records,
+  kodyCandidate("wiki-during-full-pool", kodyWiki),
+  { date: kodyDate },
+);
+assert.equal(wikiWhenSharedPoolFull.allowed, false);
+assert.equal(wikiWhenSharedPoolFull.reason, "not-shared-quota-repository");
+assert.equal(wikiWhenSharedPoolFull.counts.used, KODY_DAILY_LIMIT);
+assert.equal(wikiWhenSharedPoolFull.records.length, sharedWithWikiHistory.records.length);
 
 const kodyBase = reserveKodyPure([], kodyCandidate("cas-seed", kodyWeb), {
   date: kodyDate,

@@ -235,12 +235,13 @@ test("80 次预警但放行，100 次阻止新增主动请求", () => {
   });
 });
 
-test("预算同时读取 Android 与 Web 评论源", () => {
+test("预算只读取 Android 与 Web 评论源，不读取 Wiki", () => {
   const since = new Date("2026-11-20T16:00:00Z");
   const paths = sharedDailyCommentsPaths(repository, since);
   assert.equal(paths.length, 2);
   assert.match(paths[0].path, /AD-Oreki-Edition-Android/);
   assert.match(paths[1].path, /AD-Oreki-Edition-Web/);
+  assert.equal(paths.some(item => item.repository.includes("AD-Oreki-Wiki")), false);
   assert.equal(paths[0].path, dailyCommentsPath(paths[0].repository, since));
 });
 
