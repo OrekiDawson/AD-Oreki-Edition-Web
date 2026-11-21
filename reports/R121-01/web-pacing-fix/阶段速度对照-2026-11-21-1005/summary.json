@@ -1,0 +1,401 @@
+{
+  "run_id": "阶段速度对照-2026-11-21-1005",
+  "mode": "control",
+  "criterion": {
+    "id": "player.isGameEnd-first-true",
+    "description": "window 内 player.isGameEnd 首次为 true 即通关",
+    "formula_file": "web/AD-Oreki-Edition/src/core/celestials/pelle/game-end.js",
+    "OREKI_PELLE_END_OFFSET": 1,
+    "OREKI_PELLE_END_TARGET_EXP": 1000,
+    "pass_condition": "gameEnd 首次为 true 且真实墙钟耗时 <= 180 分钟"
+  },
+  "source": {
+    "repo": "/home/oreki/AD-Oreki-Edition/工作树/web/r121-pacing-fix",
+    "sha": "9442b9d3309fb4a8749a2bcd47aad4f0c1635d92",
+    "branch": "r121-01/web-pacing-fix",
+    "dirty": "M scripts/check_game_pace.mjs\n M scripts/test-r94-id1-peak-window.mjs\n M src/components/tabs/options-gameplay/OptionsGameplayTab.js\n M src/core/oreki-tutorial-data.gen.js\n M src/core/oreki-tutorial-data.json\n M src/core/oreki-tutorial.js\n M src/core/speed-config.js\n?? reports/R121-01/web-pacing-fix/\n?? scripts/check_speed_stage.mjs",
+    "dirty_stat": "scripts/check_game_pace.mjs                        | 11 ++-\n scripts/test-r94-id1-peak-window.mjs               |  6 +-\n .../tabs/options-gameplay/OptionsGameplayTab.js    |  6 ++\n src/core/oreki-tutorial-data.gen.js                | 20 ++---\n src/core/oreki-tutorial-data.json                  | 20 ++---\n src/core/oreki-tutorial.js                         |  4 +-\n src/core/speed-config.js                           | 91 ++++++++++++++++++----\n 7 files changed, 117 insertions(+), 41 deletions(-)",
+    "dirty_files": "M scripts/check_game_pace.mjs\n M scripts/test-r94-id1-peak-window.mjs\n M src/components/tabs/options-gameplay/OptionsGameplayTab.js\n M src/core/oreki-tutorial-data.gen.js\n M src/core/oreki-tutorial-data.json\n M src/core/oreki-tutorial.js\n M src/core/speed-config.js\n?? reports/R121-01/web-pacing-fix/\n?? scripts/check_speed_stage.mjs",
+    "last_commit": "9442b9d3309fb4a8749a2bcd47aad4f0c1635d92 2026-11-21T09:02:57+08:00 R121-01：清理时间定理恢复原版收益后的过期注释"
+  },
+  "environment": {
+    "host": "Oreki-Desktop",
+    "platform": "linux x64",
+    "node": "v26.13.0",
+    "playwright": null,
+    "chromium_executable": "/home/oreki/.cache/ms-playwright/chromium-1255/chrome-linux64/chrome",
+    "browser_version": "159.0.8154.6",
+    "viewport": {
+      "width": 412,
+      "height": 915
+    },
+    "device_scale_factor": 2.625,
+    "is_mobile": true,
+    "has_touch": true,
+    "user_agent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Mobile Safari/537.36",
+    "locale": "zh-CN",
+    "launch_args": [
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-features=CalculateNativeWinOcclusion",
+      "--mute-audio",
+      "--no-sandbox",
+      "--disable-dev-shm-usage"
+    ],
+    "server": "http://127.0.0.1:43025/ (serve /home/oreki/AD-Oreki-Edition/工作树/web/r121-pacing-fix)",
+    "page_visibility_enforcement": "Playwright CDP session: Emulation.setFocusEmulationEnabled + Page.setWebLifecycleState(active)（仅保活仿真，不碰游戏时间源）"
+  },
+  "timing": {
+    "start_iso": "2026-11-21T02:06:17.109Z",
+    "start_monotonic_ms": 2054.125,
+    "end_iso": "2026-11-21T02:09:13.560Z",
+    "end_monotonic_ms": 178573.947,
+    "wall_sec_total": 176.5,
+    "gameend_wall_sec": null,
+    "gameend_iso": null,
+    "stopwatch_note": "t0 = 新档文档起始 Date.now()（页面内 __orekiT0）；墙钟 = Node performance.now() 单调差值自 T_GAME0；全程不改任何游戏时间源",
+    "process_start_monotonic_ms": 50.623,
+    "t0_source": "document-start Date.now()（页面内 window.__orekiT0），Node 端 reload 前 recorded=2026-11-21T02:06:17.090Z",
+    "t0_in_page": 1795226777109,
+    "player_created_ms_after_t0": 646,
+    "wall_sec_total_process": 183.7
+  },
+  "freshness": {
+    "method": "全新 browser context（无 storage）+ 每个 document 起始 localStorage.clear() + 页面加载后 clear + reload",
+    "storage_keys_at_start": [],
+    "birth": {
+      "at": 1795226777755,
+      "globalKeys": [
+        "player",
+        "Tab",
+        "Tabs",
+        "GameSpeed",
+        "OrekiSmartExecutor",
+        "Pelle",
+        "GameEnd"
+      ],
+      "realities": 0,
+      "brk": false,
+      "infinitiesLog10": null,
+      "totalAntimatter": "0",
+      "antimatter": "10",
+      "dimensionBoosts": 0,
+      "galaxies": 0,
+      "endState": 0,
+      "speed": 1000,
+      "isDynamic": true,
+      "tutorialActive": true,
+      "tutorialState": 0,
+      "storageAtStart": [],
+      "speedStorageAtStart": []
+    },
+    "verdict": "PASS(全新存档)"
+  },
+  "defaults": {
+    "speed_storage_at_birth": null,
+    "speed_dynamic_storage_at_birth": null,
+    "speed_factor_at_birth": 1000,
+    "speed_is_dynamic_at_birth": true,
+    "tutorial_active_at_birth": true,
+    "tutorial_state_at_birth": 0,
+    "automation_interval_sec_at_birth": 10,
+    "final_speed_factor": 1800,
+    "speed_ramps": 0,
+    "note": "oreki-game-speed 默认 3000×、动态升档默认开启；已有用户倍率优先",
+    "storage_at_birth": {
+      "oreki-game-speed": null,
+      "oreki-game-speed-dynamic": null,
+      "oreki.automation.enabled": null,
+      "oreki.automation.intervalSec": null
+    }
+  },
+  "events": [
+    {
+      "seq": 1,
+      "tag": "首次无限(infTotal>=1)",
+      "key": "infinity",
+      "value": 0,
+      "wall_sec": 11.3,
+      "iso": "2026-11-21T02:06:28.430Z",
+      "in_page_t": 11.3,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": false,
+      "factor": 1000,
+      "ramps": 0,
+      "in_game_tt_sec": 10675
+    },
+    {
+      "seq": 2,
+      "tag": "首次打破无限(player.break)",
+      "key": "break",
+      "value": true,
+      "wall_sec": 41.4,
+      "iso": "2026-11-21T02:06:58.526Z",
+      "in_page_t": 41.4,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": true,
+      "factor": 1000,
+      "ramps": 0,
+      "in_game_tt_sec": 40772
+    }
+  ],
+  "firsts": {
+    "infinity": {
+      "seq": 1,
+      "tag": "首次无限(infTotal>=1)",
+      "key": "infinity",
+      "value": 0,
+      "wall_sec": 11.3,
+      "iso": "2026-11-21T02:06:28.430Z",
+      "in_page_t": 11.3,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": false,
+      "factor": 1000,
+      "ramps": 0,
+      "in_game_tt_sec": 10675
+    },
+    "break": {
+      "seq": 2,
+      "tag": "首次打破无限(player.break)",
+      "key": "break",
+      "value": true,
+      "wall_sec": 41.4,
+      "iso": "2026-11-21T02:06:58.526Z",
+      "in_page_t": 41.4,
+      "realities": 0,
+      "endState": 0,
+      "totAMLog10": null,
+      "doomed": false,
+      "brk": true,
+      "factor": 1000,
+      "ramps": 0,
+      "in_game_tt_sec": 40772
+    }
+  },
+  "gameend": {
+    "reached": false,
+    "at_wall_sec": null,
+    "at_iso": null,
+    "sample": null
+  },
+  "confirm": {
+    "duration_ms": 1000,
+    "samples_after": 0,
+    "regressions": 0,
+    "ok": false
+  },
+  "samples": {
+    "count": 36,
+    "interval_ms": 5000,
+    "screenshots": 7,
+    "screenshot_interval_ms": 30000
+  },
+  "anomalies": {
+    "pageerrors": [],
+    "console_errors": [],
+    "sample_errors": [],
+    "freeze_watchdog": [],
+    "aborted": null,
+    "console_prefix_counts": {
+      "[OREKI_CRUNCH_DEC] allow=true reason=ip-jump": 3,
+      "[OREKI_CRUNCH_DEC] allow=false reason=id-peak-wait": 3,
+      "🌌 Antimatter Dimensions: Reality Update 🌌": 2,
+      "[OREKI_CRUNCH_DEC] allow=true reason=pre-infinity": 2,
+      "requestfailed http://127.0.0.1:43025/public/images/stars-bg.webm :: net::ERR_ABORTED": 2,
+      "requestfailed http://127.0.0.1:43025/public/images/realityanimbg.webm :: net::ERR_ABORTED": 2,
+      "[OrekiCrunchInterval] pending release reason=ip-jump holdMs=20000 tickIntervalMs=10000": 2,
+      "[OREKI_CRUNCH_DEC] allow=true reason=pre-break-ip": 1,
+      "[OrekiCrunchInterval] pending release reason=pre-break-ip holdMs=20000 tickIntervalMs=10000": 1,
+      "[OrekiCrunchInterval] tick=2 managed mode 2 -> 1 interval 1 -> 60 (resume:pre-break-ip)": 1,
+      "[OREKI_MANAGED_AUTO] key=crunch.amount tick=3 event=field-restored target=10": 1,
+      "[OREKI_MANAGED_AUTO] key=crunch.increaseWithMult tick=3 event=field-restored target=false": 1,
+      "[OrekiCrunchInterval] tick=6 managed mode 1 -> 1 interval 60 -> 5 (resume:ip-jump)": 1,
+      "[OrekiCrunchInterval] tick=7 managed mode 1 -> 1 interval 5 -> 3600 (pause:id-peak-wait)": 1,
+      "[OREKI_MANAGED_AUTO] key=crunch tick=7 event=isActive-restored target=false": 1,
+      "[OrekiCrunchInterval] tick=9 managed mode 1 -> 1 interval 3600 -> 5 (resume:ip-jump)": 1,
+      "[OREKI_MANAGED_AUTO] key=crunch tick=9 event=isActive-restored target=true": 1,
+      "[OrekiCrunchInterval] tick=10 managed mode 1 -> 1 interval 5 -> 3600 (pause:id-peak-wait)": 1,
+      "[OREKI_MANAGED_AUTO] key=crunch tick=10 event=isActive-restored target=false": 1,
+      "[OrekiCrunchInterval] tick=15 managed mode 1 -> 1 interval 3600 -> 5 (resume:ip-jump)": 1,
+      "[OREKI_MANAGED_AUTO] key=crunch tick=15 event=isActive-restored target=true": 1,
+      "[OrekiCrunchInterval] tick=16 managed mode 1 -> 1 interval 5 -> 3600 (pause:id-peak-wait)": 1,
+      "[OREKI_MANAGED_AUTO] key=crunch tick=16 event=isActive-restored target=false": 1
+    },
+    "console_suppressed_lines": 0
+  },
+  "result": "CONTROL-OK",
+  "result_reason": "短对照 3min：speed=1800 dyn=true ramps=0 tut=false/4 fps~60 vis=visible samples=36 gameEnd=false",
+  "scheduler": {
+    "served_first": {
+      "celestial": 1
+    },
+    "served_last": {
+      "celestial": 5,
+      "routine": 5,
+      "early": 4,
+      "breakGate": 1,
+      "breakUpgrades": 3
+    },
+    "served_delta": {
+      "celestial": 4,
+      "routine": 5,
+      "early": 4,
+      "breakGate": 1,
+      "breakUpgrades": 3
+    },
+    "eternity_served": 0,
+    "eternity_reset_served": 0,
+    "eternity_reset_served_delta_total": 0,
+    "eternity_served_delta_total": 0,
+    "last_beat_log": [
+      {
+        "task": "early",
+        "gapMs": 10032.39999999851,
+        "taskGapMs": 40128.10000000149
+      },
+      {
+        "task": "celestial",
+        "gapMs": 10035.19999999553,
+        "taskGapMs": 40124
+      },
+      {
+        "task": "breakUpgrades",
+        "gapMs": 10028.70000000298,
+        "taskGapMs": 40127.5
+      },
+      {
+        "task": "routine",
+        "gapMs": 10032.79999999702,
+        "taskGapMs": 40129.09999999404
+      },
+      {
+        "task": "early",
+        "gapMs": 10033.5,
+        "taskGapMs": 40130.19999999553
+      },
+      {
+        "task": "celestial",
+        "gapMs": 10005.10000000149,
+        "taskGapMs": 40100.10000000149
+      },
+      {
+        "task": "breakUpgrades",
+        "gapMs": 10025.30000000447,
+        "taskGapMs": 40096.70000000298
+      },
+      {
+        "task": "routine",
+        "gapMs": 10031.59999999404,
+        "taskGapMs": 40095.5
+      }
+    ],
+    "note": "OrekiSmartExecutor.debugState().beat.served 累计值；修复后 eternityReset 必须 > 0"
+  },
+  "control": {
+    "max_min": 3,
+    "sampled_sec": 181.5,
+    "samples": 36,
+    "speed_factor_start": 1000,
+    "speed_factor_end": 1800,
+    "speed_is_dynamic": true,
+    "speed_ramps": 0,
+    "speed_storage": "1800",
+    "speed_dynamic_storage": null,
+    "tutorial_active": false,
+    "tutorial_state": 4,
+    "automation": {
+      "enabled": true,
+      "intervalSec": 10,
+      "strictGlobal": false,
+      "stage": "infinityDimensions",
+      "goalId": "unlock-eternity",
+      "actionCount": 0,
+      "attemptCount": 0,
+      "lastExecAgoSec": null,
+      "stalledSec": 0,
+      "degraded": false,
+      "degradedCount": 0,
+      "error": null,
+      "manualHold": null,
+      "nextInMs": 4748.39999999851,
+      "blockers": [],
+      "noAction": null,
+      "lastAction": null,
+      "served": {
+        "celestial": 5,
+        "routine": 5,
+        "early": 4,
+        "breakGate": 1,
+        "breakUpgrades": 3
+      },
+      "beatLog": [
+        {
+          "task": "early",
+          "gapMs": 10032.39999999851,
+          "taskGapMs": 40128.10000000149
+        },
+        {
+          "task": "celestial",
+          "gapMs": 10035.19999999553,
+          "taskGapMs": 40124
+        },
+        {
+          "task": "breakUpgrades",
+          "gapMs": 10028.70000000298,
+          "taskGapMs": 40127.5
+        },
+        {
+          "task": "routine",
+          "gapMs": 10032.79999999702,
+          "taskGapMs": 40129.09999999404
+        },
+        {
+          "task": "early",
+          "gapMs": 10033.5,
+          "taskGapMs": 40130.19999999553
+        },
+        {
+          "task": "celestial",
+          "gapMs": 10005.10000000149,
+          "taskGapMs": 40100.10000000149
+        },
+        {
+          "task": "breakUpgrades",
+          "gapMs": 10025.30000000447,
+          "taskGapMs": 40096.70000000298
+        },
+        {
+          "task": "routine",
+          "gapMs": 10031.59999999404,
+          "taskGapMs": 40095.5
+        }
+      ]
+    },
+    "avg_fps": 60,
+    "min_fps": 59.8,
+    "visibility_states": [
+      "visible"
+    ],
+    "page_has_focus": true,
+    "stage": "infinityDimensions",
+    "progress": {
+      "realities": 0,
+      "infinities": 0.954,
+      "eternity": null,
+      "brk": true,
+      "endState": 0,
+      "gameEnd": false,
+      "doomPhase": "idle"
+    }
+  }
+}
