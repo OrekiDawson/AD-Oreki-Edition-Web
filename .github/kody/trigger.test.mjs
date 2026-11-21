@@ -22,7 +22,7 @@ import {
   validateTriggerIdentity,
 } from "./trigger.mjs";
 
-import { confirmedKodySkip, kodySkipPullRequests } from "./skip-reconcile.mjs";
+import { confirmedKodySkip, hadEarlierRealKodyReview, kodySkipPullRequests } from "./skip-reconcile.mjs";
 
 const repository = "OrekiDawson/AD-Oreki-Edition-Android";
 
@@ -286,4 +286,29 @@ test("只有 Kody 官方 completed/skipped Check 才能退额", () => {
   assert.deepEqual(kodySkipPullRequests({ ...event, check_run: {
     ...event.check_run, pull_requests: [],
   } }), []); // 关联不明时不误退款
+});
+
+test("同一 HEAD 已有实际 Kody Review 时不得因后续 skipped 误退", () => {
+  const current = { id: 200, completed_at: "2026-11-21T13:00:00Z" };
+  const earlier = {
+    id: 100,
+    app: { slug: "kody-ai" },
+    name: "Kody Code Review",
+    status: "completed",
+    conclusion: "success",
+    completed_at: "2026-11-21T12:00:00Z",
+  };
+  assert.equal(hadEarlierRealKodyReview(current, [earlier]), true);
+  assert.equal(hadEarlierRealKodyReview(current, [
+    { ...earlier, conclusion: "failure" },
+  ]), true);
+  assert.equal(hadEarlierRealKodyReview(current, [
+    { ...earlier, conclusion: "skipped" },
+  ]), false);
+  assert.equal(hadEarlierRealKodyReview(current, [
+    { ...earlier, app: { slug: "github-actions" } },
+  ]), false);
+  assert.equal(hadEarlierRealKodyReview(current, [
+    { ...earlier, completed_at: "2026-11-21T14:00:00Z" },
+  ]), false);
 });
