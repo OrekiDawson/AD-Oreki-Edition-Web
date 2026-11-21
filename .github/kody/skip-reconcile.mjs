@@ -165,6 +165,8 @@ export async function main() {
   if (!eventPath) throw new Error("GITHUB_EVENT_PATH is required");
   const token = process.env.GH_TOKEN;
   if (!token) throw new Error("GH_TOKEN is required");
+  const eventName = String(process.env.GITHUB_EVENT_NAME ?? "").trim();
+  if (!eventName) throw new Error("GITHUB_EVENT_NAME is required");
   let event = JSON.parse(readFileSync(eventPath, "utf8"));
   if (eventName === "workflow_dispatch") {
     const input = String(process.env.INPUT_CHECK_RUN_ID ?? "").trim();

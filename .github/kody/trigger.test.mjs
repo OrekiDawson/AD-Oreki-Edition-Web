@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import {
   DAILY_TRIGGER_LIMIT,
@@ -28,6 +35,7 @@ import {
   githubListAll,
   kodyTriggerCommentEvidence,
   kodySkipPullRequests,
+  main as reconcileKodySkip,
   realKodyReviews,
 } from "./skip-reconcile.mjs";
 
@@ -63,6 +71,62 @@ test("评论证据超过分页上限时失败关闭", async () => {
     );
   } finally {
     globalThis.fetch = originalFetch;
+  }
+});
+
+test("Kody skipped 入口读取事件名并覆盖自动事件与手动重核分支", async () => {
+  const directory = mkdtempSync(join(tmpdir(), "oreki-kody-skip-"));
+  const eventPath = join(directory, "event.json");
+  const previous = {
+    GITHUB_EVENT_PATH: process.env.GITHUB_EVENT_PATH,
+    GITHUB_EVENT_NAME: process.env.GITHUB_EVENT_NAME,
+    GITHUB_REPOSITORY: process.env.GITHUB_REPOSITORY,
+    GH_TOKEN: process.env.GH_TOKEN,
+    INPUT_CHECK_RUN_ID: process.env.INPUT_CHECK_RUN_ID,
+  };
+  const restore = () => {
+    for (const [name, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[name];
+      else process.env[name] = value;
+    }
+  };
+  process.env.GITHUB_EVENT_PATH = eventPath;
+  process.env.GITHUB_REPOSITORY = repository;
+  process.env.GH_TOKEN = "test-token";
+  try {
+    writeFileSync(eventPath, JSON.stringify({
+      action: "completed",
+      repository: { full_name: repository },
+      check_run: {
+        id: 100,
+        name: "Kody Code Review",
+        status: "completed",
+        conclusion: "success",
+        head_sha: "a".repeat(40),
+        app: { slug: "kody-ai" },
+        pull_requests: [{ number: 42 }],
+      },
+    }));
+    process.env.GITHUB_EVENT_NAME = "check_run";
+    delete process.env.INPUT_CHECK_RUN_ID;
+    await reconcileKodySkip();
+
+    writeFileSync(eventPath, "{}");
+    process.env.GITHUB_EVENT_NAME = "workflow_dispatch";
+    process.env.INPUT_CHECK_RUN_ID = "0";
+    await assert.rejects(
+      reconcileKodySkip(),
+      /workflow_dispatch check_run_id is invalid/u,
+    );
+
+    process.env.GITHUB_EVENT_NAME = "";
+    await assert.rejects(
+      reconcileKodySkip(),
+      /GITHUB_EVENT_NAME is required/u,
+    );
+  } finally {
+    restore();
+    rmSync(directory, { recursive: true, force: true });
   }
 });
 
