@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "date": "2026-11-21",
+  "date": "2026-11-22",
   "records": [
     {
       "identity": "8b8ed34635a79168dc2d62cf6ba64606f82293ebe5cbe03656e38d9be798c6bf",
@@ -2147,6 +2147,20 @@
       "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/110#issuecomment-7065283179",
       "reservedAt": "2026-11-21T15:58:39.926Z",
       "updatedAt": "2026-11-21T15:58:39.926Z"
+    },
+    {
+      "kind": "kody_start_review",
+      "identity": "kody-trigger:OrekiDawson/AD-Oreki-Edition-Android#239@046ec6d776cdc19fff919778a501a9bc3b16f479",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Android",
+      "pr": 239,
+      "headSha": "046ec6d776cdc19fff919778a501a9bc3b16f479",
+      "source": "automated_trigger",
+      "date": "2026-11-22",
+      "status": "reserved",
+      "commentId": "",
+      "commentUrl": "",
+      "reservedAt": "2026-11-21T16:17:40.109Z",
+      "updatedAt": "2026-11-21T16:17:40.109Z"
     }
   ]
 }
