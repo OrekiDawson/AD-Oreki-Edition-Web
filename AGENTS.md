@@ -16,6 +16,7 @@
 - **合并底线**：真实 P0/P1 与阻塞性问题必须修复或有充分反证；必要线程、审批、Ruleset、Required Checks 与测试均满足后正常合并。不得强推、跳过平台保护、虚构审核或将 `Skipped` / `KODY NOT RUN` 写作 PASS。文档变更不机械运行无关游戏长跑。
 - **Kodus 的规则分层**：通用审查标准归 Kodus Global Rules，项目执行规范归本仓 `AGENTS.md`；不重复抄写为项目级 Kody Rules。Kody 从仓库文件读指令与否以实际配置/证据核实。自动生成的规则先审批去重，只有真正跨仓适用的候选可提升 Global，不能默认未经批准直接生效。
 - **Kody 与额度**：Kody 仅限 Balanced，严禁 Heavy；按实时授权、Provider、云端配置及费用状态执行。Android/Web 在 UTC+8 自然日共享最多 100 次主动审查请求（80 次预警，无单仓 50 次硬上限）；按原始 `@kody start-review` 评论唯一 ID 去重，避免同 Head SHA/配置重复审查。**Wiki Kody 独立统计，不消耗 Android/Web 这 100 次**，但不意味着无限、免费或自动授权。`Skipped` / `KODY NOT RUN` 不是 PASS；通用审查标准归 Kodus Global Rules，仓库执行规则归 `AGENTS.md`。
+- **Kody 跳过一律不计额度**：所有 Kody 已确认 `skipped` 的审查均不计入项目主动审查额度。触发前跳过不占位；已预占或已发 `@kody start-review` 而 Kody 官方 Check Run 最终确认为 `skipped` 的，按仓库、PR、HEAD 与 Kody Check Run 证据幂等退额；Android/Web 共享 100 次池与 Wiki 独立统计均遵守。未完成审查可临时预占防并发超额；真正完成的审查（即使无问题）仍计数。只有 GitHub Actions 的 `skipped`、缺失回执或不明状态不足以认定 Kody 已跳过，不得擅自退额或把 `SKIPPED` 写为审查 PASS。Kody 平台实际收费另行遵循其规则。
 
 ## 3. 执行效率与反馈
 
