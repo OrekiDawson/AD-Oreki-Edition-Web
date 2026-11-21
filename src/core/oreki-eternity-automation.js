@@ -203,6 +203,24 @@ export const OrekiEternityAutomation = {
   },
 
   /**
+   * 永恒重置的独立门禁。
+   *
+   * `active` 还负责时间维度、TT 与时间研究购买；挑战中必须关闭这些经济动作。
+   * 但永恒挑战的完成只能由“达到原版目标后的真实永恒”产生，不能把重置本身一起停掉。
+   * 因此只在 EC 内额外放行重置入口；普通/无限挑战与 Pelle 毁灭态仍不接管。
+   */
+  get eternityResetActive() {
+    try {
+      if (player.auto.autobuyersOn === false || Pelle.isDoomed) return false;
+      if (EternityChallenge.isRunning) return true;
+      return this.active;
+    } catch (e) {
+      this._err("eternityResetActive", e);
+      return false;
+    }
+  },
+
+  /**
    * A) 用 EP 买时间维度 1~8。
    *
    * [Oreki R25] 原来只买到 4 级。但膨胀研究 6（`TimeStudy.reality`）的第一条要求是
@@ -1372,7 +1390,7 @@ export const OrekiEternityAutomation = {
       // 之后所有 MOD 自动永恒。与 _observeEternityAutobuyerSwitch() 同级，按本会话首次
       // 观测到的存档 eternities 固化结论（换档时 _bindSaveIdentity 会清掉重新采样）。
       this._sampleFreshSession();
-      if (!this.active) return false;
+      if (!this.eternityResetActive) return false;
       // [R116-01 P0] 首次永恒驻留：玩家未亲自开启自动永恒时，MOD 不得在 canEternity
       // 出现的首个合法帧就替玩家结算首次永恒。驻留仍必须在
       // _adoptEternityAutobuyerIfNeeded() 之前，否则「同帧接管并打开开关」会把驻留旁路。
@@ -1418,6 +1436,14 @@ export const OrekiEternityAutomation = {
       if (this.holdForRealityUpgrade10()) return false;
       // 入口保护：只在「主研究已买、只差资源」时生效，不拖慢 EC1/EC2 的永恒次数增长
       if (this.ecEntryPending()) return false;
+      // EC 中完成次数只能由真实目标达成后触发的原版永恒结算产生。
+      // 不用全局 EP×1 门槛压住挑战退出，否则达标后仍可能长期不结算；
+      // `canBeCompleted` 同时覆盖原版目标与 EC4/EC12 的限制条件。
+      if (EternityChallenge.isRunning) {
+        const challenge = EternityChallenge.current;
+        if (!challenge || !challenge.canBeCompleted) return false;
+        return eternity(false, true) === true;
+      }
       // [R96 第五轮] 永恒结算门槛 ×10 → ×1：收益只要让 EP 翻倍（gained ≥ 当前 EP）就结算。
       //
       // 实测缺陷（平台期 bigE=3、EP=2.16、maxIP 1e593、maxAM 1e124044）：×10 门槛要求

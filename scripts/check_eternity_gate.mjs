@@ -1073,13 +1073,13 @@ try {
     {
       const tickBody = src.split("tickEternity() {")[1]?.split('this._err("tickEternity"')[0] || "";
       const sampleIdx = tickBody.indexOf("this._sampleFreshSession()");
-      const activeIdx = tickBody.indexOf("if (!this.active) return false;");
+      const activeIdx = tickBody.indexOf("if (!this.eternityResetActive) return false;");
       const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
       const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
         "sample=" + sampleIdx + " dwell=" + dwellIdx);
-      check("[R116 review] latch 采样与 active 解耦（在 !active early return 之前）",
+      check("[R116 review] latch 采样与永恒重置门禁解耦",
         sampleIdx >= 0 && activeIdx > sampleIdx,
         "sample=" + sampleIdx + " active=" + activeIdx);
       check("[R116 review] dwell gate 仍在接管开关之前",

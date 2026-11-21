@@ -36,6 +36,9 @@ assert.match(
 );
 assert.doesNotMatch(reality, /player\.partSimulatedReality - 1 \+ 4;/);
 assert.match(eternity, /const TT_REWARD_MULTIPLIER = 1;/);
+assert.match(eternity, /get eternityResetActive\(\)/);
+assert.match(eternity, /tickEternity\(\) \{[\s\S]*?if \(!this\.eternityResetActive\) return false;/);
+assert.match(eternity, /if \(EternityChallenge\.isRunning\) \{[\s\S]*?challenge\.canBeCompleted/);
 assert.equal(fs.existsSync(path.join(ROOT, "src/core/oreki-instant-challenges.js")), false);
 assert.doesNotMatch(game, /tryInstantCompleteChallenges|oreki-instant-challenges/);
 assert.equal(tutorialText.includes("默认 10000×"), false);
