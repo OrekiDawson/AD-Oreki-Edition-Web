@@ -89,7 +89,7 @@ jobs:
                 }
                 continue;
               }
-              const inline=normalized.match(/^任务编号\s*[:：|]\s*(.+)$/i);
+              const inline=normalized.match(/^任务编号[^\n:：|]*[:：|]\s*(.+)$/i);
               if(inline){
                 const value=inline[1].split("|")[0].trim();
                 if(/\bR\d{2,3}\b/.test(value)){
