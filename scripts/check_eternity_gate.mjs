@@ -53,6 +53,7 @@ const env = {
   ec8Running: false,
   ec8Ids: 0,
   ec8Repl: 0,
+  ec8UnlockedTiers: 8,
   ec8IdPurchases: 0,
   ec8UpgradePurchases: 0,
 };
@@ -85,14 +86,33 @@ globalThis.InfinityChallenge = { isRunning: false };
   });
   globalThis.EternityChallenge = challengeAccessor;
 }
+const infinityDimensionMocks = Array.from({ length: 8 }, (_, index) => {
+  const tier = index + 1;
+  return {
+    tier,
+    purchases: 0,
+    get isUnlocked() { return tier <= env.ec8UnlockedTiers; },
+    unlock() { return this.isUnlocked; },
+    get isAvailableForPurchase() { return this.isUnlocked && env.ec8Ids > 0; },
+    buySingle() {
+      if (!this.isAvailableForPurchase) return false;
+      this.purchases += 1;
+      env.ec8Ids -= 1;
+      player.eterc8ids -= 1;
+      env.ec8IdPurchases += 1;
+      return true;
+    },
+  };
+});
 globalThis.InfinityDimensions = {
-  all: [{ purchases: 0 }],
+  all: infinityDimensionMocks,
   canBuy() { return env.ec8Ids > 0; },
   buyMax() {
     if (env.ec8Ids <= 0) return;
     this.all[0].purchases += env.ec8Ids;
     env.ec8IdPurchases += env.ec8Ids;
     env.ec8Ids = 0;
+    player.eterc8ids = 0;
   },
 };
 const makeReplicantiUpgrade = () => ({
@@ -156,11 +176,12 @@ function reset() {
   env.ec8Running = false;
   env.ec8Ids = 0;
   env.ec8Repl = 0;
+  env.ec8UnlockedTiers = 8;
   env.ec8IdPurchases = 0;
   env.ec8UpgradePurchases = 0;
   player.eterc8ids = 0;
   player.eterc8repl = 0;
-  InfinityDimensions.all[0].purchases = 0;
+  for (const dimension of InfinityDimensions.all) dimension.purchases = 0;
   for (const upgrade of Object.values(ReplicantiUpgrade)) upgrade.value = 0;
   delete globalThis.OrekiIu15Sprint;
   A.holdForRealityUpgrade10 = ORIG_HOLD;
@@ -364,6 +385,30 @@ check("EC8 Pelle 毁灭态不代买", A.tryEternityChallenge8Purchases() === fal
 check("EC8 Pelle 毁灭态购买为 0",
   env.ec8IdPurchases === 0 && env.ec8UpgradePurchases === 0);
 globalThis.Pelle.isDoomed = false;
+
+reset();
+arm();
+env.ec8Running = true;
+env.ec8UnlockedTiers = 3;
+env.ec8Ids = 50;
+env.ec8Repl = 0;
+player.eterc8ids = 50;
+player.eterc8repl = 0;
+player.auto.eternity.isActive = true;
+check("EC8 部分维度解锁时仍会推进", A.tryEternityChallenge8Purchases() === true);
+check("EC8 为每个锁定维度保留购买额度", env.ec8Ids === 5,
+  `remaining=${env.ec8Ids}`);
+check("EC8 尚未解锁的 ID4~ID8 未被提前购买",
+  InfinityDimensions.all.slice(3).every(dimension => dimension.purchases === 0));
+check("EC8 已解锁维度均获得真实购买",
+  InfinityDimensions.all.slice(0, 3).every(dimension => dimension.purchases > 0));
+
+env.ec8UnlockedTiers = 4;
+check("EC8 后续解锁 ID4 后仍能继续购买",
+  A.tryEternityChallenge8Purchases() === true);
+check("EC8 解锁更高维度后仍为剩余锁定维度保留额度", env.ec8Ids === 4,
+  `remaining=${env.ec8Ids}`);
+check("EC8 ID4 解锁后获得真实购买", InfinityDimensions.all[3].purchases > 0);
 
 // 走完整 tick：EC 内 active=false，采购必须发生在提前返回之前。
 reset();
