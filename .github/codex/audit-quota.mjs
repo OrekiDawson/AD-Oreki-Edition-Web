@@ -435,7 +435,7 @@ export function markKodySkippedPure(records, {
     .find(startedMs =>
       Number.isFinite(targetRecordMs) &&
       Number.isFinite(startedMs) &&
-      startedMs > targetRecordMs &&
+      startedMs >= targetRecordMs &&
       startedMs <= checkStartedMs);
   if (priorRealReview) {
     return {

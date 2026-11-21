@@ -363,6 +363,17 @@ assert.equal(reviewedBeforeSkip.ok, false);
 assert.equal(reviewedBeforeSkip.reason, "prior-real-kody-review");
 assert.equal(reviewedBeforeSkip.records, skipFirst.records);
 
+const sameTimeReview = markKodySkippedPure(skipFirst.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98133,
+  checkStartedAt: "2026-11-20T00:00:30Z",
+  priorRealReviewStarts: ["2026-11-20T00:00:10Z"],
+});
+assert.equal(sameTimeReview.ok, false);
+assert.equal(sameTimeReview.reason, "prior-real-kody-review");
+
 assert.throws(() => markKodySkippedPure(kodyAttached.records, {
   repository: kodyAndroid, pr: 121, headSha: "invalid", checkRunId: 98123,
 }), /invalid verified/u);
