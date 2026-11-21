@@ -468,13 +468,12 @@ test("已完成、运行中或排队 Kody Review 关联到启动前最近请求"
     { commentId: "70", createdAt: "2026-11-21T12:57:50Z" },
     { commentId: "71", createdAt: "2026-11-21T12:58:20Z" },
   ];
-  assert.deepEqual(realKodyReviews(checks, 2, evidence, 42, true), [
+  assert.deepEqual(realKodyReviews(checks, 2, evidence, 42), [
     { startedAt: "2026-11-21T12:58:00Z", commentId: "70" },
     { startedAt: "2026-11-21T12:58:40Z", commentId: "71" },
     { startedAt: "2026-11-21T12:58:50Z", commentId: "71" },
     { startedAt: "2026-11-21T12:59:00Z", commentId: "71" },
   ]);
-  assert.equal(realKodyReviews(checks, 2, evidence, 42, false).length, 3);
 });
 
 test("skipped Check 到达时可从 PR 评论补齐精确触发证据", () => {

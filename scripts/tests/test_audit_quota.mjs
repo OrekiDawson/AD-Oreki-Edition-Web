@@ -518,6 +518,34 @@ assert.equal(reviewedBeforeSkip.ok, false);
 assert.equal(reviewedBeforeSkip.reason, "prior-real-kody-review");
 assert.equal(reviewedBeforeSkip.records, skipFirst.records);
 
+const unattributedEarlierReview = markKodySkippedPure(skipFirst.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98141,
+  checkStartedAt: "2026-11-20T00:00:30Z",
+  priorRealReviews: [{
+    startedAt: "2026-11-20T00:00:05Z",
+    commentId: "",
+  }],
+});
+assert.equal(unattributedEarlierReview.ok, true);
+assert.equal(unattributedEarlierReview.records[0].status, "skipped");
+
+const unattributedTargetReview = markKodySkippedPure(skipFirst.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98142,
+  checkStartedAt: "2026-11-20T00:00:30Z",
+  priorRealReviews: [{
+    startedAt: "2026-11-20T00:00:20Z",
+    commentId: "",
+  }],
+});
+assert.equal(unattributedTargetReview.ok, false);
+assert.equal(unattributedTargetReview.reason, "prior-real-kody-review");
+
 const sameTimeReview = markKodySkippedPure(skipFirst.records, {
   repository: kodyAndroid,
   pr: 121,

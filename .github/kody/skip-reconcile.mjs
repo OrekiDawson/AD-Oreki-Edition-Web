@@ -61,7 +61,7 @@ export function kodyTriggerCommentEvidence(comments, repository, pr) {
 }
 
 export function realKodyReviews(checks, currentCheckId, evidence = [],
-  targetPr = null, allowUnattributed = false) {
+  targetPr = null) {
   const triggerTimes = evidence
     .map(item => ({
       commentId: String(item.commentId ?? ""),
@@ -80,7 +80,7 @@ export function realKodyReviews(checks, currentCheckId, evidence = [],
         (targetPr == null ||
           (check?.pull_requests?.length
             ? check.pull_requests.some(pr => Number(pr?.number) === Number(targetPr))
-            : allowUnattributed)) &&
+            : true)) &&
         String(check?.id ?? "") !== String(currentCheckId ?? "") &&
         Number.isFinite(Date.parse(String(check?.started_at ?? check?.created_at ?? "")));
     })
@@ -257,7 +257,6 @@ export async function main() {
       event.check_run.id,
       match.evidence,
       match.pr,
-      matches.length === 1,
     );
     const startedMs = Date.parse(String(match.checkStartedAt ?? ""));
     const result = await markKodySkippedQuota(token, match, {
