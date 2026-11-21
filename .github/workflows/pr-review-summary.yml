@@ -74,9 +74,30 @@ jobs:
               /\bR\d{2,3}-(?:\d+|[A-Za-z][A-Za-z0-9._-]*)\b/g
             )||[])];
             const bodyText=(pr.body||"").replace(/\*\*|__/g,"");
-            const declaredTaskField=bodyText.match(
-              /(?:^|\n)\s*(?:\|\s*)?(?:[-*]\s*)?(?:#{1,6}\s*)?任务编号[^\n:：|]*[:：|]?\s*([^\n|]+)/i
-            )?.[1]||"";
+            let declaredTaskField="";
+            const bodyLines=bodyText.split(/\r?\n/);
+            for(let i=0;i<bodyLines.length;i++){
+              const normalized=bodyLines[i].trim()
+                .replace(/^\|\s*/,"")
+                .replace(/^[-*]\s*/,"")
+                .replace(/^#{1,6}\s*/,"");
+              if(normalized==="任务编号"){
+                const nextLine=(bodyLines[i+1]||"").trim();
+                if(/^R\d{2,3}(?:[-.]\w+)?\b/.test(nextLine)){
+                  declaredTaskField=nextLine;
+                  break;
+                }
+                continue;
+              }
+              const inline=normalized.match(/^任务编号\s*[:：|]\s*(.+)$/i);
+              if(inline){
+                const value=inline[1].split("|")[0].trim();
+                if(/\bR\d{2,3}\b/.test(value)){
+                  declaredTaskField=value;
+                  break;
+                }
+              }
+            }
             const bodySingleTasks=[...new Set(declaredTaskField.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
             const bodyHistoricalTaskIds=[...new Set(declaredTaskField.match(
               /\bR\d{2,3}-(?:\d+|[A-Za-z][A-Za-z0-9._-]*)\b/g
