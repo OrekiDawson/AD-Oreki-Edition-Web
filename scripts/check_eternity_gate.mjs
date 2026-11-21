@@ -50,6 +50,11 @@ const env = {
   infinities: 0,
   ecRunning: false,
   ecCanComplete: false,
+  ec8Running: false,
+  ec8Ids: 0,
+  ec8Repl: 0,
+  ec8IdPurchases: 0,
+  ec8UpgradePurchases: 0,
 };
 
 globalThis.player = {
@@ -63,11 +68,47 @@ globalThis.player = {
 globalThis.Player = { get canEternity() { return env.canEternity; } };
 globalThis.NormalChallenge = { isRunning: false };
 globalThis.InfinityChallenge = { isRunning: false };
-globalThis.EternityChallenge = {
-  get isRunning() { return env.ecRunning; },
-  get current() {
-    return env.ecRunning ? { canBeCompleted: env.ecCanComplete } : undefined;
+{
+  const challengeAccessor = id => ({
+    id,
+    get isRunning() { return env.ec8Running && id === 8; },
+  });
+  Object.defineProperties(challengeAccessor, {
+    isRunning: {
+      get() { return env.ecRunning; },
+    },
+    current: {
+      get() {
+        return env.ecRunning ? { canBeCompleted: env.ecCanComplete } : undefined;
+      },
+    },
+  });
+  globalThis.EternityChallenge = challengeAccessor;
+}
+globalThis.InfinityDimensions = {
+  all: [{ purchases: 0 }],
+  canBuy() { return env.ec8Ids > 0; },
+  buyMax() {
+    if (env.ec8Ids <= 0) return;
+    this.all[0].purchases += env.ec8Ids;
+    env.ec8IdPurchases += env.ec8Ids;
+    env.ec8Ids = 0;
   },
+};
+const makeReplicantiUpgrade = () => ({
+  value: 0,
+  get canBeBought() { return env.ec8Repl > 0; },
+  purchase() {
+    if (!this.canBeBought) return;
+    this.value += 1;
+    env.ec8Repl -= 1;
+    env.ec8UpgradePurchases += 1;
+  },
+});
+globalThis.ReplicantiUpgrade = {
+  chance: makeReplicantiUpgrade(),
+  interval: makeReplicantiUpgrade(),
+  galaxies: makeReplicantiUpgrade(),
 };
 globalThis.Pelle = { isDoomed: false };
 globalThis.Currency = {
@@ -112,6 +153,15 @@ function reset() {
   env.eternityCalls = [];
   env.ecRunning = false;
   env.ecCanComplete = false;
+  env.ec8Running = false;
+  env.ec8Ids = 0;
+  env.ec8Repl = 0;
+  env.ec8IdPurchases = 0;
+  env.ec8UpgradePurchases = 0;
+  player.eterc8ids = 0;
+  player.eterc8repl = 0;
+  InfinityDimensions.all[0].purchases = 0;
+  for (const upgrade of Object.values(ReplicantiUpgrade)) upgrade.value = 0;
   delete globalThis.OrekiIu15Sprint;
   A.holdForRealityUpgrade10 = ORIG_HOLD;
   A.ecEntryPending = ORIG_EC;
@@ -259,6 +309,47 @@ env.canEternity = true;
 globalThis.Pelle.isDoomed = true;
 check("EC 中 Pelle 毁灭态不真实结算", A.tickEternity() === false);
 globalThis.Pelle.isDoomed = false;
+
+// ---------------- ⑦c EC8 专用购买只消耗原版限额 ----------------
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.eternity.isActive = true;
+check("EC8 专用购买有真实动作", A.tryEternityChallenge8Purchases() === true);
+check("EC8 无限维度购买遵守剩余次数", env.ec8IdPurchases === 2 && env.ec8Ids === 0);
+check("EC8 复制器升级购买遵守剩余次数",
+  env.ec8UpgradePurchases === 2 && env.ec8Repl === 0,
+  `purchases=${env.ec8UpgradePurchases} remaining=${env.ec8Repl}`);
+
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.eternity.isActive = false;
+check("EC8 自动永恒关闭时不代买", A.tryEternityChallenge8Purchases() === false);
+check("EC8 自动永恒关闭时无限维度购买为 0", env.ec8IdPurchases === 0);
+check("EC8 自动永恒关闭时复制器升级购买为 0", env.ec8UpgradePurchases === 0);
+
+reset();
+arm();
+env.ec8Running = true;
+env.ec8Ids = 2;
+env.ec8Repl = 2;
+player.eterc8ids = 2;
+player.eterc8repl = 2;
+player.auto.autobuyersOn = false;
+env.autobuyersOn = false;
+check("EC8 总开关关闭时不代买", A.tryEternityChallenge8Purchases() === false);
+check("EC8 总开关关闭时没有购买", env.ec8IdPurchases === 0 && env.ec8UpgradePurchases === 0);
+env.autobuyersOn = true;
+player.auto.autobuyersOn = true;
 
 // ---------------- ⑧ holdForRealityUpgrade10 语义 ----------------
 reset();

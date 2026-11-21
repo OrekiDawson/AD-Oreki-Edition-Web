@@ -1682,6 +1682,49 @@ export const OrekiEternityAutomation = {
     }
   },
 
+  /**
+   * EC8 的原版规则禁止 Infinity Dimension 与 Replicanti Upgrade 自动购买器，
+   * 但挑战本身仍分别允许最多 50 / 40 次手动购买。即时完成模块退役后，
+   * 必须补上这条受限购买链，否则进入 EC8 会清空无限维度并永久停在原地。
+   *
+   * 这里只调用原版购买入口：
+   *   · `InfinityDimensions.buyMax()` 自己按 `player.eterc8ids` 截断；
+   *   · `ReplicantiUpgrade.*.purchase()` 自己按 `player.eterc8repl` 截断并递减。
+   * 不调用绕过 EC8 计数的 `autobuyerTick()`，不写任何购买次数或完成状态。
+   */
+  tryEternityChallenge8Purchases() {
+    try {
+      const challenge = EternityChallenge(8);
+      if (!challenge?.isRunning || !player.auto.autobuyersOn) return false;
+      if (player.auto.eternity.isActive !== true && !this._eternityBootstrapActive()) return false;
+      let acted = false;
+      if (InfinityDimensions.canBuy()) {
+        const before = InfinityDimensions.all
+          .reduce((sum, dimension) => sum + dimension.purchases, 0);
+        InfinityDimensions.buyMax();
+        const after = InfinityDimensions.all
+          .reduce((sum, dimension) => sum + dimension.purchases, 0);
+        acted = after > before || acted;
+      }
+      for (const upgrade of [
+        ReplicantiUpgrade.chance,
+        ReplicantiUpgrade.interval,
+        ReplicantiUpgrade.galaxies,
+      ]) {
+        while (upgrade.canBeBought && player.eterc8repl > 0) {
+          const before = upgrade.value;
+          upgrade.purchase();
+          if (upgrade.value === before) break;
+          acted = true;
+        }
+      }
+      return acted;
+    } catch (e) {
+      this._err("tryEternityChallenge8Purchases", e);
+      return false;
+    }
+  },
+
   tick() {
     // [R96] TT ×500：**先**对账（建基线/结算上一帧的真实购买），**再**买。
     // 顺序反了会让首帧的购买被当成历史购买而漏发。
@@ -1689,7 +1732,10 @@ export const OrekiEternityAutomation = {
     // 它是「真实购买后的奖励口径」，不是自动动作。
     this.settleTimeTheoremReward();
 
-    if (!this.active) return { dims: false, tt: false, studies: 0, dilation: 0, ec: false };
+    // EC8 内常规 `active` 必须关闭，以免购买 TD/TT/研究；但挑战允许的
+    // 50 次无限维度与 40 次复制器升级仍需由调度任务合法推进。
+    const ec8 = this.tryEternityChallenge8Purchases();
+    if (!this.active) return { dims: false, tt: false, studies: 0, dilation: 0, ec: false, ec8 };
     // [R118-01 #69] EC 入口等待期间压住原版 EternityAutobuyer（它不经过 tickEternity 门禁）。
     this._manageEternityHoldForEcEntry();
     // [R96] 顺序修正：TD1 已买时**先买永恒升级**（乘数优先），再考虑时间维度；
@@ -1724,7 +1770,7 @@ export const OrekiEternityAutomation = {
       this._lastEcTickAt = nowMs;
       ec = this.buyEcStudiesAndStart();
     }
-    return { dims, tt, upgrades, studies, dilation, ec };
+    return { dims, tt, upgrades, studies, dilation, ec, ec8 };
   },
 };
 
