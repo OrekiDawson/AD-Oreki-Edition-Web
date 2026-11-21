@@ -80,13 +80,20 @@ jobs:
             // 新任务唯一合法格式是 ChatGPT 分配的单层 R整数。
             // 标题优先，正文和提交信息中的历史轮次引用不得触发多任务告警。
             const titleSingleTasks=[...new Set(pr.title.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
-            const allSingleTasks=[...new Set(taskText.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
             const titleHistoricalTaskIds=[...new Set(pr.title.match(
               /\bR\d{2,3}-(?:\d+|[A-Za-z][A-Za-z0-9._-]*)\b/g
             )||[])];
-            // 展示顺序：标题单层编号 → 标题历史复合编号 → 正文兜底；历史编号不参与多任务告警。
+            const declaredTaskField=(pr.body||"").match(
+              /(?:^|\n)\s*[-*]?\s*任务编号[^\n:：]*[:：]\s*([^\n]+)/i
+            )?.[1]||"";
+            const bodySingleTasks=[...new Set(declaredTaskField.match(/\bR\d{2,3}\b(?![-.])/g)||[])];
+            const bodyHistoricalTaskIds=[...new Set(declaredTaskField.match(
+              /\bR\d{2,3}-(?:\d+|[A-Za-z][A-Za-z0-9._-]*)\b/g
+            )||[])];
+            // 展示顺序：标题单层 → 标题历史 → 正文声明单层 → 正文声明历史；不扫描自由文本。
             const taskIds=titleSingleTasks.length ? titleSingleTasks :
-              (titleHistoricalTaskIds.length ? titleHistoricalTaskIds : allSingleTasks);
+              (titleHistoricalTaskIds.length ? titleHistoricalTaskIds :
+                (bodySingleTasks.length ? bodySingleTasks : bodyHistoricalTaskIds));
             const hasMultipleSingleTasks=titleSingleTasks.length>1;
             const risk=platform==='Android' ? [
               ['AGP/R8/Gradle', /^(agp|gradle)\/|(^|\/)(build\.gradle(\.kts)?|proguard-rules\.pro)$/],
