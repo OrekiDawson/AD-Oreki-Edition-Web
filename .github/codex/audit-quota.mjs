@@ -11,13 +11,18 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
+const OWNER = "OrekiDawson";
+
 export const LIMIT = 100;
 export const KODY_KIND = "kody_start_review";
 export const KODY_DAILY_LIMIT = 100;
 export const KODY_WARNING_AT = 80;
 export const COORDINATOR_REPO = "AD-Oreki-Edition-Web";
 export const QUOTA_BRANCH = "oreki-audit-quota";
-const OWNER = "OrekiDawson";
+export const SHARED_QUOTA_REPOSITORIES = [
+  `${OWNER}/AD-Oreki-Edition-Android`,
+  `${OWNER}/AD-Oreki-Edition-Web`,
+];
 const API = "https://api.github.com";
 const RETAIN_DAYS = 8;
 const STATE_PATH = "quota/state.json";
@@ -108,10 +113,15 @@ function isKodyRecord(record) {
   return record?.kind === KODY_KIND;
 }
 
+export function isSharedQuotaRepository(repository) {
+  return SHARED_QUOTA_REPOSITORIES.includes(String(repository ?? ""));
+}
+
 function isActiveKodyRecord(record, date) {
   return isKodyRecord(record) &&
+    isSharedQuotaRepository(record.repository) &&
     record.date === date &&
-    record.status !== "released";
+    !["released", "skipped"].includes(record.status);
 }
 
 export function kodyQuotaCounts(records, date) {
@@ -141,6 +151,8 @@ function importKodyEvidence(records, evidence, date, now) {
   for (const item of evidence) {
     const repository = String(item?.repository ?? "");
     const commentId = String(item?.commentId ?? "").trim();
+    // Wiki 使用独立审查统计，绝不写入 Android/Web 共享池。
+    if (!isSharedQuotaRepository(repository)) continue;
     if (!repository || !commentId) {
       throw new Error("Kody quota evidence requires repository and unique comment id");
     }
@@ -184,9 +196,20 @@ export function reserveKodyPure(records, candidate, {
   const output = importKodyEvidence(records, evidence, date, now);
   const identity = String(candidate?.identity ?? "");
   if (!identity) throw new Error("Kody quota identity is required");
+  const repository = String(candidate?.repository ?? "");
+  if (!isSharedQuotaRepository(repository)) {
+    return {
+      allowed: false,
+      reused: false,
+      reason: "not-shared-quota-repository",
+      record: null,
+      records: output,
+      counts: kodyQuotaCounts(output, date),
+    };
+  }
   const prior = output.find(record =>
     isKodyRecord(record) &&
-    record.status !== "released" &&
+    !["released", "skipped"].includes(record.status) &&
     record.identity === identity);
   if (prior) {
     return {
@@ -212,7 +235,7 @@ export function reserveKodyPure(records, candidate, {
   const record = {
     kind: KODY_KIND,
     identity,
-    repository: String(candidate.repository ?? ""),
+    repository,
     pr: Number(candidate.pr),
     headSha: String(candidate.headSha ?? ""),
     source: "automated_trigger",
@@ -318,6 +341,76 @@ export function releaseKodyCommand(records, {
   };
 }
 
+/**
+ * 仅在 Kody GitHub App 的真实 Check Run 明确以 skipped 结束后退额。
+ * 触发评论本身以及其他 CI 的 skipped 不构成退额证据。
+ * 重复事件幂等，不改变原始评论与审查证据。
+ */
+export function markKodySkippedPure(records, {
+  repository,
+  pr,
+  headSha,
+  checkRunId,
+  checkUrl = "",
+  now = new Date().toISOString(),
+}) {
+  const repo = String(repository ?? "");
+  const number = Number(pr);
+  const sha = String(headSha ?? "");
+  const runId = String(checkRunId ?? "");
+  if (!isSharedQuotaRepository(repo) ||
+      !Number.isSafeInteger(number) || number <= 0 ||
+      !/^[a-f0-9]{40}$/iu.test(sha) ||
+      !/^[1-9][0-9]*$/u.test(runId)) {
+    throw new Error("invalid verified Kody skipped check identity");
+  }
+  const matches = records.filter(record =>
+    isKodyRecord(record) &&
+    record.repository === repo &&
+    Number(record.pr) === number &&
+    record.headSha === sha &&
+    ["reserved", "posted", "skipped"].includes(record.status));
+  if (matches.length === 0) {
+    return { ok: false, reason: "no-matching-kody-trigger", records };
+  }
+  const matchedComments = new Set(matches.map(record => String(record.commentId ?? "")).filter(Boolean));
+  let changed = false;
+  const output = records.map(record => {
+    const matchesHead = isKodyRecord(record) &&
+      record.repository === repo &&
+      Number(record.pr) === number &&
+      record.headSha === sha;
+    const matchesComment = isKodyRecord(record) &&
+      record.repository === repo &&
+      matchedComments.has(String(record.commentId ?? "")) &&
+      String(record.commentId ?? "") !== "";
+    if (!(matchesHead || matchesComment) ||
+        ["released", "skipped"].includes(record.status)) return record;
+    changed = true;
+    return {
+      ...record,
+      status: "skipped",
+      skipCheckRunId: runId,
+      skipCheckUrl: String(checkUrl),
+      updatedAt: now,
+    };
+  });
+  return {
+    ok: true,
+    reason: changed ? "kody-skipped-refunded" : "already-skipped",
+    records: changed ? output : records,
+    counts: kodyQuotaCounts(changed ? output : records, matches[0].date),
+  };
+}
+
+export async function markKodySkippedQuota(token, evidence, { now = new Date() } = {}) {
+  const date = shanghaiDate(now);
+  return mutate(token, date, records => markKodySkippedPure(records, {
+    ...evidence,
+    now: now.toISOString(),
+  }));
+}
+
 export function applyCas(records, expectedVersion, currentVersion, transform) {
   if (expectedVersion !== currentVersion) throw new Error("quota conflict");
   return transform(records);
@@ -393,6 +486,7 @@ async function readState(token, ref, date) {
 async function updateState(token, state, transform, date) {
   const result = applyCas(state.records, state.version, state.version, records => transform(records));
   const output = result.records || result;
+  if (output === state.records) return result; // 幂等事件不产生新提交
   const dates = [...new Set(output.map(record => record.date))].sort();
   const retain = new Set(dates.slice(-RETAIN_DAYS));
   const pruned = output.filter(record => retain.has(record.date) || record.date === date);

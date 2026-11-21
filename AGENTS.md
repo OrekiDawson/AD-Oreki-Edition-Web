@@ -14,7 +14,8 @@
 - **集中修复、避免复审循环**：先核对最新 PR HEAD、Diff、普通评论、Reviews、Review Threads 与 Required Checks；同一 HEAD、同一审查配置和适用范围已经有效审过时不重复主动请求。集中解决同一批问题、定向验证后再复审；不制造空提交，不因风格建议无限扩项，也不为归零机械关闭线程。
 - **合并底线**：真实 P0/P1 与阻塞性问题必须修复或有充分反证；必要线程、审批、Ruleset、Required Checks 与测试均满足后正常合并。不得强推、跳过平台保护、虚构审核或将 `Skipped` / `KODY NOT RUN` 写作 PASS。文档变更不机械运行无关游戏长跑。
 - **Kodus 的规则分层**：通用审查标准归 Kodus Global Rules，项目执行规范归本仓 `AGENTS.md`；不重复抄写为项目级 Kody Rules。Kody 从仓库文件读指令与否以实际配置/证据核实。自动生成的规则先审批去重，只有真正跨仓适用的候选可提升 Global，不能默认未经批准直接生效。
-- **Kody 动态授权与费用**：Kody 仅限 Balanced，严禁 Heavy。每次启用付费审查先确认最新用户授权、云端配置、工作流与预算；处于暂停/不确定状态时不得主动触发，也不得重新连接付费 Provider。Android/Web 若获准恢复，遵守两仓共享 UTC+8 自然日 100 次主动审查请求、80 次预警、按原始评论 ID 去重、无单仓 50 次硬上限；这并非模型 API 硬计费上限。旧 Oreki Audit 等链路是否启用须检查实时设置，禁止重复触发。
+- **Kody 动态授权与费用**：Kody 仅限 Balanced，严禁 Heavy。每次启用付费审查先确认最新用户授权、云端配置、工作流与预算；处于暂停/不确定状态时不得主动触发，也不得重新连接付费 Provider。Android/Web 若获准恢复，遵守两仓共享 UTC+8 自然日 100 次主动审查请求、80 次预警、按原始评论 ID 去重、无单仓 50 次硬上限；这并非模型 API 硬计费上限。**`AD-Oreki-Wiki` 使用独立审查统计，绝不写入、读取或扣减 Android/Web 共享计数池；Wiki 仍受自身授权、平台额度与计费限制，不是无限制审查。** 旧 Oreki Audit 等链路是否启用须检查实时设置，禁止重复触发。
+- **Kody 跳过一律不计额度**：所有 Kody 已确认 `skipped` 的审查均不计入项目主动审查额度。触发前跳过不占位；已预占或已发 `@kody start-review` 而 Kody 官方 Check Run 最终确认为 `skipped` 的，按仓库、PR、HEAD 与 Kody Check Run 证据幂等退额；Android/Web 共享 100 次池与 Wiki 独立统计均遵守。未完成审查可临时预占防并发超额；真正完成的审查（即使无问题）仍计数。只有 GitHub Actions 的 `skipped`、缺失回执或不明状态不足以认定 Kody 已跳过，不得擅自退额或把 `SKIPPED` 写为审查 PASS。Kody 平台实际收费另行遵循其规则。
 
 ## 3. 执行效率与反馈
 

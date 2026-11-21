@@ -9,7 +9,7 @@
 - GitHub Actions 的 `kody-trigger.yml` 只负责资格判断、5 分钟稳定窗口、预算、同 Head SHA 去重和精确评论 `@kody start-review`；真实审查由 Kodus GitHub App 完成。
 - 仅 OrekiDawson 同仓、`main`、非 Draft PR 自动进入；Fork、其他用户、Bot 跳过。触发 Job 固定检出任信 `main`，PAT 发送评论前核验 `/user` 身份。
 - `automatedReviewActive=false`、`reviewCadence.type=auto_pause`、`runOnDraft=false`；不新增自动触发器，不批量重审历史 PR。
-- 通用审查标准只维护在 Kodus Global Rules；当前唯一规则为 `Oreki 全局审查基线`（ID `6b9b0794-457a-427c-8a07-ff348a8574ce`）。Android/Web/Wiki 的 Repository 与 Directory Rules 均为空，不重复复制项目业务规则。
+- 通用审查标准只维护在 Kodus Global Rules；当前跨项目基线包括 `Oreki 全局审查基线`（ID `6b9b0794-457a-427c-8a07-ff348a8574ce`）与 `全局-Kody审查配额隔离`（ID `3070c16d-e493-4862-a582-22c69d728070`），完整列表以 `kodus rules view --repo-id global` 为准。Android/Web/Wiki 的 Repository 与 Directory Rules 均为空，不重复复制项目业务规则。
 - `repoInstructionsEnabled=true`，Kody 主动读取目标仓库的 `AGENTS.md`；Wiki 另参考 `content/wiki-rules.md`。`AGENTS.md` 是项目执行规范，Global Rules 是审查规范。
 - 自动规则生成关闭（三仓均不足官方要求的 3 个月审查历史），`kodyKnowledgeApproval.enabled=true`；未来启用时候选规则必须先审批，不得直接生效或自动提升为 Global。
 - 2026-11-20 从 [Kodus Global 设置](https://app.kodus.io/settings/code-review/global/general) 逐项读取：
@@ -28,6 +28,7 @@
 - 第 7 行的 `automatedReviewActive`、`reviewCadence`、`runOnDraft` 已于同日用 `kodus config remote show OrekiDawson/AD-Oreki-Edition-Android`、`...-Web` 和 `...-Wiki` 逐库读取。第 8 行的 Repository/Directory Rules 另用 `kodus rules view --json` 按三个 repository ID 核验，均返回 `[]`；Global 设置页不能单独证明这些仓库级值。
 - Android 的自动触发历史实证为 `pull_request_target` 事件 [Run 44767526027](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/actions/runs/44767526027)：PR #206，Head `1d0b951324220c4923f46315f72634c055c5e2da`。该记录只证明恢复期链路曾运行；当前工作流已由用户指令暂停为 `disabled_manually`。未来重新授权时须重新读取云端设置、工作流启停状态和共享配额状态，不得把历史运行当作当前可触发证据。
 - Android/Web 两仓共用每个 UTC+8 自然日的 100 次全局计数池，不设仓库保留额度或单仓硬上限；80 次预警，100 次拒绝新增主动请求。仅按 GitHub 原始评论唯一 ID 统计有效 `@kody start-review` 指令，Webhook 重试不重复计数；回复、讨论、修复提交、Kody 回复和 Oreki-Audit 自有审查不计数。同一 PR 再次主动发送属于新请求。统计展示全局已用、全局剩余和两端实际用量。
+- `OrekiDawson/AD-Oreki-Wiki` 的 Kody 审查使用独立统计，不计入 Android/Web 共享的每日 100 次，也不得减少两端剩余额度；共享计数脚本对非 Android/Web 记录失败关闭，同时保留历史记录而不作扣减。Wiki 仍受当前授权、Balanced 模式、平台额度与计费限制，并不存在无限审查额度。
 - 预占与扣减复用 Web 协调分支上的共享 CAS 状态，并发请求基于同一父版本提交，只有一个能成功且冲突方必须重读；支付/统计状态不换算成 Provider 模型调用硬上限。
 - Kody 付费审查当前暂停；未来获准恢复时，GitHub Actions 才负责必要触发，并继续保持 `automatedReviewActive=false`、`reviewCadence.type=auto_pause`，避免平台自动审查与触发器重复。任何恢复场景都只允许 Balanced，严禁 Heavy。
 - `codex-deepseek-review.yml` 保留为回滚资产，`OREKI_AUDIT_ENABLED=false`；未经用户明确恢复，不调用 DeepSeek 或发布自制 Review。
@@ -40,6 +41,7 @@
 - Android「Kotlin 业务实现」→ `AGENTS.md` §4：新增或修改游戏业务只能使用 Kotlin，原版 DEX/Smali 仅作为已核实 ABI/兼容入口。
 - Web「真实进度/阶段门禁与调度器权威」→ `AGENTS.md` §4：禁止越过真实结算解锁或伪造状态；受调度器管理的自动购买器配置按合法阶段策略在下一 tick 校正。
 - 跨仓审查行为 → Kodus Global Rule `6b9b0794-457a-427c-8a07-ff348a8574ce`：读取仓库 `AGENTS.md`、按实际 Diff 分级、去重复审、优先真实缺陷并禁止 Heavy。
+- Android/Web 共享配额与 Wiki 独立统计 → Kodus Global Rule `3070c16d-e493-4862-a582-22c69d728070`：只对 Android/Web 计数，Wiki 记录不写入、不扣减，非共享仓库失败关闭。
 
 因此，Repository/Directory Rules 为空不表示削减业务覆盖；业务执行规则由仓库 `AGENTS.md` 提供，通用审查方法由 Global Rule 提供。
 
