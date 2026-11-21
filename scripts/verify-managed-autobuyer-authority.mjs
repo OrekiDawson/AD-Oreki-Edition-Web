@@ -136,6 +136,7 @@ try {
 
     player.auto.antimatterDims.isActive = false;
     player.auto.antimatterDims.all[0].isActive = false;
+    player.auto.infinityDims.isActive = false;
     player.auto.tickspeed.isActive = false;
     player.auto.dimBoost.isActive = false;
     player.auto.galaxy.isActive = false;
@@ -165,7 +166,8 @@ try {
       autobuyers: Autobuyer,
       tick: tick + 1,
     });
-    check("策略要求开启的自动器恢复开启", activeAll() && player.auto.tickspeed.isActive &&
+    check("策略要求开启的自动器恢复开启", activeAll() &&
+      player.auto.infinityDims.isActive === true && player.auto.tickspeed.isActive &&
       player.auto.dimBoost.isActive && player.auto.galaxy.isActive,
       `restored=${applied.restored.join(",")}`);
     check("策略要求关闭的大坍缩恢复关闭", player.auto.bigCrunch.isActive === false,
@@ -231,6 +233,7 @@ try {
     // 为 reload 验收写入一组尚未恢复的手动值，并走原版存档入口持久化。
     player.auto.antimatterDims.isActive = false;
     player.auto.antimatterDims.all[1].isActive = false;
+    player.auto.infinityDims.isActive = false;
     player.auto.tickspeed.isActive = false;
     player.auto.tickspeed.mode = AUTOBUYER_MODE.BUY_SINGLE;
     player.auto.bigCrunch.amount = new Decimal(123);
@@ -262,6 +265,7 @@ try {
       try {
         const dims = player.auto.antimatterDims;
         return dims.isActive === true && dims.all[1].isActive === true &&
+          player.auto.infinityDims.isActive === true &&
           player.auto.tickspeed.isActive === true &&
           player.auto.tickspeed.mode === AUTOBUYER_MODE.BUY_SINGLE &&
           player.auto.bigCrunch.amount.eq(new Decimal(10)) &&
@@ -294,6 +298,7 @@ try {
 
     player.auto.antimatterDims.isActive = false;
     player.auto.antimatterDims.all[0].mode = AUTOBUYER_MODE.BUY_SINGLE;
+    player.auto.infinityDims.isActive = false;
     player.auto.tickspeed.mode = AUTOBUYER_MODE.BUY_MAX;
     player.auto.dimBoost.limitDimBoosts = true;
     player.auto.dimBoost.limitUntilGalaxies = true;
@@ -306,6 +311,7 @@ try {
     // 这些就是 MOD 首次接管前看到的玩家值，也是关闭 MOD 后必须恢复的目标。
     const playerOriginal = {
       dimGroup: player.auto.antimatterDims.isActive,
+      infinityDimGroup: player.auto.infinityDims.isActive,
       dimMode: player.auto.antimatterDims.all[0].mode,
       tickspeedMode: player.auto.tickspeed.mode,
       limitDimBoosts: player.auto.dimBoost.limitDimBoosts,
@@ -324,6 +330,7 @@ try {
     const releaseReturned = OrekiManagedAutobuyerState.releaseAll({ autobuyers: Autobuyer });
     const restored =
       player.auto.antimatterDims.isActive === playerOriginal.dimGroup &&
+      player.auto.infinityDims.isActive === playerOriginal.infinityDimGroup &&
       player.auto.antimatterDims.all[0].mode === playerOriginal.dimMode &&
       player.auto.tickspeed.mode === playerOriginal.tickspeedMode &&
       player.auto.dimBoost.limitDimBoosts === playerOriginal.limitDimBoosts &&
@@ -340,6 +347,7 @@ try {
       releaseReturned,
       actual: {
         dimGroup: player.auto.antimatterDims.isActive,
+        infinityDimGroup: player.auto.infinityDims.isActive,
         dimMode: player.auto.antimatterDims.all[0].mode,
         tickspeedMode: player.auto.tickspeed.mode,
         limitDimBoosts: player.auto.dimBoost.limitDimBoosts,
