@@ -220,24 +220,6 @@ export const OrekiEternityAutomation = {
   },
 
   /**
-   * 永恒重置的独立门禁。
-   *
-   * `active` 负责时间维度、TT 与时间研究购买；挑战中必须关闭这些经济动作。
-   * 但永恒挑战的完成只能由达到原版目标后的真实永恒结算产生，不能把重置入口一起停掉。
-   * 因此只在 EC 内额外放行重置；普通/无限挑战与 Pelle 毁灭态仍不接管。
-   */
-  get eternityResetActive() {
-    try {
-      if (player.auto.autobuyersOn === false || Pelle.isDoomed) return false;
-      if (EternityChallenge.isRunning) return true;
-      return this.active;
-    } catch (e) {
-      this._err("eternityResetActive", e);
-      return false;
-    }
-  },
-
-  /**
    * A) 用 EP 买时间维度 1~8。
    *
    * [Oreki R25] 原来只买到 4 级。但膨胀研究 6（`TimeStudy.reality`）的第一条要求是

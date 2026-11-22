@@ -17,6 +17,7 @@ const tutorialText = JSON.stringify(tutorial);
 const tutorialGenerated = fs.readFileSync(
   path.join(ROOT, "src/core/oreki-tutorial-data.gen.js"), "utf8",
 );
+const tutorialStage = fs.readFileSync(path.join(ROOT, "src/core/oreki-tutorial.js"), "utf8");
 const game = fs.readFileSync(path.join(ROOT, "src/game.js"), "utf8");
 const eternity = fs.readFileSync(
   path.join(ROOT, "src/core/oreki-eternity-automation.js"),
@@ -42,7 +43,10 @@ assert.match(eternity, /const TT_REWARD_MULTIPLIER = 1;/);
 assert.equal(tutorialText.includes("默认 10000×"), false);
 assert.equal(tutorialText.includes("默认 3000×"), false);
 assert.equal(tutorialText.includes("1000×/1800×/3000×"), true);
+assert.equal(tutorialStage.includes("默认 3000×"), false);
+assert.equal(tutorialStage.includes("1000×/1800×/3000×"), true);
 assert.match(eternity, /get eternityResetActive\(\)/);
+assert.equal((eternity.match(/get eternityResetActive\(\)/g) || []).length, 1);
 assert.match(eternity, /tickEternity\(\) \{[\s\S]*?if \(!this\.eternityResetActive\) return false;/);
 assert.match(eternity, /if \(EternityChallenge\.isRunning\) \{[\s\S]*?challenge\.canBeCompleted/);
 assert.match(eternity, /tryEternityChallenge8Purchases\(\)/);
