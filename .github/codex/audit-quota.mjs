@@ -11,13 +11,19 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
+const OWNER = "OrekiDawson";
+
 export const LIMIT = 100;
 export const KODY_KIND = "kody_start_review";
+export const KODY_SKIP_PENDING_KIND = "kody_skip_pending";
 export const KODY_DAILY_LIMIT = 100;
 export const KODY_WARNING_AT = 80;
 export const COORDINATOR_REPO = "AD-Oreki-Edition-Web";
 export const QUOTA_BRANCH = "oreki-audit-quota";
-const OWNER = "OrekiDawson";
+export const SHARED_QUOTA_REPOSITORIES = [
+  `${OWNER}/AD-Oreki-Edition-Android`,
+  `${OWNER}/AD-Oreki-Edition-Web`,
+];
 const API = "https://api.github.com";
 const RETAIN_DAYS = 8;
 const STATE_PATH = "quota/state.json";
@@ -108,10 +114,15 @@ function isKodyRecord(record) {
   return record?.kind === KODY_KIND;
 }
 
+export function isSharedQuotaRepository(repository) {
+  return SHARED_QUOTA_REPOSITORIES.includes(String(repository ?? ""));
+}
+
 function isActiveKodyRecord(record, date) {
   return isKodyRecord(record) &&
+    isSharedQuotaRepository(record.repository) &&
     record.date === date &&
-    record.status !== "released";
+    !["released", "skipped"].includes(record.status);
 }
 
 export function kodyQuotaCounts(records, date) {
@@ -130,28 +141,58 @@ export function kodyQuotaCounts(records, date) {
   };
 }
 
-function importKodyEvidence(records, evidence, date, now) {
+export function importKodyEvidence(records, evidence, date, now, {
+  allowExistingAcrossDates = false,
+} = {}) {
   const output = [...records];
-  const seen = new Set(
-    output
-      .filter(record => isKodyRecord(record) && String(record.commentId ?? ""))
-      .map(record => `${String(record.repository ?? "")}#${String(record.commentId ?? "")}`)
-      .filter(Boolean),
-  );
+  let changed = false;
+  const recordIndexByComment = new Map();
+  output.forEach((record, index) => {
+    if (!isKodyRecord(record) || !String(record.commentId ?? "")) return;
+    const key = `${String(record.repository ?? "")}#${String(record.commentId ?? "")}`;
+    recordIndexByComment.set(key, index);
+  });
   for (const item of evidence) {
     const repository = String(item?.repository ?? "");
     const commentId = String(item?.commentId ?? "").trim();
-    if (!repository || !commentId) {
+    if (!/^[^/\s]+\/[^/\s]+$/u.test(repository) || !commentId) {
       throw new Error("Kody quota evidence requires repository and unique comment id");
+    }
+    // Wiki 使用独立审查统计，绝不写入 Android/Web 共享池。
+    if (!isSharedQuotaRepository(repository)) {
+      if (repository === `${OWNER}/AD-Oreki-Wiki`) continue;
+      throw new Error(`unrecognized Kody quota evidence repository: ${repository}`);
     }
     const createdAt = new Date(String(item?.createdAt ?? ""));
     if (!Number.isFinite(createdAt.getTime())) {
       throw new Error("Kody quota evidence requires a valid creation time");
     }
-    if (shanghaiDate(createdAt) !== date) continue;
     const commentKey = `${repository}#${commentId}`;
-    if (seen.has(commentKey)) continue;
-    seen.add(commentKey);
+    const existingIndex = recordIndexByComment.get(commentKey);
+    if (
+      shanghaiDate(createdAt) !== date &&
+      !(allowExistingAcrossDates && existingIndex !== undefined)
+    ) {
+      continue;
+    }
+    if (existingIndex !== undefined) {
+      const existing = output[existingIndex];
+      const headSha = String(item?.headSha ?? "").trim();
+      if (
+        /^[a-f0-9]{40}$/iu.test(headSha) &&
+        existing.headSha !== headSha
+      ) {
+        output[existingIndex] = {
+          ...existing,
+          headSha,
+          updatedAt: now,
+        };
+        changed = true;
+      }
+      continue;
+    }
+    changed = true;
+    recordIndexByComment.set(commentKey, output.length);
     output.push({
       kind: KODY_KIND,
       identity: `kody-comment:${repository}#${commentId}`,
@@ -159,14 +200,17 @@ function importKodyEvidence(records, evidence, date, now) {
       pr: Number(item?.pr),
       commentId,
       commentUrl: String(item?.url ?? ""),
+      ...(String(item?.headSha ?? "").trim()
+        ? { headSha: String(item.headSha) }
+        : {}),
       source: "observed_comment",
-      date,
+      date: shanghaiDate(createdAt),
       status: "posted",
       createdAt: createdAt.toISOString(),
       updatedAt: now,
     });
   }
-  return output;
+  return changed ? output : records;
 }
 
 /**
@@ -184,9 +228,20 @@ export function reserveKodyPure(records, candidate, {
   const output = importKodyEvidence(records, evidence, date, now);
   const identity = String(candidate?.identity ?? "");
   if (!identity) throw new Error("Kody quota identity is required");
+  const repository = String(candidate?.repository ?? "");
+  if (!isSharedQuotaRepository(repository)) {
+    return {
+      allowed: false,
+      reused: false,
+      reason: "not-shared-quota-repository",
+      record: null,
+      records: output,
+      counts: kodyQuotaCounts(output, date),
+    };
+  }
   const prior = output.find(record =>
     isKodyRecord(record) &&
-    record.status !== "released" &&
+    !["released", "skipped"].includes(record.status) &&
     record.identity === identity);
   if (prior) {
     return {
@@ -212,7 +267,7 @@ export function reserveKodyPure(records, candidate, {
   const record = {
     kind: KODY_KIND,
     identity,
-    repository: String(candidate.repository ?? ""),
+    repository,
     pr: Number(candidate.pr),
     headSha: String(candidate.headSha ?? ""),
     source: "automated_trigger",
@@ -248,7 +303,7 @@ export function attachKodyCommand(records, {
   const alreadyPosted = records.findLastIndex(record =>
     isKodyRecord(record) &&
     record.identity === identity &&
-    record.status === "posted" &&
+    ["posted", "skipped"].includes(record.status) &&
     String(record.commentId ?? "") === duplicateComment);
   if (alreadyPosted >= 0) {
     return {
@@ -261,29 +316,48 @@ export function attachKodyCommand(records, {
   const index = records.findLastIndex(record =>
     isKodyRecord(record) &&
     record.identity === identity &&
-    record.status === "reserved");
+    (record.status === "reserved" ||
+      (record.status === "skipped" && !String(record.commentId ?? "").trim())));
   if (index < 0) throw new Error(`active Kody quota reservation not found: ${identity}`);
   const current = records[index];
   const parsedCreatedAt = new Date(createdAt);
   const commentDate = Number.isFinite(parsedCreatedAt.getTime())
     ? shanghaiDate(parsedCreatedAt)
     : current.date;
+  const commentCreatedAt = Number.isFinite(parsedCreatedAt.getTime())
+    ? parsedCreatedAt.toISOString()
+    : String(current.createdAt ?? current.reservedAt ?? now);
   const output = records.filter((record, cursor) =>
     cursor === index ||
     !(isKodyRecord(record) &&
       String(record.repository ?? "") === String(current.repository ?? "") &&
       String(record.commentId ?? "") === duplicateComment));
+  const duplicateSkipped = records.find(record =>
+    isKodyRecord(record) &&
+    record !== current &&
+    String(record.repository ?? "") === String(current.repository ?? "") &&
+    String(record.commentId ?? "") === duplicateComment &&
+    record.status === "skipped");
   const targetIndex = output.findLastIndex(record =>
     isKodyRecord(record) &&
     record.identity === identity &&
-    record.status === "reserved");
+    (record.status === "reserved" ||
+      (record.status === "skipped" && !String(record.commentId ?? "").trim())));
   if (targetIndex < 0) throw new Error(`active Kody quota reservation not found: ${identity}`);
   output[targetIndex] = {
     ...output[targetIndex],
-    status: "posted",
+    status: output[targetIndex].status === "skipped" || duplicateSkipped
+      ? "skipped"
+      : "posted",
     date: commentDate,
+    createdAt: commentCreatedAt,
     commentId: duplicateComment,
     commentUrl: String(commentUrl),
+    ...(duplicateSkipped ? {
+      skipCheckRunId: duplicateSkipped.skipCheckRunId,
+      skipCheckUrl: duplicateSkipped.skipCheckUrl,
+      headSha: output[targetIndex].headSha || duplicateSkipped.headSha,
+    } : {}),
     updatedAt: now,
   };
   return {
@@ -316,6 +390,243 @@ export function releaseKodyCommand(records, {
     records: output,
     counts: kodyQuotaCounts(output, output[index].date),
   };
+}
+
+/**
+ * 仅在 Kody GitHub App 的真实 Check Run 明确以 skipped 结束后退额。
+ * 触发评论本身以及其他 CI 的 skipped 不构成退额证据。
+ * 重复事件幂等，不改变原始评论与审查证据。
+ */
+export function markKodySkippedPure(records, {
+  repository,
+  pr,
+  headSha,
+  checkRunId,
+  checkStartedAt = "",
+  checkCreatedAt = checkStartedAt,
+  headCommittedAt = "",
+  currentPullRequestHeadSha = "",
+  currentPullRequestHeadCommittedAt = "",
+  priorRealReviews = [],
+  checkUrl = "",
+  now = new Date().toISOString(),
+}) {
+  const repo = String(repository ?? "");
+  const number = Number(pr);
+  const sha = String(headSha ?? "");
+  const runId = String(checkRunId ?? "");
+  if (!isSharedQuotaRepository(repo) ||
+      !Number.isSafeInteger(number) || number <= 0 ||
+      !/^[a-f0-9]{40}$/iu.test(sha) ||
+      !/^[1-9][0-9]*$/u.test(runId)) {
+    throw new Error("invalid verified Kody skipped check identity");
+  }
+  const alreadyRefunded = records.find(record =>
+    isKodyRecord(record) &&
+    String(record.skipCheckRunId ?? "") === runId);
+  if (alreadyRefunded) {
+    return {
+      ok: true,
+      reason: "already-skipped",
+      records,
+      counts: kodyQuotaCounts(records, alreadyRefunded.date),
+    };
+  }
+  const recordTime = record => Date.parse(
+    String(record.createdAt ?? record.reservedAt ?? record.updatedAt ?? ""),
+  );
+  const headCommittedMs = Date.parse(String(headCommittedAt));
+  const currentHeadCommittedMs = Date.parse(String(currentPullRequestHeadCommittedAt));
+  const currentHeadMatches = String(currentPullRequestHeadSha ?? "") === sha;
+  const activeRecords = records.filter(record =>
+    isKodyRecord(record) &&
+    record.repository === repo &&
+    Number(record.pr) === number &&
+    ["reserved", "posted"].includes(record.status));
+  const exactMatches = activeRecords.filter(record => record.headSha === sha);
+  const canAttributeHeadless =
+    String(currentPullRequestHeadSha ?? "").trim() !== "" &&
+    Number.isFinite(headCommittedMs) &&
+    (currentHeadMatches ||
+      (Number.isFinite(currentHeadCommittedMs) && currentHeadCommittedMs > headCommittedMs));
+  const headlessMatches = canAttributeHeadless
+    ? activeRecords.filter(record =>
+      !record.headSha &&
+      String(record.commentId ?? "").trim() !== "" &&
+      Number.isFinite(recordTime(record)) &&
+      recordTime(record) >= headCommittedMs &&
+      (currentHeadMatches || recordTime(record) < currentHeadCommittedMs))
+    : [];
+  const potentialHeadless = activeRecords.filter(record =>
+    !record.headSha && String(record.commentId ?? "").trim() !== "");
+  if (exactMatches.length === 0 && headlessMatches.length === 0) {
+    if (potentialHeadless.length > 0) {
+      return { ok: false, reason: "unattributed-trigger", records };
+    }
+    return { ok: false, reason: "no-matching-kody-trigger", records };
+  }
+  const checkStartedMs = Date.parse(String(checkStartedAt));
+  if (!Number.isFinite(checkStartedMs)) {
+    return { ok: false, reason: "missing-check-start-time", records };
+  }
+  const checkCreatedMs = Date.parse(String(checkCreatedAt));
+  if (!Number.isFinite(checkCreatedMs)) {
+    return { ok: false, reason: "missing-check-created-time", records };
+  }
+  let target = null;
+  const priorToCheck = record =>
+    Number.isFinite(recordTime(record)) && recordTime(record) <= checkCreatedMs;
+  const latest = (items, reverse = true) => items
+    .filter(priorToCheck)
+    .sort((left, right) =>
+      (recordTime(right) - recordTime(left)) * (reverse ? 1 : -1))[0] ?? null;
+  const candidates = [...exactMatches, ...headlessMatches];
+  target = latest(candidates);
+  if (!target) {
+    return { ok: false, reason: "trigger-after-check", records };
+  }
+  const priorRealReviewMatches = record => {
+    const recordMs = recordTime(record);
+    const commentId = String(record.commentId ?? "");
+    return priorRealReviews.find(review => {
+      const startedMs = Date.parse(String(review?.startedAt ?? ""));
+      if (!Number.isFinite(startedMs)) return false;
+      const reviewCommentId = String(review?.commentId ?? "");
+      if (commentId && reviewCommentId) {
+        return reviewCommentId === commentId;
+      }
+      return Number.isFinite(recordMs) &&
+        startedMs >= recordMs &&
+        startedMs <= checkStartedMs;
+    });
+  };
+  if (target.status === "reserved" && !String(target.commentId ?? "").trim()) {
+    const targetMs = recordTime(target);
+    const earlierCommentUnreviewed = candidates.some(record =>
+      record !== target &&
+      String(record.commentId ?? "").trim() !== "" &&
+      Number.isFinite(recordTime(record)) &&
+      recordTime(record) < targetMs &&
+      !priorRealReviewMatches(record));
+    if (earlierCommentUnreviewed) {
+      return { ok: false, reason: "ambiguous-reservation-and-comment", records };
+    }
+  }
+  const priorRealReview = priorRealReviewMatches(target);
+  if (priorRealReview) {
+    return {
+      ok: false,
+      reason: "prior-real-kody-review",
+      records,
+      counts: kodyQuotaCounts(records, target.date),
+    };
+  }
+  const output = [...records];
+  const outputTargetIndex = output.indexOf(target);
+  output[outputTargetIndex] = {
+    ...target,
+    headSha: target.headSha || sha,
+    status: "skipped",
+    skipCheckRunId: runId,
+    skipCheckUrl: String(checkUrl),
+    updatedAt: now,
+  };
+  return {
+    ok: true,
+    reason: "kody-skipped-refunded",
+    records: output,
+    counts: kodyQuotaCounts(output, target.date),
+  };
+}
+
+export function queuePendingKodySkip(records, checkIdentity, reason,
+  now = new Date().toISOString()) {
+  const identity =
+    `kody-skip-pending:${String(checkIdentity.repository ?? "")}` +
+    `#${Number(checkIdentity.pr)}@${String(checkIdentity.headSha ?? "")}` +
+    `:${String(checkIdentity.checkRunId ?? "")}`;
+  const existing = records.find(record =>
+    record?.kind === KODY_SKIP_PENDING_KIND && record.identity === identity);
+  if (existing) return records;
+  return [...records, {
+    kind: KODY_SKIP_PENDING_KIND,
+    identity,
+    repository: String(checkIdentity.repository ?? ""),
+    pr: Number(checkIdentity.pr),
+    headSha: String(checkIdentity.headSha ?? ""),
+    checkRunId: String(checkIdentity.checkRunId ?? ""),
+    checkStartedAt: String(checkIdentity.checkStartedAt ?? ""),
+    checkCreatedAt: String(checkIdentity.checkCreatedAt ?? ""),
+    headCommittedAt: String(checkIdentity.headCommittedAt ?? ""),
+    currentPullRequestHeadSha: String(checkIdentity.currentPullRequestHeadSha ?? ""),
+    currentPullRequestHeadCommittedAt:
+      String(checkIdentity.currentPullRequestHeadCommittedAt ?? ""),
+    status: "pending_attribution",
+    reason: String(reason),
+    date: shanghaiDate(new Date(now)),
+    updatedAt: now,
+  }];
+}
+
+export function clearPendingKodySkip(records, pendingIdentity) {
+  const hasPending = records.some(record =>
+    record?.kind === KODY_SKIP_PENDING_KIND && record.identity === pendingIdentity);
+  if (!hasPending) return records;
+  return records.filter(record =>
+    !(record?.kind === KODY_SKIP_PENDING_KIND && record.identity === pendingIdentity));
+}
+
+export function applyKodySkipEvidence(records, checkEvidence, {
+  date = shanghaiDate(),
+  now = new Date().toISOString(),
+} = {}) {
+  const {
+    evidence = [],
+    ...skipIdentity
+  } = checkEvidence;
+  const imported = importKodyEvidence(records, evidence, date, now, {
+    allowExistingAcrossDates: true,
+  });
+  const result = markKodySkippedPure(imported, {
+    ...skipIdentity,
+    now,
+  });
+  const pendingIdentity =
+    `kody-skip-pending:${String(skipIdentity.repository ?? "")}` +
+    `#${Number(skipIdentity.pr)}@${String(skipIdentity.headSha ?? "")}` +
+    `:${String(skipIdentity.checkRunId ?? "")}`;
+  if (result.ok) {
+    const nextRecords = clearPendingKodySkip(result.records, pendingIdentity);
+    return nextRecords === result.records ? result : { ...result, records: nextRecords };
+  }
+  if ([
+    "unattributed-trigger",
+    "missing-check-start-time",
+    "missing-check-created-time",
+    "ambiguous-reservation-and-comment",
+  ].includes(result.reason)) {
+    const pending = queuePendingKodySkip(
+      result.records,
+      skipIdentity,
+      result.reason,
+      now,
+    );
+    return {
+      ...result,
+      pendingQueued: pending !== result.records,
+      records: pending,
+    };
+  }
+  return result;
+}
+
+export async function markKodySkippedQuota(token, checkEvidence, { now = new Date() } = {}) {
+  const date = shanghaiDate(now);
+  return mutate(token, date, records =>
+    applyKodySkipEvidence(records, checkEvidence, {
+      date,
+      now: now.toISOString(),
+    }));
 }
 
 export function applyCas(records, expectedVersion, currentVersion, transform) {
@@ -393,6 +704,7 @@ async function readState(token, ref, date) {
 async function updateState(token, state, transform, date) {
   const result = applyCas(state.records, state.version, state.version, records => transform(records));
   const output = result.records || result;
+  if (output === state.records) return result; // 幂等事件不产生新提交
   const dates = [...new Set(output.map(record => record.date))].sort();
   const retain = new Set(dates.slice(-RETAIN_DAYS));
   const pruned = output.filter(record => retain.has(record.date) || record.date === date);

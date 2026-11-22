@@ -5,11 +5,17 @@ name: Kody PR 审查触发器
   pull_request_target:
     branches: [main]
     types: [opened, reopened, ready_for_review, synchronize]
+  check_run:
+    types: [completed]
   workflow_dispatch:
     inputs:
       pr_number:
         description: 要检查的 PR 编号
-        required: true
+        required: false
+        type: string
+      check_run_id:
+        description: 要重新核对的 Kody Code Review Check Run ID
+        required: false
         type: string
 
 permissions:
@@ -17,10 +23,41 @@ permissions:
   pull-requests: read
 
 jobs:
+  reconcile_skipped:
+    name: Kody 确认跳过后退还配额
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.check_run_id != '') ||
+      (github.event_name == 'check_run' &&
+      github.event.check_run.status == 'completed' &&
+      github.event.check_run.conclusion == 'skipped' &&
+      github.event.check_run.name == 'Kody Code Review' &&
+      github.event.check_run.app.slug == 'kody-ai')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+    concurrency:
+      group: kody-skip-reconcile-${{ github.repository }}-${{ github.event.check_run.id }}
+      cancel-in-progress: false
+    steps:
+      - name: 读取受信任 main 上的配额脚本
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          persist-credentials: false
+      - name: 使用 Kody 官方 skipped Check 证据退额
+        env:
+          GH_TOKEN: ${{ secrets.KODY_TRIGGER_PAT }}
+          INPUT_CHECK_RUN_ID: ${{ inputs.check_run_id }}
+        shell: bash
+        run: node .github/kody/skip-reconcile.mjs
+
   stabilize:
     name: 等待并复核 PR Head
     if: >-
-      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_dispatch' && inputs.pr_number != '') ||
       (github.event_name == 'pull_request_target' &&
       github.event.pull_request.user.login == 'OrekiDawson' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
@@ -73,9 +110,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     concurrency:
-      # 串行段仅覆盖预算检查与评论写入；稳定等待已在上一 Job 完成。
-      group: kody-trigger-budget-${{ github.repository }}
-      queue: max
+      # 同一 PR 只保留一个预算检查/评论写入；不同 PR 不互相阻塞。
+      group: kody-trigger-budget-${{ github.repository }}-${{ github.event.pull_request.number || inputs.pr_number }}
       cancel-in-progress: false
     permissions:
       checks: write
