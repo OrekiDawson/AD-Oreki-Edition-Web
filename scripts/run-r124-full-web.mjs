@@ -8,8 +8,11 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 import {
   buildGateSummary,
+  MAX_CONTINUITY_GAP_SECONDS,
   overallResult,
   recordCheckpointExport,
+  recordContinuityCheck,
+  recordOfflineProgress,
   validateRunnerOptions,
 } from "./web-full-run-policy.mjs";
 
@@ -27,6 +30,8 @@ const SAMPLE_MS = Number(arg("sample-ms", 10_000));
 const SHOT_MS = Number(arg("shot-ms", 60_000));
 const CONFIRM_SEC = Number(arg("confirm-sec", 120));
 const MAX_WALL_SEC = MAX_MIN * 60;
+const STOP_FILE_ARG = arg("stop-file", null);
+const STOP_FILE = STOP_FILE_ARG ? path.resolve(STOP_FILE_ARG) : null;
 const SHOTS = path.join(OUT, "截图");
 const CHECKPOINTS = path.join(OUT, "存档快照");
 fs.mkdirSync(SHOTS, { recursive: true });
@@ -84,6 +89,14 @@ const summary = {
   runtimeErrors: [],
   consoleErrors: [],
   checkpoints: [],
+  continuity: {
+    maxAllowedDivergenceSeconds: MAX_CONTINUITY_GAP_SECONDS,
+    maxObservedDivergenceSeconds: 0,
+    offlineTimeUsedMs: null,
+    offlineTimeUsedSeconds: null,
+    breaks: [],
+  },
+  stopFile: STOP_FILE,
   confirm: { requiredSeconds: CONFIRM_SEC, observedSeconds: 0, regressions: 0 },
   gates: null,
   result: "NOT RUN",
@@ -175,6 +188,7 @@ function initPageProbe() {
         galaxies: number(p.galaxies),
         speed: number(window.GameSpeed?.factor),
         visibility: document.visibilityState,
+        offlineTimeUsed: number(p.speedrun?.offlineTimeUsed),
       };
       if (!window.__r124.birth) window.__r124.birth = { ...snapshot };
       window.__r124.last = snapshot;
@@ -330,6 +344,7 @@ async function collect() {
     birth: current.birth,
   };
   if (current.probeError) summary.runtimeErrors.push(`page-probe: ${current.probeError}`);
+  recordOfflineProgress(summary, current.last);
 
   const firstReality = current.events.find(event => event.key === "reality");
   if (firstReality) summary.timing.firstRealityWallSeconds = firstReality.wallSeconds;
@@ -409,8 +424,36 @@ async function main() {
   await page.bringToFront();
   await screenshot("开局");
 
+  let continuityPrevious = {
+    wallMs: Date.now(),
+    monotonicMs: performance.now(),
+  };
   let nextSampleAt = 0;
   while (!stopping) {
+    const continuityCurrent = {
+      wallMs: Date.now(),
+      monotonicMs: performance.now(),
+    };
+    const continuityBreak = recordContinuityCheck(
+      summary.continuity,
+      continuityPrevious,
+      continuityCurrent,
+    );
+    continuityPrevious = continuityCurrent;
+    if (continuityBreak) {
+      const message = "continuity-break: 墙钟推进 "
+        + `${Math.round(continuityBreak.wallGapSeconds)} 秒，单调时钟仅推进 `
+        + `${Math.round(continuityBreak.monotonicGapSeconds)} 秒；结果包含宿主暂停或离线补算`;
+      summary.runtimeErrors.push(message);
+      summary.resultReason = "运行期间发生宿主暂停或离线补算，本次前台连续跑次无效";
+      stopping = true;
+      break;
+    }
+    if (STOP_FILE && fs.existsSync(STOP_FILE)) {
+      summary.resultReason = "检测到安全停止文件";
+      stopping = true;
+      break;
+    }
     const elapsed = wallSeconds();
     if (elapsed >= nextSampleAt) {
       const sample = await collect();

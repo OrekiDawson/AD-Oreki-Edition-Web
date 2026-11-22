@@ -4,10 +4,65 @@ import {
   buildGateSummary,
   checkpointExportError,
   classifyFirstReality,
+  measureContinuity,
   overallResult,
   recordCheckpointExport,
+  recordContinuityCheck,
+  recordOfflineProgress,
   validateRunnerOptions,
 } from "../web-full-run-policy.mjs";
+
+test("宿主暂停导致的墙钟与单调时钟分离必须阻断", () => {
+  assert.deepEqual(
+    measureContinuity(
+      { wallMs: 1000, monotonicMs: 1000 },
+      { wallMs: 306000, monotonicMs: 6000 },
+    ),
+    {
+      wallGapSeconds: 305,
+      monotonicGapSeconds: 5,
+      divergenceSeconds: 300,
+    },
+  );
+  const continuity = {
+    maxObservedDivergenceSeconds: 0,
+    breaks: [],
+  };
+  assert.equal(recordContinuityCheck(
+    continuity,
+    { wallMs: 1000, monotonicMs: 1000 },
+    { wallMs: 62000, monotonicMs: 61000 },
+  ), null);
+  const detected = recordContinuityCheck(
+    continuity,
+    { wallMs: 1000, monotonicMs: 1000 },
+    { wallMs: 306000, monotonicMs: 6000 },
+  );
+  assert.equal(detected.divergenceSeconds, 300);
+  assert.equal(continuity.maxObservedDivergenceSeconds, 300);
+  assert.equal(continuity.breaks.length, 1);
+});
+
+test("原版离线补算必须写入 runtimeErrors 并阻断总体 PASS", () => {
+  const summary = {
+    runtimeErrors: [],
+    continuity: {
+      offlineTimeUsedMs: null,
+      offlineTimeUsedSeconds: null,
+    },
+  };
+  assert.equal(recordOfflineProgress(summary, { offlineTimeUsed: 0 }), null);
+  assert.equal(recordOfflineProgress(summary, { offlineTimeUsed: 8500 }), null);
+  assert.match(
+    recordOfflineProgress(summary, { offlineTimeUsed: 271000 }),
+    /离线进度/,
+  );
+  assert.deepEqual(summary.runtimeErrors, [
+    "offline-progress: 原版已模拟 271 秒离线进度",
+  ]);
+  recordOfflineProgress(summary, { offlineTimeUsed: 271000 });
+  assert.equal(summary.runtimeErrors.length, 1);
+});
 
 test("存档导出 API 缺失、抛错或空文本必须成为运行错误", () => {
   assert.match(
