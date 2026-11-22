@@ -223,17 +223,31 @@ check("首次 Reality 前按 EC1→EC12 完整推进", A.nextUnfinishedEcId() ==
 
 player.realities = new Decimal(1);
 env.ecCompletions = Array(12).fill(0);
-check("Reality 后优先 EC11", A.nextUnfinishedEcId() === 11);
+check("Reality 后先补 EC1 解锁链", A.nextUnfinishedEcId() === 1);
 
+env.ecCompletions[0] = 5;
+check("EC1 后继续 EC2", A.nextUnfinishedEcId() === 2);
+env.ecCompletions[1] = 5;
+check("EC2 后继续 EC3", A.nextUnfinishedEcId() === 3);
+env.ecCompletions[2] = 5;
+check("EC1～3 后先补 EC10", A.nextUnfinishedEcId() === 10);
+env.ecCompletions[9] = 5;
+check("解锁链满足后优先 EC11", A.nextUnfinishedEcId() === 11);
 env.ecCompletions[10] = 5;
 check("EC11 满 5 次后优先 EC12", A.nextUnfinishedEcId() === 12);
 
 env.ecCompletions[11] = 5;
-check("Reality 门槛满足后仍可补完其它未完成 EC", A.nextUnfinishedEcId() === 1);
+check("Reality 门槛满足后仍可补完其它未完成 EC", A.nextUnfinishedEcId() === 4);
 
 for (let id = 0; id < 12; id++) env.ecCompletions[id] = id === 6 ? 0 : 5;
 globalThis.OrekiIu15Sprint = { skipEc7: true };
 check("IU15 冲刺仍禁止重打 EC7", A.nextUnfinishedEcId() === 0);
+const ecPurchaseSource = readFileSync(
+  path.join(ROOT, "src/core/oreki-eternity-automation.js"),
+  "utf8",
+);
+check("EC 购买只处理当前目标，不降级串行重打",
+  ecPurchaseSource.includes("if (id !== targetId) continue;"));
 
 // ---------------- ① 自动化关闭 → 一次都不发起 ----------------
 reset();

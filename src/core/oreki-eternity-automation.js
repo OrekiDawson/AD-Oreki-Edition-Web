@@ -866,15 +866,16 @@ export const OrekiEternityAutomation = {
    *
    * 首次 Reality 前按 1→12 完整走一遍，保留永恒挑战体系的实际展开。
    * Reality 后，重新满足 `TimeStudy.reality` 的原版硬条件只需要 EC11 与 EC12
-   * 各完成 5 次（dilation-time-studies.js）；其余 EC 的成就与奖励已在首次循环持久化。
-   * 因此后续循环先完成这两关，再按 1→10 兜底其他仍缺的挑战。
+   * 各完成 5 次（dilation-time-studies.js）；但研究 181/191/193 要求 EC1～3 与
+   * EC10 有真实完成记录，而 Reality 会清空这些记录。因此后续循环先满足解锁链，
+   * 再完成 EC11/12，最后兜底其余挑战。
    *
    * 这里只决定自动化选择哪一关；挑战目标、入口资源、完成次数与结算仍由原版处理。
    */
   ecPriorityOrder() {
     const realities = this._realitiesValue();
     if (realities !== null && realities > 0) {
-      return [11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      return [1, 2, 3, 10, 11, 12, 4, 5, 6, 7, 8, 9];
     }
     return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   },
