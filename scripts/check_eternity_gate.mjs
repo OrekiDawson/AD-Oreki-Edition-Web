@@ -1452,6 +1452,16 @@ try {
     check("[R125] 前述程序性 reset 后接管逻辑恢复自动永恒",
       player.auto.eternity.isActive === true,
       "isActive=" + String(player.auto.eternity.isActive));
+    env.ecRunning = true;
+    env.ecCanComplete = true;
+    env.canEternity = true;
+    env.eternityCalls = [];
+    check("[R125] EC 目标已达成时走原版 eternity 真实退出",
+      A.tickEternity() === true &&
+      env.eternityCalls.length === 1 &&
+      env.eternityCalls[0][0] === false &&
+      env.eternityCalls[0][1] === true,
+      JSON.stringify(env.eternityCalls));
   }
 
   globalThis.player = savedPlayer;
