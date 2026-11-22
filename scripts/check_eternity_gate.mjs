@@ -1536,6 +1536,17 @@ try {
   A._crunchSkipFrames = 0;
   check("全部真实入口门禁通过时恢复结算优先",
     A.shouldPrioritizeSettlement() === true);
+  env.ecRunning = true;
+  env.ecCanComplete = true;
+  env.gained = 0;
+  env.ep = 1e100;
+  check("EC 达标时即使 active=false 也允许结算优先",
+    A.shouldPrioritizeSettlement() === true);
+  env.ecCanComplete = false;
+  check("EC 未达标时不得抢占结算优先槽",
+    A.shouldPrioritizeSettlement() === false);
+  env.ecRunning = false;
+  env.ecCanComplete = false;
   A._eternityBootstrapActive = savedBootstrapActive;
   check("优先请求本身不直接调用 eternity",
     env.eternityCalls.length === 0);

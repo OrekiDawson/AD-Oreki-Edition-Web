@@ -391,7 +391,11 @@ export const OrekiEternityAutomation = {
         return "反物质 / IP / EP 三种货币都不够买下一个时间之理";
       }
       if (verbId === "eternity") {
-        if (!this.active) return "永恒自动器未启用（自动购买器关闭，或处于 Pelle 末日态）";
+        // EC 中 active 故意为 false（避免挑战内买 TT/TD/TS），但
+        // eternityResetActive 仍为 true；解释链必须与真实重置入口一致。
+        if (!this.eternityResetActive) {
+          return "永恒自动器未启用（自动购买器关闭，或处于 Pelle 末日态）";
+        }
         if (globalThis.OrekiIu15Sprint?.freezeResets === true) {
           return "IU15 冲刺期间禁止永恒（永恒会把反物质指数打回 0）";
         }
@@ -404,6 +408,12 @@ export const OrekiEternityAutomation = {
           return "为拿现实升级 10 暂压本现实里的第一次永恒（IP 指数需 ≥400），最多压 10 秒";
         }
         if (this.ecEntryPending()) return "正在等 EC 入口（主研究已买、只差资源），先不重置";
+        if (EternityChallenge.isRunning) {
+          const challenge = EternityChallenge.current;
+          return challenge?.canBeCompleted
+            ? ""
+            : "当前永恒挑战未达到原版完成条件";
+        }
         // 与 tickEternity() 同一门槛（×1）：收益不足当前 EP 就不重置，面板文案同步。
         if (gainedEternityPoints().lt(Currency.eternityPoints.value.times(1))) {
           return "本次永恒收益不足当前 EP（没让 EP 翻倍），等涨起来再重置";
