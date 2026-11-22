@@ -197,3 +197,60 @@ test("EC automation settles through the original eternity entry after the goal i
   expect(Number(result.after.eternities)).toBeGreaterThan(100);
   expect(pageErrors, "Unhandled browser errors").toEqual([]);
 });
+
+test("spent eternity currency does not re-enable the first-eternity dwell", async ({ page }) => {
+  const pageErrors = [];
+  page.on("pageerror", error => pageErrors.push(error.message));
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect.poll(
+    () => page.evaluate(() => typeof OrekiEternityAutomation !== "undefined"),
+    { timeout: 45_000 },
+  ).toBe(true);
+
+  const result = await page.evaluate(() => {
+    const automation = OrekiEternityAutomation;
+    automation._firstEternityEverSeen = false;
+    automation._firstEternityDwellStartedAt = null;
+    automation._firstEternityDwellSaveId = null;
+    player.eternities = new Decimal(0);
+    player.realities = 0;
+    player.records.gameCreatedTime = 987654321;
+    player.records.bestEternity = {
+      time: 12_345,
+      realTime: Number.MAX_VALUE,
+    };
+    player.records.recentEternities = Array.from(
+      { length: 10 },
+      () => [Number.MAX_VALUE, Number.MAX_VALUE, new Decimal(0), new Decimal(0), "", new Decimal(0)],
+    );
+    const bestRecordIsPast = !automation._neverEternitied();
+    const bestRecordDwell = automation.firstEternityDwellRemainingMs();
+
+    automation._firstEternityEverSeen = false;
+    automation._firstEternityDwellStartedAt = null;
+    automation._firstEternityDwellSaveId = null;
+    player.records.bestEternity = {
+      time: Number.MAX_VALUE,
+      realTime: Number.MAX_VALUE,
+    };
+    player.records.recentEternities[9][0] = 12_345;
+    const recentRecordIsPast = !automation._neverEternitied();
+    const recentRecordDwell = automation.firstEternityDwellRemainingMs();
+
+    return {
+      bestRecordIsPast,
+      bestRecordDwell,
+      recentRecordIsPast,
+      recentRecordDwell,
+    };
+  });
+
+  expect(result).toEqual({
+    bestRecordIsPast: true,
+    bestRecordDwell: 0,
+    recentRecordIsPast: true,
+    recentRecordDwell: 0,
+  });
+  expect(pageErrors, "Unhandled browser errors").toEqual([]);
+});
