@@ -1,6 +1,54 @@
 export const FIRST_REALITY_MIN_SECONDS = 70 * 60;
 export const FIRST_REALITY_TOLERANCE_SECONDS = 5 * 60;
 export const FULL_RUN_SECONDS = 180 * 60;
+export const MAX_CONTINUITY_GAP_SECONDS = 60;
+export const OFFLINE_PROGRESS_TOLERANCE_MS = 10_000;
+
+/**
+ * 前台连续运行验收不能把宿主暂停后的原版离线补算当作在线进度。
+ * 墙钟使用 Date.now()，单调时钟使用 performance.now()；两者差值可识别
+ * 进程或宿主的暂停时间，且不依赖页面内的 visibility 状态。
+ */
+export function measureContinuity(previous, current) {
+  const wallGapSeconds = Math.max(0, (current.wallMs - previous.wallMs) / 1000);
+  const monotonicGapSeconds = Math.max(
+    0,
+    (current.monotonicMs - previous.monotonicMs) / 1000,
+  );
+  return {
+    wallGapSeconds,
+    monotonicGapSeconds,
+    divergenceSeconds: Math.max(0, wallGapSeconds - monotonicGapSeconds),
+  };
+}
+
+export function recordContinuityCheck(continuity, previous, current) {
+  const measurement = measureContinuity(previous, current);
+  continuity.maxObservedDivergenceSeconds = Math.max(
+    continuity.maxObservedDivergenceSeconds ?? 0,
+    measurement.divergenceSeconds,
+  );
+  if (measurement.divergenceSeconds <= MAX_CONTINUITY_GAP_SECONDS) return null;
+  const result = {
+    ...measurement,
+    detectedAtIso: new Date(current.wallMs).toISOString(),
+  };
+  continuity.breaks.push(result);
+  return result;
+}
+
+export function recordOfflineProgress(summary, snapshot) {
+  const offlineTimeUsed = Number(snapshot?.offlineTimeUsed);
+  if (!Number.isFinite(offlineTimeUsed)) return null;
+  summary.continuity.offlineTimeUsedMs = offlineTimeUsed;
+  if (offlineTimeUsed <= OFFLINE_PROGRESS_TOLERANCE_MS) return null;
+  summary.continuity.offlineTimeUsedSeconds = Math.ceil(offlineTimeUsed / 1000);
+  const message = `offline-progress: 原版已模拟 ${summary.continuity.offlineTimeUsedSeconds} 秒离线进度`;
+  if (!summary.runtimeErrors.some(error => error.startsWith("offline-progress:"))) {
+    summary.runtimeErrors.push(message);
+  }
+  return message;
+}
 
 /**
  * 原版存档导出是独立证据。API 缺失、抛错或返回空文本时必须进入运行错误，
