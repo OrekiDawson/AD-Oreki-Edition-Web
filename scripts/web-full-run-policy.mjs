@@ -3,6 +3,22 @@ export const FIRST_REALITY_TOLERANCE_SECONDS = 5 * 60;
 export const FULL_RUN_SECONDS = 180 * 60;
 
 /**
+ * 原版存档导出是独立证据。API 缺失、抛错或返回空文本时必须进入运行错误，
+ * 不能让仅观察页面 isGameEnd 的结果升级为 GAMEEND-PASS。
+ */
+export function checkpointExportError(checkpoint) {
+  const save = checkpoint?.save;
+  if (typeof save !== "string") {
+    return "GameStorage.exportModifiedSave 不可用或未返回文本";
+  }
+  if (save.startsWith("ERROR:")) return save;
+  if (save.length === 0) {
+    return "GameStorage.exportModifiedSave 返回空文本";
+  }
+  return null;
+}
+
+/**
  * 只按页面内观测到的真实首次 Reality 时刻判断提前/正常/偏晚。
  *
  * 偏晚不等于五阶段 PACING 已 PASS；还需要后续检查完整阶段时间线。

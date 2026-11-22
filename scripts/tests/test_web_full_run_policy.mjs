@@ -2,10 +2,27 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildGateSummary,
+  checkpointExportError,
   classifyFirstReality,
   overallResult,
   validateRunnerOptions,
 } from "../web-full-run-policy.mjs";
+
+test("存档导出 API 缺失、抛错或空文本必须成为运行错误", () => {
+  assert.match(
+    checkpointExportError({ save: null }),
+    /exportModifiedSave 不可用/,
+  );
+  assert.equal(
+    checkpointExportError({ save: "ERROR: export failed" }),
+    "ERROR: export failed",
+  );
+  assert.match(
+    checkpointExportError({ save: "" }),
+    /返回空文本/,
+  );
+  assert.equal(checkpointExportError({ save: "{}" }), null);
+});
 
 test("Reality 早于 70 分钟必须 FAIL", () => {
   assert.equal(classifyFirstReality(4199).status, "FAIL");
