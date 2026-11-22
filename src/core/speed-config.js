@@ -20,6 +20,10 @@ const AUTOBUYER_SCALE_KEY = "oreki-autobuyer-interval-scale";
 const TICKSPEED_SCALE_KEY = "oreki-tickspeed-autobuyer-interval-scale";
 /** 动态速度模式开关（默认开启，独立持久化） */
 const DYNAMIC_KEY = "oreki-game-speed-dynamic";
+/** 新档阶段速度托管开关（用户手动设置倍率后关闭） */
+const STAGE_MANAGED_KEY = "oreki-game-speed-stage-managed";
+/** 上一次应用阶段速度时所在的真实游戏阶段，用于区分刷新与阶段推进 */
+const STAGE_KEY = "oreki-game-speed-stage";
 /** 动态控制器参数：连续无进度多久算停滞、两次升档的最小间隔、每次升档的倍数 */
 const DYN_STALL_MS = 4000;
 const DYN_ADJUST_MS = 5000;
@@ -30,10 +34,13 @@ function target_player() {
 }
 
 /**
- * 新档默认倍率。与 Android `OrekiGamePace.DEFAULT_SPEED` 保持同一节奏起点；
+ * 新档阶段速度。与 Android `OrekiGamePace` 保持同一节奏：
+ * Break 前 1000×、Break 后 1800×、Reality 后 3000×。
  * 已有玩家保存的合法倍率继续保留，不因升级被覆盖。
  */
-export const GAME_SPEED_DEFAULT = 3000;
+export const GAME_SPEED_DEFAULT = 1000;
+export const GAME_SPEED_POST_BREAK = 1800;
+export const GAME_SPEED_POST_REALITY = 3000;
 export const GAME_SPEED_MIN = 1;
 /**
  * 上限的技术依据：
@@ -42,7 +49,7 @@ export const GAME_SPEED_MIN = 1;
  *   真正的限制来自「离散机制」：自动购买器/Automator 每帧只 tick 一次，
  *   倍率越高，其相对游戏时间的触发频率越低；离线模拟的 tick 数按真实秒数固定，
  *   倍率越高，单 tick 覆盖的游戏时间越长，精度越差。
- * - 100000× 是默认值 3000× 的约 33 倍余量，仍在可玩范围内；
+ * - 100000× 是 Reality 后默认值 3000× 的约 33 倍余量，仍在可玩范围内；
  *   再往上收益递减且会明显失真，因此硬性钳制在 1e5。
  */
 export const GAME_SPEED_MAX = 100000;
@@ -59,7 +66,7 @@ export function parseSpeedFactor(input) {
 
   // 只接受普通十进制写法，显式拒绝 Infinity / NaN / 科学计数法误用
   if (!/^[+-]?(\d+(\.\d*)?|\.\d+)$/u.test(text)) {
-    return { ok: false, value: GAME_SPEED_DEFAULT, message: "格式无效：请输入普通数字，例如 3000" };
+    return { ok: false, value: GAME_SPEED_DEFAULT, message: "格式无效：请输入普通数字，例如 1000" };
   }
   const value = Number(text);
   if (!Number.isFinite(value)) {
@@ -117,6 +124,23 @@ function writeStored(value) {
 }
 
 let currentFactor = readStored();
+let stageManaged = readStoredFlag(
+  STAGE_MANAGED_KEY,
+  (() => {
+    try {
+      return window.localStorage.getItem(STORAGE_KEY) === null;
+    } catch (e) {
+      return true;
+    }
+  })(),
+);
+if (stageManaged) {
+  try {
+    if (window.localStorage.getItem(STAGE_MANAGED_KEY) === null) {
+      window.localStorage.setItem(STAGE_MANAGED_KEY, "1");
+    }
+  } catch (e) { /* 存储禁用时仍使用本次会话的阶段托管 */ }
+}
 /** 离线/休眠模拟期间冻结因子：simulateTime 内部会多次乘以、除以该因子，
  *  若中途改变会导致时间被重复放大或缩小，必须锁定为同一快照 */
 let simulationToken = null;
@@ -135,11 +159,59 @@ const dyn = {
   ramps: 0,             // 本次运行升档次数（诊断用）
 };
 
+function positive(value) {
+  if (typeof value === "number") return value > 0;
+  if (value && typeof value.gt === "function") return value.gt(0);
+  if (value && typeof value.toNumber === "function") return value.toNumber() > 0;
+  return false;
+}
+
+function progressionStageForState(broken, realities) {
+  if (positive(realities)) return "post-reality";
+  return broken === true ? "post-break" : "pre-break";
+}
+
+function readStoredStage() {
+  try {
+    const value = window.localStorage.getItem(STAGE_KEY);
+    return ["pre-break", "post-break", "post-reality"].includes(value) ? value : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeStoredStage(value) {
+  try {
+    window.localStorage.setItem(STAGE_KEY, value);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function writeStageManaged(value) {
+  stageManaged = !!value;
+  writeStoredFlag(STAGE_MANAGED_KEY, stageManaged);
+}
+
+let lastProgressionStage = readStoredStage();
+
+/** 仅由真实游戏状态决定新档阶段速度，不读取墙钟。 */
+export function progressionSpeedForState(broken, realities) {
+  return progressionSpeedForStage(progressionStageForState(broken, realities));
+}
+
+function progressionSpeedForStage(stage) {
+  if (stage === "post-reality") return GAME_SPEED_POST_REALITY;
+  return stage === "post-break" ? GAME_SPEED_POST_BREAK : GAME_SPEED_DEFAULT;
+}
+
 export const GameSpeed = {
   get storageKey() { return STORAGE_KEY; },
   get min() { return GAME_SPEED_MIN; },
   get max() { return GAME_SPEED_MAX; },
   get defaultFactor() { return GAME_SPEED_DEFAULT; },
+  get isStageManaged() { return stageManaged; },
 
   /** 当前用户设置的倍率（不含冻结） */
   get factor() { return currentFactor; },
@@ -190,7 +262,29 @@ export const GameSpeed = {
   get dynamicRampCount() { return dyn.ramps; },
   /** 界面用：一句话状态 */
   get modeLabel() {
-    return dynamicEnabled ? `自动（当前 ${this.format(this.factor)}×）` : `手动（${this.format(this.factor)}×）`;
+    const owner = stageManaged ? "阶段管理" : "手动";
+    return dynamicEnabled
+      ? `${owner} + 自动（当前 ${this.format(this.factor)}×）`
+      : `${owner}（${this.format(this.factor)}×）`;
+  },
+
+  /**
+   * 只在真实阶段变化时应用一次阶段默认速度。
+   * 阶段记录持久化；刷新时若阶段未变化，保留动态升档后的当前倍率。
+   */
+  tickProgressionSpeed() {
+    if (!stageManaged || simulationToken !== null) return false;
+    const p = target_player();
+    if (!p) return false;
+    const stage = progressionStageForState(p.break === true, p.realities);
+    if (stage === lastProgressionStage) return false;
+    lastProgressionStage = stage;
+    writeStoredStage(stage);
+    const next = progressionSpeedForState(p.break === true, p.realities);
+    if (currentFactor === next) return false;
+    currentFactor = next;
+    writeStored(next);
+    return true;
   },
 
   /**
@@ -208,12 +302,6 @@ export const GameSpeed = {
       // 此阶段统一保持用户设定倍率，不把“IP 尚未跳变”误当成挂机停滞。真实 Reality
       // 结算后才允许动态升档。不能使用 eternities：新档该字段存在内部初值，且 Reality
       // 会清零；EP 也会被升级消费，三者都不能稳定表示“首次现实已经发生”。
-      const positive = v => {
-        if (typeof v === "number") return v > 0;
-        if (v && typeof v.gt === "function") return v.gt(0);
-        if (v && typeof v.toNumber === "function") return v.toNumber() > 0;
-        return false;
-      };
       if (!positive(p.realities)) return false;
       // 用 0.01 数量级的分辨率做指纹：只看 exponent 取整会把「同一数量级内的真实增长」
       // 误判成停滞（例如 1.2e100 → 4.8e100）。尾数信息一起纳入，既不漏判也不过敏。
@@ -260,13 +348,29 @@ export const GameSpeed = {
   set(input) {
     const result = parseSpeedFactor(input);
     if (!result.ok) return result;
+    writeStageManaged(false);
+    lastProgressionStage = null;
     currentFactor = result.value;
     const persisted = writeStored(result.value);
     return { ok: true, value: result.value, persisted, message: persisted ? "" : "已生效，但浏览器拒绝写入本地存储，刷新后会恢复默认值" };
   },
 
   resetDefault() {
-    return this.set(GAME_SPEED_DEFAULT);
+    const p = target_player();
+    const stage = p
+      ? progressionStageForState(p.break === true, p.realities)
+      : "pre-break";
+    writeStageManaged(true);
+    lastProgressionStage = stage;
+    writeStoredStage(stage);
+    currentFactor = progressionSpeedForStage(stage);
+    const persisted = writeStored(currentFactor);
+    return {
+      ok: true,
+      value: currentFactor,
+      persisted,
+      message: persisted ? "" : "已生效，但浏览器拒绝写入本地存储，刷新后会恢复默认值",
+    };
   },
 
   /** 开始一次时间模拟，冻结当前倍率；返回用于结束的令牌 */
@@ -321,7 +425,10 @@ export function installSpeedGlobals(target = window) {
   try {
     if (!target.__orekiDynSpeedTimer) {
       target.__orekiDynSpeedTimer = setInterval(() => {
-        try { GameSpeed.tickDynamic(); } catch (e) { /* 控制器异常不得影响主循环 */ }
+        try {
+          GameSpeed.tickProgressionSpeed();
+          GameSpeed.tickDynamic();
+        } catch (e) { /* 控制器异常不得影响主循环 */ }
       }, 1000);
     }
   } catch (e) { /* 非浏览器环境忽略 */ }

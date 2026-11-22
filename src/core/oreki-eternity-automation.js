@@ -57,25 +57,25 @@ const STUDY_TICK_INTERVAL = 30;
 const RESERVE_REACHABLE_LOG10 = 2.0;
 
 /**
- * [R96] MOD 平衡参数「TT 购买收益 ×500」（用户 2026-11-09 正式裁决）。
+ * TT 购买收益保持原版 ×1。
  *
- * 原版每次成功购买给 1 TT；这里按 500 发放，但**成本曲线、购买资格、资源扣费
- * 与真实购买结算全部沿用原版**。实现方式是对账：
+ * 旧 MOD 曾把每次真实购买补发到 500 TT，这会让时间研究链、
+ * 永恒挑战和首次现实明显提前。五阶段节奏规则生效后，购买收益恢复原版 ×1；
+ * 成本曲线、购买资格、资源扣费与真实购买结算仍全部沿用原版。对账逻辑保留，
+ * 以避免存档或手动购买路径绕过统一口径：
  *   · 每帧读 `TimeTheorems.totalPurchased()`（= amBought + ipBought + epBought 之和）；
  *   · 与上一次基线比较，增量 Δ 就是「本帧真实发生的购买次数」；
- *   · 补发 Δ×(500−1) TT 走原版 `Currency.timeTheorems.add`，随后立刻推进基线。
+ *   · 补发 Δ×(1−1) TT（即 0）走原版 `Currency.timeTheorems.add`，随后立刻推进基线。
  * 这样手动点击、原版自动购买、MOD 自动购买、单次/批量购买**全部覆盖**，
  * 且同一笔购买不可能被发两次（基线在发奖后立即前进）。
  */
-const TT_REWARD_MULTIPLIER = 500;
+const TT_REWARD_MULTIPLIER = 1;
 
 /**
  * [R104 P1] 单帧购买次数上限：只用于拦截**数量级异常的换档跳变**（例如会话内导入更高进度存档）。
  *
- * 原值 50 的设定前提是 tick 每帧都被调用；但 R104 起 tick 走统一节拍（实测 ~45 s 才被服务一次），
- * 100000× 下每次服务都会真实购买数十万 TT ⇒ delta 恒 > 50，×500 奖励**一次都不会发**
- * （pass7 实测 _lastError 长期为 "delta 134/2.4e6 超出单帧上限 50"），TT 加速链断裂，
- * EP 卡在 e3682.74 到不了 isRealityAvailable 要求的 e4000。
+ * 高倍率下每次服务都可能真实购买数十万 TT；旧的小上限会把合法批量购买误判成换档，
+ * 从而让时间研究链停滞。这里因此保留数量级级保护，而不是限制正常购买。
  * 合法真实购买量远小于 1e8；只有换档级跳变才会超过它。
  */
 const TT_REWARD_MAX_DELTA_PER_TICK = 1e8;
@@ -207,6 +207,24 @@ export const OrekiEternityAutomation = {
    * `active` 还负责时间维度、TT 与时间研究购买；挑战中必须关闭这些经济动作。
    * 但永恒挑战的完成只能由“达到原版目标后的真实永恒”产生，不能把重置本身一起停掉。
    * 因此只在 EC 内额外放行重置入口；普通/无限挑战与 Pelle 毁灭态仍不接管。
+   */
+  get eternityResetActive() {
+    try {
+      if (player.auto.autobuyersOn === false || Pelle.isDoomed) return false;
+      if (EternityChallenge.isRunning) return true;
+      return this.active;
+    } catch (e) {
+      this._err("eternityResetActive", e);
+      return false;
+    }
+  },
+
+  /**
+   * 永恒重置的独立门禁。
+   *
+   * `active` 负责时间维度、TT 与时间研究购买；挑战中必须关闭这些经济动作。
+   * 但永恒挑战的完成只能由达到原版目标后的真实永恒结算产生，不能把重置入口一起停掉。
+   * 因此只在 EC 内额外放行重置；普通/无限挑战与 Pelle 毁灭态仍不接管。
    */
   get eternityResetActive() {
     try {
@@ -1009,6 +1027,24 @@ export const OrekiEternityAutomation = {
     return null;
   },
 
+  /** 当前永恒段真实时间；用于识别永恒结算把自动永恒开关复位，而非玩家手动关闭。 */
+  _thisEternityRealTime() {
+    try {
+      const v = player?.records?.thisEternity?.realTime;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
+  /** 永恒进度稳定令牌；真实永恒结算必须让其变化。 */
+  _eternitiesToken() {
+    try {
+      const v = player?.eternities;
+      return v === undefined || v === null ? null : String(v);
+    } catch (e) { /* ignore */ }
+    return null;
+  },
+
   /** 存档身份：Web 真实字段 records.gameCreatedTime（player.js:275 / storage.js:434）。 */
   _saveIdentity() {
     try {
@@ -1036,6 +1072,8 @@ export const OrekiEternityAutomation = {
     this._eternityAutoUserClosed = false;
     this._eternityAutoEnabledAtRealities = null;
     this._eternityAutoEnabledAtRealTime = null;
+    this._eternityAutoEnabledAtEternityRealTime = null;
+    this._eternityAutoEnabledAtEternities = null;
     this._eternityAutoLastSeenActive = undefined;
     // [R116-01] 首次永恒驻留的「曾永恒」latch 同样按存档身份失效。
     this._firstEternityEverSeen = false;
@@ -1052,12 +1090,16 @@ export const OrekiEternityAutomation = {
       const active = player.auto.eternity.isActive === true;
       const realities = this._realitiesValue();
       const realTime = this._thisRealityRealTime();
+      const eternityRealTime = this._thisEternityRealTime();
+      const eternities = this._eternitiesToken();
       if (active) {
         // 玩家（或上一会话）真实开着 ⇒ 本会话视为已接管，恢复链路成立。
         this._eternityAutobuyerAdopted = true;
         this._eternityAutoUserClosed = false;
         this._eternityAutoEnabledAtRealities = realities;
         this._eternityAutoEnabledAtRealTime = realTime;
+        this._eternityAutoEnabledAtEternityRealTime = eternityRealTime;
+        this._eternityAutoEnabledAtEternities = eternities;
         this._eternityAutoLastSeenActive = true;
         return;
       }
@@ -1074,7 +1116,19 @@ export const OrekiEternityAutomation = {
             realities !== null && realities > this._eternityAutoEnabledAtRealities;
           const realTimeReset = this._eternityAutoEnabledAtRealTime !== null &&
             realTime !== null && realTime < this._eternityAutoEnabledAtRealTime;
-          if (realitiesReset || realTimeReset) {
+          const eternityRealTimeReset =
+            this._eternityAutoEnabledAtEternityRealTime !== null &&
+            eternityRealTime !== null &&
+            eternityRealTime < this._eternityAutoEnabledAtEternityRealTime;
+          const eternitiesChanged =
+            this._eternityAutoEnabledAtEternities !== null &&
+            eternities !== null &&
+            eternities !== this._eternityAutoEnabledAtEternities;
+          // 本永恒真实时间回退是结算的直接证据。仅在时间不可读时才退回永恒计数变化，
+          // 避免“玩家消费永恒次数”和手动关闭同帧发生时把关闭误判为原版复位。
+          const eternityReset = eternityRealTimeReset ||
+            (eternityRealTime === null && eternitiesChanged);
+          if (realitiesReset || realTimeReset || eternityReset) {
             // 原版 Reality/永恒结算复位：不判玩家关闭，交给接管逻辑补回 true。
             this._eternityAutoUserClosed = false;
           } else if (realities !== null && realTime !== null) {
@@ -1325,6 +1379,8 @@ export const OrekiEternityAutomation = {
           this._eternityAutoLastSeenActive = true;
           this._eternityAutoEnabledAtRealities = this._realitiesValue();
           this._eternityAutoEnabledAtRealTime = this._thisRealityRealTime();
+          this._eternityAutoEnabledAtEternityRealTime = this._thisEternityRealTime();
+          this._eternityAutoEnabledAtEternities = this._eternitiesToken();
         }
         return;
       }
@@ -1339,6 +1395,8 @@ export const OrekiEternityAutomation = {
       this._eternityAutoLastSeenActive = true;
       this._eternityAutoEnabledAtRealities = this._realitiesValue();
       this._eternityAutoEnabledAtRealTime = this._thisRealityRealTime();
+      this._eternityAutoEnabledAtEternityRealTime = this._thisEternityRealTime();
+      this._eternityAutoEnabledAtEternities = this._eternitiesToken();
     } catch (e) { /* ignore */ }
   },
 
