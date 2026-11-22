@@ -24,6 +24,10 @@ const eternity = fs.readFileSync(
   "utf8",
 );
 const reality = fs.readFileSync(path.join(ROOT, "src/core/reality.js"), "utf8");
+const normalChallenges = fs.readFileSync(
+  path.join(ROOT, "src/core/normal-challenges.js"),
+  "utf8",
+);
 
 assert.match(speed, /export const GAME_SPEED_DEFAULT = 1000;/);
 assert.match(speed, /export const GAME_SPEED_POST_BREAK = 1800;/);
@@ -53,6 +57,11 @@ assert.match(eternity, /tryEternityChallenge8Purchases\(\)/);
 assert.match(eternity, /InfinityDimensions\.buyMax\(\)/);
 assert.match(eternity, /ReplicantiUpgrade\.chance/);
 assert.doesNotMatch(eternity, /ReplicantiUpgrade\.(?:chance|interval|galaxies)\.autobuyerTick\(\)/);
+assert.match(normalChallenges, /export function c11MatterGrowthPower\(/);
+assert.match(normalChallenges, /const divisor = infinityChallengeRunning \? factor : factor \* Math\.sqrt\(factor\);/);
+assert.match(normalChallenges, /return diff \/ divisor \/ 20;/);
+assert.match(normalChallenges, /c11MatterGrowthPower\(diff\)/);
+assert.doesNotMatch(normalChallenges, /diff \/ getGlobalSpeedFactor\(\) \/ 20/);
 assert.equal(fs.existsSync(path.join(ROOT, "src/core/oreki-instant-challenges.js")), false);
 assert.doesNotMatch(game, /tryInstantCompleteChallenges|oreki-instant-challenges/);
 assert.equal(tutorialText.includes("阶段速度"), true);
