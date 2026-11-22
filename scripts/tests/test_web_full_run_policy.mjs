@@ -2,10 +2,52 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildGateSummary,
+  checkpointExportError,
   classifyFirstReality,
   overallResult,
+  recordCheckpointExport,
   validateRunnerOptions,
 } from "../web-full-run-policy.mjs";
+
+test("存档导出 API 缺失、抛错或空文本必须成为运行错误", () => {
+  assert.match(
+    checkpointExportError({ save: null }),
+    /exportModifiedSave 不可用/,
+  );
+  assert.equal(
+    checkpointExportError({ save: "ERROR: export failed" }),
+    "ERROR: export failed",
+  );
+  assert.match(
+    checkpointExportError({ save: "" }),
+    /返回空文本/,
+  );
+  assert.equal(checkpointExportError({ save: "{}" }), null);
+});
+
+test("存档导出失败必须写入 runtimeErrors 并阻断总体 PASS", () => {
+  const summary = { runtimeErrors: [] };
+  const exportError = recordCheckpointExport(summary, "运行结束", { save: null });
+  assert.match(exportError, /exportModifiedSave 不可用/);
+  assert.deepEqual(summary.runtimeErrors, [
+    "checkpoint 运行结束: GameStorage.exportModifiedSave 不可用或未返回文本",
+  ]);
+  const gates = buildGateSummary({
+    gameEnd: true,
+    gameEndWallSeconds: 9000,
+    totalWallSeconds: 9120,
+    maxWallSeconds: 10800,
+    confirmSeconds: 120,
+    confirmRegressions: 0,
+    firstRealityWallSeconds: 4300,
+  });
+  assert.equal(overallResult(gates, {
+    gameEnd: true,
+    totalWallSeconds: 9120,
+    maxWallSeconds: 10800,
+    errorCount: summary.runtimeErrors.length,
+  }), "RUNTIME-ERROR");
+});
 
 test("Reality 早于 70 分钟必须 FAIL", () => {
   assert.equal(classifyFirstReality(4199).status, "FAIL");
