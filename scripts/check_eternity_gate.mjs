@@ -1501,6 +1501,37 @@ try {
 }
 
 // ---------------- 汇总 ----------------
+{
+  reset();
+  arm({ hold: false, ec: false, autoEternity: false });
+  player.auto.eternity.isActive = false;
+  player.eternities = new Decimal(0);
+  globalThis.EternityMilestone = { autobuyerEternity: { isReached: false } };
+  A._freshSessionBootstrap = true;
+  A._eternityAutobuyerAdopted = true;
+  env.canEternity = true;
+  env.ep = 0;
+  env.gained = 1e100;
+  const savedDwell = A.firstEternityDwellRemainingMs;
+  let dwellRemaining = 180_000;
+  A.firstEternityDwellRemainingMs = () => dwellRemaining;
+  check("首次永恒驻留中不抢占调度优先槽",
+    A.shouldPrioritizeSettlement() === false);
+  dwellRemaining = 0;
+  check("首次永恒驻留结束后优先请求真实结算",
+    A.shouldPrioritizeSettlement() === true);
+  check("优先请求本身不直接调用 eternity",
+    env.eternityCalls.length === 0);
+  A.firstEternityDwellRemainingMs = savedDwell;
+  const gameSource = readFileSync(path.join(ROOT, "src/game.js"), "utf8");
+  check("game.js 将永恒结算接到同一优先级提示",
+    gameSource.includes("OrekiEternityAutomation.shouldPrioritizeSettlement()") &&
+    gameSource.includes('? "eternityReset"'));
+  delete globalThis.EternityMilestone;
+  reset();
+}
+
+// ---------------- 汇总 ----------------
 console.log(`\n网页版自动永恒闸门回归：${checks} 项检查，失败 ${failures.length} 项`);
 if (failures.length) {
   for (const f of failures) console.log("  FAIL", f);

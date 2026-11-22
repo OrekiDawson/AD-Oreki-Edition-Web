@@ -1402,6 +1402,11 @@ function debugState() {
     lastNoopReason: STATE.lastNoopReason,
     actionCount: STATE.actionCount,
     attemptCount: STATE.attemptCount,
+    attemptSeq: STATE.attemptSeq,
+    taskLastAttemptSeq: { ...STATE.taskLastAttemptSeq },
+    noopSkips: STATE.noopSkips ?? 0,
+    lastBeatAt: STATE.lastBeatAt,
+    frameActed: STATE.frameActed,
     /**
      * [Oreki R45·4] 活性指标：距离上一次**真的发出动作**过去多少秒；
      * 以及当前这一轮「发不出动作」已经持续多少秒（0 = 本帧正常）。

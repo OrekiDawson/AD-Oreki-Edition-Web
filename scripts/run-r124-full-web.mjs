@@ -223,6 +223,75 @@ function initPageProbe() {
         speed: number(window.GameSpeed?.factor),
         visibility: document.visibilityState,
         offlineTimeUsed: number(p.speedrun?.offlineTimeUsed),
+        canEternity: window.Player?.canEternity === true,
+        eternityGoalLog10: log10(window.Player?.eternityGoal),
+        thisEternityMaxIPLog10: log10(p.records?.thisEternity?.maxIP),
+        noEternitiesYet: p.requirementChecks?.reality?.noEternities === true,
+        autobuyersOn: p.auto?.autobuyersOn === true,
+        eternityAutobuyer: (() => {
+          try {
+            const buyer = p.auto?.eternity;
+            return {
+              isActive: buyer?.isActive === true,
+              isUnlocked: window.Autobuyer?.eternity?.isUnlocked === true,
+              mode: number(buyer?.mode),
+              amountLog10: log10(buyer?.amount),
+              xHighestLog10: log10(buyer?.xHighest),
+              time: number(buyer?.time),
+            };
+          } catch {
+            return null;
+          }
+        })(),
+        eternityAutomation: (() => {
+          try {
+            const automation = window.OrekiEternityAutomation;
+            if (!automation) return null;
+            return {
+              active: automation.active === true,
+              eternityResetActive: automation.eternityResetActive === true,
+              ecEntryPending: automation.ecEntryPending(),
+              noopReason: automation.noopReason("eternity"),
+              firstEternityEverSeen: automation._firstEternityEverSeen === true,
+              freshSessionBootstrap: automation._freshSessionBootstrap === true,
+              dwellStartedAt: number(automation._firstEternityDwellStartedAt),
+              adopted: automation._eternityAutobuyerAdopted === true,
+              userClosed: automation._eternityAutoUserClosed === true,
+              lastError: automation._lastError || null,
+            };
+          } catch {
+            return null;
+          }
+        })(),
+        executor: (() => {
+          try {
+            const state = window.OrekiSmartExecutor?.debugState?.();
+            if (!state) return null;
+            return {
+              enabled: state.enabled === true,
+              intervalSec: number(state.intervalSec),
+              eternityStageAllowed: state.eternityStageAllowed === true,
+              stalledSec: number(state.stalledSec),
+              attemptCount: number(state.attemptCount),
+              attemptSeq: number(state.attemptSeq),
+              actionCount: number(state.actionCount),
+              lastExecAgoSec: number(state.lastExecAgoSec),
+              lastBeatAt: number(state.lastBeatAt),
+              frameActed: state.frameActed === true,
+              noopSkips: number(state.noopSkips),
+              taskLastAttemptSeq: state.taskLastAttemptSeq || null,
+              beat: state.beat || null,
+              idle: state.idle || null,
+              lastResult: state.lastResult || null,
+              noAction: state.noAction || null,
+              lastNoopReason: state.lastNoopReason || null,
+              lastError: state.lastError || null,
+              execLog: Array.isArray(state.execLog) ? state.execLog.slice(-8) : [],
+            };
+          } catch {
+            return null;
+          }
+        })(),
       };
       if (!window.__r124.birth) window.__r124.birth = { ...snapshot };
       window.__r124.last = snapshot;

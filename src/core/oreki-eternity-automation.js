@@ -396,6 +396,10 @@ export const OrekiEternityAutomation = {
           return "IU15 冲刺期间禁止永恒（永恒会把反物质指数打回 0）";
         }
         if (!Player.canEternity) return "还没到可永恒门槛（IP 需 1.797e308）";
+        const dwellMs = this.firstEternityDwellRemainingMs();
+        if (dwellMs > 0) {
+          return `首次永恒驻留中（剩余 ${Math.ceil(dwellMs / 1000)} 秒）`;
+        }
         if (this.holdForRealityUpgrade10()) {
           return "为拿现实升级 10 暂压本现实里的第一次永恒（IP 指数需 ≥400），最多压 10 秒";
         }
@@ -410,6 +414,23 @@ export const OrekiEternityAutomation = {
     } catch (e) {
       this._err("noopReason", e);
       return "";
+    }
+  },
+
+  /**
+   * 首次永恒驻留结束后，让真实永恒结算在下一调度拍优先获得唯一动作槽。
+   *
+   * 这不是绕过调度器或门禁：仍由 runCycle 的全局间隔、同帧单动作和 tickEternity
+   * 的全部合法条件决定是否真的结算。它只消除 routine/early 等低优先级动作长期
+   * 先占槽导致的额外等待。新档实测 canEternity 于 482 s 成立，180 s 驻留结束后
+   * 仍约 100 s 才结算；默认 10 s 节拍表明这是后续任务先占槽的调度延迟。
+   */
+  shouldPrioritizeSettlement() {
+    try {
+      return this.noopReason("eternity") === "";
+    } catch (e) {
+      this._err("shouldPrioritizeSettlement", e);
+      return false;
     }
   },
 

@@ -1152,7 +1152,10 @@ export function gameLoop(passDiff, options = {}) {
     // 同上：自动器启用状态维护失败时保持原状，不影响主循环
   }
 
-  OrekiSmartExecutor.setPriorityHint(shouldPrioritizeEarlyForId1() ? "early" : "");
+  const priorityHint = OrekiEternityAutomation.shouldPrioritizeSettlement()
+    ? "eternityReset"
+    : (shouldPrioritizeEarlyForId1() ? "early" : "");
+  OrekiSmartExecutor.setPriorityHint(priorityHint);
   // ── [R97 P0] 永恒层阶段门禁（与 Android `OrekiStageAuto.onAutoBuyerTick()` 逐条等价）──
   //
   // 真机根因（Android 4bf947f）：首次无限后、打破无限未完成时就被驱动了
