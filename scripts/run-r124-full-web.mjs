@@ -8,8 +8,8 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 import {
   buildGateSummary,
-  checkpointExportError,
   overallResult,
+  recordCheckpointExport,
   validateRunnerOptions,
 } from "./web-full-run-policy.mjs";
 
@@ -287,10 +287,7 @@ async function persistCheckpoint(reason) {
       }
       return { save, storage };
     });
-    const exportError = checkpointExportError(checkpoint);
-    if (exportError) {
-      summary.runtimeErrors.push(`checkpoint ${reason}: ${exportError}`);
-    }
+    const exportError = recordCheckpointExport(summary, reason, checkpoint);
     const base = `${String(summary.checkpoints.length + 1).padStart(2, "0")}-${reason}`;
     const jsonPath = path.join(CHECKPOINTS, `${base}.json`);
     fs.writeFileSync(jsonPath, `${JSON.stringify(checkpoint, null, 2)}\n`);

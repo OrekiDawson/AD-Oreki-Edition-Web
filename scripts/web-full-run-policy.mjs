@@ -18,6 +18,14 @@ export function checkpointExportError(checkpoint) {
   return null;
 }
 
+export function recordCheckpointExport(summary, reason, checkpoint) {
+  const exportError = checkpointExportError(checkpoint);
+  if (exportError) {
+    summary.runtimeErrors.push(`checkpoint ${reason}: ${exportError}`);
+  }
+  return exportError;
+}
+
 /**
  * 只按页面内观测到的真实首次 Reality 时刻判断提前/正常/偏晚。
  *
