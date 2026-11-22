@@ -427,7 +427,17 @@ export const OrekiEternityAutomation = {
    */
   shouldPrioritizeSettlement() {
     try {
-      return this.noopReason("eternity") === "";
+      if (!this.eternityResetActive) return false;
+      if (this.noopReason("eternity") !== "") return false;
+      // priorityHint 必须与 tickEternity 的真实入口门禁一致。否则玩家关闭
+      // auto.eternity 后会长期把唯一优先槽钉在永不动作的 eternityReset 上，
+      // 饿死 early 购买。这里只做只读判据，不调用会推进状态的 _justCrunchedFrame()。
+      if (player.auto.eternity.isActive !== true && !this._eternityBootstrapActive()) {
+        return false;
+      }
+      if (player.break !== true) return false;
+      if ((this._crunchSkipFrames ?? 0) > 0) return false;
+      return true;
     } catch (e) {
       this._err("shouldPrioritizeSettlement", e);
       return false;
