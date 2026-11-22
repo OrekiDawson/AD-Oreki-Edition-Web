@@ -391,7 +391,14 @@ export const OrekiEternityAutomation = {
         return "反物质 / IP / EP 三种货币都不够买下一个时间之理";
       }
       if (verbId === "eternity") {
-        if (!this.active) return "永恒自动器未启用（自动购买器关闭，或处于 Pelle 末日态）";
+        // EC 中 active 故意为 false（避免挑战内买 TT/TD/TS），但
+        // eternityResetActive 仍为 true；解释链必须与真实重置入口一致。
+        if (!this.eternityResetActive) {
+          return "永恒自动器未启用（自动购买器关闭，或处于 Pelle 末日态）";
+        }
+        if (player.auto.eternity.isActive !== true && !this._eternityBootstrapActive()) {
+          return "永恒自动器未启用（原版自动永恒开关已关闭）";
+        }
         if (globalThis.OrekiIu15Sprint?.freezeResets === true) {
           return "IU15 冲刺期间禁止永恒（永恒会把反物质指数打回 0）";
         }
@@ -404,6 +411,12 @@ export const OrekiEternityAutomation = {
           return "为拿现实升级 10 暂压本现实里的第一次永恒（IP 指数需 ≥400），最多压 10 秒";
         }
         if (this.ecEntryPending()) return "正在等 EC 入口（主研究已买、只差资源），先不重置";
+        if (EternityChallenge.isRunning) {
+          const challenge = EternityChallenge.current;
+          return challenge?.canBeCompleted
+            ? ""
+            : "当前永恒挑战未达到原版完成条件";
+        }
         // 与 tickEternity() 同一门槛（×1）：收益不足当前 EP 就不重置，面板文案同步。
         if (gainedEternityPoints().lt(Currency.eternityPoints.value.times(1))) {
           return "本次永恒收益不足当前 EP（没让 EP 翻倍），等涨起来再重置";
@@ -427,7 +440,17 @@ export const OrekiEternityAutomation = {
    */
   shouldPrioritizeSettlement() {
     try {
-      return this.noopReason("eternity") === "";
+      if (!this.eternityResetActive) return false;
+      if (this.noopReason("eternity") !== "") return false;
+      // priorityHint 必须与 tickEternity 的真实入口门禁一致。否则玩家关闭
+      // auto.eternity 后会长期把唯一优先槽钉在永不动作的 eternityReset 上，
+      // 饿死 early 购买。这里只做只读判据，不调用会推进状态的 _justCrunchedFrame()。
+      if (player.auto.eternity.isActive !== true && !this._eternityBootstrapActive()) {
+        return false;
+      }
+      if (player.break !== true) return false;
+      if ((this._crunchSkipFrames ?? 0) > 0) return false;
+      return true;
     } catch (e) {
       this._err("shouldPrioritizeSettlement", e);
       return false;
