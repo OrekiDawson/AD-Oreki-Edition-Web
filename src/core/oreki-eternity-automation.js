@@ -396,6 +396,9 @@ export const OrekiEternityAutomation = {
         if (!this.eternityResetActive) {
           return "永恒自动器未启用（自动购买器关闭，或处于 Pelle 末日态）";
         }
+        if (player.auto.eternity.isActive !== true && !this._eternityBootstrapActive()) {
+          return "永恒自动器未启用（原版自动永恒开关已关闭）";
+        }
         if (globalThis.OrekiIu15Sprint?.freezeResets === true) {
           return "IU15 冲刺期间禁止永恒（永恒会把反物质指数打回 0）";
         }

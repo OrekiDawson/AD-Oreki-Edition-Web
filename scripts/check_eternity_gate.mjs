@@ -1545,6 +1545,11 @@ try {
   env.ecCanComplete = false;
   check("EC 未达标时不得抢占结算优先槽",
     A.shouldPrioritizeSettlement() === false);
+  env.ecCanComplete = true;
+  player.auto.eternity.isActive = false;
+  check("EC 达标但原版自动永恒关闭时仍不得抢占结算优先槽",
+    A.shouldPrioritizeSettlement() === false);
+  player.auto.eternity.isActive = true;
   env.ecRunning = false;
   env.ecCanComplete = false;
   A._eternityBootstrapActive = savedBootstrapActive;
