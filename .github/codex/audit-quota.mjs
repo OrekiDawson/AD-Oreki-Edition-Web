@@ -141,7 +141,9 @@ export function kodyQuotaCounts(records, date) {
   };
 }
 
-export function importKodyEvidence(records, evidence, date, now) {
+export function importKodyEvidence(records, evidence, date, now, {
+  allowExistingAcrossDates = false,
+} = {}) {
   const output = [...records];
   let changed = false;
   const recordIndexByComment = new Map();
@@ -165,13 +167,21 @@ export function importKodyEvidence(records, evidence, date, now) {
     if (!Number.isFinite(createdAt.getTime())) {
       throw new Error("Kody quota evidence requires a valid creation time");
     }
-    if (shanghaiDate(createdAt) !== date) continue;
     const commentKey = `${repository}#${commentId}`;
     const existingIndex = recordIndexByComment.get(commentKey);
+    if (
+      shanghaiDate(createdAt) !== date &&
+      !(allowExistingAcrossDates && existingIndex !== undefined)
+    ) {
+      continue;
+    }
     if (existingIndex !== undefined) {
       const existing = output[existingIndex];
       const headSha = String(item?.headSha ?? "").trim();
-      if (!existing.headSha && /^[a-f0-9]{40}$/iu.test(headSha)) {
+      if (
+        /^[a-f0-9]{40}$/iu.test(headSha) &&
+        existing.headSha !== headSha
+      ) {
         output[existingIndex] = {
           ...existing,
           headSha,
@@ -194,7 +204,7 @@ export function importKodyEvidence(records, evidence, date, now) {
         ? { headSha: String(item.headSha) }
         : {}),
       source: "observed_comment",
-      date,
+      date: shanghaiDate(createdAt),
       status: "posted",
       createdAt: createdAt.toISOString(),
       updatedAt: now,
@@ -475,30 +485,34 @@ export function markKodySkippedPure(records, {
   if (!target) {
     return { ok: false, reason: "trigger-after-check", records };
   }
+  const priorRealReviewMatches = record => {
+    const recordMs = recordTime(record);
+    const commentId = String(record.commentId ?? "");
+    return priorRealReviews.find(review => {
+      const startedMs = Date.parse(String(review?.startedAt ?? ""));
+      if (!Number.isFinite(startedMs)) return false;
+      const reviewCommentId = String(review?.commentId ?? "");
+      if (commentId && reviewCommentId) {
+        return reviewCommentId === commentId;
+      }
+      return Number.isFinite(recordMs) &&
+        startedMs >= recordMs &&
+        startedMs <= checkStartedMs;
+    });
+  };
   if (target.status === "reserved" && !String(target.commentId ?? "").trim()) {
     const targetMs = recordTime(target);
-    const earlierComment = candidates.some(record =>
+    const earlierCommentUnreviewed = candidates.some(record =>
       record !== target &&
       String(record.commentId ?? "").trim() !== "" &&
       Number.isFinite(recordTime(record)) &&
-      recordTime(record) < targetMs);
-    if (earlierComment) {
+      recordTime(record) < targetMs &&
+      !priorRealReviewMatches(record));
+    if (earlierCommentUnreviewed) {
       return { ok: false, reason: "ambiguous-reservation-and-comment", records };
     }
   }
-  const targetRecordMs = recordTime(target);
-  const targetCommentId = String(target.commentId ?? "");
-  const priorRealReview = priorRealReviews.find(review => {
-    const startedMs = Date.parse(String(review?.startedAt ?? ""));
-    if (!Number.isFinite(startedMs)) return false;
-    const reviewCommentId = String(review?.commentId ?? "");
-    if (targetCommentId && reviewCommentId) {
-      return reviewCommentId === targetCommentId;
-    }
-    return Number.isFinite(targetRecordMs) &&
-      startedMs >= targetRecordMs &&
-      startedMs <= checkStartedMs;
-  });
+  const priorRealReview = priorRealReviewMatches(target);
   if (priorRealReview) {
     return {
       ok: false,
@@ -562,46 +576,57 @@ export function clearPendingKodySkip(records, pendingIdentity) {
     !(record?.kind === KODY_SKIP_PENDING_KIND && record.identity === pendingIdentity));
 }
 
-export async function markKodySkippedQuota(token, checkEvidence, { now = new Date() } = {}) {
-  const date = shanghaiDate(now);
+export function applyKodySkipEvidence(records, checkEvidence, {
+  date = shanghaiDate(),
+  now = new Date().toISOString(),
+} = {}) {
   const {
     evidence = [],
     ...skipIdentity
   } = checkEvidence;
-  return mutate(token, date, records => {
-    const imported = importKodyEvidence(records, evidence, date, now.toISOString());
-    const result = markKodySkippedPure(imported, {
-      ...skipIdentity,
-      now: now.toISOString(),
-    });
-    const pendingIdentity =
-      `kody-skip-pending:${String(skipIdentity.repository ?? "")}` +
-      `#${Number(skipIdentity.pr)}@${String(skipIdentity.headSha ?? "")}` +
-      `:${String(skipIdentity.checkRunId ?? "")}`;
-    if (result.ok) {
-      const records = clearPendingKodySkip(result.records, pendingIdentity);
-      return records === result.records ? result : { ...result, records };
-    }
-    if ([
-      "unattributed-trigger",
-      "missing-check-start-time",
-      "missing-check-created-time",
-      "ambiguous-reservation-and-comment",
-    ].includes(result.reason)) {
-      const pending = queuePendingKodySkip(
-        result.records,
-        skipIdentity,
-        result.reason,
-        now.toISOString(),
-      );
-      return {
-        ...result,
-        pendingQueued: pending !== result.records,
-        records: pending,
-      };
-    }
-    return result;
+  const imported = importKodyEvidence(records, evidence, date, now, {
+    allowExistingAcrossDates: true,
   });
+  const result = markKodySkippedPure(imported, {
+    ...skipIdentity,
+    now,
+  });
+  const pendingIdentity =
+    `kody-skip-pending:${String(skipIdentity.repository ?? "")}` +
+    `#${Number(skipIdentity.pr)}@${String(skipIdentity.headSha ?? "")}` +
+    `:${String(skipIdentity.checkRunId ?? "")}`;
+  if (result.ok) {
+    const nextRecords = clearPendingKodySkip(result.records, pendingIdentity);
+    return nextRecords === result.records ? result : { ...result, records: nextRecords };
+  }
+  if ([
+    "unattributed-trigger",
+    "missing-check-start-time",
+    "missing-check-created-time",
+    "ambiguous-reservation-and-comment",
+  ].includes(result.reason)) {
+    const pending = queuePendingKodySkip(
+      result.records,
+      skipIdentity,
+      result.reason,
+      now,
+    );
+    return {
+      ...result,
+      pendingQueued: pending !== result.records,
+      records: pending,
+    };
+  }
+  return result;
+}
+
+export async function markKodySkippedQuota(token, checkEvidence, { now = new Date() } = {}) {
+  const date = shanghaiDate(now);
+  return mutate(token, date, records =>
+    applyKodySkipEvidence(records, checkEvidence, {
+      date,
+      now: now.toISOString(),
+    }));
 }
 
 export function applyCas(records, expectedVersion, currentVersion, transform) {

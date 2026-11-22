@@ -121,6 +121,76 @@ test("Kody skipped 入口读取事件名并覆盖自动事件与手动重核分�
       /workflow_dispatch check_run_id is invalid/u,
     );
 
+    const originalFetch = globalThis.fetch;
+    const requests = [];
+    const checkedSha = "a".repeat(40);
+    const jsonResponse = data => ({
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      async json() { return data; },
+    });
+    globalThis.fetch = async (url, init = {}) => {
+      const target = String(url);
+      requests.push({ target, method: init.method ?? "GET" });
+      if (target.endsWith("/check-runs/200")) {
+        return jsonResponse({
+          id: 200,
+          name: "Kody Code Review",
+          status: "completed",
+          conclusion: "skipped",
+          head_sha: checkedSha,
+          created_at: "2026-11-21T12:58:10Z",
+          started_at: "2026-11-21T12:59:00Z",
+          app: { slug: "kody-ai" },
+          pull_requests: [{ number: 42 }],
+        });
+      }
+      if (target.includes(`/commits/${checkedSha}/check-runs`)) {
+        return jsonResponse({ total_count: 0, check_runs: [] });
+      }
+      if (target.endsWith(`/commits/${checkedSha}`)) {
+        return jsonResponse({
+          commit: {
+            committer: { date: "2026-11-21T12:57:00Z" },
+            author: { date: "2026-11-21T12:57:00Z" },
+          },
+        });
+      }
+      if (target.endsWith("/pulls/42")) return jsonResponse(pr());
+      if (target.includes("/issues/42/comments")) return jsonResponse([]);
+      if (target.includes("/issues/42/timeline")) return jsonResponse([]);
+      if (target.includes("/git/ref/heads/oreki-audit-quota")) {
+        throw new Error("quota dispatch reached");
+      }
+      throw new Error(`unexpected fetch ${target}`);
+    };
+    try {
+      process.env.INPUT_CHECK_RUN_ID = "200";
+      await assert.rejects(
+        reconcileKodySkip(),
+        /quota dispatch reached/u,
+      );
+      assert.equal(
+        requests.some(request => request.target.endsWith("/check-runs/200")),
+        true,
+      );
+      assert.equal(
+        requests.some(request => request.target.includes("/issues/42/comments")),
+        true,
+      );
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+
+    process.env.GITHUB_REPOSITORY = "";
+    process.env.INPUT_CHECK_RUN_ID = "200";
+    await assert.rejects(
+      reconcileKodySkip(),
+      /GITHUB_REPOSITORY is required/u,
+    );
+    process.env.GITHUB_REPOSITORY = repository;
+
     process.env.GITHUB_EVENT_NAME = "";
     await assert.rejects(
       reconcileKodySkip(),
@@ -527,6 +597,17 @@ test("按 PR timeline 顺序为触发评论绑定当时的 Head", () => {
     ], repository, 42, heads).map(item => item.headSha),
     [headA],
   );
+});
+
+test("force push 后触发评论绑定新 Head", () => {
+  const headA = "a".repeat(40);
+  const headB = "b".repeat(40);
+  const heads = triggerCommentHeadShas([
+    { event: "committed", sha: headA },
+    { event: "head_ref_force_pushed", before: headA, after: headB },
+    { event: "commented", id: 72 },
+  ]);
+  assert.equal(heads.get("72"), headB);
 });
 
 test("真实 Kody Check 按创建时间绑定请求，启动延迟不改变触发评论", () => {

@@ -50,6 +50,13 @@ export function triggerCommentHeadShas(timeline) {
   const heads = new Map();
   let currentHeadSha = "";
   for (const event of timeline) {
+    if (
+      event?.event === "head_ref_force_pushed" &&
+      /^[a-f0-9]{40}$/iu.test(String(event.after ?? ""))
+    ) {
+      currentHeadSha = event.after;
+      continue;
+    }
     if (event?.event === "committed" && /^[a-f0-9]{40}$/iu.test(String(event.sha ?? ""))) {
       currentHeadSha = event.sha;
       continue;
@@ -205,6 +212,8 @@ export async function main() {
   if (!token) throw new Error("GH_TOKEN is required");
   const eventName = String(process.env.GITHUB_EVENT_NAME ?? "").trim();
   if (!eventName) throw new Error("GITHUB_EVENT_NAME is required");
+  const repositoryName = String(process.env.GITHUB_REPOSITORY ?? "").trim();
+  if (!repositoryName) throw new Error("GITHUB_REPOSITORY is required");
   let event = JSON.parse(readFileSync(eventPath, "utf8"));
   if (eventName === "workflow_dispatch") {
     const input = String(process.env.INPUT_CHECK_RUN_ID ?? "").trim();
@@ -212,12 +221,12 @@ export async function main() {
       throw new Error("workflow_dispatch check_run_id is invalid");
     }
     const check = await githubJson(
-      `/repos/${process.env.GITHUB_REPOSITORY}/check-runs/${input}`,
+      `/repos/${repositoryName}/check-runs/${input}`,
       token,
     );
     event = {
       action: "completed",
-      repository: { full_name: process.env.GITHUB_REPOSITORY },
+      repository: { full_name: repositoryName },
       check_run: check,
     };
   }
@@ -323,6 +332,15 @@ export async function main() {
     if (!result.ok &&
         commentsFetchFailed &&
         result.reason === "no-matching-kody-trigger") {
+      throw new Error(
+        `Kody skip: ${match.repository}#${match.pr} requires retry: ${result.reason}`,
+      );
+    }
+    if (!result.ok && result.reason === "no-matching-kody-trigger") {
+      console.warn(
+        `::warning::Kody skip ${match.repository}#${match.pr}@${match.headSha} ` +
+        "无法关联唯一触发评论；保留额度并要求重核。",
+      );
       throw new Error(
         `Kody skip: ${match.repository}#${match.pr} requires retry: ${result.reason}`,
       );

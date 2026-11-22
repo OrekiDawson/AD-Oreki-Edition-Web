@@ -8,6 +8,7 @@ import {
   LIMIT,
   SHARED_QUOTA_REPOSITORIES,
   applyCas,
+  applyKodySkipEvidence,
   attachKodyCommand,
   clearPendingKodySkip,
   consumedCount,
@@ -548,6 +549,82 @@ const ambiguousReservation = markKodySkippedPure(mixedReservation.records, {
 assert.equal(ambiguousReservation.ok, false);
 assert.equal(ambiguousReservation.reason, "ambiguous-reservation-and-comment");
 assert.equal(ambiguousReservation.records, mixedReservation.records);
+const ambiguousPending = applyKodySkipEvidence(mixedReservation.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98146,
+  checkCreatedAt: "2026-11-20T00:00:20Z",
+  checkStartedAt: "2026-11-20T00:00:30Z",
+}, {
+  date: kodyDate,
+  now: "2026-11-20T00:00:30Z",
+});
+assert.equal(ambiguousPending.reason, "ambiguous-reservation-and-comment");
+assert.equal(ambiguousPending.pendingQueued, true);
+assert.equal(
+  ambiguousPending.records.some(record =>
+    record.kind === KODY_SKIP_PENDING_KIND &&
+    record.status === "pending_attribution" &&
+    record.reason === "ambiguous-reservation-and-comment"),
+  true,
+);
+assert.equal(
+  kodyQuotaCounts(ambiguousPending.records, kodyDate).used,
+  kodyQuotaCounts(mixedReservation.records, kodyDate).used,
+);
+const disambiguatedReservation = markKodySkippedPure(mixedReservation.records, {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98147,
+  checkCreatedAt: "2026-11-20T00:00:20Z",
+  checkStartedAt: "2026-11-20T00:00:30Z",
+  priorRealReviews: [{
+    commentId: "9501",
+    startedAt: "2026-11-20T00:00:12Z",
+  }],
+});
+assert.equal(disambiguatedReservation.ok, true);
+assert.equal(
+  disambiguatedReservation.records.find(record => !record.commentId).status,
+  "skipped",
+);
+
+const priorDayRecord = {
+  ...observedOnly,
+  identity: `kody-comment:${kodyAndroid}#9601`,
+  headSha: undefined,
+  commentId: "9601",
+  createdAt: "2026-11-20T15:00:00Z",
+  date: "2026-11-20",
+};
+const crossDayRefund = applyKodySkipEvidence([priorDayRecord], {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98148,
+  checkCreatedAt: "2026-11-20T16:29:00Z",
+  checkStartedAt: "2026-11-20T16:30:00Z",
+  headCommittedAt: "2026-11-20T14:50:00Z",
+  currentPullRequestHeadSha: "a".repeat(40),
+  currentPullRequestHeadCommittedAt: "2026-11-20T14:50:00Z",
+  evidence: [{
+    repository: kodyAndroid,
+    pr: 121,
+    commentId: "9601",
+    headSha: "a".repeat(40),
+    createdAt: "2026-11-20T15:00:00Z",
+  }],
+}, {
+  date: "2026-11-21",
+  now: "2026-11-20T16:30:00Z",
+});
+assert.equal(crossDayRefund.ok, true);
+assert.equal(crossDayRefund.reason, "kody-skipped-refunded");
+assert.equal(crossDayRefund.records[0].status, "skipped");
+assert.equal(crossDayRefund.records[0].date, "2026-11-20");
+assert.equal(crossDayRefund.records[0].headSha, "a".repeat(40));
 const skipSecond = attachKodyCommand(
   reserveKodyPure(skipFirst.records, kodyCandidate("same-head-second", kodyAndroid), {
     date: kodyDate,
