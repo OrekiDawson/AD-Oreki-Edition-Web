@@ -1,0 +1,80 @@
+export const FIRST_REALITY_MIN_SECONDS = 70 * 60;
+export const FIRST_REALITY_TOLERANCE_SECONDS = 5 * 60;
+export const FULL_RUN_SECONDS = 180 * 60;
+
+/**
+ * 只按页面内观测到的真实首次 Reality 时刻判断提前/正常/偏晚。
+ *
+ * 偏晚不等于五阶段 PACING 已 PASS；还需要后续检查完整阶段时间线。
+ */
+export function classifyFirstReality(wallSeconds) {
+  if (!Number.isFinite(wallSeconds) || wallSeconds < 0) {
+    return { status: "NOT RUN", reason: "missing-first-reality-time" };
+  }
+  if (wallSeconds < FIRST_REALITY_MIN_SECONDS) {
+    return {
+      status: "FAIL",
+      reason: "first-reality-before-70-minutes",
+      wallSeconds,
+    };
+  }
+  if (wallSeconds <= FIRST_REALITY_MIN_SECONDS + FIRST_REALITY_TOLERANCE_SECONDS) {
+    return {
+      status: "PASS-BAND",
+      reason: "first-reality-within-70-75-minute-band",
+      wallSeconds,
+    };
+  }
+  return {
+    status: "NOT RUN",
+    reason: "first-reality-after-75-minute-band; full timeline review required",
+    wallSeconds,
+  };
+}
+
+/**
+ * 五项门禁独立汇总。PACING 只有在完整时间线经人工核验后才可另行记 PASS；
+ * 本工具可以确定提前 Reality 为 FAIL，也能独立判断 ENDGAME 与终局后稳定性。
+ */
+export function buildGateSummary({
+  gameEnd,
+  gameEndWallSeconds,
+  totalWallSeconds,
+  maxWallSeconds,
+  confirmSeconds,
+  confirmRegressions,
+  firstRealityWallSeconds,
+}) {
+  const firstReality = classifyFirstReality(firstRealityWallSeconds);
+  const fullBudgetRequested = maxWallSeconds >= FULL_RUN_SECONDS;
+
+  let endgame = "NOT RUN";
+  if (gameEnd === true && Number.isFinite(gameEndWallSeconds)) {
+    endgame = gameEndWallSeconds <= FULL_RUN_SECONDS ? "PASS" : "FAIL";
+  } else if (fullBudgetRequested && totalWallSeconds >= maxWallSeconds) {
+    endgame = "FAIL";
+  }
+
+  let postEndgame = "NOT RUN";
+  if (gameEnd === true) {
+    postEndgame = confirmSeconds >= 120 && confirmRegressions === 0 ? "PASS" : "FAIL";
+  }
+
+  return {
+    gameplayLegality: "NOT RUN",
+    pacing: firstReality.status === "FAIL" ? "FAIL" : "NOT RUN",
+    endgame,
+    postEndgame,
+    saveCompatibility: "NOT RUN",
+    firstReality,
+  };
+}
+
+export function overallResult(gates, { gameEnd, totalWallSeconds, maxWallSeconds }) {
+  if (gates.firstReality.status === "FAIL") return "PACING-FAIL";
+  if (gameEnd === true) return gates.endgame === "PASS" ? "GAMEEND-PASS" : "GAMEEND-FAIL";
+  if (maxWallSeconds >= FULL_RUN_SECONDS && totalWallSeconds >= maxWallSeconds) {
+    return "TIMEOUT-FAIL";
+  }
+  return "STOPPED-NOT-RUN";
+}

@@ -78,6 +78,7 @@ jobs:
           node scripts/check_game_pace.mjs
           node scripts/check_speed_stage.mjs
           node scripts/check_eternity_gate.mjs
+          node --test scripts/tests/test_web_full_run_policy.mjs
           node scripts/test-r100-newgame-autobuyers.mjs
           node scripts/test-scheduler-beat.mjs
           # R104 real fresh-save failures: scheduler starvation, clock throttling,
