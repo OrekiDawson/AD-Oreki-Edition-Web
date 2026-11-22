@@ -2561,9 +2561,9 @@
       "headSha": "b9df4cde23fb9bc74f49992dbf118a83563c4ac9",
       "source": "automated_trigger",
       "date": "2026-11-22",
-      "status": "reserved",
-      "commentId": "",
-      "commentUrl": "",
+      "status": "posted",
+      "commentId": "7071337151",
+      "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/113#issuecomment-7071337151",
       "reservedAt": "2026-11-22T00:07:56.308Z",
       "updatedAt": "2026-11-22T00:07:56.308Z"
     }
