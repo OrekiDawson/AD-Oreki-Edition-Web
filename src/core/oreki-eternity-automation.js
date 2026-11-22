@@ -1048,6 +1048,23 @@ export const OrekiEternityAutomation = {
     return null;
   },
 
+  /**
+   * 永恒次数是否单调增加。
+   *
+   * 进入/完成 EC 可能让 `thisEternity.realTime` 从 0 重置到 0，时间回退判据
+   * 无法识别这次原版永恒结算；此时永恒次数增加是可靠证据。永恒次数不在
+   * 永恒层消费，只有 Reality 会清零，因此“增加”可以明确排除玩家手动关闭。
+   */
+  _eternitiesIncreased(beforeToken, afterToken) {
+    if (beforeToken === null || beforeToken === undefined ||
+        afterToken === null || afterToken === undefined) return false;
+    try {
+      return new Decimal(afterToken).gt(new Decimal(beforeToken));
+    } catch (e) {
+      return false;
+    }
+  },
+
   /** 存档身份：Web 真实字段 records.gameCreatedTime（player.js:275 / storage.js:434）。 */
   _saveIdentity() {
     try {
@@ -1129,6 +1146,12 @@ export const OrekiEternityAutomation = {
         return;
       }
       if (this._eternityAutoLastSeenActive === true) {
+        // 真实 UI/热键关闭会先调用 notePlayerEternityAutobuyerToggle(false)。
+        // 该显式意图优先于同一帧发生的永恒结算信号，不能被 observer 清除。
+        if (this._eternityAutoUserClosed === true) {
+          this._eternityAutoLastSeenActive = false;
+          return;
+        }
         // [R118-01 #69 hotfix] 自动器未解锁时界面不渲染该开关（AutobuyerBox.js），
         // 玩家无法在此状态手动关闭；true→false 只可能是原版
         // ETERNITY_RESET_AFTER → Autobuyers.reset()（未解锁置 false）。
@@ -1149,9 +1172,17 @@ export const OrekiEternityAutomation = {
             this._eternityAutoEnabledAtEternities !== null &&
             eternities !== null &&
             eternities !== this._eternityAutoEnabledAtEternities;
+          // EC 连续结算常出现 realTime 从 0 回到 0；只比较“回退”会漏掉
+          // 第 100 次永恒解锁自动永恒后的原始 reset，随后把程序性 false
+          // 误判为玩家关闭。永恒次数增加只可能来自真实 eternity()，
+          // 因而与 Reality 清零、玩家手动关闭都可以区分。
+          const eternitiesIncreased = this._eternitiesIncreased(
+            this._eternityAutoEnabledAtEternities,
+            eternities,
+          );
           // 本永恒真实时间回退是结算的直接证据。仅在时间不可读时才退回永恒计数变化，
-          // 避免“玩家消费永恒次数”和手动关闭同帧发生时把关闭误判为原版复位。
-          const eternityReset = eternityRealTimeReset ||
+          // 永恒次数增加同样是结算证据；显式玩家关闭已在上面提前返回。
+          const eternityReset = eternityRealTimeReset || eternitiesIncreased ||
             (eternityRealTime === null && eternitiesChanged);
           if (realitiesReset || realTimeReset || eternityReset) {
             // 原版 Reality/永恒结算复位：不判玩家关闭，交给接管逻辑补回 true。

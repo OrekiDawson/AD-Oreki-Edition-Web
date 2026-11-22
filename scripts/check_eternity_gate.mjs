@@ -1390,6 +1390,8 @@ try {
         observeBody.includes("eternityRealTimeReset") &&
         observeBody.includes("eternitiesChanged") &&
         observeBody.includes("eternityRealTime === null && eternitiesChanged") &&
+        observeBody.includes("eternitiesIncreased") &&
+        observeBody.includes("eternityRealTimeReset || eternitiesIncreased") &&
         observeBody.includes("realitiesReset || realTimeReset || eternityReset"));
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
@@ -1432,6 +1434,24 @@ try {
       autobuyerBoxSource.includes("notePlayerEternityAutobuyerToggle") &&
       autobuyerTogglesSource.includes("notePlayerEternityAutobuyerToggle") &&
       hotkeysSource.includes("notePlayerEternityAutobuyerToggle"));
+
+    // 100 次永恒刚解锁自动器时，EC 连续真实结算可能让 thisEternity.realTime
+    // 从 0 重置到 0；永恒次数增加必须识别为原版 reset，而不是玩家关闭。
+    setup({ eternities: 100, isActive: true, saveId: 5152, unlocked: true, realities: 0 });
+    player.eternities = new Decimal(100);
+    player.records.thisEternity = { realTime: 0 };
+    A._observeEternityAutobuyerSwitch();
+    player.eternities = new Decimal(101);
+    player.records.thisEternity.realTime = 0;
+    player.auto.eternity.isActive = false;
+    A._observeEternityAutobuyerSwitch();
+    check("[R125] EC 连续结算 realTime 0→0 且永恒次数增加不误判玩家关闭",
+      A._eternityAutoUserClosed === false,
+      "userClosed=" + String(A._eternityAutoUserClosed));
+    A._adoptEternityAutobuyerIfNeeded();
+    check("[R125] 前述程序性 reset 后接管逻辑恢复自动永恒",
+      player.auto.eternity.isActive === true,
+      "isActive=" + String(player.auto.eternity.isActive));
   }
 
   globalThis.player = savedPlayer;
