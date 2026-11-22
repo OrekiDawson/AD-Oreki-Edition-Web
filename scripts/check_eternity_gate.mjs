@@ -1438,6 +1438,7 @@ try {
     // 100 次永恒刚解锁自动器时，EC 连续真实结算可能让 thisEternity.realTime
     // 从 0 重置到 0；永恒次数增加必须识别为原版 reset，而不是玩家关闭。
     setup({ eternities: 100, isActive: true, saveId: 5152, unlocked: true, realities: 0 });
+    player.records.thisReality = { realTime: 500 };
     player.eternities = new Decimal(100);
     player.records.thisEternity = { realTime: 0 };
     A._observeEternityAutobuyerSwitch();
