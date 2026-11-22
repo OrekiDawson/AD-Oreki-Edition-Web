@@ -457,13 +457,19 @@ export function markKodySkippedPure(records, {
       recordTime(record) >= headCommittedMs &&
       (currentHeadMatches || recordTime(record) < currentHeadCommittedMs))
     : [];
-  const potentialHeadless = activeRecords.filter(record =>
+  const allHeadless = activeRecords.filter(record =>
     !record.headSha && String(record.commentId ?? "").trim() !== "");
+  const potentialHeadless = canAttributeHeadless
+    ? allHeadless.filter(record =>
+      !Number.isFinite(recordTime(record)) ||
+      (recordTime(record) >= headCommittedMs &&
+        (currentHeadMatches || recordTime(record) < currentHeadCommittedMs)))
+    : allHeadless;
   if (exactMatches.length === 0 && headlessMatches.length === 0) {
     if (potentialHeadless.length > 0) {
       return { ok: false, reason: "unattributed-trigger", records };
     }
-    return { ok: false, reason: "no-matching-kody-trigger", records };
+    return { ok: false, reason: "no-relevant-kody-trigger", records };
   }
   const checkStartedMs = Date.parse(String(checkStartedAt));
   if (!Number.isFinite(checkStartedMs)) {
@@ -525,6 +531,7 @@ export function markKodySkippedPure(records, {
   const outputTargetIndex = output.indexOf(target);
   output[outputTargetIndex] = {
     ...target,
+    commentId: target.commentId || "",
     headSha: target.headSha || sha,
     status: "skipped",
     skipCheckRunId: runId,
