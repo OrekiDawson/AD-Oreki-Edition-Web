@@ -3053,6 +3053,20 @@
       "reservedAt": "2026-11-22T06:22:32.646Z",
       "updatedAt": "2026-11-22T06:22:32.646Z",
       "createdAt": "2026-11-22T06:22:37.000Z"
+    },
+    {
+      "kind": "kody_start_review",
+      "identity": "kody-trigger:OrekiDawson/AD-Oreki-Edition-Web#122@1134468da739eefd438677adc4095a1971615f8b",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Web",
+      "pr": 122,
+      "headSha": "1134468da739eefd438677adc4095a1971615f8b",
+      "source": "automated_trigger",
+      "date": "2026-11-22",
+      "status": "reserved",
+      "commentId": "",
+      "commentUrl": "",
+      "reservedAt": "2026-11-22T06:28:56.208Z",
+      "updatedAt": "2026-11-22T06:28:56.208Z"
     }
   ]
 }
