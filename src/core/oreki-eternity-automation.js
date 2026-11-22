@@ -675,8 +675,13 @@ export const OrekiEternityAutomation = {
   buyEcStudiesAndStart() {
     try {
       // 1) 能买的 EC 研究都买掉（canBeBought 会自己校验：unlocked 为 0 / 主研究已买 / 二级资源达标）
-      for (let id = 1; id <= 12; id++) {
+      const targetId = this.nextUnfinishedEcId();
+      if (!targetId) return false;
+      for (const id of this.ecPriorityOrder()) {
         try {
+          // 只处理当前目标；高优先级目标暂时买不起时等待资源，不能在同一拍
+          // 降级购买低优先级 EC，否则 Reality 后仍会重新串行打完整条 1→12 链。
+          if (id !== targetId) continue;
           // 【R36 修复】已经解锁了某一关就不能再买别的 EC 研究
           // （ec-time-study.js:80 `if (player.challenge.eternity.unlocked !== 0) return false;`）。
           // 不 break 的话，后面的 id 会白跑一轮「补前置研究」，白白烧掉 TT。
@@ -844,7 +849,7 @@ export const OrekiEternityAutomation = {
       const skipEc7 = (() => {
         try { return globalThis.OrekiIu15Sprint?.skipEc7 === true; } catch (e) { return false; }
       })();
-      for (let id = 1; id <= 12; id++) {
+      for (const id of this.ecPriorityOrder()) {
         if (id === 7 && skipEc7) continue;
         const challenge = EternityChallenge(id);
         if (challenge && challenge.completions < challenge.maxCompletions) return id;
@@ -854,6 +859,24 @@ export const OrekiEternityAutomation = {
       this._err("nextUnfinishedEcId", e);
       return 0;
     }
+  },
+
+  /**
+   * [R125] Reality 后的 EC 优先级。
+   *
+   * 首次 Reality 前按 1→12 完整走一遍，保留永恒挑战体系的实际展开。
+   * Reality 后，重新满足 `TimeStudy.reality` 的原版硬条件只需要 EC11 与 EC12
+   * 各完成 5 次（dilation-time-studies.js）；其余 EC 的成就与奖励已在首次循环持久化。
+   * 因此后续循环先完成这两关，再按 1→10 兜底其他仍缺的挑战。
+   *
+   * 这里只决定自动化选择哪一关；挑战目标、入口资源、完成次数与结算仍由原版处理。
+   */
+  ecPriorityOrder() {
+    const realities = this._realitiesValue();
+    if (realities !== null && realities > 0) {
+      return [11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    }
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   },
 
   /** 下一个 EC 是否「只差入口资源」（主研究已买、但二级门槛未满足） */

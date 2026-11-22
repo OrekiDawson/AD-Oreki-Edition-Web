@@ -57,6 +57,8 @@ const env = {
   ec8AffordableTiers: 8,
   ec8IdPurchases: 0,
   ec8UpgradePurchases: 0,
+  ecCompletions: Array(12).fill(0),
+  ecMaxCompletions: Array(12).fill(5),
 };
 
 globalThis.player = {
@@ -74,6 +76,8 @@ globalThis.InfinityChallenge = { isRunning: false };
   const challengeAccessor = id => ({
     id,
     get isRunning() { return env.ec8Running && id === 8; },
+    get completions() { return env.ecCompletions[id - 1] || 0; },
+    get maxCompletions() { return env.ecMaxCompletions[id - 1] || 5; },
   });
   Object.defineProperties(challengeAccessor, {
     isRunning: {
@@ -170,6 +174,7 @@ const ORIG_HOLD = A.holdForRealityUpgrade10;
 const ORIG_EC = A.ecEntryPending;
 
 function reset() {
+  player.realities = 0;
   env.canEternity = false;
   env.gained = 0;
   env.ep = 0;
@@ -187,6 +192,8 @@ function reset() {
   player.eterc8repl = 0;
   for (const dimension of InfinityDimensions.all) dimension.purchases = 0;
   for (const upgrade of Object.values(ReplicantiUpgrade)) upgrade.value = 0;
+  env.ecCompletions = Array(12).fill(0);
+  env.ecMaxCompletions = Array(12).fill(5);
   delete globalThis.OrekiIu15Sprint;
   A.holdForRealityUpgrade10 = ORIG_HOLD;
   A.ecEntryPending = ORIG_EC;
@@ -208,6 +215,25 @@ function reset() {
   A._eternityAutoEnabledAtEternityRealTime = null;
   A._eternityAutoEnabledAtEternities = null;
 }
+
+// ---------------- EC 选择顺序：首轮完整，Reality 后优先硬门槛 ----------------
+reset();
+player.realities = 0;
+check("首次 Reality 前按 EC1→EC12 完整推进", A.nextUnfinishedEcId() === 1);
+
+player.realities = new Decimal(1);
+env.ecCompletions = Array(12).fill(0);
+check("Reality 后优先 EC11", A.nextUnfinishedEcId() === 11);
+
+env.ecCompletions[10] = 5;
+check("EC11 满 5 次后优先 EC12", A.nextUnfinishedEcId() === 12);
+
+env.ecCompletions[11] = 5;
+check("Reality 门槛满足后仍可补完其它未完成 EC", A.nextUnfinishedEcId() === 1);
+
+for (let id = 0; id < 12; id++) env.ecCompletions[id] = id === 6 ? 0 : 5;
+globalThis.OrekiIu15Sprint = { skipEc7: true };
+check("IU15 冲刺仍禁止重打 EC7", A.nextUnfinishedEcId() === 0);
 
 // ---------------- ① 自动化关闭 → 一次都不发起 ----------------
 reset();
