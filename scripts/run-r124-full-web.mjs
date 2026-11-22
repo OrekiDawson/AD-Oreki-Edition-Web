@@ -80,7 +80,8 @@ const summary = {
   events: [],
   samples: 0,
   screenshots: 0,
-  errors: [],
+  runtimeErrors: [],
+  consoleErrors: [],
   checkpoints: [],
   confirm: { requiredSeconds: CONFIRM_SEC, observedSeconds: 0, regressions: 0 },
   gates: null,
@@ -249,7 +250,7 @@ async function screenshot(name) {
     summary.screenshots += 1;
     lastShotAt = Date.now();
   } catch (error) {
-    summary.errors.push(`screenshot ${name}: ${String(error?.message || error)}`);
+    summary.runtimeErrors.push(`screenshot ${name}: ${String(error?.message || error)}`);
   }
 }
 
@@ -299,7 +300,7 @@ async function persistCheckpoint(reason) {
     writeSummary();
     return jsonPath;
   } catch (error) {
-    summary.errors.push(`checkpoint ${reason}: ${String(error?.message || error)}`);
+    summary.runtimeErrors.push(`checkpoint ${reason}: ${String(error?.message || error)}`);
     return null;
   }
 }
@@ -325,7 +326,7 @@ async function collect() {
     storageAtStart: current.storageAtStart,
     birth: current.birth,
   };
-  if (current.probeError) summary.errors.push(`page-probe: ${current.probeError}`);
+  if (current.probeError) summary.runtimeErrors.push(`page-probe: ${current.probeError}`);
 
   const firstReality = current.events.find(event => event.key === "reality");
   if (firstReality) summary.timing.firstRealityWallSeconds = firstReality.wallSeconds;
@@ -382,9 +383,9 @@ async function main() {
   });
   await context.addInitScript(initPageProbe);
   page = await context.newPage();
-  page.on("pageerror", error => summary.errors.push(`pageerror: ${error.message}`));
+  page.on("pageerror", error => summary.runtimeErrors.push(`pageerror: ${error.message}`));
   page.on("console", message => {
-    if (message.type() === "error") summary.errors.push(`console: ${message.text()}`);
+    if (message.type() === "error") summary.consoleErrors.push(message.text());
   });
 
   await page.goto(base, { waitUntil: "domcontentloaded", timeout: 120_000 });
@@ -449,14 +450,14 @@ async function main() {
     confirmRegressions: summary.confirm.regressions,
     firstRealityWallSeconds: summary.timing.firstRealityWallSeconds,
   });
+  await screenshot("结束");
   summary.result = overallResult(summary.gates, {
     gameEnd,
     totalWallSeconds: summary.timing.totalWallSeconds,
     maxWallSeconds: MAX_WALL_SEC,
-    errorCount: summary.errors.length,
+    errorCount: summary.runtimeErrors.length,
   });
   summary.resultReason ||= summary.gates.firstReality.reason;
-  await screenshot("结束");
   writeSummary();
   process.exitCode = summary.result === "GAMEEND-PASS" ? 0 : 2;
   log("运行结束", JSON.stringify({
@@ -478,11 +479,26 @@ process.on("SIGTERM", () => { stopping = true; });
 try {
   await main();
 } catch (error) {
-  summary.errors.push(String(error?.stack || error));
-  summary.result = "NOT RUN";
+  summary.runtimeErrors.push(String(error?.stack || error));
+  if (summary.timing.startIso !== null) {
+    summary.gates ||= buildGateSummary({
+      gameEnd: false,
+      gameEndWallSeconds: null,
+      totalWallSeconds: wallSeconds(),
+      maxWallSeconds: MAX_WALL_SEC,
+      confirmSeconds: summary.confirm.observedSeconds,
+      requiredConfirmSeconds: CONFIRM_SEC,
+      confirmRegressions: summary.confirm.regressions,
+      firstRealityWallSeconds: summary.timing.firstRealityWallSeconds,
+    });
+    summary.result = "RUNTIME-ERROR";
+    process.exitCode = 2;
+  } else {
+    summary.result = "NOT RUN";
+    process.exitCode = 1;
+  }
   summary.resultReason = String(error?.message || error);
   writeSummary();
-  process.exitCode = 1;
 } finally {
   await cleanup();
 }

@@ -51,6 +51,8 @@
   与运行错误均以非零退出码结束，避免包装脚本把未完成运行当成功。
 - 结束前使用原版 `GameStorage.exportModifiedSave()` 导出可恢复存档文本，同时保存
   localStorage 快照；12 秒复验已生成 `存档快照/01-运行结束.txt` 与 `.json`。
+- 工具侧异常与页面 `console.error` 分开记录；只有 pageerror、探针、截图或检查点失败等
+  `runtimeErrors` 会阻断结果，页面控制台噪声单独保存在 `consoleErrors`。
 
 ## #106 处置建议
 
