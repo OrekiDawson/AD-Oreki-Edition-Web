@@ -52,3 +52,21 @@ R124 Web 完整运行器已在 `main@3dfc85c774de579fcc53a5b7bea4e6cc8f85f5f3` �
 - `SAVE COMPATIBILITY`：`NOT RUN`
 
 下一步必须在宿主连续运行、无离线补算的条件下，从合并后的准确 `main` 重新执行完整新档跑次。
+
+## R125 审查修复（2026-11-22）
+
+PR #127 的 5 条未解决线程均成立，R125 在最新 `origin/main@970e825` 上做 fix-forward：
+
+1. 页面探针把 `null`/`undefined` 保留为无法读取，不再经 `Number(null) === 0` 冒充“已测量 0ms”。
+2. 页面每 50ms 记录心跳缺口；页面 `Date.now()` 墙钟与 Node 单调墙钟之间超过 60 秒也阻断。两者可捕获渲染进程单独冻结，而不仅依赖仅在读档时更新的 `offlineTimeUsed`。
+3. 持续观察原版“离线进度模拟”与“在你离开的……”弹窗；出现即保留时间、文本并写入 `runtimeErrors`。
+4. 连续性基线提前到清空新档并设置 `startIso` 的同一时刻，页面重载、等待和首张截图期间的暂停不再落在基线之前。
+5. 一旦存在运行错误，五项独立门禁全部作废为 `NOT RUN`；原事件与首现实时刻保留作诊断，但不得继续输出 ENDGAME/PACING 的污染结论。
+
+验证：
+
+- `node --test scripts/tests/test_web_full_run_policy.mjs`：17/17 PASS。
+- `python3 scripts/tests/test_repository_policy.py`：15/15 PASS。
+- 5 秒单实例 headless Chromium 冒烟：11 次采样、2 张截图、读档容差 `offlineTimeUsed=15ms`、连续性最大偏差约 `0.00072s`、`runtimeErrors=[]`、最终存档导出成功、总体 `STOPPED-NOT-RUN` 且五项门禁均为 `NOT RUN`。
+
+以上仅证明运行器门禁修复；完整 PACING、ENDGAME、终局后稳定性与存档兼容仍为 `NOT RUN`。

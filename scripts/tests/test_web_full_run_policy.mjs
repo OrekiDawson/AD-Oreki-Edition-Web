@@ -6,9 +6,11 @@ import {
   classifyFirstReality,
   measureContinuity,
   overallResult,
+  quarantineRuntimeGates,
   recordCheckpointExport,
   recordContinuityCheck,
   recordOfflineProgress,
+  recordPageContinuity,
   validateRunnerOptions,
 } from "../web-full-run-policy.mjs";
 
@@ -62,6 +64,78 @@ test("原版离线补算必须写入 runtimeErrors 并阻断总体 PASS", () => 
   ]);
   recordOfflineProgress(summary, { offlineTimeUsed: 271000 });
   assert.equal(summary.runtimeErrors.length, 1);
+});
+
+test("offlineTimeUsed 探针缺失时必须失败关闭，不能伪装为 0ms", () => {
+  const summary = {
+    runtimeErrors: [],
+    continuity: { offlineTimeUsedMs: null, offlineTimeUsedSeconds: null },
+  };
+  assert.match(recordOfflineProgress(summary, { offlineTimeUsed: null }), /无法读取/);
+  assert.equal(summary.continuity.offlineTimeUsedMs, null);
+  assert.equal(summary.runtimeErrors.length, 1);
+});
+
+test("运行期离线补算可由页面心跳、双时钟偏差与离线弹窗捕获", () => {
+  const summary = { runtimeErrors: [] };
+  recordPageContinuity(summary, {
+    maxHeartbeatGapMs: 245_000,
+    pageWallSeconds: 780,
+    offlineCatchupSeen: {
+      catchupSeconds: 231,
+      text: "在你离开的 3 分 51 秒里",
+    },
+  }, 549);
+  assert.deepEqual(summary.runtimeErrors, [
+    "page-heartbeat: 页面心跳中断 245 秒",
+    "page-clock: 页面墙钟比 Node 连续时钟多 231 秒",
+    "offline-catchup-seen: 检测到原版离线补算弹窗，约 231 秒",
+  ]);
+  recordPageContinuity(summary, {
+    maxHeartbeatGapMs: 245_000,
+    pageWallSeconds: 780,
+    offlineCatchupSeen: { catchupSeconds: 231 },
+  }, 549);
+  assert.equal(summary.runtimeErrors.length, 3);
+});
+
+test("连续正常页面不会被页面心跳门禁误报", () => {
+  const summary = { runtimeErrors: [] };
+  recordPageContinuity(summary, {
+    maxHeartbeatGapMs: 51,
+    pageWallSeconds: 10.1,
+    offlineCatchupSeen: null,
+  }, 10);
+  assert.deepEqual(summary.runtimeErrors, []);
+});
+
+test("连续性失效后五项独立门禁全部作废", () => {
+  const gates = buildGateSummary({
+    gameEnd: true,
+    gameEndWallSeconds: 9000,
+    totalWallSeconds: 9120,
+    maxWallSeconds: 10800,
+    confirmSeconds: 120,
+    confirmRegressions: 0,
+    firstRealityWallSeconds: 4300,
+  });
+  const quarantined = quarantineRuntimeGates(gates, 1);
+  for (const name of [
+    "gameplayLegality",
+    "pacing",
+    "endgame",
+    "postEndgame",
+    "saveCompatibility",
+  ]) {
+    assert.equal(quarantined[name], "NOT RUN");
+  }
+  assert.equal(quarantined.invalidatedByRuntimeErrors, 1);
+  assert.equal(overallResult(quarantined, {
+    gameEnd: true,
+    totalWallSeconds: 9120,
+    maxWallSeconds: 10800,
+    errorCount: 1,
+  }), "RUNTIME-ERROR");
 });
 
 test("存档导出 API 缺失、抛错或空文本必须成为运行错误", () => {

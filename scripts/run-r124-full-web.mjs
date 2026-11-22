@@ -13,6 +13,8 @@ import {
   recordCheckpointExport,
   recordContinuityCheck,
   recordOfflineProgress,
+  recordPageContinuity,
+  quarantineRuntimeGates,
   validateRunnerOptions,
 } from "./web-full-run-policy.mjs";
 
@@ -139,6 +141,9 @@ function initPageProbe() {
     events: [],
     birth: null,
     last: null,
+    lastHeartbeatAt: Date.now(),
+    maxHeartbeatGapMs: 0,
+    offlineCatchupSeen: null,
   };
   try {
     for (let i = 0; i < localStorage.length; i += 1) {
@@ -166,16 +171,45 @@ function initPageProbe() {
     }
   };
   const number = value => {
+    if (value === null || value === undefined) return null;
     const result = Number(value);
     return Number.isFinite(result) ? result : null;
   };
 
   setInterval(() => {
+    const heartbeatAt = Date.now();
+    const heartbeatGapMs = Math.max(0, heartbeatAt - window.__r124.lastHeartbeatAt);
+    window.__r124.lastHeartbeatAt = heartbeatAt;
+    window.__r124.maxHeartbeatGapMs = Math.max(
+      window.__r124.maxHeartbeatGapMs,
+      heartbeatGapMs,
+    );
     try {
       const p = window.player;
       if (!p) return;
+      const pageWallSeconds = Math.round((heartbeatAt - window.__r124.t0) / 100) / 10;
+      const pageMonotonicSeconds = Math.round(performance.now() / 100) / 10;
+      const modal = document.querySelector(
+        "[data-v-modal-progress-bar], .c-modal-message",
+      );
+      const modalText = String(modal?.innerText || "");
+      const offlineCatchupVisible = Boolean(modal)
+        && /离线进度模拟|在你离开的/.test(modalText);
+      if (offlineCatchupVisible && !window.__r124.offlineCatchupSeen) {
+        window.__r124.offlineCatchupSeen = {
+          wallSeconds: pageWallSeconds,
+          catchupSeconds: null,
+          text: modalText.slice(0, 500),
+          iso: new Date(heartbeatAt).toISOString(),
+        };
+      }
       const snapshot = {
-        wallSeconds: Math.round((Date.now() - window.__r124.t0) / 100) / 10,
+        wallSeconds: pageWallSeconds,
+        pageWallSeconds,
+        pageMonotonicSeconds,
+        heartbeatGapMs,
+        maxHeartbeatGapMs: window.__r124.maxHeartbeatGapMs,
+        offlineCatchupSeen: window.__r124.offlineCatchupSeen,
         realities: number(p.realities),
         eternitiesLog10: log10(p.eternities),
         infinitiesLog10: log10(window.Currency?.infinitiesTotal?.value),
@@ -323,7 +357,6 @@ async function persistCheckpoint(reason) {
 }
 
 async function collect() {
-  await dismissMessageModal();
   const current = await page.evaluate(() => ({
     events: window.__r124.events,
     birth: window.__r124.birth || null,
@@ -345,6 +378,7 @@ async function collect() {
   };
   if (current.probeError) summary.runtimeErrors.push(`page-probe: ${current.probeError}`);
   recordOfflineProgress(summary, current.last);
+  recordPageContinuity(summary, current.last, sample.wallSeconds);
 
   const firstReality = current.events.find(event => event.key === "reality");
   if (firstReality) summary.timing.firstRealityWallSeconds = firstReality.wallSeconds;
@@ -361,6 +395,7 @@ async function collect() {
   if (Date.now() - lastShotAt >= SHOT_MS) {
     await screenshot(`进度-${Math.round(wallSeconds())}秒`);
   }
+  await dismissMessageModal();
   writeSummary();
   return sample;
 }
@@ -412,6 +447,10 @@ async function main() {
   gameStartMonotonic = performance.now();
   startedMonotonic = gameStartMonotonic;
   summary.timing.startIso = iso(t0);
+  let continuityPrevious = {
+    wallMs: t0,
+    monotonicMs: gameStartMonotonic,
+  };
   await page.reload({ waitUntil: "domcontentloaded", timeout: 120_000 });
   await page.waitForFunction(
     () => window.player && window.OrekiSmartExecutor,
@@ -424,10 +463,6 @@ async function main() {
   await page.bringToFront();
   await screenshot("开局");
 
-  let continuityPrevious = {
-    wallMs: Date.now(),
-    monotonicMs: performance.now(),
-  };
   let nextSampleAt = 0;
   while (!stopping) {
     const continuityCurrent = {
@@ -496,6 +531,7 @@ async function main() {
     confirmRegressions: summary.confirm.regressions,
     firstRealityWallSeconds: summary.timing.firstRealityWallSeconds,
   });
+  summary.gates = quarantineRuntimeGates(summary.gates, summary.runtimeErrors.length);
   await screenshot("结束");
   summary.result = overallResult(summary.gates, {
     gameEnd,

@@ -4,6 +4,12 @@ export const FULL_RUN_SECONDS = 180 * 60;
 export const MAX_CONTINUITY_GAP_SECONDS = 60;
 export const OFFLINE_PROGRESS_TOLERANCE_MS = 10_000;
 
+function pushRuntimeError(summary, prefix, message) {
+  if (summary.runtimeErrors.some(error => error.startsWith(prefix))) return false;
+  summary.runtimeErrors.push(message);
+  return true;
+}
+
 /**
  * 前台连续运行验收不能把宿主暂停后的原版离线补算当作在线进度。
  * 墙钟使用 Date.now()，单调时钟使用 performance.now()；两者差值可识别
@@ -38,16 +44,77 @@ export function recordContinuityCheck(continuity, previous, current) {
 }
 
 export function recordOfflineProgress(summary, snapshot) {
-  const offlineTimeUsed = Number(snapshot?.offlineTimeUsed);
-  if (!Number.isFinite(offlineTimeUsed)) return null;
+  const rawOfflineTimeUsed = snapshot?.offlineTimeUsed;
+  if (rawOfflineTimeUsed === null || rawOfflineTimeUsed === undefined) {
+    const message = "offline-time-probe: 无法读取 player.speedrun.offlineTimeUsed";
+    pushRuntimeError(summary, "offline-time-probe:", message);
+    return message;
+  }
+  const offlineTimeUsed = Number(rawOfflineTimeUsed);
+  if (!Number.isFinite(offlineTimeUsed)) {
+    const message = "offline-time-probe: offlineTimeUsed 不是有限数";
+    pushRuntimeError(summary, "offline-time-probe:", message);
+    return message;
+  }
   summary.continuity.offlineTimeUsedMs = offlineTimeUsed;
   if (offlineTimeUsed <= OFFLINE_PROGRESS_TOLERANCE_MS) return null;
   summary.continuity.offlineTimeUsedSeconds = Math.ceil(offlineTimeUsed / 1000);
   const message = `offline-progress: 原版已模拟 ${summary.continuity.offlineTimeUsedSeconds} 秒离线进度`;
-  if (!summary.runtimeErrors.some(error => error.startsWith("offline-progress:"))) {
-    summary.runtimeErrors.push(message);
-  }
+  pushRuntimeError(summary, "offline-progress:", message);
   return message;
+}
+
+/**
+ * offlineTimeUsed 只覆盖存档载入补算；运行期 hibernationCatchup 不会更新它。
+ * 因此同时检查页面心跳、页面/Node 墙钟偏差和离线弹窗，捕获渲染进程单独冻结。
+ */
+export function recordPageContinuity(summary, snapshot, nodeWallSeconds) {
+  const heartbeatGapSeconds = Number(snapshot?.maxHeartbeatGapMs) / 1000;
+  if (Number.isFinite(heartbeatGapSeconds)
+      && heartbeatGapSeconds > MAX_CONTINUITY_GAP_SECONDS) {
+    pushRuntimeError(
+      summary,
+      "page-heartbeat:",
+      `page-heartbeat: 页面心跳中断 ${Math.round(heartbeatGapSeconds)} 秒`,
+    );
+  }
+  const pageWallSeconds = Number(snapshot?.pageWallSeconds);
+  if (Number.isFinite(pageWallSeconds) && Number.isFinite(nodeWallSeconds)) {
+    const divergence = Math.max(0, pageWallSeconds - nodeWallSeconds);
+    if (divergence > MAX_CONTINUITY_GAP_SECONDS) {
+      pushRuntimeError(
+        summary,
+        "page-clock:",
+        `page-clock: 页面墙钟比 Node 连续时钟多 ${Math.round(divergence)} 秒`,
+      );
+    }
+  }
+  if (snapshot?.offlineCatchupSeen) {
+    const seconds = Number(snapshot.offlineCatchupSeen.catchupSeconds);
+    const suffix = Number.isFinite(seconds) ? `，约 ${Math.round(seconds)} 秒` : "";
+    pushRuntimeError(
+      summary,
+      "offline-catchup-seen:",
+      `offline-catchup-seen: 检测到原版离线补算弹窗${suffix}`,
+    );
+  }
+}
+
+/**
+ * 运行期间一旦不再满足连续前台条件，补算后的事件仍可保留作诊断，
+ * 但五项独立门禁不得继续输出产品 PASS/FAIL。
+ */
+export function quarantineRuntimeGates(gates, errorCount) {
+  if (errorCount <= 0) return gates;
+  return {
+    ...gates,
+    gameplayLegality: "NOT RUN",
+    pacing: "NOT RUN",
+    endgame: "NOT RUN",
+    postEndgame: "NOT RUN",
+    saveCompatibility: "NOT RUN",
+    invalidatedByRuntimeErrors: errorCount,
+  };
 }
 
 /**
