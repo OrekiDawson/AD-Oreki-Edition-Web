@@ -1108,11 +1108,6 @@ export const OrekiEternityAutomation = {
         return;
       }
       if (this._eternityAutoLastSeenActive === true) {
-        // UI/热键已明确报告玩家关闭；即使同帧发生过永恒计时回退，也不得反向覆盖玩家意图。
-        if (this._eternityAutoUserClosed === true) {
-          this._eternityAutoLastSeenActive = false;
-          return;
-        }
         // [R118-01 #69 hotfix] 自动器未解锁时界面不渲染该开关（AutobuyerBox.js），
         // 玩家无法在此状态手动关闭；true→false 只可能是原版
         // ETERNITY_RESET_AFTER → Autobuyers.reset()（未解锁置 false）。

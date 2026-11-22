@@ -1386,13 +1386,18 @@ try {
     check("[R124] 手动关闭不会被接管逻辑重新打开",
       player.auto.eternity.isActive === false,
       "isActive=" + String(player.auto.eternity.isActive));
-    const toggleLabelSource = readFileSync(
-      path.join(ROOT, "src/components/tabs/autobuyers/AutobuyerSingleToggleLabel.js"),
+    const autobuyerBoxSource = readFileSync(
+      path.join(ROOT, "src/components/tabs/autobuyers/AutobuyerBox.js"),
+      "utf8",
+    );
+    const autobuyerTogglesSource = readFileSync(
+      path.join(ROOT, "src/components/tabs/autobuyers/AutobuyerToggles.js"),
       "utf8",
     );
     const hotkeysSource = readFileSync(path.join(ROOT, "src/core/hotkeys.js"), "utf8");
-    check("[R124] UI 与热键切换自动永恒时都记录玩家意图",
-      toggleLabelSource.includes("notePlayerEternityAutobuyerToggle") &&
+    check("[R124] 永恒 UI、批量开关与热键都记录玩家意图",
+      autobuyerBoxSource.includes("notePlayerEternityAutobuyerToggle") &&
+      autobuyerTogglesSource.includes("notePlayerEternityAutobuyerToggle") &&
       hotkeysSource.includes("notePlayerEternityAutobuyerToggle"));
   }
 

@@ -43,8 +43,14 @@ export default {
       );
     },
     toggleAllAutobuyers() {
-      for (const autobuyer of Autobuyers.unlocked) {
+      const unlocked = Autobuyers.unlocked;
+      for (const autobuyer of unlocked) {
         autobuyer.isActive = this.allAutobuyersDisabled;
+      }
+      if (unlocked.includes(Autobuyer.eternity)) {
+        globalThis.OrekiEternityAutomation?.notePlayerEternityAutobuyerToggle(
+          Autobuyer.eternity.isActive,
+        );
       }
     },
     toggleAntimatterSingles() {

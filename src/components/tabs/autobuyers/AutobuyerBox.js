@@ -125,7 +125,11 @@ export default {
       }
     },
     toggle() {
-      this.isActive = !this.isActive;
+      const next = !this.isActive;
+      this.isActive = next;
+      if (this.autobuyer === Autobuyer.eternity) {
+        globalThis.OrekiEternityAutomation?.notePlayerEternityAutobuyerToggle(next);
+      }
     },
     purchase() {
       this.autobuyer.purchase();
