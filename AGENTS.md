@@ -2,6 +2,12 @@
 
 > 此文件只存长期约束；具体轮次、Kody 启停、PR 状态与最新上线结果由最新授权、GitHub 和任务记录决定。
 
+## 0. 游戏优先与规则审查边界（2026-11-22）
+
+- 跨仓唯一调度顺序以 [Workspace `AGENTS.md` §0](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/blob/main/AGENTS.md) 为准：游戏合法性、`PACING`、真实 180 分钟终局、存档兼容及直接阻断 CI/运行故障优先于非阻断规则 PR。
+- 本仓下文“规则变更 PR 优先”对第 3 级（影响当前工作合法性和安全性的规则 PR）仍按 §2 优先处理；自第 4 级（其他/非阻断规则 PR）起，每个谷时小时最多处理一个非阻断规则 PR，等待外部回执标 `WAITING`，同 HEAD 不重复收费审查。
+- 合法谷时活跃且存在已授权的游戏核心任务时，每个自然小时至少推进一项游戏核心工作；纯规则、fetch、Issue/PR 刷新、等待 Kody 或 CI 绿灯不计游戏推进，且不得冒充玩家体验或五项门禁成果。若该自然小时没有已授权的游戏核心任务（例如仅授权规则/审查批次），如实记录 `WAITING` 或无可推进项，不得越权启动游戏开发或把规则/巡查成果冒充游戏推进。
+
 ## 1. 授权、预算与运行状态
 
 - **实时授权优先**：用户明确授权的范围直接执行；未授权的付费调用、全量开发、自动发布和无人值守任务不得擅自启动。最新明确暂停优先于更早的恢复；当前 Goal/编号、PR、Kody 开关、测试状态以最新用户指令、实际平台配置及任务记录为准，不在本长期规则中永久冻结某一轮状态。历史 AGENTS 快照只供追溯。
@@ -12,12 +18,15 @@
 
 - **风险分级**：A 类为纯文档/注释/索引，定向核实事实、版权、链接及敏感信息；B 类为 Actions、审查触发器、共享配额、权限、构建与发布工具，重点核实并发、幂等、边界、失败恢复和回滚，不因“未改游戏代码”而轻审；C 类为游戏业务、存档、结算和高风险机制，完整审查风险并做最小必要真实验证。混合 PR 按最高真实风险设置门禁，按文件聚焦测试。
 - **集中修复、避免复审循环**：先核对最新 PR HEAD、Diff、普通评论、Reviews、Review Threads 与 Required Checks；同一 HEAD、同一审查配置和适用范围已经有效审过时不重复主动请求。集中解决同一批问题、定向验证后再复审；不制造空提交，不因风格建议无限扩项，也不为归零机械关闭线程。
+- **规则治理专职 Subagent（长期强制，三仓共用 1 名）**：Lead 在当前已授权且实际运行的多 Agent 会话中，若存在可执行的规则/审查治理任务，应优先**仅委派 1 名跨 Android、Web、Wiki（兼顾 Workspace 交接）的规则治理 Subagent**，而非每仓各派 1 名或让所有 Agent 都处理规则；须核实实际 Subagent 可用性与现行数量限制，不凭文档声称已启动。该 Subagent 在已认领、独立的工作树和明确 Owner/文件范围内，负责各仓 `AGENTS.md`/专项长期规范一致性、有效规则 PR 的定向修复与去重、Kody/Codex Review Threads 的逐条核实、必要 CI/Ruleset 检查、过期/重复 PR 的安全收口和 [Workspace Issue #20](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/issues/20) 的证据交接；Wiki 优先监督已配置的 **Kody 原生自动审查**，只在自动失败且符合现行费用/Provider/授权门禁时人工兜底，不重复发起相同 HEAD/配置收费审查。**Lead 仍独占任务优先级、授权与预算、跨仓冲突、最终合并及正式发布决策，不得由 Subagent 绕过审批、Required Checks 或冒充 Review PASS**。Lead 每批次先识别真正阻断当前操作的 Critical/High/安全与 CI 问题并交给该 Subagent；“规则 PR 优先”是**发现与委派的优先权，不代表 Lead 必须亲自清空规则队列**。非阻断规则建议由该 Subagent 集中处理，不得因为措辞/风格复审无限修改 `AGENTS.md`、空提交、反复开 PR 或占用全部工作时段；每次有真实结果、外部等待、受阻或无可执行任务时，及时交接 `Owner/HEAD/CI/Review/下一动作` 并进入空闲，不空轮询。Lead 与其余合适的 Subagent 在无冲突且允许执行时**持续优先推进 Android/Web 的玩家 P0/P1、挑战原版结算、五阶段 PACING、180 分钟终局、存档兼容及最小真实验证**，Wiki 内容/Pages 的独立必要任务亦不因规则队列停摆；不可把仅处理规则、仅派遣 Agent 或等待 Kody 冒充游戏开发成果。安全/数据损坏/预算停工、峰谷与云端本地 Owner 避让、Kody Balanced/费用限额和最新用户明确指令始终优先；没有可用 Subagent 时 Lead 仅做必要安全收口并记录 `BLOCKED`，不为此停掉可独立执行的主线任务。
 - **规则变更 PR 优先收口（长期强制）**：本地 Codex Lead 每次开始谷时 Issue/PR 批次、接收新的审查结果或准备认领普通 PR 时，**优先核对并实际推进当前四仓未关闭的规范/规则 PR**，包括 `AGENTS.md`、适用的 `DELIVERY_RULES`、跨仓策略、审查/预算/权限/调度规则、构建与发布门禁及其必要引用。优先顺序为：**真实 P0/P1、安全/数据损坏及用户暂停或预算硬限制 > CI FAIL、Kody High、已完成验收且待合并的 PR > 影响当前工作合法性和安全性的规则 PR > 其他规则 PR > 普通功能 PR 与非阻断技术债**；不得将仅含 Changelog 的 PR 冒充规则变更。先读最新 `origin/main`、Workspace Issue #20 的 Owner/HEAD/交接和各 PR 的 Diff、CI、Review Threads，避免重复认领与覆盖；对无冲突且在授权范围内的规则 PR，执行 `TRIAGE → ACT → VERIFY → PERSIST`：确认规则冲突、修复可信审查意见、运行文档/CI 最小必要检查、推进合格 Draft、核实 Required Checks/审批后合并，或标记具体 `REVIEW_BLOCKED / CI_BLOCKED / CONFLICT / SUPERSEDED` 及下一动作。**优先处理不等于无审查自动合并**：不得绕过 Ruleset、未经授权触发收费 Kody、将 skipped 当 PASS，或为刷进度重复评论。规则 PR 合并后应即时刷新相关仓库 `origin/main` 并重读已生效规则，通知受影响的 Lead/Subagent 按新规则继续；未合并的新规则不得提前宣称生效。云端执行窗口仍按默认只读和明确交接规则避免并发；单个规则 PR 受阻时继续处理无冲突的下一项，不能让全部开发停摆。
 - **具备审查条件的 PR 必须及时 Ready（长期强制）**：`Draft` 仅适用于真实 WIP、缺少独立可审查的 Diff/说明、明确冻结且禁止合并的历史证据、或存在尚需先排除的严重冲突与安全阻断。**修改已完成、范围清楚且可供审查时，Codex 必须及时将 PR 标记 `Ready for review` 并推进审查，不得只因 CI 尚在运行、预计会出现审查意见或担心 Kody 费用而长期留在 Draft**。Ready 只表示允许开始审查，**不等于 Required Checks PASS、Kody Review PASS、游戏验收 PASS 或允许合并**；阻断仍须逐项核实并解决。Lead 每次接收子任务、CI/Review 结果及收口时检查本仓开放 PR，真实不能 Ready 的记录 `Owner / 最新 HEAD / 阻断 / CI / Review / 下一动作`，按需交接至 [Workspace Issue #20](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/issues/20)。**收费审查与 Draft/Ready 状态分开管理**：核实事件自动审查触发、Provider、Balanced、既有授权及限额，不重复发送 `@kody start-review`，不为送审私自启用新的付费 Provider；授权或费用受阻如实记 `REVIEW_BLOCKED`，但不得反过来把本来可送审的独立 PR 无限压在 Draft。未解决 P0/P1、分支保护、冲突或必要 Review Threads 必须在合并前解决，不通过切换状态绕过硬门禁。跨仓总规则来源：[Workspace 已合并 PR #27](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/pull/27)及[Workspace AGENTS.md](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/blob/main/AGENTS.md)。
 - **合并底线**：真实 P0/P1 与阻塞性问题必须修复或有充分反证；必要线程、审批、Ruleset、Required Checks 与测试均满足后正常合并。不得强推、跳过平台保护、虚构审核或将 `Skipped` / `KODY NOT RUN` 写作 PASS。文档变更不机械运行无关游戏长跑。
 - **Kodus 的规则分层**：通用审查标准归 Kodus Global Rules，项目执行规范归本仓 `AGENTS.md`；不重复抄写为项目级 Kody Rules。Kody 从仓库文件读指令与否以实际配置/证据核实。自动生成的规则先审批去重，只有真正跨仓适用的候选可提升 Global，不能默认未经批准直接生效。
 - **Kody 动态授权与费用**：Kody 仅限 Balanced，严禁 Heavy。每次启用付费审查先确认最新用户授权、云端配置、工作流与预算；处于暂停/不确定状态时不得主动触发，也不得重新连接付费 Provider。Android/Web 若获准恢复，遵守两仓共享 UTC+8 自然日 100 次主动审查请求、80 次预警、按原始评论 ID 去重、无单仓 50 次硬上限；这并非模型 API 硬计费上限。**`AD-Oreki-Wiki` 使用独立审查统计，绝不写入、读取或扣减 Android/Web 共享计数池；Wiki 仍受自身授权、平台额度与计费限制，不是无限制审查。** 旧 Oreki Audit 等链路是否启用须检查实时设置，禁止重复触发。
 - **Kody 跳过一律不计额度**：所有 Kody 已确认 `skipped` 的审查均不计入项目主动审查额度。触发前跳过不占位；已预占或已发 `@kody start-review` 而 Kody 官方 Check Run 最终确认为 `skipped` 的，按仓库、PR、HEAD 与 Kody Check Run 证据幂等退额；Android/Web 共享 100 次池与 Wiki 独立统计均遵守。未完成审查可临时预占防并发超额；真正完成的审查（即使无问题）仍计数。只有 GitHub Actions 的 `skipped`、缺失回执或不明状态不足以认定 Kody 已跳过，不得擅自退额或把 `SKIPPED` 写为审查 PASS。Kody 平台实际收费另行遵循其规则。
+
+- **Subagent 完成后再调度（长期强制）**：每次 Subagent 完成、失败、取消或释放资源后，Lead 应及时接收并核实真实 Commit/PR/测试证据、更新队列，再按已授权且无冲突的任务继续派发；无安全且有价值的任务时正常释放并记录原因，不制造占位任务。Lead 占用 AVD、签名、最终构建/部署或等待长跑/CI 时，不依赖这些资源的 Android/Web 游戏修复、定向测试准备或 AGP/R8 工程工作，在已授权且处于合法谷时（或安全可执行窗口）时仍应并行推进；不得因等待 Lead 合并 PR 而让已完成 Agent 无故闲置，也不得改动他人认领的 PR 或工作树。峰时停工、预算停工与本条冲突时优先。
 
 ## 3. 执行效率与反馈
 

@@ -76,6 +76,7 @@ jobs:
         run: |
           node scripts/check_stage_gate.mjs
           node scripts/check_game_pace.mjs
+          node scripts/check_speed_stage.mjs
           node scripts/check_eternity_gate.mjs
           node scripts/test-r100-newgame-autobuyers.mjs
           node scripts/test-scheduler-beat.mjs

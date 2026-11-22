@@ -1,6 +1,21 @@
 import { DC } from "./constants.js";
 import { GameMechanicState } from "./game-mechanics/index.js";
 
+/**
+ * C11 中物质超过反物质会触发重置，不应随全局加速而更快追上反物质。
+ * 这里只为 C11 额外减慢物质增长，让被加速的反物质成长获得合法结算窗口。
+ * IC6 的物质是独立惩罚除数，必须保持原版语义。
+ */
+export function c11MatterGrowthPower(
+  diff,
+  speedFactor = getGlobalSpeedFactor(),
+  infinityChallengeRunning = InfinityChallenge(6).isRunning,
+) {
+  const factor = Number.isFinite(speedFactor) && speedFactor > 0 ? speedFactor : 1;
+  const divisor = infinityChallengeRunning ? factor : factor * Math.sqrt(factor);
+  return diff / divisor / 20;
+}
+
 export function updateNormalAndInfinityChallenges(diff) {
   if (NormalChallenge(11).isRunning || InfinityChallenge(6).isRunning) {
     if (AntimatterDimension(2).amount.neq(0)) {
@@ -8,8 +23,7 @@ export function updateNormalAndInfinityChallenges(diff) {
       // These caps are values which occur at approximately e308 IP
       const cappedBase = 1.03 + Math.clampMax(DimBoost.totalBoosts, 400) / 200 +
         Math.clampMax(player.galaxies, 100) / 100;
-      // 挑战中物质出现的速度不受加速影响，需除以因子还原
-      Currency.matter.multiply(Decimal.pow(cappedBase, diff / getGlobalSpeedFactor() / 20));
+      Currency.matter.multiply(Decimal.pow(cappedBase, c11MatterGrowthPower(diff)));
     }
     if (Currency.matter.gt(Currency.antimatter.value) && NormalChallenge(11).isRunning && !Player.canCrunch) {
       const values = [Currency.antimatter.value, Currency.matter.value];

@@ -34,6 +34,27 @@ test("running challenge is not completed without reaching its goal", async ({ pa
   expect(pageErrors, "Unhandled browser errors").toEqual([]);
 });
 
+test("C11 matter growth uses bounded global-speed compensation", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#ui")).toBeVisible({ timeout: 45_000 });
+
+  const result = await page.evaluate(async () => {
+    const module = await import("/src/core/normal-challenges.js");
+    return {
+      original: module.c11MatterGrowthPower(1800, 1),
+      compensated: module.c11MatterGrowthPower(1800, 1800),
+      infinityChallenge: module.c11MatterGrowthPower(1800, 1800, true),
+      invalidFallback: module.c11MatterGrowthPower(1800, 0),
+    };
+  });
+
+  expect(result.original).toBe(90);
+  expect(result.compensated).toBeCloseTo(90 / (1800 * Math.sqrt(1800)), 12);
+  expect(result.compensated).toBeLessThan(result.original);
+  expect(result.infinityChallenge).toBeCloseTo(90 / 1800, 12);
+  expect(result.invalidFallback).toBe(90);
+});
+
 test("EC8 automation preserves purchases for locked infinity dimensions", async ({ page }) => {
   const pageErrors = [];
   page.on("pageerror", error => pageErrors.push(error.message));
@@ -121,5 +142,58 @@ test("EC8 automation preserves purchases for unlocked but unaffordable dimension
   expect(
     afterUnlockAffordability.purchases.slice(4).every(purchases => purchases > 0),
   ).toBe(true);
+  expect(pageErrors, "Unhandled browser errors").toEqual([]);
+});
+
+test("EC automation settles through the original eternity entry after the goal is reached", async ({ page }) => {
+  const pageErrors = [];
+  page.on("pageerror", error => pageErrors.push(error.message));
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#ui")).toBeVisible({ timeout: 45_000 });
+  await expect.poll(
+    () => page.evaluate(() => typeof OrekiEternityAutomation !== "undefined"),
+    { timeout: 45_000 },
+  ).toBe(true);
+
+  const result = await page.evaluate(() => {
+    player.break = true;
+    player.auto.autobuyersOn = true;
+    player.auto.eternity.isActive = true;
+    player.eternities = new Decimal(100);
+    player.challenge.eternity.current = 1;
+    player.challenge.eternity.unlocked = 1;
+    player.eternityChalls.eterc1 = 0;
+    player.records.thisEternity.maxIP = EternityChallenge(1).initialGoal.times(10);
+    Currency.infinityPoints.value = Decimal.pow(10, 500);
+    player.records.thisEternity.maxAM = Decimal.pow(10, 1e4);
+    const before = {
+      canEternity: Player.canEternity,
+      canBeCompleted: EternityChallenge(1).canBeCompleted,
+      completions: EternityChallenge(1).completions,
+      current: player.challenge.eternity.current,
+    };
+    const acted = OrekiEternityAutomation.tickEternity();
+    return {
+      before,
+      acted,
+      after: {
+        completions: EternityChallenge(1).completions,
+        current: player.challenge.eternity.current,
+        eternities: player.eternities.toString(),
+      },
+    };
+  });
+
+  expect(result.before).toEqual({
+    canEternity: true,
+    canBeCompleted: true,
+    completions: 0,
+    current: 1,
+  });
+  expect(result.acted).toBe(true);
+  expect(result.after.completions).toBe(1);
+  expect(result.after.current).toBe(0);
+  expect(Number(result.after.eternities)).toBeGreaterThan(100);
   expect(pageErrors, "Unhandled browser errors").toEqual([]);
 });

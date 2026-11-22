@@ -57,6 +57,7 @@ function makeItem({ active = true, unlocked = true, bought = false, mode = null 
 }
 
 let dims;
+let infinityDims;
 let registry;
 let bigCrunch;
 
@@ -84,6 +85,9 @@ function resetFakes() {
   dims = Array.from({ length: 8 }, () => makeItem({ active: true, mode: 10 }));
   const dimAccessor = tier => dims[tier - 1];
   dimAccessor.isActive = true; // 组级开关（原版 UI 的唯一可见 checkbox）
+  infinityDims = Array.from({ length: 8 }, () => makeItem({ active: true }));
+  const infinityDimAccessor = tier => infinityDims[tier - 1];
+  infinityDimAccessor.isActive = true;
   bigCrunch = makeItem({ active: true, mode: 2 });
   bigCrunch.mode = 2; // X_HIGHEST
   bigCrunch.time = 10;
@@ -93,6 +97,7 @@ function resetFakes() {
   bigCrunch.increaseWithMult = false;
   registry = {
     antimatterDimension: dimAccessor,
+    infinityDimension: infinityDimAccessor,
     tickspeed: makeItem({ active: true, mode: 1 }),
     dimboost: makeItem({ active: true }),
     galaxy: makeItem({ active: true }),
@@ -152,6 +157,19 @@ test("玩家关闭维度组/计数频率/大坍缩 ⇒ 下一 Tick 恢复开启"
   assert.equal(bigCrunch.isActive, true);
   assert.equal(result.wrote, 3);
   assert.deepEqual([...result.restored].sort(), ["crunch", "dim1", "tickspeed"]);
+});
+
+test("永恒重置关闭无限维度组与逐层开关 ⇒ 下一 Tick 全部恢复", () => {
+  apply(1);
+  registry.infinityDimension.isActive = false;
+  infinityDims[0].isActive = false;
+  infinityDims[7].isActive = false;
+  const result = apply(2);
+  assert.equal(registry.infinityDimension.isActive, true, "无限维度组必须恢复");
+  assert.equal(infinityDims.every(dim => dim.isActive === true), true,
+    "已解锁无限维度逐层必须恢复");
+  assert.equal(result.restored.includes("infinityDim1"), true);
+  assert.equal(result.restored.includes("infinityDim8"), true);
 });
 
 test("wantCrunch=false ⇒ 下一 Tick 由调度器关闭大坍缩；玩家重开后再次关闭", () => {
@@ -268,6 +286,17 @@ test("MOD 总开关关闭 ⇒ 不写、不消费 Tick；重开后同 Tick 恢复
   assert.equal(registry.antimatterDimension.isActive, true);
 });
 
+test("关闭 MOD ⇒ 无限维度自动器恢复为接管前玩家值", () => {
+  registry.infinityDimension.isActive = false;
+  infinityDims[0].isActive = false;
+  apply(1);
+  assert.equal(registry.infinityDimension.isActive, true);
+  assert.equal(infinityDims[0].isActive, true);
+  Managed.releaseAll({ autobuyers: registry });
+  assert.equal(registry.infinityDimension.isActive, false);
+  assert.equal(infinityDims[0].isActive, false);
+});
+
 test("原版自动购买器总开关关闭 ⇒ 整体让路，不写", () => {
   apply(1);
   globalThis.player.auto.autobuyersOn = false;
@@ -326,7 +355,7 @@ test("原版 reset 改 mode ⇒ 不污染玩家 mode 原值，time 分别恢复"
   assert.equal(bigCrunch.time, 30, "mode reset 不得污染 time 原值");
 });
 
-test("IU15 冲刺整体让路；Pelle 只让大坍缩，其余 13 项仍对账", () => {
+test("IU15 冲刺整体让路；Pelle 只让大坍缩，其余 21 项仍对账", () => {
   apply(1);
   registry.antimatterDimension.isActive = false;
   globalThis.OrekiIu15Sprint = { active: true };
