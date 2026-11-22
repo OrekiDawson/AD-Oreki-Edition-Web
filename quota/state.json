@@ -2830,7 +2830,8 @@
       "date": "2026-11-22",
       "status": "posted",
       "createdAt": "2026-11-22T04:56:42.000Z",
-      "updatedAt": "2026-11-22T05:02:20.290Z"
+      "updatedAt": "2026-11-22T05:27:27.000Z",
+      "headSha": "20500d18ab1d29e533a33e3f5bc29fe27b378574"
     },
     {
       "kind": "kody_start_review",
