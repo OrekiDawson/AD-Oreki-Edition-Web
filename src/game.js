@@ -169,7 +169,10 @@ export function gainedInfinityPoints() {
   }
   let ip = player.break
     ? Decimal.pow10(player.records.thisInfinity.maxAM.log10() / div - 0.75)
-    : new Decimal(308 / div);
+    // 首次 Break 前不再一次性补 IP。每次真实坍缩的收益随已完成无限次数增长，
+    // 由玩家实际购买 1、2、4、…、16384 的间隔升级；既保留原版成本链，
+    // 又避免 32767 IP 直接注入让 Break 在首分钟发生。
+    : new Decimal(308 / div).max(new Decimal(player.infinities.add(1)));
   if (Effarig.isRunning && Effarig.currentStage === EFFARIG_STAGES.ETERNITY) {
     // [Oreki R32] 原版这里是 `ip.min(DC.E200)` —— 把阶段 2 的单次坍缩收益硬顶在 1e200，
     // 逼玩家靠 totalIPMult 把最终 IP 抬到 `Player.eternityGoal`（1.797e308）。
@@ -198,23 +201,13 @@ export function gainedInfinityPoints() {
   }
 
   ip = ip.floor();
-  // [Oreki AD3] 首次 ID1 突破兜底
-  // 事实（R13.1 同帧实测）：第一无限维度的解锁要求与初始成本同为 1e8 IP；
-  // 而 Break 后该阶段单次坍缩收益只有 ~3.5e5，同时 X_HIGHEST×10 的自动坍缩门槛是
-  // highestPrevPrestige(9.9e5)×10 = 9.9e6。两头都够不着 → willInfinity 恒 false、
-  // 一次坍缩都不会发生、IP 永远停在 1e6，ID1 在这条路径上不可能达成。
-  // 做法：只在「已 Break / 未解锁永恒 / ID1 还没解锁 / 不在挑战或毁灭现实」这个窗口内，
-  // 把**下一次坍缩的收益**抬到刚好够买下 ID1（1e8），既让真实入账达标，
-  // 也让自动坍缩的门槛得以通过（1e8 ≥ 9.9e6）。
-  // ID1 一旦解锁，本兜底立即失效，不会外溢成全局倍率；不改 BASE_COSTS，不改历史记录与阶段标志。
-  if (firstInfinityDimensionBoostActive(ip)) ip = ip.max(DC.E8);
   return ip;
 }
 
 /**
- * [Oreki AD5] 打开 Break Infinity 闸门（间隔升级自动化 + 一次性阶段奖励）。
- * 导出到全局，便于测试与调试面板观察实际发放情况。
- * @returns {boolean} 本次是否发放了阶段奖励
+ * [Oreki AD5] 按真实 IP 自动购买大坍缩间隔并打开 Break Infinity。
+ * 导出到全局，便于测试与调试面板观察实际购买情况。
+ * @returns {boolean} 本次是否按真实成本完成了间隔升级或打开了 Break
  */
 export function tryOpenBreakInfinityGate() {
   const granted = OrekiBreakInfinityGate.tryOpen();
@@ -537,31 +530,6 @@ export function isFirstId1Window() {
     const requirement = InfinityDimension(1).ipRequirement;
     if (requirement && Currency.infinityPoints.value.lt(requirement)) return false;
     return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-/**
- * [Oreki AD3] 是否处于「首次 ID1 突破」窗口。只读判断，无副作用。
- * @param {Decimal} pendingIP 本次坍缩按原版公式应得的 IP
- */
-function firstInfinityDimensionBoostActive(pendingIP) {
-  try {
-    if (!player.break) return false;
-    // [Oreki R26] 原来这里是 `if (PlayerProgress.eternityUnlocked()) return false;`。
-    // 现实重置会 `InfinityDimensions.fullReset()` 把 ID1 打回未解锁（infinity-dimension.js:236），
-    // 但永久进度标志永远为 true → 第一次现实之后这条兜底再也不生效。
-    // 下一行的 `InfinityDimension(1).isUnlocked` 本身就是「已经突破过」的真实状态，
-    // 只在现实重置时才会变回 false，用它判定与设计意图完全等价，且每次现实后自动重开。
-    if (InfinityDimension(1).isUnlocked) return false;
-    if (NormalChallenge.isRunning || InfinityChallenge.isRunning) return false;
-    if (Pelle.isDoomed) return false;
-    // 余额已够买 → 停止兜底。必须看「当前 IP 余额」而不是只看 isUnlocked：
-    // 玩家可能已经攒够却还没点 Max All，否则会每轮重复领到 1e8 的最低收益。
-    if (Currency.infinityPoints.value.gte(DC.E8)) return false;
-    // 已经够买就不用兜底
-    return pendingIP.lt(DC.E8);
   } catch (e) {
     return false;
   }

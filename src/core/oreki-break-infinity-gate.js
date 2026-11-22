@@ -1,4 +1,4 @@
-// [Oreki AD5] 打破无限闸门：间隔升级自动化 + 一次性阶段奖励
+// [Oreki AD5] 打破无限闸门：按真实 IP 自动购买间隔升级
 //
 // ── 事实（R19 真新档 601 s 实测 + 源码逐行核对）──────────────────────
 // 1. `breakInfinity()`（src/game.js:77）第一行就是
@@ -18,28 +18,21 @@
 //    这就是**第二道时间墙**，而且它的本质是「自动化缺口 + 阶段奖励缺口」，
 //    不是数值平衡问题。
 //
-// ── 本模块做什么（两件事，都可逆）────────────────────────────────────
-// A) **间隔升级自动化**：只要玩家开了自动购买器、且 IP 余额够，
-//    就自动购买大坍缩自动器的间隔升级（走游戏自身的 `upgradeInterval(false)`，
-//    不伪造 interval、不绕过成本）。这消除「必须手点 15 次」的自动化缺口。
-//
-// B) **一次性阶段奖励**：在满足 Break 的前置条件（已达成过第一次无限、
-//    自动购买器已开、非挑战、非毁灭现实、间隔尚未拉满）时，
-//    **一次性**把 IP 补足到 32767（= 15 级间隔升级的完整成本）。
-//    与 AD3 的形态完全一致（AD3 也是一次性阶段奖励：把 IP 兜底到 1e8 以解锁 ID1）。
+// ── 本模块做什么 ─────────────────────────────────────────────────────
+// 间隔升级自动化：只要玩家开了自动购买器、且 IP 余额够，
+// 就自动购买大坍缩自动器的间隔升级（走游戏自身的 `upgradeInterval(false)`，
+// 不伪造 interval、不绕过成本）。这消除「必须手点 15 次」的自动化缺口。
 //
 // ── 边界 ─────────────────────────────────────────────────────────────
 // · 只在 `!player.break` 时生效；Break 之后一律不再发放。
-// · `grantedThisSession` 保证**每次会话最多发放一次**，
-//   且 A) 与 B) 在同一次调用里完成 → 间隔拉满后 `hasMaxedInterval` 变 true，
-//   下一帧直接返回，不存在「发钱→花钱→再发钱」的循环。
+// · 不向玩家账户注入 IP；每次升级都从真实余额扣除。
 // · 不写任何新的存档字段（用会话内状态 + 存档里本来就有的 interval）。
 // · 不改 `gainedInfinityPoints`、不改 `div`、不改 `-0.75`、不改 `totalIPMult`。
 // · 受玩家既有的「自动购买器」总开关 `player.auto.autobuyersOn` 控制。
 //
-// ── 为什么 32767 这个数字是「最小可逆」────────────────────────────────
+// ── 为什么 32767 这个数字仍然重要 ────────────────────────────────────
 // 它恰好等于把间隔从 150000 拉到 100 所需的**全部**成本，
-// 不多给一分；发放后立刻被间隔升级消耗完，玩家余额回到原处。
+// 只能通过真实无限循环逐步挣到并按序支付。
 
 import { PlayerProgress } from "./player-progress.js";
 
@@ -52,11 +45,6 @@ export const BREAK_INTERVAL_TOTAL_COST = 32767;
 
 export const OrekiBreakInfinityGate = {
   /**
-   * 会话内标记：保证一次性阶段奖励每次会话只发一次。
-   */
-  grantedThisSession: false,
-
-  /**
    * 是否处于「Break 闸门」窗口（只读判断，无副作用）。
    */
   active() {
@@ -65,7 +53,7 @@ export const OrekiBreakInfinityGate = {
       if (!player.auto.autobuyersOn) return false;
       if (!PlayerProgress.infinityUnlocked()) return false;
       if (NormalChallenge.isRunning || InfinityChallenge.isRunning || EternityChallenge.isRunning) return false;
-      // [Oreki R40-A5] 毁灭态（佩勒）放行本闸门，但**只放行 A 段**（花真实 IP 买间隔升级）。
+      // [Oreki R40-A5] 毁灭态（佩勒）也允许用真实 IP 买间隔升级。
       //
       // 原因（实测，见 `_tools/_r40/R40A4-佩勒诊断.md` §7/§8）：
       //   进毁灭态那一帧 `Autobuyer.reset()` 会把 interval 打回 `baseInterval`（150000），
@@ -73,9 +61,8 @@ export const OrekiBreakInfinityGate = {
       //   （`autobuyers/autobuyer.js:185-189` + `reality.js:643` 清了永恒次数）。
       //   而 `breakInfinity()` 第一行就要求 `hasMaxedInterval`（`game.js:85`），
       //   所以「间隔买不回 100 ⇒ 永远破不了无限 ⇒ 反物质夹在 1.8e308」。
-      //   A 段走的是游戏自身的 `upgradeInterval(false)`（真实扣 IP），
+      //   本模块走的是游戏自身的 `upgradeInterval(false)`（真实扣 IP），
       //   和玩家在自动购买器页手点 15 次完全等价，不是补贴。
-      //   B 段（一次性补足 32767 IP）**仍然只在非毁灭态发放**，见 `tryOpen()`。
       if (Autobuyer.bigCrunch.hasMaxedInterval) return false;
       return true;
     } catch (e) {
@@ -83,32 +70,11 @@ export const OrekiBreakInfinityGate = {
     }
   },
 
-  /**
-   * 打开 Break 闸门：必要时发放一次性阶段奖励，并自动升级间隔。
-   * @returns {boolean} 本次是否发放了阶段奖励
-   */
+  /** 按真实 IP 成本升级大坍缩自动器间隔。 */
   tryOpen() {
     try {
       if (!this.active()) return false;
-
-      // B) 一次性阶段奖励：把 IP 补足到「拉满间隔的全部成本」
-      //
-      // [Oreki R40-A5] 毁灭态**不发放**这段补贴。
-      // 原版给佩勒安排的开 Break 通路是 `reality.js:749-752`（末日/现实重置时自动置
-      // `player.break = true`，前提是 `keepAutobuyers` 已买 + 间隔已满），
-      // 不是「发钱买通关」。在毁灭态补 IP 等于我们替玩家付账，会破坏「真实通关」口径。
-      // 所以毁灭态只放行 A 段（真实扣 IP 的间隔升级），见 `active()` 上方的注释。
-      let granted = false;
-      if (!this.grantedThisSession && !Pelle.isDoomed) {
-        const need = Decimal.subtract(new Decimal(BREAK_INTERVAL_TOTAL_COST), Currency.infinityPoints.value);
-        if (need.gt(0)) {
-          Currency.infinityPoints.add(need);
-          granted = true;
-        }
-        this.grantedThisSession = true;
-      }
-
-      // A) 间隔升级自动化：余额够就买，走游戏自身的购买路径
+      let purchased = false;
       const bc = Autobuyer.bigCrunch;
       let guard = 0;
       while (!bc.hasMaxedInterval && guard < 64) {
@@ -117,9 +83,10 @@ export const OrekiBreakInfinityGate = {
         const before = bc.interval;
         bc.upgradeInterval(false);
         if (bc.interval === before) break; // 买不动了，退出，避免死循环
+        purchased = true;
       }
 
-      return granted;
+      return purchased;
     } catch (e) {
       return false;
     }

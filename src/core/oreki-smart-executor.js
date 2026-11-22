@@ -171,11 +171,11 @@ const VERBS = {
   buyInfinityUpgrade: { policy: "owned", source: "early", method: "buyInfinityUpgrades", label: "买无限升级" },
 
   // [Oreki R44] 打破无限期的间隔升级。**刻意不代劳**：这条路径由
-  // `oreki-break-infinity-gate.js` 独占（它同时负责「一次性把 IP 补足到 32767」的相位判定），
-  // 执行层再插一手会和它的 `grantedThisSession` 相位打架。
+  // `oreki-break-infinity-gate.js` 独占（它按真实 IP 成本自动购买间隔升级），
+  // 执行层不再另写一套购买逻辑。
   buyBigCrunchInterval: {
     policy: "delegated", label: "拉满大坍缩间隔",
-    why: "OrekiBreakInfinityGate 独占（间隔升级 + 一次性 IP 补足是同一相位，拆开会出现「发钱→被别的购买吃掉」）"
+    why: "OrekiBreakInfinityGate 独占真实余额下的间隔升级，避免重复购买"
   },
 
   // ── 永恒（OrekiEternityAutomation）──
