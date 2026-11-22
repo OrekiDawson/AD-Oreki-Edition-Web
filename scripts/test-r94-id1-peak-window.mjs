@@ -360,7 +360,7 @@ const defaultIntervalSec = Number(EXECUTOR_SRC.match(
   /const INTERVAL_DEFAULT_SEC = (\d+);/)[1]);
 
 check("17. 原版自动购买器的有效间隔 = interval / F（高倍率下按游戏时间触发）", () => {
-  assert.equal(gameSpeedDefault, 3000, "默认倍率应为 3000×");
+  assert.equal(gameSpeedDefault, 500, "Reality 前默认倍率应为 500×");
   assert.match(AUTOBUYER_SRC,
     /get effectiveInterval\(\) \{\s*\n\s*return this\.interval \/ Math\.max\(1, getGlobalSpeedFactor\(\)\);/);
 });
@@ -377,7 +377,7 @@ check("17c. 首次现实前的离散生长链保持用户设定倍率，不自�
     /if \(!positive\(p\.realities\)\) return false;/);
 });
 
-check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买器在新默认倍率下每帧都能触发", () => {
+check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买器在新默认倍率下不超过 50ms 触发", () => {
   const dimBoostInterval = Number(PLAYER_SRC.match(
     /dimBoost: \{[\s\S]*?interval: (\d+),/)[1]);
   const galaxyInterval = Number(PLAYER_SRC.match(
@@ -385,15 +385,17 @@ check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买�
   const adIntervals = PLAYER_SRC.match(
     /antimatterDims: \{[\s\S]*?interval: \[([^\]]+)\]/)[1]
     .split(",").map(s => Number(s.trim()));
-  const frameMs = 1000 / 60;
+  // 500× 阶段速度下，最慢的原版购买器（星系 20000ms）为 40ms；
+  // 仍是 25Hz 自动购买，不依赖 MOD 的 1~60 秒战略节拍，也不构成长时间停顿。
+  const maxEffectiveMs = 50;
   const rows = [
     ["维度提升", dimBoostInterval],
     ["反物质星系", galaxyInterval],
     ...adIntervals.map((ms, i) => [`反物质维度 ${i + 1}`, ms]),
   ].map(([name, interval]) => {
     const effective = interval / gameSpeedDefault;
-    assert.ok(effective < frameMs,
-      `${name} 的有效间隔 ${effective}ms 不小于一帧 ${frameMs.toFixed(2)}ms`);
+    assert.ok(effective <= maxEffectiveMs,
+      `${name} 的有效间隔 ${effective}ms 超过 ${maxEffectiveMs}ms 自动购买上界`);
     return `${name} ${interval}ms→${effective}ms`;
   });
   // 证据落到测试输出里，报告可直接引用

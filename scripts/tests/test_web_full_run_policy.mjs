@@ -4,10 +4,139 @@ import {
   buildGateSummary,
   checkpointExportError,
   classifyFirstReality,
+  measureContinuity,
   overallResult,
+  quarantineRuntimeGates,
   recordCheckpointExport,
+  recordContinuityCheck,
+  recordOfflineProgress,
+  recordPageContinuity,
   validateRunnerOptions,
 } from "../web-full-run-policy.mjs";
+
+test("宿主暂停导致的墙钟与单调时钟分离必须阻断", () => {
+  assert.deepEqual(
+    measureContinuity(
+      { wallMs: 1000, monotonicMs: 1000 },
+      { wallMs: 306000, monotonicMs: 6000 },
+    ),
+    {
+      wallGapSeconds: 305,
+      monotonicGapSeconds: 5,
+      divergenceSeconds: 300,
+    },
+  );
+  const continuity = {
+    maxObservedDivergenceSeconds: 0,
+    breaks: [],
+  };
+  assert.equal(recordContinuityCheck(
+    continuity,
+    { wallMs: 1000, monotonicMs: 1000 },
+    { wallMs: 62000, monotonicMs: 61000 },
+  ), null);
+  const detected = recordContinuityCheck(
+    continuity,
+    { wallMs: 1000, monotonicMs: 1000 },
+    { wallMs: 306000, monotonicMs: 6000 },
+  );
+  assert.equal(detected.divergenceSeconds, 300);
+  assert.equal(continuity.maxObservedDivergenceSeconds, 300);
+  assert.equal(continuity.breaks.length, 1);
+});
+
+test("原版离线补算必须写入 runtimeErrors 并阻断总体 PASS", () => {
+  const summary = {
+    runtimeErrors: [],
+    continuity: {
+      offlineTimeUsedMs: null,
+      offlineTimeUsedSeconds: null,
+    },
+  };
+  assert.equal(recordOfflineProgress(summary, { offlineTimeUsed: 0 }), null);
+  assert.equal(recordOfflineProgress(summary, { offlineTimeUsed: 8500 }), null);
+  assert.match(
+    recordOfflineProgress(summary, { offlineTimeUsed: 271000 }),
+    /离线进度/,
+  );
+  assert.deepEqual(summary.runtimeErrors, [
+    "offline-progress: 原版已模拟 271 秒离线进度",
+  ]);
+  recordOfflineProgress(summary, { offlineTimeUsed: 271000 });
+  assert.equal(summary.runtimeErrors.length, 1);
+});
+
+test("offlineTimeUsed 探针缺失时必须失败关闭，不能伪装为 0ms", () => {
+  const summary = {
+    runtimeErrors: [],
+    continuity: { offlineTimeUsedMs: null, offlineTimeUsedSeconds: null },
+  };
+  assert.match(recordOfflineProgress(summary, { offlineTimeUsed: null }), /无法读取/);
+  assert.equal(summary.continuity.offlineTimeUsedMs, null);
+  assert.equal(summary.runtimeErrors.length, 1);
+});
+
+test("运行期离线补算可由页面心跳、双时钟偏差与离线弹窗捕获", () => {
+  const summary = { runtimeErrors: [] };
+  recordPageContinuity(summary, {
+    maxHeartbeatGapMs: 245_000,
+    pageWallSeconds: 780,
+    offlineCatchupSeen: {
+      catchupSeconds: 231,
+      text: "在你离开的 3 分 51 秒里",
+    },
+  }, 549);
+  assert.deepEqual(summary.runtimeErrors, [
+    "page-heartbeat: 页面心跳中断 245 秒",
+    "page-clock: 页面墙钟比 Node 连续时钟多 231 秒",
+    "offline-catchup-seen: 检测到原版离线补算弹窗，约 231 秒",
+  ]);
+  recordPageContinuity(summary, {
+    maxHeartbeatGapMs: 245_000,
+    pageWallSeconds: 780,
+    offlineCatchupSeen: { catchupSeconds: 231 },
+  }, 549);
+  assert.equal(summary.runtimeErrors.length, 3);
+});
+
+test("连续正常页面不会被页面心跳门禁误报", () => {
+  const summary = { runtimeErrors: [] };
+  recordPageContinuity(summary, {
+    maxHeartbeatGapMs: 51,
+    pageWallSeconds: 10.1,
+    offlineCatchupSeen: null,
+  }, 10);
+  assert.deepEqual(summary.runtimeErrors, []);
+});
+
+test("连续性失效后五项独立门禁全部作废", () => {
+  const gates = buildGateSummary({
+    gameEnd: true,
+    gameEndWallSeconds: 9000,
+    totalWallSeconds: 9120,
+    maxWallSeconds: 10800,
+    confirmSeconds: 120,
+    confirmRegressions: 0,
+    firstRealityWallSeconds: 4300,
+  });
+  const quarantined = quarantineRuntimeGates(gates, 1);
+  for (const name of [
+    "gameplayLegality",
+    "pacing",
+    "endgame",
+    "postEndgame",
+    "saveCompatibility",
+  ]) {
+    assert.equal(quarantined[name], "NOT RUN");
+  }
+  assert.equal(quarantined.invalidatedByRuntimeErrors, 1);
+  assert.equal(overallResult(quarantined, {
+    gameEnd: true,
+    totalWallSeconds: 9120,
+    maxWallSeconds: 10800,
+    errorCount: 1,
+  }), "RUNTIME-ERROR");
+});
 
 test("存档导出 API 缺失、抛错或空文本必须成为运行错误", () => {
   assert.match(

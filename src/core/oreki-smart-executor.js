@@ -171,11 +171,11 @@ const VERBS = {
   buyInfinityUpgrade: { policy: "owned", source: "early", method: "buyInfinityUpgrades", label: "买无限升级" },
 
   // [Oreki R44] 打破无限期的间隔升级。**刻意不代劳**：这条路径由
-  // `oreki-break-infinity-gate.js` 独占（它同时负责「一次性把 IP 补足到 32767」的相位判定），
-  // 执行层再插一手会和它的 `grantedThisSession` 相位打架。
+  // `oreki-break-infinity-gate.js` 独占（它按真实 IP 成本自动购买间隔升级），
+  // 执行层不再另写一套购买逻辑。
   buyBigCrunchInterval: {
     policy: "delegated", label: "拉满大坍缩间隔",
-    why: "OrekiBreakInfinityGate 独占（间隔升级 + 一次性 IP 补足是同一相位，拆开会出现「发钱→被别的购买吃掉」）"
+    why: "OrekiBreakInfinityGate 独占真实余额下的间隔升级，避免重复购买"
   },
 
   // ── 永恒（OrekiEternityAutomation）──
@@ -1030,9 +1030,7 @@ function runCycle(tasks) {
   const hint = typeof STATE.priorityHint === "string" ? STATE.priorityHint : "";
   // [R91] 被提示的任务不得**连续两拍**优先：它上一拍已经动过手就退回原 priority，
   // 让其它任务（典型是 `routine`）拿到这一拍，避免提示变成独占。见 `STATE.lastBeatTask`。
-  const priorityOf = task => (hint && task.id === hint && STATE.lastBeatTask !== hint
-    ? Number.NEGATIVE_INFINITY
-    : task.priority);
+  const hintEligible = task => hint && task.id === hint && STATE.lastBeatTask !== hint;
   // [R104 P0] 饥饿兜底：连续 STARVATION_ATTEMPTS 拍以上没被尝试到的任务先问。
   // no-op 不消耗节拍，所以「先问」不会减慢前面真正有工作的任务；
   // 只有被前置的任务真的 didAct 时才吃掉这一拍（与正常优先级语义一致）。
@@ -1043,6 +1041,11 @@ function runCycle(tasks) {
     .map(t => ({ id: t[0], priority: Number(t[1]) || 0, fn: t[2], cls: t[3] || "" }))
     .filter(t => typeof t.fn === "function")
     .sort((a, b) => {
+      // 紧迫提示必须先于饥饿轮转。否则 hint 与其它任务同处饥饿组时仍按最早未尝试
+      // 排序，无法越过已经排队的动作；首次永恒驻留结束后的结算会遇到同一问题。
+      const ha = hintEligible(a);
+      const hb = hintEligible(b);
+      if (ha !== hb) return ha ? -1 : 1;
       const sa = starvedOf(a) ? 0 : 1;
       const sb = starvedOf(b) ? 0 : 1;
       if (sa !== sb) return sa - sb;
@@ -1055,7 +1058,7 @@ function runCycle(tasks) {
         const lb = STATE.taskLastAttemptSeq[b.id] ?? 0;
         if (la !== lb) return la - lb;
       }
-      return priorityOf(a) - priorityOf(b);
+      return a.priority - b.priority;
     });
 
   for (const task of ordered) {
@@ -1402,6 +1405,11 @@ function debugState() {
     lastNoopReason: STATE.lastNoopReason,
     actionCount: STATE.actionCount,
     attemptCount: STATE.attemptCount,
+    attemptSeq: STATE.attemptSeq,
+    taskLastAttemptSeq: { ...STATE.taskLastAttemptSeq },
+    noopSkips: STATE.noopSkips ?? 0,
+    lastBeatAt: STATE.lastBeatAt,
+    frameActed: STATE.frameActed,
     /**
      * [Oreki R45·4] 活性指标：距离上一次**真的发出动作**过去多少秒；
      * 以及当前这一轮「发不出动作」已经持续多少秒（0 = 本帧正常）。
