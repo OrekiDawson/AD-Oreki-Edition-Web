@@ -398,6 +398,9 @@ function toggleAutobuyer(buyer) {
     GameUI.notify.info("连续统已启用，无法修改此自动购买器。");
   } else if (buyer.isUnlocked || isSimpleTickspeed) {
     buyer.toggle();
+    if (buyer === Autobuyer.eternity) {
+      globalThis.OrekiEternityAutomation?.notePlayerEternityAutobuyerToggle(buyer.isActive);
+    }
     GameUI.notify.info(`${buyer.name}自动购买器已${(buyer.isActive) ? "启用" : "禁用"}`);
   }
   return false;

@@ -1064,6 +1064,28 @@ export const OrekiEternityAutomation = {
     this._eternityAutobuyerConfigured = false;
   },
 
+  /**
+   * 玩家通过 UI / 热键切换自动永恒时立即记录意图。
+   *
+   * 仅靠下一次帧观察无法区分「永恒重置把开关关掉」和「玩家在两次观察之间手动关掉」；
+   * 因此真实输入路径必须在写入 isActive 的同一事件中通知本模块。
+   */
+  notePlayerEternityAutobuyerToggle(active) {
+    this._bindSaveIdentity();
+    if (active === true) {
+      this._eternityAutobuyerAdopted = true;
+      this._eternityAutoUserClosed = false;
+      this._eternityAutoEnabledAtRealities = this._realitiesValue();
+      this._eternityAutoEnabledAtRealTime = this._thisRealityRealTime();
+      this._eternityAutoEnabledAtEternityRealTime = this._thisEternityRealTime();
+      this._eternityAutoEnabledAtEternities = this._eternitiesToken();
+      this._eternityAutoLastSeenActive = true;
+    } else {
+      this._eternityAutoUserClosed = true;
+      this._eternityAutoLastSeenActive = false;
+    }
+  },
+
   _observeEternityAutobuyerSwitch() {
     try {
       // 先做存档身份绑定（换档即清空上一个存档的归属状态）。
@@ -1086,6 +1108,11 @@ export const OrekiEternityAutomation = {
         return;
       }
       if (this._eternityAutoLastSeenActive === true) {
+        // UI/热键已明确报告玩家关闭；即使同帧发生过永恒计时回退，也不得反向覆盖玩家意图。
+        if (this._eternityAutoUserClosed === true) {
+          this._eternityAutoLastSeenActive = false;
+          return;
+        }
         // [R118-01 #69 hotfix] 自动器未解锁时界面不渲染该开关（AutobuyerBox.js），
         // 玩家无法在此状态手动关闭；true→false 只可能是原版
         // ETERNITY_RESET_AFTER → Autobuyers.reset()（未解锁置 false）。

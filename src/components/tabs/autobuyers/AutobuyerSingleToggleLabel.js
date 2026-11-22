@@ -30,6 +30,11 @@ export default {
     },
     toggle() {
       this.autobuyer.toggle();
+      if (this.autobuyer === Autobuyer.eternity) {
+        globalThis.OrekiEternityAutomation?.notePlayerEternityAutobuyerToggle(
+          this.autobuyer.isActive,
+        );
+      }
     },
   },
   template: `

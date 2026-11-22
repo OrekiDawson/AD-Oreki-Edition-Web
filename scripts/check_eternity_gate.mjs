@@ -205,6 +205,8 @@ function reset() {
   A._eternityAutoSaveId = null;
   A._eternityAutoEnabledAtRealities = null;
   A._eternityAutoEnabledAtRealTime = null;
+  A._eternityAutoEnabledAtEternityRealTime = null;
+  A._eternityAutoEnabledAtEternities = null;
 }
 
 // ---------------- ① 自动化关闭 → 一次都不发起 ----------------
@@ -1366,6 +1368,32 @@ try {
         dwellIdx >= 0 && adoptIdx > dwellIdx,
         "dwell=" + dwellIdx + " adopt=" + adoptIdx);
     }
+
+    // [R124] 永恒重置与玩家随后手动关闭之间必须有显式意图边界。
+    setup({ eternities: 100, isActive: true, saveId: 5151, unlocked: true, realities: 1 });
+    player.eternities = new Decimal(100);
+    player.records.thisEternity = { realTime: 120 };
+    A._observeEternityAutobuyerSwitch();
+    player.eternities = new Decimal(101);
+    player.records.thisEternity.realTime = 0;
+    player.auto.eternity.isActive = false;
+    A.notePlayerEternityAutobuyerToggle(false);
+    A._observeEternityAutobuyerSwitch();
+    check("[R124] 永恒计时回退后玩家手动关闭仍保持粘滞",
+      A._eternityAutoUserClosed === true,
+      "userClosed=" + String(A._eternityAutoUserClosed));
+    A._adoptEternityAutobuyerIfNeeded();
+    check("[R124] 手动关闭不会被接管逻辑重新打开",
+      player.auto.eternity.isActive === false,
+      "isActive=" + String(player.auto.eternity.isActive));
+    const toggleLabelSource = readFileSync(
+      path.join(ROOT, "src/components/tabs/autobuyers/AutobuyerSingleToggleLabel.js"),
+      "utf8",
+    );
+    const hotkeysSource = readFileSync(path.join(ROOT, "src/core/hotkeys.js"), "utf8");
+    check("[R124] UI 与热键切换自动永恒时都记录玩家意图",
+      toggleLabelSource.includes("notePlayerEternityAutobuyerToggle") &&
+      hotkeysSource.includes("notePlayerEternityAutobuyerToggle"));
   }
 
   globalThis.player = savedPlayer;
