@@ -653,10 +653,10 @@ const releasedOrphan = markKodySkippedPure(
   },
 );
 assert.equal(releasedOrphan.ok, true);
-assert.equal(releasedOrphan.records[0].status, "skipped");
+assert.equal(releasedOrphan.records[0].status, "reserved");
 assert.equal(releasedOrphan.records[0].commentId, undefined);
 assert.equal(releasedOrphan.records[1].status, "skipped");
-assert.equal(releasedOrphan.counts.used, 0);
+assert.equal(releasedOrphan.counts.used, 1);
 
 const staleHeadless = markKodySkippedPure([{
   ...observedOnly,

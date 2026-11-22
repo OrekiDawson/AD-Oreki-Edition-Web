@@ -527,45 +527,17 @@ export function markKodySkippedPure(records, {
       counts: kodyQuotaCounts(records, target.date),
     };
   }
-  const targetMs = recordTime(target);
-  const reservationCandidate = activeRecords
-    .filter(record =>
-      record !== target &&
-      record.status === "reserved" &&
-      !String(record.commentId ?? "").trim() &&
-      String(record.headSha ?? "") === sha &&
-      Number.isFinite(recordTime(record)) &&
-      recordTime(record) <= targetMs)
-    .sort((left, right) => recordTime(right) - recordTime(left))[0] ?? null;
-  const reservationMs = reservationCandidate ? recordTime(reservationCandidate) : Number.NaN;
-  const interveningComment = reservationCandidate && activeRecords.some(record =>
-    record !== target &&
-    Number.isFinite(recordTime(record)) &&
-    Number.isFinite(reservationMs) &&
-    recordTime(record) > reservationMs &&
-    recordTime(record) < targetMs &&
-    String(record.commentId ?? "").trim() !== "");
-  const relatedReservation =
-    interveningComment ||
-    (reservationCandidate && priorRealReviewMatches(reservationCandidate))
-      ? null
-      : reservationCandidate;
   const output = [...records];
-  const skippedRecords = relatedReservation ? [target, relatedReservation] : [target];
-  for (const record of skippedRecords) {
-    const index = output.indexOf(record);
-    output[index] = {
-      ...record,
-      ...(record === target
-        ? { commentId: record.commentId || target.commentId || "" }
-        : {}),
-      headSha: record.headSha || target.headSha || sha,
-      status: "skipped",
-      skipCheckRunId: runId,
-      skipCheckUrl: String(checkUrl),
-      updatedAt: now,
-    };
-  }
+  const outputTargetIndex = output.indexOf(target);
+  output[outputTargetIndex] = {
+    ...target,
+    commentId: target.commentId || "",
+    headSha: target.headSha || sha,
+    status: "skipped",
+    skipCheckRunId: runId,
+    skipCheckUrl: String(checkUrl),
+    updatedAt: now,
+  };
   return {
     ok: true,
     reason: "kody-skipped-refunded",
