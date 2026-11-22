@@ -83,6 +83,7 @@ export function overallResult(gates, {
   errorCount = 0,
 }) {
   if (errorCount > 0) return "RUNTIME-ERROR";
+  if (gates.postEndgame === "FAIL") return "POST-ENDGAME-FAIL";
   if (gates.firstReality.status === "FAIL") return "PACING-FAIL";
   if (gameEnd === true) return gates.endgame === "PASS" ? "GAMEEND-PASS" : "GAMEEND-FAIL";
   if (maxWallSeconds >= FULL_RUN_SECONDS && totalWallSeconds >= maxWallSeconds) {

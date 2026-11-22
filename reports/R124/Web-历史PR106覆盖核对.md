@@ -37,7 +37,7 @@
 
 ## 定向验证
 
-- `node --test scripts/tests/test_web_full_run_policy.mjs`：8/8 PASS。
+- `node --test scripts/tests/test_web_full_run_policy.mjs`：9/9 PASS。
 - `check_game_pace.mjs`：PASS。
 - `check_speed_stage.mjs`：PASS。
 - `check_eternity_gate.mjs`：219/219 PASS。
@@ -49,6 +49,8 @@
 - 终局后稳定性仅凭 `isGameEnd` 持续为真不足以证明存档/重载恢复，因此保持
   `NOT RUN`；确认窗口回归才记 `FAIL`。`STOPPED-NOT-RUN`、PACING/ENDGAME FAIL
   与运行错误均以非零退出码结束，避免包装脚本把未完成运行当成功。
+- 结束前使用原版 `GameStorage.exportModifiedSave()` 导出可恢复存档文本，同时保存
+  localStorage 快照；12 秒复验已生成 `存档快照/01-运行结束.txt` 与 `.json`。
 
 ## #106 处置建议
 

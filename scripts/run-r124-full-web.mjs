@@ -27,7 +27,9 @@ const SHOT_MS = Number(arg("shot-ms", 60_000));
 const CONFIRM_SEC = Number(arg("confirm-sec", 120));
 const MAX_WALL_SEC = MAX_MIN * 60;
 const SHOTS = path.join(OUT, "截图");
+const CHECKPOINTS = path.join(OUT, "存档快照");
 fs.mkdirSync(SHOTS, { recursive: true });
+fs.mkdirSync(CHECKPOINTS, { recursive: true });
 
 function stamp() {
   const date = new Date();
@@ -79,6 +81,7 @@ const summary = {
   samples: 0,
   screenshots: 0,
   errors: [],
+  checkpoints: [],
   confirm: { requiredSeconds: CONFIRM_SEC, observedSeconds: 0, regressions: 0 },
   gates: null,
   result: "NOT RUN",
@@ -261,6 +264,46 @@ async function dismissMessageModal() {
   }
 }
 
+async function persistCheckpoint(reason) {
+  if (!page) return null;
+  try {
+    const checkpoint = await page.evaluate(() => {
+      const storage = {};
+      try {
+        for (let i = 0; i < localStorage.length; i += 1) {
+          const key = localStorage.key(i);
+          storage[key] = localStorage.getItem(key);
+        }
+      } catch (error) {
+        storage.__error = String(error?.message || error);
+      }
+      let save = null;
+      try {
+        save = globalThis.GameStorage?.exportModifiedSave?.() ?? null;
+      } catch (error) {
+        save = `ERROR: ${String(error?.message || error)}`;
+      }
+      return { save, storage };
+    });
+    const base = `${String(summary.checkpoints.length + 1).padStart(2, "0")}-${reason}`;
+    const jsonPath = path.join(CHECKPOINTS, `${base}.json`);
+    fs.writeFileSync(jsonPath, `${JSON.stringify(checkpoint, null, 2)}\n`);
+    if (typeof checkpoint.save === "string" && !checkpoint.save.startsWith("ERROR:")) {
+      fs.writeFileSync(path.join(CHECKPOINTS, `${base}.txt`), checkpoint.save);
+    }
+    summary.checkpoints.push({
+      reason,
+      json: jsonPath,
+      exportedSave: typeof checkpoint.save === "string" && !checkpoint.save.startsWith("ERROR:"),
+    });
+    writeSummary();
+    return jsonPath;
+  } catch (error) {
+    summary.errors.push(`checkpoint ${reason}: ${String(error?.message || error)}`);
+    return null;
+  }
+}
+
 async function collect() {
   await dismissMessageModal();
   const current = await page.evaluate(() => ({
@@ -370,6 +413,7 @@ async function main() {
       nextSampleAt = elapsed + SAMPLE_MS / 1000;
       if (sample.events.some(event => event.key === "reality")
           && summary.timing.firstRealityWallSeconds < 70 * 60) {
+        await persistCheckpoint("首次现实过早");
         stopping = true;
         summary.resultReason = "首次 Reality 早于 70 分钟，停止无效长跑";
       }
@@ -391,6 +435,7 @@ async function main() {
   }
 
   const final = await collect();
+  await persistCheckpoint("运行结束");
   const gameEnd = final.events.some(event => event.key === "gameEnd");
   summary.timing.totalWallSeconds = wallSeconds();
   summary.timing.endIso = iso();

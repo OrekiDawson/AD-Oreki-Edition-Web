@@ -106,6 +106,24 @@ test("运行错误必须覆盖 GAMEEND-PASS", () => {
   }), "RUNTIME-ERROR");
 });
 
+test("终局后稳定性回退必须覆盖 GAMEEND-PASS", () => {
+  const gates = buildGateSummary({
+    gameEnd: true,
+    gameEndWallSeconds: 9000,
+    totalWallSeconds: 9120,
+    maxWallSeconds: 10800,
+    confirmSeconds: 120,
+    confirmRegressions: 1,
+    firstRealityWallSeconds: 4300,
+  });
+  assert.equal(gates.postEndgame, "FAIL");
+  assert.equal(overallResult(gates, {
+    gameEnd: true,
+    totalWallSeconds: 9120,
+    maxWallSeconds: 10800,
+  }), "POST-ENDGAME-FAIL");
+});
+
 test("CLI 时间参数必须为正有限数", () => {
   assert.throws(() => validateRunnerOptions({
     maxMinutes: 180,
