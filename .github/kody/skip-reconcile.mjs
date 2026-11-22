@@ -331,7 +331,7 @@ export async function main() {
     });
     if (!result.ok &&
         commentsFetchFailed &&
-        result.reason === "no-matching-kody-trigger") {
+        ["no-matching-kody-trigger", "no-relevant-kody-trigger"].includes(result.reason)) {
       throw new Error(
         `Kody skip: ${match.repository}#${match.pr} requires retry: ${result.reason}`,
       );

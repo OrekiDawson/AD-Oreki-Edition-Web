@@ -234,7 +234,7 @@ const oldHeadSkip = markKodySkippedPure([oldHeadObserved], {
   currentPullRequestHeadCommittedAt: "2026-11-20T16:30:00Z",
 });
 assert.equal(oldHeadSkip.ok, false);
-assert.equal(oldHeadSkip.reason, "unattributed-trigger");
+assert.equal(oldHeadSkip.reason, "no-relevant-kody-trigger");
 assert.equal(oldHeadSkip.records[0].status, "posted");
 assert.equal(oldHeadSkip.records[0].headSha, undefined);
 
@@ -625,6 +625,59 @@ assert.equal(crossDayRefund.reason, "kody-skipped-refunded");
 assert.equal(crossDayRefund.records[0].status, "skipped");
 assert.equal(crossDayRefund.records[0].date, "2026-11-20");
 assert.equal(crossDayRefund.records[0].headSha, "a".repeat(40));
+const legacyReservedRecord = {
+  ...observedOnly,
+  identity: "orphan-reservation",
+  commentId: undefined,
+  status: "reserved",
+  createdAt: "2026-11-20T00:00:15Z",
+  headSha: "a".repeat(40),
+};
+const postedAfterReservation = {
+  ...observedOnly,
+  identity: `kody-comment:${kodyAndroid}#9701`,
+  commentId: "9701",
+  status: "posted",
+  createdAt: "2026-11-20T00:00:20Z",
+  headSha: "a".repeat(40),
+};
+const releasedOrphan = markKodySkippedPure(
+  [legacyReservedRecord, postedAfterReservation],
+  {
+    repository: kodyAndroid,
+    pr: 121,
+    headSha: "a".repeat(40),
+    checkRunId: 98149,
+    checkCreatedAt: "2026-11-20T00:00:25Z",
+    checkStartedAt: "2026-11-20T00:00:30Z",
+  },
+);
+assert.equal(releasedOrphan.ok, true);
+assert.equal(releasedOrphan.records[0].status, "skipped");
+assert.equal(releasedOrphan.records[0].commentId, undefined);
+assert.equal(releasedOrphan.records[1].status, "skipped");
+assert.equal(releasedOrphan.counts.used, 0);
+
+const staleHeadless = markKodySkippedPure([{
+  ...observedOnly,
+  identity: `kody-comment:${kodyAndroid}#9801`,
+  commentId: "9801",
+  headSha: undefined,
+  createdAt: "2026-11-20T00:00:05Z",
+}], {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98150,
+  checkCreatedAt: "2026-11-20T00:00:20Z",
+  checkStartedAt: "2026-11-20T00:00:30Z",
+  headCommittedAt: "2026-11-20T00:00:10Z",
+  currentPullRequestHeadSha: "a".repeat(40),
+  currentPullRequestHeadCommittedAt: "2026-11-20T00:00:10Z",
+});
+assert.equal(staleHeadless.ok, false);
+assert.equal(staleHeadless.reason, "no-relevant-kody-trigger");
+assert.equal(staleHeadless.records[0].status, "posted");
 const skipSecond = attachKodyCommand(
   reserveKodyPure(skipFirst.records, kodyCandidate("same-head-second", kodyAndroid), {
     date: kodyDate,
