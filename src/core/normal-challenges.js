@@ -2,13 +2,18 @@ import { DC } from "./constants.js";
 import { GameMechanicState } from "./game-mechanics/index.js";
 
 /**
- * C11/IC6 的物质增长在原版中被全局速度因子完全抵消，导致 MOD 的高速档
- * 仍需按真实时间缓慢积累。这里只对物质指数做有界补偿：
- * F=1 保持原版；F 越大仍保留速度收益，但使用平方根避免非预期的长期停滞。
+ * C11 中物质超过反物质会触发重置，不应随全局加速而更快追上反物质。
+ * 这里只为 C11 额外减慢物质增长，让被加速的反物质成长获得合法结算窗口。
+ * IC6 的物质是独立惩罚除数，必须保持原版语义。
  */
-export function c11MatterGrowthPower(diff, speedFactor = getGlobalSpeedFactor()) {
+export function c11MatterGrowthPower(
+  diff,
+  speedFactor = getGlobalSpeedFactor(),
+  infinityChallengeRunning = InfinityChallenge(6).isRunning,
+) {
   const factor = Number.isFinite(speedFactor) && speedFactor > 0 ? speedFactor : 1;
-  return diff / Math.sqrt(factor) / 20;
+  const divisor = infinityChallengeRunning ? factor : factor * Math.sqrt(factor);
+  return diff / divisor / 20;
 }
 
 export function updateNormalAndInfinityChallenges(diff) {

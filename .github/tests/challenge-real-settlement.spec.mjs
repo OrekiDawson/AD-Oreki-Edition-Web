@@ -43,13 +43,15 @@ test("C11 matter growth uses bounded global-speed compensation", async ({ page }
     return {
       original: module.c11MatterGrowthPower(1800, 1),
       compensated: module.c11MatterGrowthPower(1800, 1800),
+      infinityChallenge: module.c11MatterGrowthPower(1800, 1800, true),
       invalidFallback: module.c11MatterGrowthPower(1800, 0),
     };
   });
 
   expect(result.original).toBe(90);
-  expect(result.compensated).toBeCloseTo(90 / Math.sqrt(1800), 12);
-  expect(result.compensated / result.original).toBeCloseTo(1 / Math.sqrt(1800), 12);
+  expect(result.compensated).toBeCloseTo(90 / (1800 * Math.sqrt(1800)), 12);
+  expect(result.compensated).toBeLessThan(result.original);
+  expect(result.infinityChallenge).toBeCloseTo(90 / 1800, 12);
   expect(result.invalidFallback).toBe(90);
 });
 
