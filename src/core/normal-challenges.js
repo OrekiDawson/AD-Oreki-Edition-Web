@@ -1,6 +1,16 @@
 import { DC } from "./constants.js";
 import { GameMechanicState } from "./game-mechanics/index.js";
 
+/**
+ * C11/IC6 的物质增长在原版中被全局速度因子完全抵消，导致 MOD 的高速档
+ * 仍需按真实时间缓慢积累。这里只对物质指数做有界补偿：
+ * F=1 保持原版；F 越大仍保留速度收益，但使用平方根避免非预期的长期停滞。
+ */
+export function c11MatterGrowthPower(diff, speedFactor = getGlobalSpeedFactor()) {
+  const factor = Number.isFinite(speedFactor) && speedFactor > 0 ? speedFactor : 1;
+  return diff / Math.sqrt(factor) / 20;
+}
+
 export function updateNormalAndInfinityChallenges(diff) {
   if (NormalChallenge(11).isRunning || InfinityChallenge(6).isRunning) {
     if (AntimatterDimension(2).amount.neq(0)) {
@@ -8,8 +18,7 @@ export function updateNormalAndInfinityChallenges(diff) {
       // These caps are values which occur at approximately e308 IP
       const cappedBase = 1.03 + Math.clampMax(DimBoost.totalBoosts, 400) / 200 +
         Math.clampMax(player.galaxies, 100) / 100;
-      // 挑战中物质出现的速度不受加速影响，需除以因子还原
-      Currency.matter.multiply(Decimal.pow(cappedBase, diff / getGlobalSpeedFactor() / 20));
+      Currency.matter.multiply(Decimal.pow(cappedBase, c11MatterGrowthPower(diff)));
     }
     if (Currency.matter.gt(Currency.antimatter.value) && NormalChallenge(11).isRunning && !Player.canCrunch) {
       const values = [Currency.antimatter.value, Currency.matter.value];

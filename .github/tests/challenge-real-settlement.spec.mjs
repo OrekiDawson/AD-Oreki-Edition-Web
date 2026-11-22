@@ -34,6 +34,25 @@ test("running challenge is not completed without reaching its goal", async ({ pa
   expect(pageErrors, "Unhandled browser errors").toEqual([]);
 });
 
+test("C11 matter growth uses bounded global-speed compensation", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#ui")).toBeVisible({ timeout: 45_000 });
+
+  const result = await page.evaluate(async () => {
+    const module = await import("/src/core/normal-challenges.js");
+    return {
+      original: module.c11MatterGrowthPower(1800, 1),
+      compensated: module.c11MatterGrowthPower(1800, 1800),
+      invalidFallback: module.c11MatterGrowthPower(1800, 0),
+    };
+  });
+
+  expect(result.original).toBe(90);
+  expect(result.compensated).toBeCloseTo(90 / Math.sqrt(1800), 12);
+  expect(result.compensated / result.original).toBeCloseTo(1 / Math.sqrt(1800), 12);
+  expect(result.invalidFallback).toBe(90);
+});
+
 test("EC8 automation preserves purchases for locked infinity dimensions", async ({ page }) => {
   const pageErrors = [];
   page.on("pageerror", error => pageErrors.push(error.message));
