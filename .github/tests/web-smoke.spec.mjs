@@ -46,8 +46,8 @@ test("stage speed follows Break/Reality and preserves manual choice across reloa
   await expect.poll(() => page.evaluate(() => ({
     factor: GameSpeed.factor,
     managed: GameSpeed.isStageManaged,
-  }))).toEqual({ factor: 1000, managed: true });
-  await expect(page.locator(".c-oreki-speed__hint").filter({ hasText: "Break 前 1000×" }))
+  }))).toEqual({ factor: 500, managed: true });
+  await expect(page.locator(".c-oreki-speed__hint").filter({ hasText: "Break 前 500×" }))
     .toBeVisible();
 
   await page.locator('input[aria-label="自定义游戏速度倍率"]').fill("2400");
@@ -68,6 +68,6 @@ test("stage speed follows Break/Reality and preserves manual choice across reloa
   await expect.poll(() => page.evaluate(() => ({
     factor: GameSpeed.factor,
     managed: GameSpeed.isStageManaged,
-  }))).toEqual({ factor: 1000, managed: true });
+  }))).toEqual({ factor: 500, managed: true });
   expect(pageErrors, "Unhandled browser errors").toEqual([]);
 });
