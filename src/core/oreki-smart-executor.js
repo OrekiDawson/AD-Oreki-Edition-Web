@@ -1030,9 +1030,7 @@ function runCycle(tasks) {
   const hint = typeof STATE.priorityHint === "string" ? STATE.priorityHint : "";
   // [R91] 被提示的任务不得**连续两拍**优先：它上一拍已经动过手就退回原 priority，
   // 让其它任务（典型是 `routine`）拿到这一拍，避免提示变成独占。见 `STATE.lastBeatTask`。
-  const priorityOf = task => (hint && task.id === hint && STATE.lastBeatTask !== hint
-    ? Number.NEGATIVE_INFINITY
-    : task.priority);
+  const hintEligible = task => hint && task.id === hint && STATE.lastBeatTask !== hint;
   // [R104 P0] 饥饿兜底：连续 STARVATION_ATTEMPTS 拍以上没被尝试到的任务先问。
   // no-op 不消耗节拍，所以「先问」不会减慢前面真正有工作的任务；
   // 只有被前置的任务真的 didAct 时才吃掉这一拍（与正常优先级语义一致）。
@@ -1043,6 +1041,11 @@ function runCycle(tasks) {
     .map(t => ({ id: t[0], priority: Number(t[1]) || 0, fn: t[2], cls: t[3] || "" }))
     .filter(t => typeof t.fn === "function")
     .sort((a, b) => {
+      // 紧迫提示必须先于饥饿轮转。否则 hint 与其它任务同处饥饿组时仍按最早未尝试
+      // 排序，无法越过已经排队的动作；首次永恒驻留结束后的结算会遇到同一问题。
+      const ha = hintEligible(a);
+      const hb = hintEligible(b);
+      if (ha !== hb) return ha ? -1 : 1;
       const sa = starvedOf(a) ? 0 : 1;
       const sb = starvedOf(b) ? 0 : 1;
       if (sa !== sb) return sa - sb;
@@ -1055,7 +1058,7 @@ function runCycle(tasks) {
         const lb = STATE.taskLastAttemptSeq[b.id] ?? 0;
         if (la !== lb) return la - lb;
       }
-      return priorityOf(a) - priorityOf(b);
+      return a.priority - b.priority;
     });
 
   for (const task of ordered) {

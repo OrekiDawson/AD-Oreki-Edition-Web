@@ -66,7 +66,7 @@ PR #127 的 5 条未解决线程均成立，R125 在最新 `origin/main@970e825`
 验证：
 
 - `node --test scripts/tests/test_web_full_run_policy.mjs`：17/17 PASS。
-- Web `scripts/tests/*.mjs` 全量：20/20 PASS（含审查配额、发布审查上下文与完整运行器策略）。
+- Web `scripts/tests/*.mjs` 全量：21/21 PASS（含审查配额、发布审查上下文、完整运行器策略和调度优先顺序）。
 - `python3 scripts/tests/test_repository_policy.py`：15/15 PASS。
 - 5 秒单实例 headless Chromium 冒烟：11 次采样、2 张截图、读档容差 `offlineTimeUsed=15ms`、连续性最大偏差约 `0.00072s`、`runtimeErrors=[]`、最终存档导出成功、总体 `STOPPED-NOT-RUN` 且五项门禁均为 `NOT RUN`。
 

@@ -82,7 +82,7 @@ Owner：本机 Codex Lead
 ## 验证
 
 - `node scripts/check_eternity_gate.mjs`：229/229 PASS。
-- Web `scripts/tests/*.mjs`：20/20 PASS。
+- Web `scripts/tests/*.mjs`：21/21 PASS，新增测试确认紧迫提示先于饥饿轮转且只改变尝试顺序。
 - `python3 scripts/tests/test_repository_policy.py`：15/15 PASS。
 - `node --check`：`src/game.js`、`src/core/oreki-eternity-automation.js`、`src/core/oreki-smart-executor.js`、`scripts/run-r124-full-web.mjs` 全部 PASS。
 
