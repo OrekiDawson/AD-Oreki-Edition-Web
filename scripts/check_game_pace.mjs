@@ -30,14 +30,14 @@ const normalChallenges = fs.readFileSync(
 );
 
 assert.match(speed, /export const GAME_SPEED_DEFAULT = 500;/);
-assert.match(speed, /export const GAME_SPEED_POST_BREAK = 70;/);
+assert.match(speed, /export const GAME_SPEED_POST_BREAK = 35;/);
 assert.match(speed, /export const GAME_SPEED_POST_REALITY = 3000;/);
 assert.match(speed, /export const GAME_SPEED_MAX = 100000;/);
 assert.match(speed, /let dynamicEnabled = readStoredFlag\(DYNAMIC_KEY, true\);/);
 assert.match(speed, /tickProgressionSpeed\(\)/);
 assert.match(speed, /progressionStageForState\(p\.break === true, p\.realities\)/);
 assert.match(options, /speedPresets: \[1, 10, 100, 1000, 3000, 10000, 100000\]/);
-assert.match(options, /Break 前 500×，Break 后 70×，Reality 后 3000×/);
+assert.match(options, /Break 前 500×，Break 后 35×，Reality 后 3000×/);
 assert.match(
   reality,
   /const simCount = \(multiversalSim \+ 1\) \* \(amplifiedSim \+ 1\) \+ player\.partSimulatedReality - 1;/,
@@ -46,9 +46,9 @@ assert.doesNotMatch(reality, /player\.partSimulatedReality - 1 \+ 4;/);
 assert.match(eternity, /const TT_REWARD_MULTIPLIER = 1;/);
 assert.equal(tutorialText.includes("默认 10000×"), false);
 assert.equal(tutorialText.includes("默认 3000×"), false);
-assert.equal(tutorialText.includes("500×/70×/3000×"), true);
+assert.equal(tutorialText.includes("500×/35×/3000×"), true);
 assert.equal(tutorialStage.includes("默认 3000×"), false);
-assert.equal(tutorialStage.includes("500×/70×/3000×"), true);
+assert.equal(tutorialStage.includes("500×/35×/3000×"), true);
 assert.match(eternity, /get eternityResetActive\(\)/);
 assert.equal((eternity.match(/get eternityResetActive\(\)/g) || []).length, 1);
 assert.match(eternity, /tickEternity\(\) \{[\s\S]*?if \(!this\.eternityResetActive\) return false;/);
@@ -69,4 +69,4 @@ const obsoleteChallengeCompletion = /(?:进入|点进去).{0,2}(?:即|就)完成
 assert.doesNotMatch(tutorialText, obsoleteChallengeCompletion);
 assert.doesNotMatch(tutorialGenerated, obsoleteChallengeCompletion);
 
-console.log("PASS  R125 Web 节奏：500×/70×/3000×、无额外现实模拟、TT 收益恢复原版");
+console.log("PASS  R125 Web 节奏：500×/35×/3000×、无额外现实模拟、TT 收益恢复原版");
