@@ -573,6 +573,7 @@ try {
       confirmRegressions: summary.confirm.regressions,
       firstRealityWallSeconds: summary.timing.firstRealityWallSeconds,
     });
+    summary.gates = quarantineRuntimeGates(summary.gates, summary.runtimeErrors.length);
     summary.result = "RUNTIME-ERROR";
     process.exitCode = 2;
   } else {
