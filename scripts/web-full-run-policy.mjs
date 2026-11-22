@@ -42,6 +42,7 @@ export function buildGateSummary({
   totalWallSeconds,
   maxWallSeconds,
   confirmSeconds,
+  requiredConfirmSeconds = 120,
   confirmRegressions,
   firstRealityWallSeconds,
 }) {
@@ -57,7 +58,12 @@ export function buildGateSummary({
 
   let postEndgame = "NOT RUN";
   if (gameEnd === true) {
-    postEndgame = confirmSeconds >= 120 && confirmRegressions === 0 ? "PASS" : "FAIL";
+    if (confirmRegressions > 0) {
+      postEndgame = "FAIL";
+    } else if (confirmSeconds >= requiredConfirmSeconds) {
+      // 仅持续观察 isGameEnd 不能证明终局后的存档保存、重载和状态恢复。
+      postEndgame = "NOT RUN";
+    }
   }
 
   return {
@@ -70,11 +76,30 @@ export function buildGateSummary({
   };
 }
 
-export function overallResult(gates, { gameEnd, totalWallSeconds, maxWallSeconds }) {
+export function overallResult(gates, {
+  gameEnd,
+  totalWallSeconds,
+  maxWallSeconds,
+  errorCount = 0,
+}) {
+  if (errorCount > 0) return "RUNTIME-ERROR";
   if (gates.firstReality.status === "FAIL") return "PACING-FAIL";
   if (gameEnd === true) return gates.endgame === "PASS" ? "GAMEEND-PASS" : "GAMEEND-FAIL";
   if (maxWallSeconds >= FULL_RUN_SECONDS && totalWallSeconds >= maxWallSeconds) {
     return "TIMEOUT-FAIL";
   }
   return "STOPPED-NOT-RUN";
+}
+
+export function validateRunnerOptions({ maxMinutes, sampleMs, shotMs, confirmSeconds }) {
+  for (const [flag, value] of [
+    ["--max-min", maxMinutes],
+    ["--sample-ms", sampleMs],
+    ["--shot-ms", shotMs],
+    ["--confirm-sec", confirmSeconds],
+  ]) {
+    if (!Number.isFinite(value) || value <= 0) {
+      throw new Error(`${flag} 必须为正有限数`);
+    }
+  }
 }

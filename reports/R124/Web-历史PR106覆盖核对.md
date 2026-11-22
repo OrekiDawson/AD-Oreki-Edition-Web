@@ -37,7 +37,7 @@
 
 ## 定向验证
 
-- `node --test scripts/tests/test_web_full_run_policy.mjs`：5/5 PASS。
+- `node --test scripts/tests/test_web_full_run_policy.mjs`：8/8 PASS。
 - `check_game_pace.mjs`：PASS。
 - `check_speed_stage.mjs`：PASS。
 - `check_eternity_gate.mjs`：219/219 PASS。
@@ -46,6 +46,9 @@
   结果严格输出 `STOPPED-NOT-RUN`。
 - 完成源码 SHA/出生快照加固后的 12 秒复验：5 次采样、3 张截图、
   全新存档 `storageAtStart=[]`、0 pageerror，结果仍为 `STOPPED-NOT-RUN`。
+- 终局后稳定性仅凭 `isGameEnd` 持续为真不足以证明存档/重载恢复，因此保持
+  `NOT RUN`；确认窗口回归才记 `FAIL`。`STOPPED-NOT-RUN`、PACING/ENDGAME FAIL
+  与运行错误均以非零退出码结束，避免包装脚本把未完成运行当成功。
 
 ## #106 处置建议
 

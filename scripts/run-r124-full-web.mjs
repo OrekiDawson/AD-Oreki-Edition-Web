@@ -9,6 +9,7 @@ import { chromium } from "@playwright/test";
 import {
   buildGateSummary,
   overallResult,
+  validateRunnerOptions,
 } from "./web-full-run-policy.mjs";
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -303,7 +304,12 @@ async function collect() {
 }
 
 async function main() {
-  if (!Number.isFinite(MAX_MIN) || MAX_MIN <= 0) throw new Error("--max-min 必须为正数");
+  validateRunnerOptions({
+    maxMinutes: MAX_MIN,
+    sampleMs: SAMPLE_MS,
+    shotMs: SHOT_MS,
+    confirmSeconds: CONFIRM_SEC,
+  });
   log("启动 R124 Web 完整运行器", JSON.stringify({ REPO, OUT, MAX_MIN, SAMPLE_MS }));
   server = await startServer(REPO);
   const base = `http://127.0.0.1:${server.address().port}/index.html`;
@@ -380,7 +386,7 @@ async function main() {
       if (!stillEnded) summary.confirm.regressions += 1;
       if (summary.confirm.observedSeconds >= CONFIRM_SEC) stopping = true;
     }
-    if (!stopping && wallSeconds() >= MAX_WALL_SEC) stopping = true;
+    if (!stopping && gameEndAt === null && wallSeconds() >= MAX_WALL_SEC) stopping = true;
     await new Promise(resolve => setTimeout(resolve, 200));
   }
 
@@ -394,6 +400,7 @@ async function main() {
     totalWallSeconds: summary.timing.totalWallSeconds,
     maxWallSeconds: MAX_WALL_SEC,
     confirmSeconds: summary.confirm.observedSeconds,
+    requiredConfirmSeconds: CONFIRM_SEC,
     confirmRegressions: summary.confirm.regressions,
     firstRealityWallSeconds: summary.timing.firstRealityWallSeconds,
   });
@@ -401,10 +408,12 @@ async function main() {
     gameEnd,
     totalWallSeconds: summary.timing.totalWallSeconds,
     maxWallSeconds: MAX_WALL_SEC,
+    errorCount: summary.errors.length,
   });
   summary.resultReason ||= summary.gates.firstReality.reason;
   await screenshot("结束");
   writeSummary();
+  process.exitCode = summary.result === "GAMEEND-PASS" ? 0 : 2;
   log("运行结束", JSON.stringify({
     result: summary.result,
     gates: summary.gates,
