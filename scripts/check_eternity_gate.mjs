@@ -205,6 +205,8 @@ function reset() {
   A._eternityAutoSaveId = null;
   A._eternityAutoEnabledAtRealities = null;
   A._eternityAutoEnabledAtRealTime = null;
+  A._eternityAutoEnabledAtEternityRealTime = null;
+  A._eternityAutoEnabledAtEternities = null;
 }
 
 // ---------------- ① 自动化关闭 → 一次都不发起 ----------------
@@ -601,10 +603,10 @@ try {
   }
 }
 
-// ---------------- ⑪ R96：TT 购买收益 ×500（与 Android 同语义） ----------------
+// ---------------- ⑪ TT 购买收益保持原版 ×1 ----------------
 {
   const src = readFileSync(path.join(ROOT, "src/core/oreki-eternity-automation.js"), "utf8");
-  check("倍率常量 = 500", src.includes("const TT_REWARD_MULTIPLIER = 500;"));
+  check("倍率常量 = 1", src.includes("const TT_REWARD_MULTIPLIER = 1;"));
   check("totalPurchased 结果按真实类型处理（number 不再调 toNumber）",
     src.includes('typeof raw === "number" ? raw : raw.toNumber()'));
   check("禁止把 totalPurchased() 直接当 Decimal 调 toNumber",
@@ -649,14 +651,14 @@ try {
     total = 3;
     check("无新购买时不发奖", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 4;
-    check("新增 1 次购买 → 补发 499 TT", A2.settleTimeTheoremReward() === 499 && added === 499);
+    check("新增 1 次购买 → 不补发 TT", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 4;
-    check("同一笔购买不会被重复补发", A2.settleTimeTheoremReward() === 0 && added === 499);
+    check("同一笔购买不会被重复补发", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 6;
-    check("批量新增 2 次 → 补发 998 TT", A2.settleTimeTheoremReward() === 998 && added === 1497);
+    check("批量新增 2 次 → 不补发 TT", A2.settleTimeTheoremReward() === 0 && added === 0);
     total = 2_400_000;
-    check("[R104 P1] 高倍率单拍真实大额购买 delta=2.4e6 → 按 ×500 补发（不再当换档丢弃）",
-      A2.settleTimeTheoremReward() === (2_400_000 - 6) * 499);
+    check("[R104 P1] 高倍率单拍真实大额购买 delta=2.4e6 → 不补发 TT",
+      A2.settleTimeTheoremReward() === 0);
     const addedAfterBig = added;
     total = 2_400_000 + 200_000_000;
     check("超过 1e8 的换档级跳变仍只重设基线、不发奖",
@@ -1345,6 +1347,17 @@ try {
       const activeIdx = tickBody.indexOf("if (!this.eternityResetActive) return false;");
       const dwellIdx = tickBody.indexOf("firstEternityDwellRemainingMs");
       const adoptIdx = tickBody.indexOf("this._adoptEternityAutobuyerIfNeeded()");
+      const observeBody = src.split("_observeEternityAutobuyerSwitch() {")[1]
+        ?.split("_eternityBootstrapActive() {")[0] || "";
+      check("[R121] 自动永恒开关观察记录本永恒真实时间",
+        observeBody.includes("this._eternityAutoEnabledAtEternityRealTime = eternityRealTime"));
+      check("[R121] 自动永恒开关观察记录永恒进度令牌",
+        observeBody.includes("this._eternityAutoEnabledAtEternities = eternities"));
+      check("[R121] 永恒进度变化不被误判为玩家手动关闭",
+        observeBody.includes("eternityRealTimeReset") &&
+        observeBody.includes("eternitiesChanged") &&
+        observeBody.includes("eternityRealTime === null && eternitiesChanged") &&
+        observeBody.includes("realitiesReset || realTimeReset || eternityReset"));
       check("[R116 review] tickEternity 在 dwell gate 之前采样 fresh-session latch",
         sampleIdx >= 0 && dwellIdx > sampleIdx,
         "sample=" + sampleIdx + " dwell=" + dwellIdx);
@@ -1355,6 +1368,37 @@ try {
         dwellIdx >= 0 && adoptIdx > dwellIdx,
         "dwell=" + dwellIdx + " adopt=" + adoptIdx);
     }
+
+    // [R124] 永恒重置与玩家随后手动关闭之间必须有显式意图边界。
+    setup({ eternities: 100, isActive: true, saveId: 5151, unlocked: true, realities: 1 });
+    player.eternities = new Decimal(100);
+    player.records.thisEternity = { realTime: 120 };
+    A._observeEternityAutobuyerSwitch();
+    player.eternities = new Decimal(101);
+    player.records.thisEternity.realTime = 0;
+    player.auto.eternity.isActive = false;
+    A.notePlayerEternityAutobuyerToggle(false);
+    A._observeEternityAutobuyerSwitch();
+    check("[R124] 永恒计时回退后玩家手动关闭仍保持粘滞",
+      A._eternityAutoUserClosed === true,
+      "userClosed=" + String(A._eternityAutoUserClosed));
+    A._adoptEternityAutobuyerIfNeeded();
+    check("[R124] 手动关闭不会被接管逻辑重新打开",
+      player.auto.eternity.isActive === false,
+      "isActive=" + String(player.auto.eternity.isActive));
+    const autobuyerBoxSource = readFileSync(
+      path.join(ROOT, "src/components/tabs/autobuyers/AutobuyerBox.js"),
+      "utf8",
+    );
+    const autobuyerTogglesSource = readFileSync(
+      path.join(ROOT, "src/components/tabs/autobuyers/AutobuyerToggles.js"),
+      "utf8",
+    );
+    const hotkeysSource = readFileSync(path.join(ROOT, "src/core/hotkeys.js"), "utf8");
+    check("[R124] 永恒 UI、批量开关与热键都记录玩家意图",
+      autobuyerBoxSource.includes("notePlayerEternityAutobuyerToggle") &&
+      autobuyerTogglesSource.includes("notePlayerEternityAutobuyerToggle") &&
+      hotkeysSource.includes("notePlayerEternityAutobuyerToggle"));
   }
 
   globalThis.player = savedPlayer;

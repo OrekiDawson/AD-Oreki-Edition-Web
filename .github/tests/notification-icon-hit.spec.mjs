@@ -51,13 +51,15 @@ test("notification toasts must not cover the floating help/info buttons on mobil
   ).toBe(4);
   // 入场动画（a-notification--enter 0.5s）结束后再测命中
   await page.waitForTimeout(800);
+  await expect(page.locator(".l-help-me")).toHaveCount(2);
 
   const hits = await page.evaluate(() => {
-    const findButton = text => [...document.querySelectorAll(".l-help-me")]
-      .find(el => el.textContent.trim() === text);
+    const findButton = kind => kind === "help"
+      ? document.querySelector(".l-help-me:not(.l-information)")
+      : document.querySelector(".l-information.l-help-me");
     const result = {};
-    for (const [key, text] of [["help", "?"], ["info", "i"]]) {
-      const el = findButton(text);
+    for (const key of ["help", "info"]) {
+      const el = findButton(key);
       if (!el) {
         result[key] = null;
         continue;
@@ -82,7 +84,7 @@ test("notification toasts must not cover the floating help/info buttons on mobil
     () => document.getElementById("notification-container").children.length,
   );
   const center = await page.evaluate(() => {
-    const el = [...document.querySelectorAll(".l-help-me")].find(item => item.textContent.trim() === "?");
+    const el = document.querySelector(".l-help-me:not(.l-information)");
     const rect = el.getBoundingClientRect();
     return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
   });

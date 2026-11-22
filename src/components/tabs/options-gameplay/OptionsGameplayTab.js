@@ -28,6 +28,8 @@ export default {
       speedFactor: GameSpeed.factor,
       speedInput: String(GameSpeed.factor),
       speedPresets: [1, 10, 100, 1000, 3000, 10000, 100000],
+      speedStageManaged: GameSpeed.isStageManaged,
+      speedModeLabel: GameSpeed.modeLabel,
       // 直接读 GameSpeed 的开关状态，不另设一份存档/本地状态
       scaleAutobuyerInterval: GameSpeed.scaleAutobuyerInterval,
       scaleTickspeedAutobuyerInterval: GameSpeed.scaleTickspeedAutobuyerInterval,
@@ -55,7 +57,7 @@ export default {
       return GameSpeed.format(this.speedFactor);
     },
     dynamicSpeedLabel() {
-      return GameSpeed.modeLabel;
+      return this.speedModeLabel;
     },
     dynamicSpeedHint() {
       return this.dynamicSpeed
@@ -77,6 +79,11 @@ export default {
     },
     speedStorageHint() {
       return "独立保存在浏览器本地：重置或导入存档都不会改变倍率";
+    },
+    speedStageHint() {
+      return this.speedStageManaged
+        ? "新档阶段速度：Break 前 1000×，Break 后 1800×，Reality 后 3000×；手动设置倍率后停止自动接管"
+        : "已使用你的手动倍率；点“恢复默认”可重新启用阶段速度";
     },
     sliderPropsOfflineTicks() {
       return {
@@ -126,6 +133,7 @@ export default {
     dynamicSpeed(newValue) {
       GameSpeed.setDynamic(newValue);
       this.speedFactor = GameSpeed.factor;
+      this.speedModeLabel = GameSpeed.modeLabel;
     },
     // [Oreki R50 web · 九修] 开关即时生效并持久化
     automationEnabled(newValue) {
@@ -160,6 +168,8 @@ export default {
       this.automatorUnlocked = Player.automatorUnlocked;
       this.automatorLogSize = options.automatorEvents.maxEntries;
       this.speedFactor = GameSpeed.factor;
+      this.speedStageManaged = GameSpeed.isStageManaged;
+      this.speedModeLabel = GameSpeed.modeLabel;
       this.scaleAutobuyerInterval = GameSpeed.scaleAutobuyerInterval;
       this.scaleTickspeedAutobuyerInterval = GameSpeed.scaleTickspeedAutobuyerInterval;
       this.dynamicSpeed = GameSpeed.isDynamic;
@@ -268,6 +278,8 @@ export default {
       }
       this.speedFactor = result.value;
       this.speedInput = String(result.value);
+      this.speedStageManaged = GameSpeed.isStageManaged;
+      this.speedModeLabel = GameSpeed.modeLabel;
       if (result.persisted) {
         GameUI.notify.success(`游戏速度已设置为 ×${GameSpeed.format(result.value)}`);
       } else {
@@ -284,7 +296,9 @@ export default {
       const result = GameSpeed.resetDefault();
       this.speedFactor = GameSpeed.factor;
       this.speedInput = String(GameSpeed.factor);
-      if (result.ok) GameUI.notify.info(`游戏速度已恢复默认 ×${GameSpeed.format(GameSpeed.defaultFactor)}`);
+      this.speedStageManaged = GameSpeed.isStageManaged;
+      this.speedModeLabel = GameSpeed.modeLabel;
+      if (result.ok) GameUI.notify.info(`游戏速度已恢复阶段管理 ×${GameSpeed.format(result.value)}`);
     },
     // Given the endpoints of 22-54, this produces 500, 600, ... , 900, 1000, 2000, ... , 1e6 ticks
     // It's essentially 10^(x/10) but with the mantissa spaced linearly instead of logarithmically
@@ -309,6 +323,7 @@ export default {
           <b>游戏速度：×{{ speedFactorText }}</b>
           <span class="c-oreki-speed__hint">{{ speedHint }}</span>
           <span class="c-oreki-speed__hint">{{ speedStorageHint }}</span>
+          <span class="c-oreki-speed__hint">{{ speedStageHint }}</span>
         </div>
         <div class="o-primary-btn o-primary-btn--option c-oreki-speed__input">
           <b>自定义倍率</b>
