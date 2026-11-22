@@ -457,14 +457,14 @@ export function markKodySkippedPure(records, {
       recordTime(record) >= headCommittedMs &&
       (currentHeadMatches || recordTime(record) < currentHeadCommittedMs))
     : [];
+  const allHeadless = activeRecords.filter(record =>
+    !record.headSha && String(record.commentId ?? "").trim() !== "");
   const potentialHeadless = canAttributeHeadless
-    ? activeRecords.filter(record =>
-      !record.headSha &&
-      String(record.commentId ?? "").trim() !== "" &&
-      Number.isFinite(recordTime(record)) &&
-      recordTime(record) >= headCommittedMs &&
-      (currentHeadMatches || recordTime(record) < currentHeadCommittedMs))
-    : [];
+    ? allHeadless.filter(record =>
+      !Number.isFinite(recordTime(record)) ||
+      (recordTime(record) >= headCommittedMs &&
+        (currentHeadMatches || recordTime(record) < currentHeadCommittedMs)))
+    : allHeadless;
   if (exactMatches.length === 0 && headlessMatches.length === 0) {
     if (potentialHeadless.length > 0) {
       return { ok: false, reason: "unattributed-trigger", records };
@@ -533,7 +533,7 @@ export function markKodySkippedPure(records, {
       record !== target &&
       record.status === "reserved" &&
       !String(record.commentId ?? "").trim() &&
-      (!record.headSha || !target.headSha || record.headSha === target.headSha) &&
+      String(record.headSha ?? "") === sha &&
       Number.isFinite(recordTime(record)) &&
       recordTime(record) <= targetMs)
     .sort((left, right) => recordTime(right) - recordTime(left))[0] ?? null;
@@ -545,7 +545,11 @@ export function markKodySkippedPure(records, {
     recordTime(record) > reservationMs &&
     recordTime(record) < targetMs &&
     String(record.commentId ?? "").trim() !== "");
-  const relatedReservation = interveningComment ? null : reservationCandidate;
+  const relatedReservation =
+    interveningComment ||
+    (reservationCandidate && priorRealReviewMatches(reservationCandidate))
+      ? null
+      : reservationCandidate;
   const output = [...records];
   const skippedRecords = relatedReservation ? [target, relatedReservation] : [target];
   for (const record of skippedRecords) {

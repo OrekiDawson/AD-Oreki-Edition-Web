@@ -678,6 +678,64 @@ const staleHeadless = markKodySkippedPure([{
 assert.equal(staleHeadless.ok, false);
 assert.equal(staleHeadless.reason, "no-relevant-kody-trigger");
 assert.equal(staleHeadless.records[0].status, "posted");
+
+const unknownHeadless = markKodySkippedPure([{
+  ...observedOnly,
+  identity: `kody-comment:${kodyAndroid}#9802`,
+  commentId: "9802",
+  headSha: undefined,
+  createdAt: "2026-11-20T00:00:10Z",
+}], {
+  repository: kodyAndroid,
+  pr: 121,
+  headSha: "a".repeat(40),
+  checkRunId: 98151,
+  checkCreatedAt: "2026-11-20T00:00:20Z",
+  checkStartedAt: "2026-11-20T00:00:30Z",
+});
+assert.equal(unknownHeadless.ok, false);
+assert.equal(unknownHeadless.reason, "unattributed-trigger");
+
+const otherHeadReservation = {
+  ...legacyReservedRecord,
+  identity: "other-head-reservation",
+  headSha: "b".repeat(40),
+};
+const otherHeadSkip = markKodySkippedPure(
+  [otherHeadReservation, postedAfterReservation],
+  {
+    repository: kodyAndroid,
+    pr: 121,
+    headSha: "a".repeat(40),
+    checkRunId: 98152,
+    checkCreatedAt: "2026-11-20T00:00:25Z",
+    checkStartedAt: "2026-11-20T00:00:30Z",
+  },
+);
+assert.equal(otherHeadSkip.ok, true);
+assert.equal(otherHeadSkip.records[0].status, "reserved");
+assert.equal(otherHeadSkip.records[1].status, "skipped");
+assert.equal(otherHeadSkip.counts.used, 1);
+
+const reviewedReservationSkip = markKodySkippedPure(
+  [legacyReservedRecord, postedAfterReservation],
+  {
+    repository: kodyAndroid,
+    pr: 121,
+    headSha: "a".repeat(40),
+    checkRunId: 98153,
+    checkCreatedAt: "2026-11-20T00:00:25Z",
+    checkStartedAt: "2026-11-20T00:00:30Z",
+    priorRealReviews: [{
+      commentId: "",
+      startedAt: "2026-11-20T00:00:18Z",
+    }],
+  },
+);
+assert.equal(reviewedReservationSkip.ok, true);
+assert.equal(reviewedReservationSkip.records[0].status, "reserved");
+assert.equal(reviewedReservationSkip.records[1].status, "skipped");
+assert.equal(reviewedReservationSkip.counts.used, 1);
 const skipSecond = attachKodyCommand(
   reserveKodyPure(skipFirst.records, kodyCandidate("same-head-second", kodyAndroid), {
     date: kodyDate,
