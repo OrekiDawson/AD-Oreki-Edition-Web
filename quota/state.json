@@ -2919,6 +2919,20 @@
       "reservedAt": "2026-11-22T05:31:22.212Z",
       "updatedAt": "2026-11-22T05:31:22.212Z",
       "createdAt": "2026-11-22T05:31:28.000Z"
+    },
+    {
+      "kind": "kody_start_review",
+      "identity": "kody-trigger:OrekiDawson/AD-Oreki-Edition-Android#251@d9b72bb3ff2ce43585ef6e0a90b55bbedfd0ecc5",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Android",
+      "pr": 251,
+      "headSha": "d9b72bb3ff2ce43585ef6e0a90b55bbedfd0ecc5",
+      "source": "automated_trigger",
+      "date": "2026-11-22",
+      "status": "reserved",
+      "commentId": "",
+      "commentUrl": "",
+      "reservedAt": "2026-11-22T05:48:52.346Z",
+      "updatedAt": "2026-11-22T05:48:52.346Z"
     }
   ]
 }
