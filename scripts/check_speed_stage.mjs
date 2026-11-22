@@ -32,17 +32,17 @@ const freshStorage = new MemoryStorage();
 const freshPlayer = { realities: 0, break: false };
 const { GameSpeed, progressionSpeedForState } = await loadSpeed(freshStorage, freshPlayer);
 
-assert.equal(progressionSpeedForState(false, 0), 1000);
-assert.equal(progressionSpeedForState(true, 0), 1800);
+assert.equal(progressionSpeedForState(false, 0), 500);
+assert.equal(progressionSpeedForState(true, 0), 900);
 assert.equal(progressionSpeedForState(true, { gt: () => true }), 3000);
-assert.equal(GameSpeed.factor, 1000);
+assert.equal(GameSpeed.factor, 500);
 assert.equal(GameSpeed.isStageManaged, true);
 
 GameSpeed.tickProgressionSpeed();
 assert.equal(freshStorage.getItem("oreki-game-speed-stage"), "pre-break");
 freshPlayer.break = true;
 assert.equal(GameSpeed.tickProgressionSpeed(), true);
-assert.equal(GameSpeed.factor, 1800);
+assert.equal(GameSpeed.factor, 900);
 freshPlayer.realities = { gt: () => true };
 assert.equal(GameSpeed.tickProgressionSpeed(), true);
 assert.equal(GameSpeed.factor, 3000);
@@ -82,5 +82,5 @@ const manual = await loadSpeed(manualStorage, { realities: 1, break: true });
 assert.equal(manual.GameSpeed.tickProgressionSpeed(), false);
 assert.equal(manual.GameSpeed.factor, 2400);
 
-console.log("PASS  Web 阶段速度：1000× → 1800× → 3000×；刷新保留动态升档，手动倍率优先");
+console.log("PASS  Web 阶段速度：500× → 900× → 3000×；刷新保留动态升档，手动倍率优先");
 process.exit(0);
