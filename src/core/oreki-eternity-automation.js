@@ -1249,6 +1249,20 @@ export const OrekiEternityAutomation = {
         this._firstEternityEverSeen = true;
         return true;
       }
+      // eternities 是会被永恒升级消耗的货币；不能把「当前余额 0」当成新档。
+      // Reality 之前 bestEternity / recentEternities 会保留首次永恒后的真实历史，
+      // 用它们恢复「曾经永恒过」，避免读档或消费完余额后重复 180 s 首次驻留。
+      const bestEternity = player.records?.bestEternity;
+      const bestRecorded = [bestEternity?.time, bestEternity?.realTime]
+        .some(value => Number.isFinite(value) && value < Number.MAX_VALUE);
+      const recentRecorded = Array.isArray(player.records?.recentEternities) &&
+        player.records.recentEternities.some(run =>
+          Array.isArray(run) && Number.isFinite(run[0]) && run[0] < Number.MAX_VALUE
+        );
+      if (bestRecorded || recentRecorded) {
+        this._firstEternityEverSeen = true;
+        return true;
+      }
     } catch (e) { /* 读不到按未永恒处理 */ }
     return false;
   },

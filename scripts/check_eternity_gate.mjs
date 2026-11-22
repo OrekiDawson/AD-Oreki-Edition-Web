@@ -1144,6 +1144,36 @@ try {
   player.eternities = mkE(0);
   check("[R116] 同会话内 eternities 被花回 0 ⇒ latch 生效，不重新驻留",
     A.firstEternityDwellRemainingMs() === 0);
+
+  // 冷启动或旧档加载时没有内存 latch；eternities 可能已被永恒升级花到 0。
+  // 原版 bestEternity/recentEternities 是 Reality 前可用的真实历史字段，必须据此识别老档。
+  setup({ eternities: 0, realities: 0, isActive: false, unlocked: false });
+  player.records.bestEternity = { time: 12_345, realTime: Number.MAX_VALUE };
+  check("[R124] 余额已花到 0 但 bestEternity.time 有记录 ⇒ 不是首次永恒",
+    A._neverEternitied() === false);
+  check("[R124] 历史记录存在时冷启动不得重复 180 s 驻留",
+    A.firstEternityDwellRemainingMs() === 0);
+
+  setup({ eternities: 0, realities: 0, isActive: false, unlocked: false });
+  player.records.bestEternity = { time: Number.MAX_VALUE, realTime: 12_345 };
+  player.records.recentEternities = Array.from(
+    { length: 10 },
+    (_, index) => [index === 9 ? 12_345 : Number.MAX_VALUE, 0, 0, 0, "", 0],
+  );
+  check("[R124] 余额已花到 0 但 recentEternities 有记录 ⇒ 不是首次永恒",
+    A._neverEternitied() === false);
+  check("[R124] recentEternities 历史记录同样阻止重复驻留",
+    A.firstEternityDwellRemainingMs() === 0);
+
+  setup({ eternities: 0, realities: 0, isActive: false, unlocked: false });
+  player.records.bestEternity = { time: Number.MAX_VALUE, realTime: Number.MAX_VALUE };
+  player.records.recentEternities = Array.from(
+    { length: 10 },
+    () => [Number.MAX_VALUE, Number.MAX_VALUE, 0, 0, "", 0],
+  );
+  check("[R124] 真正的空白永恒记录仍是新档",
+    A.firstEternityDwellRemainingMs() === 180_000);
+
   // 换存档：上一个存档的"曾永恒"结论不得串到新档。
   player.records.gameCreatedTime = 333;
   check("[R116] 换存档后即使新档 eternities=0 ⇒ 重新驻留（不串档）",
@@ -1216,6 +1246,9 @@ try {
     check("[R116] Web 无 bigEternities：用 realities>0 识别 Reality 后的已永恒存档",
       src.includes("if (realities !== null && realities > 0) {")
       && src.includes("this._firstEternityEverSeen = true;"));
+    check("[R124] 余额花到 0 时用原版 bestEternity/recentEternities 识别老档",
+      src.includes("player.records?.bestEternity")
+      && src.includes("player.records?.recentEternities"));
     check("[R116] 换存档清「曾永恒」latch（导入新档仍需引导驻留）",
       src.includes("this._firstEternityEverSeen = false;"));
     {
