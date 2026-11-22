@@ -82,7 +82,7 @@ export default {
     },
     speedStageHint() {
       return this.speedStageManaged
-        ? "新档阶段速度：Break 前 500×，Break 后 900×，Reality 后 3000×；手动设置倍率后停止自动接管"
+        ? "新档阶段速度：Break 前 500×，Break 后 1×，Reality 后 3000×；手动设置倍率后停止自动接管"
         : "已使用你的手动倍率；点“恢复默认”可重新启用阶段速度";
     },
     sliderPropsOfflineTicks() {
