@@ -125,7 +125,6 @@ function initPageProbe() {
     for (let i = 0; i < localStorage.length; i += 1) {
       window.__r124.storageAtStart.push(localStorage.key(i));
     }
-    localStorage.clear();
   } catch {
     window.__r124.storageAtStart = ["ERR"];
   }
