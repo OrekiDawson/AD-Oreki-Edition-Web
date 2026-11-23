@@ -34,12 +34,13 @@ function target_player() {
 }
 
 /**
- * 新档阶段速度。与 Android `OrekiGamePace` 保持同一节奏：
- * Break 前 500×、Break 后 70×、Reality 后 3000×。
+ * 新档阶段速度：Break 前 500×、Break 后 35×、Reality 后 3000×。
+ * 70× 的真实新档仍在 58分31秒进入 Reality，早于 70 分钟下界；35× 是
+ * 为延长 Infinity/Eternity/EC 内容而设的待实测候选。Android 必须独立同步与验收。
  * 已有玩家保存的合法倍率继续保留，不因升级被覆盖。
  */
 export const GAME_SPEED_DEFAULT = 500;
-export const GAME_SPEED_POST_BREAK = 70;
+export const GAME_SPEED_POST_BREAK = 35;
 export const GAME_SPEED_POST_REALITY = 3000;
 export const GAME_SPEED_MIN = 1;
 /**
