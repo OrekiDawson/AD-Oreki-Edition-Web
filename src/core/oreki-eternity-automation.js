@@ -866,29 +866,26 @@ export const OrekiEternityAutomation = {
    *
    * 首次 Reality 前按 1→12 完整走一遍，保留永恒挑战体系的实际展开。
    * Reality 后，重新满足 `TimeStudy.reality` 的原版硬条件只需要 EC11 与 EC12
-   * 各完成 5 次（dilation-time-studies.js）；但研究 181/191/193 要求 EC1～3 与
-   * EC10 有真实完成记录，而 Reality 会清空这些记录。因此后续循环先满足解锁链，
-   * 再完成 EC11/12，最后兜底其余挑战。
+   * 各完成 5 次（dilation-time-studies.js）；研究 181/191/193 要求 EC1～3 与
+   * EC10 有真实完成记录，而 Reality 会清空这些记录。EC4～8 的奖励也以
+   * completions > 0 生效。因此后续循环保持 1→12 顺序，但 EC1～8 只需补到 1 次，
+   * EC9～12 仍按膨胀模块依赖补满 5 次。
    *
    * 这里只决定自动化选择哪一关；挑战目标、入口资源、完成次数与结算仍由原版处理。
    */
   ecPriorityOrder() {
-    const realities = this._realitiesValue();
-    if (realities !== null && realities > 0) {
-      return [1, 2, 3, 10, 11, 12, 4, 5, 6, 7, 8, 9];
-    }
     return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   },
 
   /**
-   * 当前阶段实际需要完成的次数。研究 181/191/193 只要求 EC1/2/3/10
-   * 的完成次数大于 0；Reality 后补到 1 次即可交棒。EC11/12 仍须 5/5。
+   * 当前阶段实际需要完成的次数。Reality 后 EC1～8 的奖励或研究门槛只要求
+   * completions > 0，补到 1 次即可；EC9～12 与膨胀模块共用满 5/5 定义。
    */
   ecRequiredCompletions(id) {
     const challenge = EternityChallenge(id);
     const max = challenge?.maxCompletions ?? 5;
     const realities = this._realitiesValue();
-    if (realities !== null && realities > 0 && [1, 2, 3, 10].includes(id)) {
+    if (realities !== null && realities > 0 && id >= 1 && id <= 8) {
       return Math.min(1, max);
     }
     return max;

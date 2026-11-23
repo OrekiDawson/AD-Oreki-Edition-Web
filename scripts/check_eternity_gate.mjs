@@ -230,20 +230,24 @@ check("EC1 后继续 EC2", A.nextUnfinishedEcId() === 2);
 env.ecCompletions[1] = 1;
 check("EC2 后继续 EC3", A.nextUnfinishedEcId() === 3);
 env.ecCompletions[2] = 1;
-check("EC1～3 后先补 EC10", A.nextUnfinishedEcId() === 10);
-env.ecCompletions[9] = 1;
-check("解锁链满足后优先 EC11", A.nextUnfinishedEcId() === 11);
-check("Reality 后前置 EC 只需 1 次",
-  A.ecRequiredCompletions(1) === 1 && A.ecRequiredCompletions(10) === 1);
-check("Reality 门槛 EC 仍需 5 次",
-  A.ecRequiredCompletions(11) === 5 && A.ecRequiredCompletions(12) === 5);
+check("EC1～3 后继续保留 EC4 奖励", A.nextUnfinishedEcId() === 4);
+for (let id = 4; id <= 8; id++) env.ecCompletions[id - 1] = 1;
+check("EC4～8 只需一次即可继续 EC9", A.nextUnfinishedEcId() === 9);
+check("Reality 后奖励 EC1～8 只需 1 次",
+  A.ecRequiredCompletions(1) === 1 && A.ecRequiredCompletions(8) === 1);
+check("膨胀依赖 EC9～12 仍需 5 次",
+  A.ecRequiredCompletions(9) === 5 && A.ecRequiredCompletions(12) === 5);
+env.ecCompletions[8] = 5;
+check("EC9 满 5 次后继续 EC10", A.nextUnfinishedEcId() === 10);
+env.ecCompletions[9] = 5;
+check("EC10 满 5 次后继续 EC11", A.nextUnfinishedEcId() === 11);
 env.ecCompletions[10] = 5;
 check("EC11 满 5 次后优先 EC12", A.nextUnfinishedEcId() === 12);
 
 env.ecCompletions[11] = 5;
-check("Reality 门槛满足后仍可补完其它未完成 EC", A.nextUnfinishedEcId() === 4);
+check("Reality 门槛满足后全部阶段目标完成", A.nextUnfinishedEcId() === 0);
 
-for (let id = 0; id < 12; id++) env.ecCompletions[id] = id === 6 ? 0 : A.ecRequiredCompletions(id + 1);
+for (let id = 0; id < 12; id++) env.ecCompletions[id] = id === 6 ? 0 : 5;
 globalThis.OrekiIu15Sprint = { skipEc7: true };
 check("IU15 冲刺仍禁止重打 EC7", A.nextUnfinishedEcId() === 0);
 const ecPurchaseSource = readFileSync(
