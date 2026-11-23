@@ -888,9 +888,11 @@ export const OrekiEternityAutomation = {
       if (!primaryMet) return false;
       if (!study.isEntryGoalMet) return true;
       // 峰值达标不等于研究已买下。EC 购买是 2 秒节流，自动永恒却是逐帧执行；
-      // 若这里立刻释放，下一帧永恒仍可能清空刚达到的入口资源。保持到原版
-      // purchaseUntil/purchase 真正把 EC 研究买下（或挑战已解锁）为止。
-      return !study.isBought && player.challenge.eternity.unlocked !== id;
+      // 若这里立刻释放，下一帧永恒仍可能清空 EC4 刚达到的无限次数。
+      // 但这个扩展等待只能用于 EC4：其它 EC 的入口还有 TT/禁用研究等独立门槛，
+      // 若它们已达标却因这些因素暂未买下，继续压永恒会停止 EP 增长并形成自锁。
+      if (id !== 4 || study.wasRequirementPreviouslyMet) return false;
+      return true;
     } catch (e) {
       this._err("ecEntryPending", e);
       return false;

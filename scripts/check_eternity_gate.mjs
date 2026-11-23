@@ -224,6 +224,7 @@ player.challenge.eternity.unlocked = 0;
 env.ecCompletions = [5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 let ec4EntryGoalMet = false;
 let ec4Bought = false;
+let ec4PreviouslyMet = false;
 globalThis.TimeStudy = Object.assign(
   id => ({ isBought: Math.abs(id - 143) < 1e-9 }),
   {
@@ -231,6 +232,7 @@ globalThis.TimeStudy = Object.assign(
       get isBought() { return id === 4 && ec4Bought; },
       config: { requirement: id === 4 ? [143] : [171] },
       get isEntryGoalMet() { return id === 4 && ec4EntryGoalMet; },
+      get wasRequirementPreviouslyMet() { return id === 4 && ec4PreviouslyMet; },
     }),
   },
 );
@@ -240,6 +242,10 @@ check("[R126] EC4 只差真实无限次数时暂停自动永恒",
 ec4EntryGoalMet = true;
 check("[R126] EC4 峰值达标但研究未买下时继续暂停自动永恒",
   A.ecEntryPending() === true);
+ec4PreviouslyMet = true;
+check("[R126] EC4 入口已永久达标后不再暂停自动永恒",
+  A.ecEntryPending() === false);
+ec4PreviouslyMet = false;
 ec4Bought = true;
 check("[R126] EC4 研究买下后恢复自动永恒", A.ecEntryPending() === false);
 env.ecCompletions = Array(12).fill(0);
@@ -247,6 +253,32 @@ check("[R126] EC1 入口依赖永恒次数，不得暂停自动永恒",
   A.ecEntryPending() === false);
 delete globalThis.TimeStudy;
 player.challenge.eternity.unlocked = 0;
+
+// 其它 EC 的入口一旦达标，后续是否买下还受 TT、禁用研究等独立条件约束。
+// 这些条件不能通过无限压制自动永恒来解决，否则 EP 与 TT 都会停摆。
+{
+  const saved = globalThis.TimeStudy;
+  player.challenge.eternity.unlocked = 0;
+  globalThis.TimeStudy = Object.assign(
+    id => ({ isBought: true }),
+    {
+      eternityChallenge: () => ({
+        get isBought() { return false; },
+        config: { requirement: [171] },
+        get isEntryGoalMet() { return true; },
+        get wasRequirementPreviouslyMet() { return false; },
+      }),
+    },
+  );
+  env.ecCompletions = [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  check("[R126] EC2 入口达标后不继续压制自动永恒",
+    A.ecEntryPending() === false);
+  env.ecCompletions = [5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0];
+  check("[R126] EC9 入口达标后不继续压制自动永恒",
+    A.ecEntryPending() === false);
+  globalThis.TimeStudy = saved;
+  env.ecCompletions = Array(12).fill(0);
+}
 
 // EC4 未就绪时不能让其它已经可购买的 EC 无限饥饿。这里直接驱动生产购买循环，
 // 证明目标 EC4 不可买时，EC5 的原版 purchase 路径仍会被调用。
@@ -982,6 +1014,8 @@ try {
     src.includes("if (id === 1) return false;"));
   check("EC4 不得继续排除在入口等待之外",
     !src.includes("if (id === 1 || id === 4) return false;"));
+  check("其它 EC 入口达标后不得继续压制自动永恒",
+    src.includes("if (id !== 4 || study.wasRequirementPreviouslyMet) return false;"));
 }
 
 // ---------------- ⑭ [R114-03] 真实永恒单一门禁（EC / 膨胀 / TP 播种 / 退出膨胀） ----------------
