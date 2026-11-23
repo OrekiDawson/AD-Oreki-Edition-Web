@@ -1,5 +1,11 @@
 # Web MOD · Agent 长期规则
 
+## 跨仓协作：Android P0 架构治理（2026-11-23）
+
+- Android [#61](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/issues/61) 根目录标准化已提升为 **P0 架构任务**，与 [#52](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/issues/52) 的 `build_mod.py` 退役执行「迁移即清理」：替代一个可达生产环节，同批删除失效入口与无消费者的专用工具；共享工具由最后使用者退出时删除。详见 Workspace 最新 `AGENTS.md` 和 [Issue #20](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/issues/20)。
+- Web 只负责确认自身与 Android 目录/构建变更相关的跨仓脚本、共享数据、链接和行为等价，不因 Android P0 擅自迁移 Web 目录或调整 Web 业务、部署/发布门禁。Android 代码 Owner 与 Web Owner 避让；真实玩家 P0/P1 和存档安全仍优先。规则合并后按既有授权立即安全同步本机并验证，不冒充已合并或同步成功。
+
+
 > 此文件只存长期约束；具体轮次、Kody 启停、PR 状态与最新上线结果由最新授权、GitHub 和任务记录决定。
 
 ## 仅 AGENTS.md 变更的 Kody skipped 快速合并规则（2026-11-23）
