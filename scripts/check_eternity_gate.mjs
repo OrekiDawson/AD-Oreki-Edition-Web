@@ -57,11 +57,14 @@ const env = {
   ec8AffordableTiers: 8,
   ec8IdPurchases: 0,
   ec8UpgradePurchases: 0,
+  ecCompletions: Array(12).fill(0),
+  ecMaxCompletions: Array(12).fill(5),
 };
 
 globalThis.player = {
   // [R101 P0] 原版「自动永恒」单项开关的数据源（Autobuyer.eternity.isActive 同源）。
   auto: { autobuyersOn: true, eternity: { isActive: true } },
+  challenge: { eternity: { unlocked: 0 } },
   options: {},
   requirementChecks: { reality: { noEternities: true } },
   records: {},
@@ -74,6 +77,8 @@ globalThis.InfinityChallenge = { isRunning: false };
   const challengeAccessor = id => ({
     id,
     get isRunning() { return env.ec8Running && id === 8; },
+    get completions() { return env.ecCompletions[id - 1] || 0; },
+    get maxCompletions() { return env.ecMaxCompletions[id - 1] || 5; },
   });
   Object.defineProperties(challengeAccessor, {
     isRunning: {
@@ -170,6 +175,7 @@ const ORIG_HOLD = A.holdForRealityUpgrade10;
 const ORIG_EC = A.ecEntryPending;
 
 function reset() {
+  player.realities = 0;
   env.canEternity = false;
   env.gained = 0;
   env.ep = 0;
@@ -187,6 +193,8 @@ function reset() {
   player.eterc8repl = 0;
   for (const dimension of InfinityDimensions.all) dimension.purchases = 0;
   for (const upgrade of Object.values(ReplicantiUpgrade)) upgrade.value = 0;
+  env.ecCompletions = Array(12).fill(0);
+  env.ecMaxCompletions = Array(12).fill(5);
   delete globalThis.OrekiIu15Sprint;
   A.holdForRealityUpgrade10 = ORIG_HOLD;
   A.ecEntryPending = ORIG_EC;
@@ -207,6 +215,91 @@ function reset() {
   A._eternityAutoEnabledAtRealTime = null;
   A._eternityAutoEnabledAtEternityRealTime = null;
   A._eternityAutoEnabledAtEternities = null;
+}
+
+// ---------------- [R126] EC4 入口等待：保留真实无限次数累积 ----------------
+reset();
+player.realities = 0;
+player.challenge.eternity.unlocked = 0;
+env.ecCompletions = [5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let ec4EntryGoalMet = false;
+let ec4Bought = false;
+globalThis.TimeStudy = Object.assign(
+  id => ({ isBought: Math.abs(id - 143) < 1e-9 }),
+  {
+    eternityChallenge: id => ({
+      get isBought() { return id === 4 && ec4Bought; },
+      config: { requirement: id === 4 ? [143] : [171] },
+      get isEntryGoalMet() { return id === 4 && ec4EntryGoalMet; },
+    }),
+  },
+);
+check("[R126] EC1～3 完成后目标为 EC4", A.nextUnfinishedEcId() === 4);
+check("[R126] EC4 只差真实无限次数时暂停自动永恒",
+  A.ecEntryPending() === true);
+ec4EntryGoalMet = true;
+check("[R126] EC4 峰值达标但研究未买下时继续暂停自动永恒",
+  A.ecEntryPending() === true);
+ec4Bought = true;
+check("[R126] EC4 研究买下后恢复自动永恒", A.ecEntryPending() === false);
+env.ecCompletions = Array(12).fill(0);
+check("[R126] EC1 入口依赖永恒次数，不得暂停自动永恒",
+  A.ecEntryPending() === false);
+delete globalThis.TimeStudy;
+player.challenge.eternity.unlocked = 0;
+
+// EC4 未就绪时不能让其它已经可购买的 EC 无限饥饿。这里直接驱动生产购买循环，
+// 证明目标 EC4 不可买时，EC5 的原版 purchase 路径仍会被调用。
+{
+  const savedChallenge = globalThis.EternityChallenge;
+  const savedTimeStudy = globalThis.TimeStudy;
+  const savedRealEternityAllowed = A.realEternityAllowed;
+  const purchases = [];
+  let started = 0;
+  player.challenge.eternity.unlocked = 0;
+  env.ecCompletions = [5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  globalThis.EternityChallenge = Object.assign(id => ({
+    id,
+    get completions() { return env.ecCompletions[id - 1] || 0; },
+    get maxCompletions() { return 5; },
+    get isRunning() { return false; },
+    get isUnlocked() { return player.challenge.eternity.unlocked === id; },
+    start() { started = id; return true; },
+  }), { isRunning: false });
+  globalThis.TimeStudy = Object.assign(
+    id => ({
+      get isBought() { return false; },
+      purchaseUntil() { purchases.push(`until:${id}`); return false; },
+      purchase() { purchases.push(`purchase:${id}`); return false; },
+    }),
+    {
+      eternityChallenge: id => ({
+        get isBought() { return false; },
+        get canBeBought() { return id === 5; },
+        config: { requirement: id === 4 ? [143] : [171] },
+        purchaseUntil() { purchases.push(`ec-until:${id}`); return false; },
+        purchase() {
+          purchases.push(`ec:${id}`);
+          if (id === 5) {
+            player.challenge.eternity.unlocked = 5;
+            return true;
+          }
+          return false;
+        },
+      }),
+    },
+  );
+  A.realEternityAllowed = () => true;
+  const advanced = A.buyEcStudiesAndStart();
+  check("[R126] EC4 不可买时仍推进一个可购买的原版 EC",
+    advanced === true
+      && purchases.includes("ec:5")
+      && started === 5,
+    `advanced=${advanced} started=${started} purchases=${purchases.join(",")}`);
+  A.realEternityAllowed = savedRealEternityAllowed;
+  globalThis.TimeStudy = savedTimeStudy;
+  globalThis.EternityChallenge = savedChallenge;
+  player.challenge.eternity.unlocked = 0;
 }
 
 // ---------------- ① 自动化关闭 → 一次都不发起 ----------------
@@ -885,8 +978,10 @@ try {
     !src.includes("if (this._frame % STUDY_TICK_INTERVAL === 0)"));
   check("禁止回归：tick 不再用 _frame % 20 控制 EC 购买",
     !src.includes("if (this._frame % 20 === 0) ec = this.buyEcStudiesAndStart();"));
-  check("EC1 入口资源=永恒次数，不得压永恒（与 EC4 同型例外）",
-    src.includes("if (id === 1 || id === 4) return false;"));
+  check("EC1 入口资源=永恒次数，不得压永恒",
+    src.includes("if (id === 1) return false;"));
+  check("EC4 不得继续排除在入口等待之外",
+    !src.includes("if (id === 1 || id === 4) return false;"));
 }
 
 // ---------------- ⑭ [R114-03] 真实永恒单一门禁（EC / 膨胀 / TP 播种 / 退出膨胀） ----------------
