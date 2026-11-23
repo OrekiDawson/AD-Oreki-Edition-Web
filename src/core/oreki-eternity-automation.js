@@ -694,7 +694,7 @@ export const OrekiEternityAutomation = {
           // → 再把同一关买回来…… 实测后果是 TT 一直在退，但已买普通研究恒为 0，
           // 整个时间研究链永远建立不起来（R23 实测：59 秒 TT 367 万、研究 0 个）。
           const challenge = EternityChallenge(id);
-          if (challenge && challenge.completions >= challenge.maxCompletions) continue;
+          if (challenge && challenge.completions >= this.ecRequiredCompletions(id)) continue;
 
           // 【R36 关键修复 · 真正的全局阻塞点】
           // EC9~EC12 买不上的真正原因**不是资源**，而是**前置普通时间研究没买**。
@@ -745,7 +745,7 @@ export const OrekiEternityAutomation = {
         return false;
       }
       if (!challenge || !challenge.isUnlocked) return false;
-      if (challenge.completions >= challenge.maxCompletions) {
+      if (challenge.completions >= this.ecRequiredCompletions(unlockedId)) {
         // [AD11.1] 这一关已满：必须 respecTimeStudies 才能把 unlocked 清 0，
         // 否则 ECTimeStudyState.canBeBought 里那条 unlocked !== 0 就直接 return false，
         // 后面所有 EC 研究永远买不上（实测卡在 EC2 满级后无法推进）。
@@ -793,7 +793,7 @@ export const OrekiEternityAutomation = {
       if (!id || id > 12) return false;
       const challenge = EternityChallenge(id);
       if (!challenge) return false;
-      if (challenge.completions >= challenge.maxCompletions) return false;
+      if (challenge.completions >= this.ecRequiredCompletions(id)) return false;
       const study = TimeStudy.eternityChallenge(id);
       if (!study) return false;
       if (study.isBought) return false;
@@ -852,7 +852,7 @@ export const OrekiEternityAutomation = {
       for (const id of this.ecPriorityOrder()) {
         if (id === 7 && skipEc7) continue;
         const challenge = EternityChallenge(id);
-        if (challenge && challenge.completions < challenge.maxCompletions) return id;
+        if (challenge && challenge.completions < this.ecRequiredCompletions(id)) return id;
       }
       return 0;
     } catch (e) {
@@ -878,6 +878,20 @@ export const OrekiEternityAutomation = {
       return [1, 2, 3, 10, 11, 12, 4, 5, 6, 7, 8, 9];
     }
     return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  },
+
+  /**
+   * 当前阶段实际需要完成的次数。研究 181/191/193 只要求 EC1/2/3/10
+   * 的完成次数大于 0；Reality 后补到 1 次即可交棒。EC11/12 仍须 5/5。
+   */
+  ecRequiredCompletions(id) {
+    const challenge = EternityChallenge(id);
+    const max = challenge?.maxCompletions ?? 5;
+    const realities = this._realitiesValue();
+    if (realities !== null && realities > 0 && [1, 2, 3, 10].includes(id)) {
+      return Math.min(1, max);
+    }
+    return max;
   },
 
   /** 下一个 EC 是否「只差入口资源」（主研究已买、但二级门槛未满足） */
