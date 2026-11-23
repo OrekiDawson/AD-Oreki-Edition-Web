@@ -1,9 +1,10 @@
 # R126 Web EC4 入口清零修复
 
-- 日期：2026-11-23（UTC+8）
+- 文档同步日期：2026-11-24（UTC+8）
 - 分支：`r126/web-ec4-deadlock-main`
-- 当前 HEAD：`4563ec3cdb805399e11aa2330b952bf786126329`
-- 基线：`origin/main` `00733331ac52b97924bfa08e9c124ec189cfd3f1`
+- 本次实测功能 HEAD：`6c3194a3164ba79b543edc02d7340e425080a37b`
+- 分支创建基线：`origin/main` `00733331ac52b97924bfa08e9c124ec189cfd3f1`
+- 本次上游核对：`origin/main` `6f2560ad233aac2831b5a0015f0692cf1df16065`
 
 ## 症状与根因
 
@@ -31,7 +32,7 @@ R125 的 35× 真实新档在 `t=3081.1s` 后把下一目标固定为 EC4，但�
 | `node --test scripts/tests/test_web_full_run_policy.mjs` | PASS | 17/17 |
 | 生产模块、测试与探针语法 | PASS | `node --check` 全部通过 |
 | Git 空白错误 | PASS | `git diff --check` 无输出 |
-| 真实存档回归短程 | PASS | 已买下 EC4 研究的存档完成数 `3→4`，墙钟约 `41.2s`；仅作回归，不冒充入口等待分支证据 |
+| 真实存档回归短程 | PASS | 已买下 EC4 研究的存档完成数 `3→4`，墙钟约 `41.5s`；仅作回归，不冒充入口等待分支证据 |
 | EC4 未买、只差入口的诊断夹具 | PASS | `ecEntryPending=true`，真实 tick 越过 `1e6`，EC4 `0→1`，约 `20.1s` |
 | 页面/控制台/运行错误 | PASS | `errors=[]`，`runtimeError=null` |
 | 自动永恒开启下的入口推进 | PASS | `enableEternityAutobuyer=true`，EC4 仍完成一次 |
@@ -46,12 +47,14 @@ R125 的 35× 真实新档在 `t=3081.1s` 后把下一目标固定为 EC4，但�
 - 最终 EC 完成数：`[5,5,5,4,5,3,3,1,0,0,0,0]`
 - 初始 `infinitiesTotal` 指数：`7.14765`
 - 最终 EC4 累计入口指数：`6.30103`（已越过 `1e6` 门槛）
-- `summary.json` SHA-256：`f1b4ef3577123931aaa2325209e7fb293162f2a4cd749ac3b0688284cd3612d7`
-- `checkpoint.txt` SHA-256：`98940292a8e3c2bac5f79ef6dfbd6b37281fa6b86f4f5f3be10601d4a0495848`
+- `summary.json` SHA-256：`3163f30af1e087ea660d06dbb69c82a317e70bf5eae31f68cab6fad68b50d420`
+- `checkpoint.txt` SHA-256：`620184d02c87b84e5de9b71a4c275f40876357e58b7df0548841ed4605dca727`
+- `samples.jsonl` SHA-256：`91784ac7dd8acefbdf9f72f24cf15af5cc57020872aa12def82613f091845dfb`
 
 ### 入口等待分支诊断夹具
 
 首条真实存档回归样本的 EC4 研究已经买下，不能证明新增的“峰值达标后继续等待购买”分支。
+本次还只读扫描了主工作树 `savestates/` 的 1123 份可解析存档，没有找到同时满足以下条件的自然前置样本。
 因此使用同一真实存档、在测试页内明确构造以下边界，并保留夹具状态与改动说明：
 
 - EC1～3 完成数 `5,5,5`，EC4 完成数 `0`；
@@ -63,9 +66,9 @@ R125 的 35× 真实新档在 `t=3081.1s` 后把下一目标固定为 EC4，但�
 | 采样 | 结果 |
 | --- | --- |
 | 夹具即时状态 | `primary143Bought=true`、`entryPending=true`、`entryMet=false`、`bought=false` |
-| 首次正常采样（0.8s） | 自动永恒开启，`infinitiesTotal` 已越过 `1e6`，EC4 尚未买下，`entryPending` 仍为 true |
+| 首次正常采样（0.7s） | 自动永恒开启，`infinitiesTotal` 已越过 `1e6`，EC4 尚未买下，`entryPending` 仍为 true |
 | 完成（20.1s） | EC4 完成数 `0→1`，入口等待解除，`errors=[]` |
-| 证据 | 96 条、100ms 采样；`summary.json` `d61862b4…b623`；`checkpoint.txt` `9b629dcc…7065` |
+| 证据 | 95 条、100ms 采样；`summary.json` `fecfbb0af8605be02f22108576ca002fcb3573daada3cbcca59940494f5e8180`；`checkpoint.txt` `02d77f3de941f5ded1d24916339b44fae15adb1b99bfd48388d932cca9fe2b41`；`samples.jsonl` `fec4b47225582403052cf6dbebd49bd2d9f4c47f3a2054418329f02554a3038e` |
 
 ## 未运行与合并边界
 
