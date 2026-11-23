@@ -18,6 +18,7 @@ const arg = (name, fallback) => {
 const savePath = path.resolve(arg("save", ""));
 const maxSeconds = Number(arg("max-sec", 180));
 const sampleMs = Number(arg("sample-ms", 1000));
+const noEarlyStop = process.argv.includes("--no-early-stop");
 const enableEternityAutobuyer = process.argv.includes("--enable-eternity");
 const disableEcEntryHold = process.argv.includes("--disable-ec-entry-hold");
 const out = path.resolve(arg("out", path.join(REPO, "reports", "R126", "EC4短程探针")));
@@ -208,7 +209,7 @@ async function main() {
         if ((current.ecDone?.[3] ?? 0) > initialEc4Completions
           || (current.ecUnlocked ?? 0) === 4) {
           completed = true;
-          break;
+          if (!noEarlyStop) break;
         }
       }
       await page.waitForTimeout(200);
@@ -228,6 +229,7 @@ async function main() {
       save: savePath,
       source: path.basename(REPO),
       maxSeconds,
+      noEarlyStop,
       enableEternityAutobuyer,
       disableEcEntryHold,
       sampleCount: samples.length,
