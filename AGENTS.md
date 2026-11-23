@@ -1,5 +1,12 @@
 # Web MOD · Agent 长期规则
 
+## Android P0 包名变更的 Web 跨仓协作（2026-11-23）
+
+- Android MOD 的最终正式 `applicationId` 经用户确认改为 `net.oreki.antimatterdimensions`（自有域名 `oreki.net`），Debug 为 `net.oreki.antimatterdimensions.debug`；这属于 Android P0 身份迁移，权威实施任务 Android #52/#61/#25/#17、PR #276，调度见 Workspace #20。与原 Android `com.oreki.antimatterdimensions` 是**不同系统应用**；不能覆盖安装，也不会自动继承旧包私有数据，必须由 Android 侧验证旧存档导出→新包导入。
+- **Web 只修实际受影响的共享引用**：下载页/帮助文档、安卓安装包名、跨端存档指南、深链/App Links、共享脚本/发布元数据如硬编码旧 applicationId，按实际变化修正。**不改 Web 的应用 URL、游戏存档结构、Web 部署路径或业务行为**；Android 的源 namespace/混淆 ABI 不得全局改名。必要测试最小化，保持 Android/Web 存档互通、PACING 和发布门禁。
+- Android 规则 PR 合并后立即传递本机安全同步；Web 规则合并也同样要求本机读回核验，未验证不得冒充本机已更新。沿用现有 R126，不新 /goal。
+
+
 ## 跨仓协作：Android P0 架构治理（2026-11-23）
 
 - Android [#61](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/issues/61) 根目录标准化已提升为 **P0 架构任务**，与 [#52](https://github.com/OrekiDawson/AD-Oreki-Edition-Android/issues/52) 的 `build_mod.py` 退役执行「迁移即清理」：替代一个可达生产环节，同批删除失效入口与无消费者的专用工具；共享工具由最后使用者退出时删除。详见 Workspace 最新 `AGENTS.md` 和 [Issue #20](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/issues/20)。
