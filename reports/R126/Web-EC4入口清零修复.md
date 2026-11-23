@@ -31,7 +31,8 @@ R125 的 35× 真实新档在 `t=3081.1s` 后把下一目标固定为 EC4，但�
 | `node --test scripts/tests/test_web_full_run_policy.mjs` | PASS | 17/17 |
 | 生产模块、测试与探针语法 | PASS | `node --check` 全部通过 |
 | Git 空白错误 | PASS | `git diff --check` 无输出 |
-| 真实存档短程探针 | PASS | EC4 完成数 `3→4`，墙钟约 `41.2s` |
+| 真实存档回归短程 | PASS | 已买下 EC4 研究的存档完成数 `3→4`，墙钟约 `41.2s`；仅作回归，不冒充入口等待分支证据 |
+| EC4 未买、只差入口的诊断夹具 | PASS | `ecEntryPending=true`，真实 tick 越过 `1e6`，EC4 `0→1`，约 `20.1s` |
 | 页面/控制台/运行错误 | PASS | `errors=[]`，`runtimeError=null` |
 | 自动永恒开启下的入口推进 | PASS | `enableEternityAutobuyer=true`，EC4 仍完成一次 |
 
@@ -47,6 +48,24 @@ R125 的 35× 真实新档在 `t=3081.1s` 后把下一目标固定为 EC4，但�
 - 最终 EC4 累计入口指数：`6.30103`（已越过 `1e6` 门槛）
 - `summary.json` SHA-256：`f1b4ef3577123931aaa2325209e7fb293162f2a4cd749ac3b0688284cd3612d7`
 - `checkpoint.txt` SHA-256：`98940292a8e3c2bac5f79ef6dfbd6b37281fa6b86f4f5f3be10601d4a0495848`
+
+### 入口等待分支诊断夹具
+
+首条真实存档回归样本的 EC4 研究已经买下，不能证明新增的“峰值达标后继续等待购买”分支。
+因此使用同一真实存档、在测试页内明确构造以下边界，并保留夹具状态与改动说明：
+
+- EC1～3 完成数 `5,5,5`，EC4 完成数 `0`；
+- 143 普通研究已买，EC4 研究未买、挑战未解锁；
+- `infinitiesTotal=0`，随后只由生产大坍缩/无限次数路径增长。
+
+该夹具只验证诊断分支，不是自然新档，也不计入 `GAMEPLAY LEGALITY / PACING / ENDGAME`。
+
+| 采样 | 结果 |
+| --- | --- |
+| 夹具即时状态 | `primary143Bought=true`、`entryPending=true`、`entryMet=false`、`bought=false` |
+| 首次正常采样（0.8s） | 自动永恒开启，`infinitiesTotal` 已越过 `1e6`，EC4 尚未买下，`entryPending` 仍为 true |
+| 完成（20.1s） | EC4 完成数 `0→1`，入口等待解除，`errors=[]` |
+| 证据 | 96 条、100ms 采样；`summary.json` `d61862b4…b623`；`checkpoint.txt` `9b629dcc…7065` |
 
 ## 未运行与合并边界
 

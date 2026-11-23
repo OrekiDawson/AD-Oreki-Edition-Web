@@ -21,8 +21,10 @@ const sampleMs = Number(arg("sample-ms", 1000));
 const noEarlyStop = process.argv.includes("--no-early-stop");
 const enableEternityAutobuyer = process.argv.includes("--enable-eternity");
 const disableEcEntryHold = process.argv.includes("--disable-ec-entry-hold");
+const ec4EntryFixture = process.argv.includes("--ec4-entry-fixture");
 const out = path.resolve(arg("out", path.join(REPO, "reports", "R126", "EC4短程探针")));
 fs.mkdirSync(out, { recursive: true });
+let fixtureInitial = null;
 
 function startServer(root) {
   const mime = {
@@ -173,7 +175,7 @@ async function main() {
       localStorage.setItem("dimensionSave", save);
       localStorage.setItem("dimensionTestSave", save);
     }, saveText);
-    const startedAt = Date.now();
+    let startedAt = Date.now();
     await page.reload({ waitUntil: "domcontentloaded", timeout: 120_000 });
     await page.waitForFunction(
       () => window.player && window.OrekiEternityAutomation && window.Currency,
@@ -185,6 +187,40 @@ async function main() {
         player.auto.autobuyersOn = true;
         player.auto.eternity.isActive = true;
       });
+    }
+    if (ec4EntryFixture) {
+      fixtureInitial = await page.evaluate(() => {
+        // 诊断夹具：从真实存档构造“EC1~3 已完成、EC4 研究未买、只差
+        // infinitiesTotal”边界。它只用于证明入口等待分支，不冒充自然新档
+        // 或任何挑战完成/终局证据。
+        if (!player.timestudy.studies.includes(143)) player.timestudy.studies.push(143);
+        player.eternityChalls.eterc4 = 0;
+        player.challenge.eternity.current = 0;
+        player.challenge.eternity.unlocked = 0;
+        player.challenge.eternity.requirementBits &= ~(1 << 4);
+        GameCache.timeStudies.invalidate();
+        Currency.infinities.value = new Decimal(0);
+        Currency.infinitiesBanked.value = new Decimal(0);
+        TimeStudy.eternityChallenge(4).invalidateRequirement();
+        player.auto.autobuyersOn = true;
+        player.auto.eternity.isActive = true;
+        const study = TimeStudy.eternityChallenge(4);
+        return {
+          studies: [...player.timestudy.studies],
+          ecDone: Array.from(
+            { length: 12 },
+            (_, index) => Number(EternityChallenge(index + 1).completions),
+          ),
+          ecUnlocked: Number(player.challenge.eternity.unlocked),
+          nextEc: Number(globalThis.OrekiEternityAutomation?.nextUnfinishedEcId?.()),
+          primary143Bought: TimeStudy(143).isBought === true,
+          entryPending: globalThis.OrekiEternityAutomation?.ecEntryPending?.() === true,
+          infinitiesLog10: Number(Currency.infinitiesTotal.value.log10()),
+          entryMet: study.isEntryGoalMet === true,
+          bought: study.isBought === true,
+        };
+      });
+      startedAt = Date.now();
     }
     if (disableEcEntryHold) {
       await page.evaluate(() => {
@@ -232,6 +268,8 @@ async function main() {
       noEarlyStop,
       enableEternityAutobuyer,
       disableEcEntryHold,
+      ec4EntryFixture,
+      fixtureInitial,
       sampleCount: samples.length,
       ec4Progressed: completed,
       initial: samples[0] || null,
