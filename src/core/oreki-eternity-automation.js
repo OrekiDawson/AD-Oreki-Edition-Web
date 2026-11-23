@@ -898,17 +898,19 @@ export const OrekiEternityAutomation = {
       if (player.challenge.eternity.unlocked !== 0) return false;
       const id = this.nextUnfinishedEcId();
       if (!id) return false;
-      // [Oreki R25] EC4 例外：它的入口是 `Currency.infinitiesTotal`（无限次数），
-      // 而 `Currency.infinities` 每次永恒都会清零，只有 `infinitiesBanked`
-      // 会在永恒时按 5% 结算累积（eternity.js:53 + 时间研究 191）。
-      // 也就是说「暂停永恒」对 EC4 是**反效果**：攒不到 1e6，反而把唯一的累积途径关掉。
+      // [R125] EC4 入口是 `Currency.infinitiesTotal`（本次无限次数 + 永久保留次数）。
+      // `initializeResourcesAfterEternity()` 会调用 `Currency.infinities.reset()`，而首次
+      // 到达 EC4 时时间研究 191 尚未解锁，不能靠 5% banked 自动累积。35× 真实新档中
+      // 自动永恒把 EC4 入口反复清零，峰值仅 10064 / 1000000，并长期挡住 EC5、EC7~10。
+      // 因此 EC4 与其它“只差入口资源”的 EC 一样暂停自动永恒；大坍缩仍继续执行，
+      // 无限次数会由其真实产出累积，入口满足后仍由原版购买与挑战入口继续。
       //
-      // [R104 P0] EC1 同型例外：入口资源就是**永恒次数**
+      // [R104 P0] EC1 仍需例外：入口资源就是**永恒次数**
       // （ec-time-studies.js:9-12 secondary.resource="永恒次数"、current=Currency.eternities、
       //   required=20000 → MOD 的 OREKI_EC_REQUIREMENT_DIVISOR=100 下为 200）。
       // 压住永恒 ⇒ 永恒次数不涨 ⇒ 200 永远到不了 ⇒ ecEntryPending 永远 true ⇒ 永恒永远被压住。
       // 实测（pass3，t=1042→1712 s 共 670 秒零进度）：et=48、ecPend=true、canEt=true、EP 恒 6.79e5。
-      if (id === 1 || id === 4) return false;
+      if (id === 1) return false;
       const study = TimeStudy.eternityChallenge(id);
       if (!study || study.isBought) return false;
       const primaryMet = (study.config.requirement || []).some(s => {

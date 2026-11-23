@@ -64,6 +64,7 @@ const env = {
 globalThis.player = {
   // [R101 P0] 原版「自动永恒」单项开关的数据源（Autobuyer.eternity.isActive 同源）。
   auto: { autobuyersOn: true, eternity: { isActive: true } },
+  challenge: { eternity: { unlocked: 0 } },
   options: {},
   requirementChecks: { reality: { noEternities: true } },
   records: {},
@@ -256,6 +257,34 @@ const ecPurchaseSource = readFileSync(
 );
 check("EC 购买只处理当前目标，不降级串行重打",
   ecPurchaseSource.includes("if (id !== targetId) continue;"));
+
+// ---------------- EC4 入口等待：暂停永恒让无限次数真实累积 ----------------
+reset();
+player.realities = new Decimal(1);
+player.challenge.eternity.unlocked = 0;
+env.ecCompletions = Array(12).fill(0);
+for (let id = 1; id <= 3; id++) env.ecCompletions[id - 1] = 5;
+let ec4EntryGoalMet = false;
+globalThis.TimeStudy = Object.assign(
+  id => ({ isBought: Math.abs(id - 143) < 1e-9 }),
+  {
+    eternityChallenge: id => ({
+      isBought: false,
+      config: { requirement: id === 4 ? [143] : [171] },
+      get isEntryGoalMet() { return id === 4 && ec4EntryGoalMet; },
+    }),
+  },
+);
+check("EC4 成为目标且只差无限次数入口", A.nextUnfinishedEcId() === 4);
+check("EC4 入口未满足时暂停自动永恒，避免真实无限次数被清零",
+  A.ecEntryPending() === true);
+ec4EntryGoalMet = true;
+check("EC4 入口满足后恢复自动永恒", A.ecEntryPending() === false);
+env.ecCompletions = Array(12).fill(0);
+check("EC1 的入口依赖永恒次数，仍不得暂停自动永恒",
+  A.nextUnfinishedEcId() === 1 && A.ecEntryPending() === false);
+delete globalThis.TimeStudy;
+player.challenge.eternity.unlocked = 0;
 
 // ---------------- ① 自动化关闭 → 一次都不发起 ----------------
 reset();
@@ -933,8 +962,10 @@ try {
     !src.includes("if (this._frame % STUDY_TICK_INTERVAL === 0)"));
   check("禁止回归：tick 不再用 _frame % 20 控制 EC 购买",
     !src.includes("if (this._frame % 20 === 0) ec = this.buyEcStudiesAndStart();"));
-  check("EC1 入口资源=永恒次数，不得压永恒（与 EC4 同型例外）",
-    src.includes("if (id === 1 || id === 4) return false;"));
+  check("EC1 入口资源=永恒次数，不得压永恒",
+    src.includes("if (id === 1) return false;"));
+  check("EC4 不得继续排除在入口等待之外",
+    !src.includes("if (id === 1 || id === 4) return false;"));
 }
 
 // ---------------- ⑭ [R114-03] 真实永恒单一门禁（EC / 膨胀 / TP 播种 / 退出膨胀） ----------------
