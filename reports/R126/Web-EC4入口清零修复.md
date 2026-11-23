@@ -2,7 +2,7 @@
 
 - 日期：2026-11-23（UTC+8）
 - 分支：`r126/web-ec4-deadlock-main`
-- 当前 HEAD：`548d7049e670704836acf1f88345c173db48eaeb`
+- 当前 HEAD：`4563ec3cdb805399e11aa2330b952bf786126329`
 - 基线：`origin/main` `00733331ac52b97924bfa08e9c124ec189cfd3f1`
 
 ## 症状与根因
@@ -26,7 +26,7 @@ R125 的 35× 真实新档在 `t=3081.1s` 后把下一目标固定为 EC4，但�
 
 | 项目 | 结果 | 证据 |
 | --- | --- | --- |
-| `node scripts/check_eternity_gate.mjs` | PASS | 246 项，失败 0 |
+| `node scripts/check_eternity_gate.mjs` | PASS | 250 项，失败 0 |
 | `node scripts/check_managed_autobuyer_state.mjs` | PASS | 27 PASS / 0 FAIL |
 | `node --test scripts/tests/test_web_full_run_policy.mjs` | PASS | 17/17 |
 | 生产模块、测试与探针语法 | PASS | `node --check` 全部通过 |
