@@ -24,6 +24,8 @@ EC11 与 EC12 各完成 5 次；其余 EC 的成就和奖励在首次循环中�
 - Reality 后按 EC1→EC2→EC3→EC10→EC11→EC12→EC4～EC9 选择。
 - EC1～3 与 EC10 的真实完成记录用于解锁 181/191/193 研究链；EC11/EC12
   仍负责重新满足 `TimeStudy.reality` 的原版硬条件。
+- Reality 后 EC1/2/3/10 只补到原版门槛需要的 1 次；EC11/12 仍补满 5/5，
+  避免每轮重复完成 16 次已经满足的挑战。
 - 在同一自动化拍内只处理当前目标；高优先级目标暂时买不起时等待资源，
   不降级串行购买其它 EC。
 - 已满的 EC 仍通过原版 `respecTimeStudies(true)` 清除入口并重建研究路径。
@@ -32,7 +34,7 @@ EC11 与 EC12 各完成 5 次；其余 EC 的成就和奖励在首次循环中�
 
 ## 静态验证
 
-- `node scripts/check_eternity_gate.mjs`：244 项 PASS / 0 FAIL
+- `node scripts/check_eternity_gate.mjs`：251 项 PASS / 0 FAIL
 - 新档首轮选择 EC1
 - Reality 后先选择 EC1，再依次 EC2、EC3、EC10
 - 解锁链满足后选择 EC11
