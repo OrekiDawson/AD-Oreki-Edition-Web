@@ -2,6 +2,16 @@
 
 > 此文件只存长期约束；具体轮次、Kody 启停、PR 状态与最新上线结果由最新授权、GitHub 和任务记录决定。
 
+## Subagent 生命周期与事件驱动补位（2026-11-23，长期强制）
+
+- **Lead 不得长期单线程包办**：当前 Goal active、合法窗口、预算和工具可用且存在互不冲突的有效任务时，Lead 优先负责队列、Owner/资源分配、结果验收、集成与阻断仲裁；长时间测试、独立取证、规则 PR 核验等应实际派发给 Subagent。并行不是硬性凑数，资源冲突或高风险任务可由 Lead 独占。
+- **以真实工具返回为准**：派发前检查 Harness 可用的 create/send/wait/status 等接口，实际调用并记录 Agent ID、任务、工作树、资源独占范围、状态和返回证据；只写“将派发”不算完成。不得编造 Agent 或将普通进程冒充 Subagent。
+- **Completed 不是永久占槽**：Subagent 完成、失败、退出或释放资源时，Lead 应及时验收产物，更新队列并在仍有合法无冲突工作时派发新 Agent 补位；Harness 不支持恢复已结束 Agent 时创建新 Agent 接续，传递最小必要的 HEAD、文件、证据与下一动作，不要求保留原会话或精确派发时间。
+- **事件驱动而非空轮询**：在完成/失败/解阻/资源释放/阶段切换等事件发生时重新评估待办，禁止为维持并发率而反复空轮询、创建无价值任务、重复测试或耗尽 Token；空闲须有明确原因（无任务、Owner 冲突、资源/预算/时间限制、工具不可用）。
+- **隔离与验收**：每个 Subagent 明确唯一 Owner、分支/工作树、可写文件、AVD/ADB、Playwright、构建及 GitHub 写入边界；避免并发覆盖或争用。Lead 对每项结果核对真实 HEAD、日志、CI/Review/运行证据，不把 Agent 自报 PASS 直接视为平台 PASS。Web 的任务须服从 Workspace 跨仓调度规则和最新用户授权。
+- **调度故障可恢复**：若实际创建或接续接口失败，记录工具名、错误和阻断范围，继续可独立执行的工作；不要只给计划。阶段汇报简洁展示 active/completed/failed Agent 数、有效派发/完成数、Owner、阻断及下一次补位动作。
+
+
 ## 0. 游戏优先与规则审查边界（2026-11-22）
 
 - 跨仓唯一调度顺序以 [Workspace `AGENTS.md` §0](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/blob/main/AGENTS.md) 为准：游戏合法性、`PACING`、真实 180 分钟终局、存档兼容及直接阻断 CI/运行故障优先于非阻断规则 PR。
