@@ -863,17 +863,19 @@ export const OrekiEternityAutomation = {
       if (player.challenge.eternity.unlocked !== 0) return false;
       const id = this.nextUnfinishedEcId();
       if (!id) return false;
-      // [Oreki R25] EC4 例外：它的入口是 `Currency.infinitiesTotal`（无限次数），
-      // 而 `Currency.infinities` 每次永恒都会清零，只有 `infinitiesBanked`
-      // 会在永恒时按 5% 结算累积（eternity.js:53 + 时间研究 191）。
-      // 也就是说「暂停永恒」对 EC4 是**反效果**：攒不到 1e6，反而把唯一的累积途径关掉。
+      // [R126] EC4 入口是 `Currency.infinitiesTotal`（本次无限次数 + 永久保留次数）。
+      // `initializeResourcesAfterEternity()` 会调用 `Currency.infinities.reset()`；首次到达
+      // EC4 时时间研究 191 尚未解锁，不能依赖 banked 的 5% 累积。R125 真实新档中自动永恒
+      // 反复把入口清零，最高仅 10064 / 1,000,000，并让单目标调度长期停在同一关。
+      // 因此 EC4 与其它“只差入口资源”的 EC 一样暂停自动永恒；大坍缩仍继续运行，
+      // `infinitiesTotal` 由真实无限次数累积，达到原版入口后立即恢复永恒调度。
       //
-      // [R104 P0] EC1 同型例外：入口资源就是**永恒次数**
+      // [R104 P0] EC1 仍需例外：入口资源就是**永恒次数**
       // （ec-time-studies.js:9-12 secondary.resource="永恒次数"、current=Currency.eternities、
       //   required=20000 → MOD 的 OREKI_EC_REQUIREMENT_DIVISOR=100 下为 200）。
       // 压住永恒 ⇒ 永恒次数不涨 ⇒ 200 永远到不了 ⇒ ecEntryPending 永远 true ⇒ 永恒永远被压住。
       // 实测（pass3，t=1042→1712 s 共 670 秒零进度）：et=48、ecPend=true、canEt=true、EP 恒 6.79e5。
-      if (id === 1 || id === 4) return false;
+      if (id === 1) return false;
       const study = TimeStudy.eternityChallenge(id);
       if (!study || study.isBought) return false;
       const primaryMet = (study.config.requirement || []).some(s => {
@@ -884,7 +886,13 @@ export const OrekiEternityAutomation = {
         }
       });
       if (!primaryMet) return false;
-      return !study.isEntryGoalMet;
+      if (!study.isEntryGoalMet) return true;
+      // 峰值达标不等于研究已买下。EC 购买是 2 秒节流，自动永恒却是逐帧执行；
+      // 若这里立刻释放，下一帧永恒仍可能清空 EC4 刚达到的无限次数。
+      // 但这个扩展等待只能用于 EC4：其它 EC 的入口还有 TT/禁用研究等独立门槛，
+      // 若它们已达标却因这些因素暂未买下，继续压永恒会停止 EP 增长并形成自锁。
+      if (id !== 4 || study.wasRequirementPreviouslyMet) return false;
+      return true;
     } catch (e) {
       this._err("ecEntryPending", e);
       return false;
