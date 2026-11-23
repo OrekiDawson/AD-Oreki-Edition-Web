@@ -2,6 +2,14 @@
 
 > 此文件只存长期约束；具体轮次、Kody 启停、PR 状态与最新上线结果由最新授权、GitHub 和任务记录决定。
 
+## 仅 AGENTS.md 变更的 Kody skipped 快速合并规则（2026-11-23）
+
+- 对当前 PR HEAD 的**实际完整 Diff** 核验：仅新增/修改 `AGENTS.md`（含子目录同名文件），不得混入代码、CI、其他文档、构建或发布文件；若混入任何其他路径，不适用本例外。
+- 当 Kody **官方**针对该 HEAD/配置确认因纯规则文件而 `skipped`，该结果不计付费审查配额，亦不等于 Review PASS；不为取得形式上的 PASS 重复触发 Kody。若 Kody skipped 的原因不明、服务故障或未返回官方结论，不得套用本例外。
+- 只要当前 HEAD 的适用 Required Checks、审批、分支保护、Ruleset、合并冲突及其他人工阻断均已核验满足，允许直接自动合并纯 AGENTS.md PR，无需额外等待 Kody 的 PASS 或逐项向用户征询。**不得**绕过 GitHub 强制要求的 Kody Check 或任何其他保护规则；若平台仍将其判为 Required 且未满足，保持 BLOCKED。
+- 合并后回读 GitHub 验证 merged 状态、merge commit 和 main；记录 Kody skipped 的真实原因、HEAD、门禁证据及结果。规则本身的授权不等于任何 PR 已满足合并条件。
+
+
 ## 持续执行与有效验证（2026-11-23，长期强制）
 
 - **继承跨仓权威**：遵循 [Workspace AGENTS.md](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/blob/main/AGENTS.md) 的持续执行、短测收敛、Owner 避让和 Subagent 连续调度规则；以该规则实际合并进入 main 后的版本为准，不提前宣称未合并 PR 已生效。
