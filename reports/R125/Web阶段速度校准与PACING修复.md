@@ -69,3 +69,39 @@
 ## Android 同步
 
 Android 当前同类阶段速度为 `500/900/3000`，且使用同一 Reality 前 EC 门槛链。Web 新档定向验证通过后，必须将 Android 的阶段速度同步为 `500/70/3000`，重新构建并做真实 AVD 验证；不得把本次 Web 预测写成 Android PASS。
+
+> **后续实测更新**：`500/70/3000` 已被真实新档证伪（首次 Reality 58 分 31 秒），
+> 不再作为 Android 同步目标。Android 当前同步候选改为本节下方表格的
+> `500/35/3000`，仍须重新构建并完成真实 AVD 验证。
+
+## 2026-11-23 后续实测与 35× 候选
+
+`500×/70×/3000×` 的新档长跑再次确认 PACING FAIL：
+
+- 首次 Infinity：`31.1s`
+- 首次 Break：`711.2s`
+- 首次 Eternity：`1671.0s`
+- 首次 Reality：`3511.1s`（58 分 31 秒）
+- Reality 后 EC 与第二次 Reality 继续真实推进，第二次 Reality 于约 `6182.8s`
+  出现，阶段进入 `realityTree`，未发现自动永恒或 Reality 入口死锁。
+
+因此直接问题不是首个永恒条件、自动永恒购买器或 Reality 门禁，而是 Break 后至
+首次 Reality 的 35～58 分钟内容被 `70×` 全局时间压缩。根据已有 `1800× → 900×
+→ 100× → 70×` 实测点，单纯高倍率微调收益递减，候选改为：
+
+| 阶段 | 已失败值 | 待验证候选 |
+| --- | ---: | ---: |
+| Break 前 | 500× | 500× |
+| Break 后、Reality 前 | 70× | 35× |
+| Reality 后 | 3000× | 3000× |
+
+该候选不按墙钟锁阶段，不写资源或完成位，只改变真实阶段内的全局时间倍率。
+已通过：
+
+- `node scripts/check_speed_stage.mjs`
+- `node scripts/check_game_pace.mjs`
+- `node scripts/validate_tutorial.mjs --stats`（2158/2158）
+- `node --test scripts/tests/test_early_pace_real_progress.mjs`（3/3）
+
+真实新档首次 Reality、180 分钟终局、通关后稳定性与 Android 同步仍为 `NOT RUN`；
+35× 尚未取得真实 PACING PASS，不得提前合并或宣称修复完成。
