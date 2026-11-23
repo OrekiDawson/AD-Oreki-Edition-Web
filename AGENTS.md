@@ -2,6 +2,14 @@
 
 > 此文件只存长期约束；具体轮次、Kody 启停、PR 状态与最新上线结果由最新授权、GitHub 和任务记录决定。
 
+## 云端 GitHub 收口窗口（2026-11-23 更新）
+
+- 仅适用于 ChatGPT 云端「AD Issue/PR 云端自主收口」自动化，不是本机 Codex/Twinny 开发或 GitHub 写入禁令。按 Asia/Taipei 每天 07:00、12:00、18:00 启动，绝对截止分别为 **07:30、12:30、18:30**，每轮最多 **30 分钟**；迟到不顺延，至少提前 5 分钟停止领取新任务并持久化交接。不得跨槽延长、增加收费班次或空轮询凑时长。
+- 窗口内按 INTAKE→TRIAGE→ACT→VERIFY→PERSIST 连续处理四仓已授权、无冲突的安全 Issue/PR；完成一项继续下一项，优先真实修复、合并与关闭，不把单条 #20 评论或一次巡检当作完成。每次关键写入前重新核对当前 HEAD、CI、Kody、审批与 Ruleset。
+- 运行不足 **10 分钟** 提前结束，必须说明实际工作量、剩余前五项安全待办及逐项不能继续的原因；10 分钟仅为审计阈值，不是最低运行时长。外部平台单次运行限制须如实记录，不能假装执行满 30 分钟。
+- 纯 AGENTS.md PR 只有在 Kody 官方确认 skipped、完整 Diff 仅含 AGENTS.md 且其他 GitHub 强制门禁均满足时可直接合并；skipped 不是 Review PASS。预算、Owner、峰时、本机 R126 真实运行门禁与既有安全规则不因窗口缩短而放宽。
+
+
 ## 0. 游戏优先与规则审查边界（2026-11-22）
 
 - 跨仓唯一调度顺序以 [Workspace `AGENTS.md` §0](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/blob/main/AGENTS.md) 为准：游戏合法性、`PACING`、真实 180 分钟终局、存档兼容及直接阻断 CI/运行故障优先于非阻断规则 PR。
