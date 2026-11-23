@@ -3958,12 +3958,14 @@
       "headSha": "d52f084eda7838943eeed839ab1ced24380f5868",
       "source": "automated_trigger",
       "date": "2026-11-23",
-      "status": "posted",
+      "status": "skipped",
       "commentId": "7100183905",
       "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/138#issuecomment-7100183905",
       "reservedAt": "2026-11-23T11:51:44.172Z",
-      "updatedAt": "2026-11-23T11:51:44.172Z",
-      "createdAt": "2026-11-23T11:51:47.000Z"
+      "updatedAt": "2026-11-23T11:51:52.000Z",
+      "createdAt": "2026-11-23T11:51:47.000Z",
+      "skipCheckRunId": "137673218629",
+      "skipCheckUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Web/runs/137673218629"
     }
   ]
 }
