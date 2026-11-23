@@ -3824,11 +3824,12 @@
       "headSha": "054276ab8b09e293ceca565e4178e4dd7ae2d12a",
       "source": "automated_trigger",
       "date": "2026-11-23",
-      "status": "reserved",
-      "commentId": "",
-      "commentUrl": "",
+      "status": "posted",
+      "commentId": "7099851172",
+      "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Web/pull/135#issuecomment-7099851172",
       "reservedAt": "2026-11-23T11:36:05.679Z",
-      "updatedAt": "2026-11-23T11:36:05.679Z"
+      "updatedAt": "2026-11-23T11:36:05.679Z",
+      "createdAt": "2026-11-23T11:36:08.000Z"
     }
   ]
 }
