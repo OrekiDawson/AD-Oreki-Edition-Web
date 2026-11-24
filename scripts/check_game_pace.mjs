@@ -47,6 +47,45 @@ assert.match(eternity, /const TT_REWARD_MULTIPLIER = 1;/);
 assert.equal(tutorialText.includes("默认 10000×"), false);
 assert.equal(tutorialText.includes("默认 3000×"), false);
 assert.equal(tutorialText.includes("500×/70×/3000×"), true);
+
+function assertTutorialSpeedClaims(sentence) {
+  for (const [label, expected] of [["新档", 500], ["Break 后", 70], ["Reality 后", 3000]]) {
+    if (!sentence.includes(label)) continue;
+    const claim = sentence.match(new RegExp(`${label}[^。；]*?(?:×\\s*(\\d+)|(\\d+)\\s*×)`));
+    if (!claim) continue;
+    assert.equal(Number(claim[1] ?? claim[2]), expected, `${label} 速度应为 ${expected}×`);
+  }
+}
+
+const generatedJson = tutorialGenerated.slice(tutorialGenerated.indexOf("{"), tutorialGenerated.lastIndexOf("}") + 1);
+const generatedTutorial = JSON.parse(generatedJson);
+function chapterSpeedFields(chapter) {
+  return [
+    chapter?.stageGoal ?? "",
+    ...(chapter?.steps ?? []).map(step => step.text ?? ""),
+    ...(chapter?.traps ?? []),
+    ...(chapter?.numbers ?? []).map(number => number.value ?? ""),
+  ];
+}
+for (const field of chapterSpeedFields(tutorial.chapters?.[0] ?? {})) {
+  for (const sentence of field.split(/[。；]/)) assertTutorialSpeedClaims(sentence);
+}
+for (const field of chapterSpeedFields(generatedTutorial.chapters?.[0] ?? {})) {
+  for (const sentence of field.split(/[。；]/)) assertTutorialSpeedClaims(sentence);
+}
+const stageSpeedNumber = tutorial.chapters?.[0]?.numbers?.find(item => item.label === "新档阶段速度");
+assert.ok(stageSpeedNumber, "缺少第 0 章新档阶段速度数值");
+const chapter0Speeds = [...stageSpeedNumber.value.matchAll(/(?:×\s*(\d+)|(\d+)\s*×)/g)]
+  .map(claim => Number(claim[1] ?? claim[2]));
+assert.deepEqual(chapter0Speeds, [500, 70, 3000]);
+const pacingAppendix = tutorial.appendices?.find(item => item.id === "apx_changes");
+assert.ok(pacingAppendix, "缺少附录 F 变更清单");
+const pacingSpeedRows = pacingAppendix.body.split("\n").filter(line => line.startsWith("| 游戏速度 |"));
+assert.equal(1, pacingSpeedRows.length, "附录 F 必须有唯一游戏速度行");
+const pacingSpeeds = pacingSpeedRows[0].match(/按\s*(\d+)\s*×\s*\/\s*(\d+)\s*×\s*\/\s*(\d+)\s*×/);
+assert.ok(pacingSpeeds, "附录 F 缺少阶段速度三元组");
+assert.deepEqual(pacingSpeeds.slice(1).map(Number), [500, 70, 3000]);
+
 assert.equal(tutorialStage.includes("默认 3000×"), false);
 assert.equal(tutorialStage.includes("500×/70×/3000×"), true);
 assert.match(eternity, /get eternityResetActive\(\)/);
@@ -68,5 +107,9 @@ assert.equal(tutorialText.includes("阶段速度"), true);
 const obsoleteChallengeCompletion = /(?:进入|点进去).{0,2}(?:即|就)完成|瞬时完成|一口气补满|下一帧.{0,8}(?:结算|发奖|完成)|各点一次|点一遍|这一个动作|白拿|至少给它一帧时间再退出|补满并结算/;
 assert.doesNotMatch(tutorialText, obsoleteChallengeCompletion);
 assert.doesNotMatch(tutorialGenerated, obsoleteChallengeCompletion);
+assert.equal(tutorialText.includes("32 格全部点亮即完成"), false);
+assert.equal(tutorialText.includes("31 格点亮（33 除外）"), false);
+assert.equal(tutorialText.includes("第 24 条因本作禁用新闻栏而暂不可正常取得"), true);
+assert.equal(tutorialText.includes("第 33 条也因商店移除而不可正常取得"), true);
 
 console.log("PASS  R125 Web 节奏：500×/70×/3000×、无额外现实模拟、TT 收益恢复原版");
