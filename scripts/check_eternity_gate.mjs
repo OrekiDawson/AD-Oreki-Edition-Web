@@ -255,8 +255,9 @@ const ecPurchaseSource = readFileSync(
   path.join(ROOT, "src/core/oreki-eternity-automation.js"),
   "utf8",
 );
-check("EC 购买只处理当前目标，不降级串行重打",
-  ecPurchaseSource.includes("if (id !== targetId) continue;"));
+check("EC 购买首选当前目标但允许其它合法目标兜底",
+  ecPurchaseSource.includes("const order = [targetId, ...this.ecPriorityOrder().filter(id => id !== targetId)];")
+  && !ecPurchaseSource.includes("if (id !== targetId) continue;"));
 
 // ---------------- EC4 入口等待：暂停永恒让无限次数真实累积 ----------------
 reset();

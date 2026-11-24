@@ -677,11 +677,12 @@ export const OrekiEternityAutomation = {
       // 1) 能买的 EC 研究都买掉（canBeBought 会自己校验：unlocked 为 0 / 主研究已买 / 二级资源达标）
       const targetId = this.nextUnfinishedEcId();
       if (!targetId) return false;
-      for (const id of this.ecPriorityOrder()) {
+      // 首选顺序目标；若它暂时不可买，继续检查其它真正可买的未完成 EC。
+      // 不能把“当前目标不可买”扩大成“本 tick 禁止所有其它合法购买”，
+      // 否则 EC4 等资源门槛会让后续 EC 永久饥饿。
+      const order = [targetId, ...this.ecPriorityOrder().filter(id => id !== targetId)];
+      for (const id of order) {
         try {
-          // 只处理当前目标；高优先级目标暂时买不起时等待资源，不能在同一拍
-          // 降级购买低优先级 EC，否则 Reality 后仍会重新串行打完整条 1→12 链。
-          if (id !== targetId) continue;
           // 【R36 修复】已经解锁了某一关就不能再买别的 EC 研究
           // （ec-time-study.js:80 `if (player.challenge.eternity.unlocked !== 0) return false;`）。
           // 不 break 的话，后面的 id 会白跑一轮「补前置研究」，白白烧掉 TT。
