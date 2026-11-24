@@ -46,6 +46,8 @@ assert.doesNotMatch(reality, /player\.partSimulatedReality - 1 \+ 4;/);
 assert.match(eternity, /const TT_REWARD_MULTIPLIER = 1;/);
 assert.equal(tutorialText.includes("默认 10000×"), false);
 assert.equal(tutorialText.includes("默认 3000×"), false);
+assert.equal(tutorialText.includes("新档从 ×1000"), false);
+assert.equal(tutorialText.includes("Break 后 ×1800"), false);
 assert.equal(tutorialText.includes("500×/70×/3000×"), true);
 assert.equal(tutorialStage.includes("默认 3000×"), false);
 assert.equal(tutorialStage.includes("500×/70×/3000×"), true);
