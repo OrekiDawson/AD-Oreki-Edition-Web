@@ -867,9 +867,9 @@ export const OrekiEternityAutomation = {
    * 首次 Reality 前按 1→12 完整走一遍，保留永恒挑战体系的实际展开。
    * Reality 后，重新满足 `TimeStudy.reality` 的原版硬条件只需要 EC11 与 EC12
    * 各完成 5 次（dilation-time-studies.js）；研究 181/191/193 要求 EC1～3 与
-   * EC10 有真实完成记录，而 Reality 会清空这些记录。EC4～8 的奖励也以
-   * completions > 0 生效。因此后续循环保持 1→12 顺序，但 EC1～8 只需补到 1 次，
-   * EC9～12 仍按膨胀模块依赖补满 5 次。
+   * EC10 有真实完成记录，而 Reality 会清空这些记录。EC4～7 的奖励也以
+   * completions > 0 生效。因此后续循环保持 1→12 顺序，但 EC1～7 只需补到 1 次；
+   * EC8～12 与膨胀模块的 `DEEP_EC_IDS` 共用满 5/5 定义，避免 respec 抖动。
    *
    * 这里只决定自动化选择哪一关；挑战目标、入口资源、完成次数与结算仍由原版处理。
    */
@@ -878,14 +878,14 @@ export const OrekiEternityAutomation = {
   },
 
   /**
-   * 当前阶段实际需要完成的次数。Reality 后 EC1～8 的奖励或研究门槛只要求
-   * completions > 0，补到 1 次即可；EC9～12 与膨胀模块共用满 5/5 定义。
+   * 当前阶段实际需要完成的次数。Reality 后 EC1～7 的奖励或研究门槛只要求
+   * completions > 0，补到 1 次即可；EC8～12 与膨胀模块 `DEEP_EC_IDS` 共用满 5/5。
    */
   ecRequiredCompletions(id) {
     const challenge = EternityChallenge(id);
     const max = challenge?.maxCompletions ?? 5;
     const realities = this._realitiesValue();
-    if (realities !== null && realities > 0 && id >= 1 && id <= 8) {
+    if (realities !== null && realities > 0 && id >= 1 && id <= 7) {
       return Math.min(1, max);
     }
     return max;
@@ -921,6 +921,10 @@ export const OrekiEternityAutomation = {
         }
       });
       if (!primaryMet) return false;
+      // EC4 入口达标不等于研究已买下。EC 循环按 2 秒节流，而原版自动永恒每帧
+      // 都可能清空 infinities 与入口峰值缓存；必须保持到研究真正买下/挑战启动，
+      // 否则会反复出现“刚达标又被永恒清零”。
+      if (id === 4) return true;
       return !study.isEntryGoalMet;
     } catch (e) {
       this._err("ecEntryPending", e);
