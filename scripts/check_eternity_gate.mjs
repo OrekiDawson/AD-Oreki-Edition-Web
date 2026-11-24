@@ -232,12 +232,23 @@ env.ecCompletions[1] = 1;
 check("EC2 后继续 EC3", A.nextUnfinishedEcId() === 3);
 env.ecCompletions[2] = 1;
 check("EC1～3 后继续保留 EC4 奖励", A.nextUnfinishedEcId() === 4);
-for (let id = 4; id <= 8; id++) env.ecCompletions[id - 1] = 1;
-check("EC4～8 只需一次即可继续 EC9", A.nextUnfinishedEcId() === 9);
-check("Reality 后奖励 EC1～8 只需 1 次",
-  A.ecRequiredCompletions(1) === 1 && A.ecRequiredCompletions(8) === 1);
-check("膨胀依赖 EC9～12 仍需 5 次",
-  A.ecRequiredCompletions(9) === 5 && A.ecRequiredCompletions(12) === 5);
+for (let id = 4; id <= 7; id++) env.ecCompletions[id - 1] = 1;
+check("EC4～7 只需一次后继续等待 EC8", A.nextUnfinishedEcId() === 8);
+check("Reality 后奖励 EC1～7 只需 1 次",
+  A.ecRequiredCompletions(1) === 1 && A.ecRequiredCompletions(7) === 1);
+check("膨胀依赖 EC8～12 仍需 5 次",
+  A.ecRequiredCompletions(8) === 5 && A.ecRequiredCompletions(9) === 5 &&
+  A.ecRequiredCompletions(10) === 5 && A.ecRequiredCompletions(11) === 5 &&
+  A.ecRequiredCompletions(12) === 5);
+const dilationEcSource = readFileSync(
+  path.join(ROOT, "src/core/oreki-dilation-automation.js"),
+  "utf8",
+);
+check("膨胀 EC8～12 完成阈值复用同一函数",
+  dilationEcSource.includes(
+    "ch.completions < OrekiEternityAutomation.ecRequiredCompletions(id)"));
+env.ecCompletions[7] = 5;
+check("EC8 满 5 次后继续 EC9", A.nextUnfinishedEcId() === 9);
 env.ecCompletions[8] = 5;
 check("EC9 满 5 次后继续 EC10", A.nextUnfinishedEcId() === 10);
 env.ecCompletions[9] = 5;
@@ -280,8 +291,12 @@ check("EC4 成为目标且只差无限次数入口", A.nextUnfinishedEcId() === 
 check("EC4 入口未满足时暂停自动永恒，避免真实无限次数被清零",
   A.ecEntryPending() === true);
 ec4EntryGoalMet = true;
-check("EC4 入口满足后恢复自动永恒", A.ecEntryPending() === false);
+check("EC4 入口满足但研究尚未买下时继续暂停自动永恒",
+  A.ecEntryPending() === true);
+player.challenge.eternity.unlocked = 4;
+check("EC4 研究买下并启动后恢复自动永恒", A.ecEntryPending() === false);
 env.ecCompletions = Array(12).fill(0);
+player.challenge.eternity.unlocked = 0;
 check("EC1 的入口依赖永恒次数，仍不得暂停自动永恒",
   A.nextUnfinishedEcId() === 1 && A.ecEntryPending() === false);
 delete globalThis.TimeStudy;
