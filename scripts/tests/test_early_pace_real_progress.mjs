@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { aggregateAutomation } from "../../scripts/gen_tutorial_module.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const read = relative => fs.readFileSync(path.join(ROOT, relative), "utf8");
@@ -25,13 +26,15 @@ test("教程不再宣称自动补足 IP", () => {
   const tutorialText = read("src/core/oreki-tutorial-data.json");
   const tutorial = JSON.parse(tutorialText);
   const appendix = tutorial.appendices.find(item => item.id === "apx_automation");
+  const appendixBody = aggregateAutomation(tutorial.chapters);
 
   assert.ok(appendix, "自动化总览附录必须存在");
   assert.equal(appendix.auto, "automation", "总览正文必须由各章 automation 字段生成");
+  assert.equal(Object.hasOwn(appendix, "body"), false, "总览正文不得写回源 JSON");
   assert.doesNotMatch(tutorialText, /本作会直接把余额补到 32767/);
   assert.doesNotMatch(tutorialText, /由本作单独补足/);
-  assert.doesNotMatch(appendix.body, /单次坍缩收益兜到 1e8/);
-  assert.match(appendix.body, /不直接抬高单次坍缩收益/);
-  assert.match(tutorialText, /必须由真实无限循环逐步积累/);
+  assert.doesNotMatch(appendixBody, /单次坍缩收益兜到 1e8/);
+  assert.match(appendixBody, /真实大坍缩条件/);
+  assert.match(appendixBody, /不直接增加无限次数或无限点数/);
 });
 

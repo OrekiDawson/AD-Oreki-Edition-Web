@@ -674,13 +674,14 @@ export const OrekiEternityAutomation = {
    */
   buyEcStudiesAndStart() {
     try {
-      // 1) 能买的 EC 研究都买掉（canBeBought 会自己校验：unlocked 为 0 / 主研究已买 / 二级资源达标）
+      // 1) 首选当前目标；目标暂时不可买时，继续检查其它合法未完成 EC，避免单目标饥饿。
       const targetId = this.nextUnfinishedEcId();
       if (!targetId) return false;
-      // 首选顺序目标；若它暂时不可买，继续检查其它真正可买的未完成 EC。
-      // 不能把“当前目标不可买”扩大成“本 tick 禁止所有其它合法购买”，
-      // 否则 EC4 等资源门槛会让后续 EC 永久饥饿。
-      const order = [targetId, ...this.ecPriorityOrder().filter(id => id !== targetId)];
+      const order = [
+        targetId,
+        ...Array.from({ length: 12 }, (_, index) => index + 1)
+          .filter(id => id !== targetId),
+      ];
       for (const id of order) {
         try {
           // 【R36 修复】已经解锁了某一关就不能再买别的 EC 研究
@@ -695,7 +696,7 @@ export const OrekiEternityAutomation = {
           // → 再把同一关买回来…… 实测后果是 TT 一直在退，但已买普通研究恒为 0，
           // 整个时间研究链永远建立不起来（R23 实测：59 秒 TT 367 万、研究 0 个）。
           const challenge = EternityChallenge(id);
-          if (challenge && challenge.completions >= this.ecRequiredCompletions(id)) continue;
+          if (challenge && challenge.completions >= challenge.maxCompletions) continue;
 
           // 【R36 关键修复 · 真正的全局阻塞点】
           // EC9~EC12 买不上的真正原因**不是资源**，而是**前置普通时间研究没买**。
@@ -746,7 +747,7 @@ export const OrekiEternityAutomation = {
         return false;
       }
       if (!challenge || !challenge.isUnlocked) return false;
-      if (challenge.completions >= this.ecRequiredCompletions(unlockedId)) {
+      if (challenge.completions >= challenge.maxCompletions) {
         // [AD11.1] 这一关已满：必须 respecTimeStudies 才能把 unlocked 清 0，
         // 否则 ECTimeStudyState.canBeBought 里那条 unlocked !== 0 就直接 return false，
         // 后面所有 EC 研究永远买不上（实测卡在 EC2 满级后无法推进）。
@@ -794,7 +795,7 @@ export const OrekiEternityAutomation = {
       if (!id || id > 12) return false;
       const challenge = EternityChallenge(id);
       if (!challenge) return false;
-      if (challenge.completions >= this.ecRequiredCompletions(id)) return false;
+      if (challenge.completions >= challenge.maxCompletions) return false;
       const study = TimeStudy.eternityChallenge(id);
       if (!study) return false;
       if (study.isBought) return false;
@@ -850,46 +851,16 @@ export const OrekiEternityAutomation = {
       const skipEc7 = (() => {
         try { return globalThis.OrekiIu15Sprint?.skipEc7 === true; } catch (e) { return false; }
       })();
-      for (const id of this.ecPriorityOrder()) {
+      for (let id = 1; id <= 12; id++) {
         if (id === 7 && skipEc7) continue;
         const challenge = EternityChallenge(id);
-        if (challenge && challenge.completions < this.ecRequiredCompletions(id)) return id;
+        if (challenge && challenge.completions < challenge.maxCompletions) return id;
       }
       return 0;
     } catch (e) {
       this._err("nextUnfinishedEcId", e);
       return 0;
     }
-  },
-
-  /**
-   * [R125] Reality 后的 EC 优先级。
-   *
-   * 首次 Reality 前按 1→12 完整走一遍，保留永恒挑战体系的实际展开。
-   * Reality 后，重新满足 `TimeStudy.reality` 的原版硬条件只需要 EC11 与 EC12
-   * 各完成 5 次（dilation-time-studies.js）；研究 181/191/193 要求 EC1～3 与
-   * EC10 有真实完成记录，而 Reality 会清空这些记录。EC4～7 的奖励也以
-   * completions > 0 生效。因此后续循环保持 1→12 顺序，但 EC1～7 只需补到 1 次；
-   * EC8～12 与膨胀模块的 `DEEP_EC_IDS` 共用满 5/5 定义，避免 respec 抖动。
-   *
-   * 这里只决定自动化选择哪一关；挑战目标、入口资源、完成次数与结算仍由原版处理。
-   */
-  ecPriorityOrder() {
-    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  },
-
-  /**
-   * 当前阶段实际需要完成的次数。Reality 后 EC1～7 的奖励或研究门槛只要求
-   * completions > 0，补到 1 次即可；EC8～12 与膨胀模块 `DEEP_EC_IDS` 共用满 5/5。
-   */
-  ecRequiredCompletions(id) {
-    const challenge = EternityChallenge(id);
-    const max = challenge?.maxCompletions ?? 5;
-    const realities = this._realitiesValue();
-    if (realities !== null && realities > 0 && id >= 1 && id <= 7) {
-      return Math.min(1, max);
-    }
-    return max;
   },
 
   /** 下一个 EC 是否「只差入口资源」（主研究已买、但二级门槛未满足） */
@@ -899,12 +870,12 @@ export const OrekiEternityAutomation = {
       if (player.challenge.eternity.unlocked !== 0) return false;
       const id = this.nextUnfinishedEcId();
       if (!id) return false;
-      // [R125] EC4 入口是 `Currency.infinitiesTotal`（本次无限次数 + 永久保留次数）。
-      // `initializeResourcesAfterEternity()` 会调用 `Currency.infinities.reset()`，而首次
-      // 到达 EC4 时时间研究 191 尚未解锁，不能靠 5% banked 自动累积。35× 真实新档中
-      // 自动永恒把 EC4 入口反复清零，峰值仅 10064 / 1000000，并长期挡住 EC5、EC7~10。
-      // 因此 EC4 与其它“只差入口资源”的 EC 一样暂停自动永恒；大坍缩仍继续执行，
-      // 无限次数会由其真实产出累积，入口满足后仍由原版购买与挑战入口继续。
+      // [R126] EC4 入口是 `Currency.infinitiesTotal`（本次无限次数 + 永久保留次数）。
+      // `initializeResourcesAfterEternity()` 会调用 `Currency.infinities.reset()`；首次到达
+      // EC4 时时间研究 191 尚未解锁，不能依赖 banked 的 5% 累积。R125 真实新档中自动永恒
+      // 反复把入口清零，最高仅 10064 / 1,000,000，并让单目标调度长期停在同一关。
+      // 因此 EC4 与其它“只差入口资源”的 EC 一样暂停自动永恒；大坍缩仍继续运行，
+      // `infinitiesTotal` 由真实无限次数累积，达到原版入口后立即恢复永恒调度。
       //
       // [R104 P0] EC1 仍需例外：入口资源就是**永恒次数**
       // （ec-time-studies.js:9-12 secondary.resource="永恒次数"、current=Currency.eternities、
@@ -922,11 +893,13 @@ export const OrekiEternityAutomation = {
         }
       });
       if (!primaryMet) return false;
-      // EC4 入口达标不等于研究已买下。EC 循环按 2 秒节流，而原版自动永恒每帧
-      // 都可能清空 infinities 与入口峰值缓存；必须保持到研究真正买下/挑战启动，
-      // 否则会反复出现“刚达标又被永恒清零”。
-      if (id === 4) return true;
-      return !study.isEntryGoalMet;
+      if (!study.isEntryGoalMet) return true;
+      // 峰值达标不等于研究已买下。EC 购买是 2 秒节流，自动永恒却是逐帧执行；
+      // 若这里立刻释放，下一帧永恒仍可能清空 EC4 刚达到的无限次数。
+      // 但这个扩展等待只能用于 EC4：其它 EC 的入口还有 TT/禁用研究等独立门槛，
+      // 若它们已达标却因这些因素暂未买下，继续压永恒会停止 EP 增长并形成自锁。
+      if (id !== 4 || study.wasRequirementPreviouslyMet) return false;
+      return true;
     } catch (e) {
       this._err("ecEntryPending", e);
       return false;

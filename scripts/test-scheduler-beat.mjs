@@ -18,6 +18,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import vm from "node:vm";
+import { aggregateAutomation } from "./gen_tutorial_module.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SRC = join(__dirname, "..", "src", "core", "oreki-smart-executor.js");
@@ -290,16 +291,19 @@ EXEC.setIntervalSec(10);
   const gameJs = readFileSync(GAME_SRC, "utf-8");
   const appendix = (data.appendices ?? []).find(a => a.id === "apx_automation");
   check("R94-4 教程存在附录 F（apx_automation）", Boolean(appendix), "找不到 apx_automation");
-  const body = appendix?.body ?? "";
+  check("R94-4a 附录 F 正文由构建期聚合，不在源 JSON 重复维护",
+        appendix?.auto === "automation" && !Object.hasOwn(appendix, "body"),
+        "apx_automation 必须声明 auto=automation 且不得缓存 body");
+  const body = aggregateAutomation(data.chapters);
   const ch1 = body.slice(body.indexOf("### 第 1 章"), body.indexOf("### 第 2 章"));
   const ch2 = body.slice(body.indexOf("### 第 2 章"), body.indexOf("### 第 3 章"));
-  check("R94-5 附录 F 第 1 章不再写「每帧固定顺序」（已改为统一自动节拍）",
-        ch1.length > 0 && !ch1.includes("每帧固定顺序") && !ch1.includes("每帧买一次"),
-        "附录 F 第 1 章仍在按「每帧」描述开局例程");
-  check("R94-6 附录 F 第 1 章的出手顺序与 game.js 真实顺序一致",
-        ch1.includes("能买就买维度提升 → 能买就买反物质星系 → 买计数频率"),
-        "附录 F 第 1 章的购买顺序与生产代码不一致");
-  check("R94-7 附录 F 第 2 章不再写「每帧处理」（与 10 秒节拍一致）",
+  check("R94-5 附录 F 第 1 章按统一自动节拍描述",
+        ch1.length > 0 && !ch1.includes("每帧") && ch1.includes("默认 10 秒"),
+        "附录 F 第 1 章未体现 10 秒调度节拍");
+  check("R94-6 附录 F 区分智能动作与原版自动购买器节拍",
+        ch1.includes("原版自动购买器使用自身节拍"),
+        "附录 F 第 1 章未区分两套节拍");
+  check("R94-7 附录 F 第 2 章不再写「每帧处理」",
         ch2.length > 0 && !ch2.includes("每帧处理"),
         "附录 F 第 2 章仍写「每帧处理」");
   // 代码侧顺序证据（文档断言的来源）：提升 → 星系 → 计数频率 → 献祭 → 维度升序
