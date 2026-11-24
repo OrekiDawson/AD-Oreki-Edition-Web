@@ -94,5 +94,7 @@ assert.equal(tutorialText.includes("阶段速度"), true);
 const obsoleteChallengeCompletion = /(?:进入|点进去).{0,2}(?:即|就)完成|瞬时完成|一口气补满|下一帧.{0,8}(?:结算|发奖|完成)|各点一次|点一遍|这一个动作|白拿|至少给它一帧时间再退出|补满并结算/;
 assert.doesNotMatch(tutorialText, obsoleteChallengeCompletion);
 assert.doesNotMatch(tutorialGenerated, obsoleteChallengeCompletion);
+assert.equal(tutorialText.includes("32 格全部点亮"), false);
+assert.equal(tutorialText.includes("31 格点亮（33 除外）"), true);
 
 console.log("PASS  R125 Web 节奏：500×/70×/3000×、无额外现实模拟、TT 收益恢复原版");
