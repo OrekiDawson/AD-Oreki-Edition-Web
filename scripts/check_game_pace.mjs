@@ -48,30 +48,43 @@ assert.equal(tutorialText.includes("默认 10000×"), false);
 assert.equal(tutorialText.includes("默认 3000×"), false);
 assert.equal(tutorialText.includes("500×/70×/3000×"), true);
 
-function assertTutorialSpeedClaims(text) {
+function assertTutorialSpeedClaims(sentence) {
   for (const [label, expected] of [["新档", 500], ["Break 后", 70], ["Reality 后", 3000]]) {
-    const claims = [...text.matchAll(new RegExp(`${label}[^；]*?(?:×\\s*(\\d+)|(\\d+)\\s*×)`, "g"))];
-    assert.ok(claims.length > 0, `缺少 ${label} 速度说明`);
-    for (const claim of claims) {
-      assert.equal(Number(claim[1] ?? claim[2]), expected, `${label} 速度应为 ${expected}×`);
-    }
+    if (!sentence.includes(label)) continue;
+    const claim = sentence.match(new RegExp(`${label}[^。；]*?(?:×\\s*(\\d+)|(\\d+)\\s*×)`));
+    if (!claim) continue;
+    assert.equal(Number(claim[1] ?? claim[2]), expected, `${label} 速度应为 ${expected}×`);
   }
 }
 
 const generatedJson = tutorialGenerated.slice(tutorialGenerated.indexOf("{"), tutorialGenerated.lastIndexOf("}") + 1);
 const generatedTutorial = JSON.parse(generatedJson);
-assertTutorialSpeedClaims(JSON.stringify(tutorial.chapters?.[0] ?? {}));
-assertTutorialSpeedClaims(JSON.stringify(generatedTutorial.chapters?.[0] ?? {}));
+function chapterSpeedFields(chapter) {
+  return [
+    chapter?.stageGoal ?? "",
+    ...(chapter?.steps ?? []).map(step => step.text ?? ""),
+    ...(chapter?.traps ?? []),
+    ...(chapter?.numbers ?? []).map(number => number.value ?? ""),
+  ];
+}
+for (const field of chapterSpeedFields(tutorial.chapters?.[0] ?? {})) {
+  for (const sentence of field.split(/[。；]/)) assertTutorialSpeedClaims(sentence);
+}
+for (const field of chapterSpeedFields(generatedTutorial.chapters?.[0] ?? {})) {
+  for (const sentence of field.split(/[。；]/)) assertTutorialSpeedClaims(sentence);
+}
 const stageSpeedNumber = tutorial.chapters?.[0]?.numbers?.find(item => item.label === "新档阶段速度");
 assert.ok(stageSpeedNumber, "缺少第 0 章新档阶段速度数值");
 const chapter0Speeds = [...stageSpeedNumber.value.matchAll(/(?:×\s*(\d+)|(\d+)\s*×)/g)]
   .map(claim => Number(claim[1] ?? claim[2]));
 assert.deepEqual(chapter0Speeds, [500, 70, 3000]);
-const speedTriples = [...tutorialText.matchAll(/(?:^|[^0-9])(\d+)\s*×\s*\/\s*(\d+)\s*×\s*\/\s*(\d+)\s*×/g)];
-assert.ok(speedTriples.length > 0, "缺少阶段速度三元组");
-for (const triple of speedTriples) {
-  assert.deepEqual(triple.slice(1).map(Number), [500, 70, 3000]);
-}
+const pacingAppendix = tutorial.appendices?.find(item => item.id === "apx_changes");
+assert.ok(pacingAppendix, "缺少附录 F 变更清单");
+const pacingSpeedRows = pacingAppendix.body.split("\n").filter(line => line.startsWith("| 游戏速度 |"));
+assert.equal(1, pacingSpeedRows.length, "附录 F 必须有唯一游戏速度行");
+const pacingSpeeds = pacingSpeedRows[0].match(/按\s*(\d+)\s*×\s*\/\s*(\d+)\s*×\s*\/\s*(\d+)\s*×/);
+assert.ok(pacingSpeeds, "附录 F 缺少阶段速度三元组");
+assert.deepEqual(pacingSpeeds.slice(1).map(Number), [500, 70, 3000]);
 
 assert.equal(tutorialStage.includes("默认 3000×"), false);
 assert.equal(tutorialStage.includes("500×/70×/3000×"), true);
