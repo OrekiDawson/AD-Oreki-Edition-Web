@@ -400,12 +400,12 @@ export const OrekiDilationAutomation = {
     return this.hold === true;
   },
 
-  /** 8 → 9 → 10 → 11 → 12：第一关未达到共享完成阈值就停在这一关 */
+  /** 9 → 10 → 11 → 12：第一关没满 5 次就停在这一关 */
   _targetEc() {
     try {
       for (const id of DEEP_EC_IDS) {
         const ch = EternityChallenge(id);
-        if (ch.completions < OrekiEternityAutomation.ecRequiredCompletions(id)) return id;
+        if (!ch.isFullyCompleted) return id;
       }
     } catch (e) {
       // 忽略
