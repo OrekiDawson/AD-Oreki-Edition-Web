@@ -46,9 +46,33 @@ assert.doesNotMatch(reality, /player\.partSimulatedReality - 1 \+ 4;/);
 assert.match(eternity, /const TT_REWARD_MULTIPLIER = 1;/);
 assert.equal(tutorialText.includes("默认 10000×"), false);
 assert.equal(tutorialText.includes("默认 3000×"), false);
-assert.equal(tutorialText.includes("新档从 ×1000"), false);
-assert.equal(tutorialText.includes("Break 后 ×1800"), false);
 assert.equal(tutorialText.includes("500×/70×/3000×"), true);
+
+function assertTutorialSpeedClaims(text) {
+  for (const [label, expected] of [["新档", 500], ["Break 后", 70], ["Reality 后", 3000]]) {
+    const claims = [...text.matchAll(new RegExp(`${label}[^；]*?(?:×\\s*(\\d+)|(\\d+)\\s*×)`, "g"))];
+    assert.ok(claims.length > 0, `缺少 ${label} 速度说明`);
+    for (const claim of claims) {
+      assert.equal(Number(claim[1] ?? claim[2]), expected, `${label} 速度应为 ${expected}×`);
+    }
+  }
+}
+
+const generatedJson = tutorialGenerated.slice(tutorialGenerated.indexOf("{"), tutorialGenerated.lastIndexOf("}") + 1);
+const generatedTutorial = JSON.parse(generatedJson);
+assertTutorialSpeedClaims(JSON.stringify(tutorial.chapters?.[0] ?? {}));
+assertTutorialSpeedClaims(JSON.stringify(generatedTutorial.chapters?.[0] ?? {}));
+const stageSpeedNumber = tutorial.chapters?.[0]?.numbers?.find(item => item.label === "新档阶段速度");
+assert.ok(stageSpeedNumber, "缺少第 0 章新档阶段速度数值");
+const chapter0Speeds = [...stageSpeedNumber.value.matchAll(/(?:×\s*(\d+)|(\d+)\s*×)/g)]
+  .map(claim => Number(claim[1] ?? claim[2]));
+assert.deepEqual(chapter0Speeds, [500, 70, 3000]);
+const speedTriples = [...tutorialText.matchAll(/(?:^|[^0-9])(\d+)\s*×\s*\/\s*(\d+)\s*×\s*\/\s*(\d+)\s*×/g)];
+assert.ok(speedTriples.length > 0, "缺少阶段速度三元组");
+for (const triple of speedTriples) {
+  assert.deepEqual(triple.slice(1).map(Number), [500, 70, 3000]);
+}
+
 assert.equal(tutorialStage.includes("默认 3000×"), false);
 assert.equal(tutorialStage.includes("500×/70×/3000×"), true);
 assert.match(eternity, /get eternityResetActive\(\)/);
