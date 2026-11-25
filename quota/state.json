@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "date": "2026-11-25",
+  "date": "2026-11-26",
   "records": [
     {
       "identity": "8b8ed34635a79168dc2d62cf6ba64606f82293ebe5cbe03656e38d9be798c6bf",
@@ -5469,6 +5469,20 @@
       "commentUrl": "",
       "reservedAt": "2026-11-25T15:50:57.686Z",
       "updatedAt": "2026-11-25T15:50:57.686Z"
+    },
+    {
+      "kind": "kody_start_review",
+      "identity": "kody-trigger:OrekiDawson/AD-Oreki-Edition-Android#310@0adf62544ff8f915eb9fd1a41cecc3d74291cf68",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Android",
+      "pr": 310,
+      "headSha": "0adf62544ff8f915eb9fd1a41cecc3d74291cf68",
+      "source": "automated_trigger",
+      "date": "2026-11-26",
+      "status": "reserved",
+      "commentId": "",
+      "commentUrl": "",
+      "reservedAt": "2026-11-25T16:11:48.382Z",
+      "updatedAt": "2026-11-25T16:11:48.382Z"
     }
   ]
 }
