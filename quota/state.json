@@ -5911,12 +5911,14 @@
       "headSha": "aeea1a35a597b764f6872d16ed1adc4e828378da",
       "source": "automated_trigger",
       "date": "2026-11-26",
-      "status": "posted",
+      "status": "skipped",
       "commentId": "7193791339",
       "commentUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Android/pull/324#issuecomment-7193791339",
       "reservedAt": "2026-11-26T13:45:17.583Z",
-      "updatedAt": "2026-11-26T13:45:17.583Z",
-      "createdAt": "2026-11-26T13:45:21.000Z"
+      "updatedAt": "2026-11-26T13:47:15.000Z",
+      "createdAt": "2026-11-26T13:45:21.000Z",
+      "skipCheckRunId": "139952749353",
+      "skipCheckUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Android/runs/139952749353"
     }
   ]
 }
