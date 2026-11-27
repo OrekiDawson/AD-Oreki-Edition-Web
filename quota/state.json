@@ -6051,6 +6051,20 @@
       "createdAt": "2026-11-27T05:21:36.000Z",
       "skipCheckRunId": "140328632709",
       "skipCheckUrl": "https://github.com/OrekiDawson/AD-Oreki-Edition-Web/runs/140328632709"
+    },
+    {
+      "kind": "kody_start_review",
+      "identity": "kody-trigger:OrekiDawson/AD-Oreki-Edition-Android#327@f2bf92ad9fc82e32b2cda44087abc959a89f6d6f",
+      "repository": "OrekiDawson/AD-Oreki-Edition-Android",
+      "pr": 327,
+      "headSha": "f2bf92ad9fc82e32b2cda44087abc959a89f6d6f",
+      "source": "automated_trigger",
+      "date": "2026-11-27",
+      "status": "reserved",
+      "commentId": "",
+      "commentUrl": "",
+      "reservedAt": "2026-11-27T15:00:14.628Z",
+      "updatedAt": "2026-11-27T15:00:14.628Z"
     }
   ]
 }
