@@ -9,11 +9,16 @@
 ### 1.1 统一规则来源与继承
 - 六仓既有 PR 实质收口优先于新增 P0，新增业务优先于非阻断架构、规则和目录治理；实际 OPEN PR 合计 ≤5（含 Draft 和预留），ChatGPT 直接授权 PR 例外按 Workspace §4.1，其他 Agent 不得借用。
 - 活跃会话恢复、每 60 分钟及关键动作前按 Workspace 规定刷新远端规则、HEAD、Owner、门禁。Lead 每三分钟实质汇报，Subagent 有安全独立任务即续派；等待 CI/Kody 不等于全局停工。
+
+### 1.2 游戏优先与规则审查边界
+- P0 游戏业务优先于非阻断架构迁移；规则/审查与测试不得代替真实游戏进展。
+
+### 1.3 授权、预算与运行状态
 - 用户暂停、权限、安全、预算及资源硬门禁优先；全天执行，无峰谷或固定余额停工。周期预算 80% 预警、100% 或将超额停新增收费，禁止换账号/Provider、擅自充值或绕过限制。
 - Coreutils 优先（全局长期强制）：能以标准 Shell、Coreutils、find/grep/sed/awk/jq 可靠完成的不使用 Node.js；仅真实 JS 运行时/生态或可靠性、兼容性必要时例外。PATH 内直接调用命令名，Windows 使用 pwsh，不用 powershell.exe 或绝对可执行路径，除非 PATH 解析或版本冲突。
 - 本机项目数据上限 80 GiB，遵循统一回收及资源锁；禁止删除唯一成果、凭据、有效回滚点或他人 WIP。fetch 不等于工作树已同步；仅干净主工作树可安全快进。
 
-### 1.3 任务与 Goal
+### 1.4 任务编号与 Goal
 - R 编号由 ChatGPT 分配；不改历史编号、不添加子编号，活跃 Goal 不重复 /goal 或重置计时。按事实证据验收。
 
 ## 2. Web 技术与玩法
@@ -38,8 +43,11 @@
 [GitHub 质量与合并细则](docs/Agent规则/04-质量审查与合并.md)
 ### 4.1 GitHub 审查与质量门禁
 - Kody 仅 Balanced；全项目付费在途 ≤3，Android/Web 共享每日 100 次主动审查、80 次预警，Wiki 独立；核实真实授权/Provider/预算，按 HEAD/配置去重。官方 skipped 不计额度、不等于 PASS。
-- 必须满足实际 Required Checks、线程解决、审批、Ruleset、Owner 和安全门禁；不强推、不绕过平台保护。纯 AGENTS.md 且 Kody 官方确认规则文件 skipped 按现行例外；其他文件不适用。
+- 必须满足实际 Required Checks、线程解决、审批、Ruleset、Owner 和安全门禁；不强推、不绕过平台保护。
 - 已有 PR 优先实质收口；规则 PR 逐条继承、合并回读；具备审查条件及时 Ready，不长期 Draft 或重复触发付费。
+
+#### 4.1.1 仅规则变更时的 Kody skipped 例外
+- 纯 AGENTS.md 且 Kody 官方确认规则文件 skipped 按现行例外；其他文件不适用，强制门禁照常满足。
 
 ## 5. 工作方式与环境
 
