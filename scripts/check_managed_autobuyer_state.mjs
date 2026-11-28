@@ -142,6 +142,30 @@ test("同一 Tick 多次调用 ⇒ tick-wait，不写配置", () => {
   assert.equal(Managed.debugState().writes, writesBefore, "逐帧调用不得刷写");
 });
 
+test("已解锁永恒层购买器下一 tick 恢复，关闭 MOD 时交还原值", () => {
+  const available = Object.assign(makeItem({ active: false }), { tier: 1 });
+  const locked = Object.assign(makeItem({ active: false, unlocked: false, bought: false }), { tier: 8 });
+  registry.timeDimension = { zeroIndexed: [available, locked], isActive: false };
+  registry.timeTheorem = makeItem({ active: false });
+  registry.epMult = makeItem({ active: false });
+  apply(1);
+  assert.equal(registry.timeDimension.isActive, true);
+  assert.equal(available.isActive, true);
+  assert.equal(locked.isActive, false);
+  assert.equal(registry.timeTheorem.isActive, true);
+  assert.equal(registry.epMult.isActive, true);
+  registry.timeTheorem.isActive = false;
+  apply(1);
+  assert.equal(registry.timeTheorem.isActive, false);
+  apply(2);
+  assert.equal(registry.timeTheorem.isActive, true);
+  Managed.releaseAll({ autobuyers: registry });
+  assert.equal(registry.timeDimension.isActive, false);
+  assert.equal(available.isActive, false);
+  assert.equal(registry.timeTheorem.isActive, false);
+  assert.equal(registry.epMult.isActive, false);
+});
+
 // ---------------------------------------------------------------------------
 // 2. 手动关闭 → 下一 Tick 恢复
 // ---------------------------------------------------------------------------
