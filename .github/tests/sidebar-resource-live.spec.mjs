@@ -11,8 +11,9 @@ import { test, expect } from "@playwright/test";
 //   $recompute 依赖挂上之前；此后 sidebarID 恒为 0 不再变化，computed 永久命中首次缓存。
 // 修复：update() 每帧把「最新可用资源 id」写入响应式字段 defaultResourceID，computed 只读该字段。
 //
-// 本用例只读状态与 DOM 文本，不写存档字段；首次无限由默认 10000× 的真实游玩自然达成。
+// 本用例只读状态与 DOM 文本，等待当前开局倍率下的真实首次无限。
 test("sidebar latest-resource readout follows real unlocks without a reload", async ({ page }) => {
+  test.setTimeout(360_000);
   const pageErrors = [];
   page.on("pageerror", error => pageErrors.push(error.message));
 
@@ -45,9 +46,8 @@ test("sidebar latest-resource readout follows real unlocks without a reload", as
   expect(initial.resolvedId, "新档侧栏应显示当前最新可用资源").toBe(initial.latestAvailableId);
   expect(initial.domName).toBe(initial.expectedName);
 
-  // 默认 10000× 新档真实游玩：首次无限在数秒内自然结算，不需要注入任何存档/时间。
   await expect.poll(() => page.evaluate(() => window.PlayerProgress.infinityUnlocked()), {
-    timeout: 90_000,
+    timeout: 300_000,
     message: "首次无限未在窗口内达成",
   }).toBe(true);
 

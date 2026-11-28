@@ -35,7 +35,7 @@ const { GameSpeed, progressionSpeedForState } = await loadSpeed(freshStorage, fr
 assert.equal(progressionSpeedForState(false, 0, 0, 0), 48);
 assert.equal(progressionSpeedForState(false, 0, 0, { gt: () => true }), 500);
 assert.equal(progressionSpeedForState(true, 0, 0), 70);
-assert.equal(progressionSpeedForState(true, 0, { gt: () => true }), 27);
+assert.equal(progressionSpeedForState(true, 0, { gt: () => true }), 7);
 assert.equal(progressionSpeedForState(true, { gt: () => true }, { gt: () => true }), 3000);
 assert.equal(GameSpeed.factor, 48);
 assert.equal(GameSpeed.isStageManaged, true);
@@ -51,7 +51,7 @@ assert.equal(GameSpeed.tickProgressionSpeed(), true);
 assert.equal(GameSpeed.factor, 70);
 freshPlayer.eternities = { gt: () => true };
 assert.equal(GameSpeed.tickProgressionSpeed(), true);
-assert.equal(GameSpeed.factor, 27);
+assert.equal(GameSpeed.factor, 7);
 assert.equal(freshStorage.getItem("oreki-game-speed-stage"), "post-eternity");
 freshPlayer.realities = { gt: () => true };
 assert.equal(GameSpeed.tickProgressionSpeed(), true);
@@ -119,8 +119,18 @@ const existingEternity = await loadSpeed(existingEternityStorage, {
   eternities: { gt: () => true },
 });
 assert.equal(existingEternity.GameSpeed.tickProgressionSpeed(), true);
-assert.equal(existingEternity.GameSpeed.factor, 27,
-  "已有永恒次数的存档进入首次现实前阶段时采用 27×");
+assert.equal(existingEternity.GameSpeed.factor, 7,
+  "已有永恒次数的存档进入首次现实前阶段时采用 7×");
+
+const previousPaceStorage = new MemoryStorage([
+  ["oreki-game-speed", "27"],
+  ["oreki-game-speed-stage-managed", "1"],
+  ["oreki-game-speed-stage", "post-eternity"],
+]);
+const previousPace = await loadSpeed(previousPaceStorage, { realities: 0, break: true, eternities: 1 });
+assert.equal(previousPace.GameSpeed.tickProgressionSpeed(), true);
+assert.equal(previousPace.GameSpeed.factor, 7);
+assert.equal(previousPace.GameSpeed.tickProgressionSpeed(), false);
 
 for (const [infinities, expected] of [[0, 48], [1, 500]]) {
   const oldStorage = new MemoryStorage([
@@ -133,5 +143,5 @@ for (const [infinities, expected] of [[0, 48], [1, 500]]) {
   assert.equal(migrated.GameSpeed.factor, expected);
 }
 
-console.log("PASS  Web 阶段速度：48× → 500× → 70× → 27× → 3000×；旧档迁移、动态升档和手动倍率");
+console.log("PASS  Web 阶段速度：48× → 500× → 70× → 7× → 3000×；旧档迁移、动态升档和手动倍率");
 process.exit(0);

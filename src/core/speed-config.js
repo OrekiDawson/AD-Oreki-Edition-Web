@@ -35,13 +35,13 @@ function target_player() {
 
 /**
  * Web 新档阶段速度：
- * 首次无限前 48×、首次无限后 500×、Break 后 70×、首次永恒后 27×、Reality 后 3000×。
+ * 首次无限前 48×、首次无限后 500×、Break 后 70×、首次永恒后 7×、Reality 后 3000×。
  * 玩家手动保存的倍率继续保留。
  */
 export const GAME_SPEED_DEFAULT = 48;
 export const GAME_SPEED_POST_INFINITY = 500;
 export const GAME_SPEED_POST_BREAK = 70;
-export const GAME_SPEED_POST_ETERNITY = 27;
+export const GAME_SPEED_POST_ETERNITY = 7;
 export const GAME_SPEED_POST_REALITY = 3000;
 export const GAME_SPEED_MIN = 1;
 /**
@@ -277,18 +277,17 @@ export const GameSpeed = {
   },
 
   /**
-   * 只在真实阶段变化时应用一次阶段默认速度。
-   * 阶段记录持久化；刷新时若阶段未变化，保留动态升档后的当前倍率。
+   * 应用当前阶段倍率。进入现实后的同阶段刷新保留动态升档。
    */
   tickProgressionSpeed() {
     if (!stageManaged || simulationToken !== null) return false;
     const p = target_player();
     if (!p) return false;
     const stage = progressionStageForState(p.break === true, p.realities, p.eternities, p.infinities);
-    if (stage === lastProgressionStage) return false;
+    const next = progressionSpeedForStage(stage);
+    if (stage === lastProgressionStage && (stage === "post-reality" || currentFactor === next)) return false;
     lastProgressionStage = stage;
     writeStoredStage(stage);
-    const next = progressionSpeedForStage(stage);
     if (currentFactor === next) return false;
     currentFactor = next;
     writeStored(next);

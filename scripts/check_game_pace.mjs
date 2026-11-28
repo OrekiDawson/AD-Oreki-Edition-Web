@@ -32,14 +32,14 @@ const normalChallenges = fs.readFileSync(
 assert.match(speed, /export const GAME_SPEED_DEFAULT = 48;/);
 assert.match(speed, /export const GAME_SPEED_POST_INFINITY = 500;/);
 assert.match(speed, /export const GAME_SPEED_POST_BREAK = 70;/);
-assert.match(speed, /export const GAME_SPEED_POST_ETERNITY = 27;/);
+assert.match(speed, /export const GAME_SPEED_POST_ETERNITY = 7;/);
 assert.match(speed, /export const GAME_SPEED_POST_REALITY = 3000;/);
 assert.match(speed, /export const GAME_SPEED_MAX = 100000;/);
 assert.match(speed, /let dynamicEnabled = readStoredFlag\(DYNAMIC_KEY, true\);/);
 assert.match(speed, /tickProgressionSpeed\(\)/);
 assert.match(speed, /progressionStageForState\(p\.break === true, p\.realities, p\.eternities, p\.infinities\)/);
 assert.match(options, /speedPresets: \[1, 10, 100, 1000, 3000, 10000, 100000\]/);
-assert.match(options, /首次无限前 48×，首次无限后 500×，打破无限后 70×，首次永恒后 27×，首次现实后 3000×/);
+assert.match(options, /首次无限前 48×，首次无限后 500×，打破无限后 70×，首次永恒后 7×，首次现实后 3000×/);
 assert.match(
   reality,
   /const simCount = \(multiversalSim \+ 1\) \* \(amplifiedSim \+ 1\) \+ player\.partSimulatedReality - 1;/,
@@ -55,7 +55,7 @@ assert.ok(pacingAppendix, "缺少附录 F 变更清单");
 assert.deepEqual(generatedTutorial.appendices?.find(item => item.id === "apx_changes"), pacingAppendix);
 const pacingSpeedRows = pacingAppendix.body.split("\n").filter(line => line.startsWith("| 游戏速度 |"));
 assert.equal(1, pacingSpeedRows.length, "附录 F 必须有唯一游戏速度行");
-assert.match(pacingSpeedRows[0], /Web 新档为首次无限前 48×、首次无限后 500×、打破无限后 70×、首次永恒后 27×、首次现实后 3000×/);
+assert.match(pacingSpeedRows[0], /Web 新档为首次无限前 48×、首次无限后 500×、打破无限后 70×、首次永恒后 7×、首次现实后 3000×/);
 
 assert.equal(tutorialStage.includes("默认 3000×"), false);
 assert.doesNotMatch(tutorialStage, /首次无限与打破无限仍在秒级/);
@@ -83,4 +83,4 @@ assert.equal(tutorialText.includes("31 格点亮（33 除外）"), false);
 assert.equal(tutorialText.includes("第 24 条因本作禁用新闻栏而暂不可正常取得"), true);
 assert.equal(tutorialText.includes("第 33 条也因商店移除而不可正常取得"), true);
 
-console.log("PASS  R132 Web 节奏：48×/500×/70×/27×/3000×、无额外现实模拟、TT 收益恢复原版");
+console.log("PASS  R132 Web 节奏：48×/500×/70×/7×/3000×、无额外现实模拟、TT 收益恢复原版");

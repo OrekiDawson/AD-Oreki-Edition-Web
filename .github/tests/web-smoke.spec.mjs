@@ -20,7 +20,7 @@ test("fresh mobile session boots the real game without JS exceptions", async ({ 
   expect(pageErrors, "Unhandled browser errors").toEqual([]);
 });
 
-test("stage speed follows Break/Reality and preserves manual choice across reload", async ({ page }) => {
+test("mobile settings show the opening speed and preserve manual speed across reload", async ({ page }) => {
   const pageErrors = [];
   page.on("pageerror", error => pageErrors.push(error.message));
 
@@ -46,8 +46,8 @@ test("stage speed follows Break/Reality and preserves manual choice across reloa
   await expect.poll(() => page.evaluate(() => ({
     factor: GameSpeed.factor,
     managed: GameSpeed.isStageManaged,
-  }))).toEqual({ factor: 500, managed: true });
-  await expect(page.locator(".c-oreki-speed__hint").filter({ hasText: "Break 前 500×" }))
+  }))).toEqual({ factor: 48, managed: true });
+  await expect(page.locator(".c-oreki-speed__hint").filter({ hasText: "首次无限前 48×，首次无限后 500×" }))
     .toBeVisible();
 
   await page.locator('input[aria-label="自定义游戏速度倍率"]').fill("2400");
@@ -68,6 +68,6 @@ test("stage speed follows Break/Reality and preserves manual choice across reloa
   await expect.poll(() => page.evaluate(() => ({
     factor: GameSpeed.factor,
     managed: GameSpeed.isStageManaged,
-  }))).toEqual({ factor: 500, managed: true });
+  }))).toEqual({ factor: 48, managed: true });
   expect(pageErrors, "Unhandled browser errors").toEqual([]);
 });
