@@ -35,10 +35,10 @@ function target_player() {
 
 /**
  * Web 新档阶段速度：
- * 首次无限前 60×、首次无限后 500×、Break 后 70×、首次永恒后 27×、Reality 后 3000×。
+ * 首次无限前 48×、首次无限后 500×、Break 后 70×、首次永恒后 27×、Reality 后 3000×。
  * 玩家手动保存的倍率继续保留。
  */
-export const GAME_SPEED_DEFAULT = 60;
+export const GAME_SPEED_DEFAULT = 48;
 export const GAME_SPEED_POST_INFINITY = 500;
 export const GAME_SPEED_POST_BREAK = 70;
 export const GAME_SPEED_POST_ETERNITY = 27;

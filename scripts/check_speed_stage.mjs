@@ -32,12 +32,12 @@ const freshStorage = new MemoryStorage();
 const freshPlayer = { realities: 0, break: false, eternities: 0, infinities: 0 };
 const { GameSpeed, progressionSpeedForState } = await loadSpeed(freshStorage, freshPlayer);
 
-assert.equal(progressionSpeedForState(false, 0, 0, 0), 60);
+assert.equal(progressionSpeedForState(false, 0, 0, 0), 48);
 assert.equal(progressionSpeedForState(false, 0, 0, { gt: () => true }), 500);
 assert.equal(progressionSpeedForState(true, 0, 0), 70);
 assert.equal(progressionSpeedForState(true, 0, { gt: () => true }), 27);
 assert.equal(progressionSpeedForState(true, { gt: () => true }, { gt: () => true }), 3000);
-assert.equal(GameSpeed.factor, 60);
+assert.equal(GameSpeed.factor, 48);
 assert.equal(GameSpeed.isStageManaged, true);
 
 GameSpeed.tickProgressionSpeed();
@@ -66,7 +66,7 @@ freshPlayer.infinities = 0;
 assert.equal(GameSpeed.tickProgressionSpeed(), false);
 assert.equal(GameSpeed.factor, 2400, "玩家手动倍率不得被阶段托管覆盖");
 GameSpeed.resetDefault();
-assert.equal(GameSpeed.factor, 60, "回到阶段托管后按当前存档选择开局倍率");
+assert.equal(GameSpeed.factor, 48, "回到阶段托管后按当前存档选择开局倍率");
 
 const reloadStorage = new MemoryStorage([
   ["oreki-game-speed", "20000"],
@@ -122,7 +122,7 @@ assert.equal(existingEternity.GameSpeed.tickProgressionSpeed(), true);
 assert.equal(existingEternity.GameSpeed.factor, 27,
   "已有永恒次数的存档进入首次现实前阶段时采用 27×");
 
-for (const [infinities, expected] of [[0, 60], [1, 500]]) {
+for (const [infinities, expected] of [[0, 48], [1, 500]]) {
   const oldStorage = new MemoryStorage([
     ["oreki-game-speed", "500"],
     ["oreki-game-speed-stage-managed", "1"],
@@ -133,5 +133,5 @@ for (const [infinities, expected] of [[0, 60], [1, 500]]) {
   assert.equal(migrated.GameSpeed.factor, expected);
 }
 
-console.log("PASS  Web 阶段速度：60× → 500× → 70× → 27× → 3000×；旧档迁移、动态升档和手动倍率");
+console.log("PASS  Web 阶段速度：48× → 500× → 70× → 27× → 3000×；旧档迁移、动态升档和手动倍率");
 process.exit(0);

@@ -29,7 +29,7 @@ const normalChallenges = fs.readFileSync(
   "utf8",
 );
 
-assert.match(speed, /export const GAME_SPEED_DEFAULT = 60;/);
+assert.match(speed, /export const GAME_SPEED_DEFAULT = 48;/);
 assert.match(speed, /export const GAME_SPEED_POST_INFINITY = 500;/);
 assert.match(speed, /export const GAME_SPEED_POST_BREAK = 70;/);
 assert.match(speed, /export const GAME_SPEED_POST_ETERNITY = 27;/);
@@ -39,7 +39,7 @@ assert.match(speed, /let dynamicEnabled = readStoredFlag\(DYNAMIC_KEY, true\);/)
 assert.match(speed, /tickProgressionSpeed\(\)/);
 assert.match(speed, /progressionStageForState\(p\.break === true, p\.realities, p\.eternities, p\.infinities\)/);
 assert.match(options, /speedPresets: \[1, 10, 100, 1000, 3000, 10000, 100000\]/);
-assert.match(options, /首次无限前 60×，首次无限后 500×，打破无限后 70×，首次永恒后 27×，首次现实后 3000×/);
+assert.match(options, /首次无限前 48×，首次无限后 500×，打破无限后 70×，首次永恒后 27×，首次现实后 3000×/);
 assert.match(
   reality,
   /const simCount = \(multiversalSim \+ 1\) \* \(amplifiedSim \+ 1\) \+ player\.partSimulatedReality - 1;/,
@@ -55,7 +55,7 @@ assert.ok(pacingAppendix, "缺少附录 F 变更清单");
 assert.deepEqual(generatedTutorial.appendices?.find(item => item.id === "apx_changes"), pacingAppendix);
 const pacingSpeedRows = pacingAppendix.body.split("\n").filter(line => line.startsWith("| 游戏速度 |"));
 assert.equal(1, pacingSpeedRows.length, "附录 F 必须有唯一游戏速度行");
-assert.match(pacingSpeedRows[0], /Web 新档为首次无限前 60×、首次无限后 500×、打破无限后 70×、首次永恒后 27×、首次现实后 3000×/);
+assert.match(pacingSpeedRows[0], /Web 新档为首次无限前 48×、首次无限后 500×、打破无限后 70×、首次永恒后 27×、首次现实后 3000×/);
 
 assert.equal(tutorialStage.includes("默认 3000×"), false);
 assert.doesNotMatch(tutorialStage, /首次无限与打破无限仍在秒级/);
@@ -74,7 +74,7 @@ assert.match(normalChallenges, /c11MatterGrowthPower\(diff\)/);
 assert.doesNotMatch(normalChallenges, /diff \/ getGlobalSpeedFactor\(\) \/ 20/);
 assert.equal(fs.existsSync(path.join(ROOT, "src/core/oreki-instant-challenges.js")), false);
 assert.doesNotMatch(game, /tryInstantCompleteChallenges|oreki-instant-challenges/);
-assert.doesNotMatch(JSON.stringify(tutorial.chapters[0]), /(?:60|500|70|27|3000)×/);
+assert.doesNotMatch(JSON.stringify(tutorial.chapters[0]), /(?:48|500|70|27|3000)×/);
 const obsoleteChallengeCompletion = /(?:进入|点进去).{0,2}(?:即|就)完成|瞬时完成|一口气补满|下一帧.{0,8}(?:结算|发奖|完成)|各点一次|点一遍|这一个动作|白拿|至少给它一帧时间再退出|补满并结算/;
 assert.doesNotMatch(tutorialText, obsoleteChallengeCompletion);
 assert.doesNotMatch(tutorialGenerated, obsoleteChallengeCompletion);
@@ -83,4 +83,4 @@ assert.equal(tutorialText.includes("31 格点亮（33 除外）"), false);
 assert.equal(tutorialText.includes("第 24 条因本作禁用新闻栏而暂不可正常取得"), true);
 assert.equal(tutorialText.includes("第 33 条也因商店移除而不可正常取得"), true);
 
-console.log("PASS  R132 Web 节奏：60×/500×/70×/27×/3000×、无额外现实模拟、TT 收益恢复原版");
+console.log("PASS  R132 Web 节奏：48×/500×/70×/27×/3000×、无额外现实模拟、TT 收益恢复原版");
