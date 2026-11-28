@@ -7,7 +7,7 @@
 //   2. 每个有效 Tick 都按**当前阶段最新状态**重新计算启用目标：
 //      玩家手动改动启停后，本 Tick 内允许保留其操作，下一次有效 Tick 恢复目标。
 //   3. 启停目标：反物质维度 ×8、无限维度 ×8、计数频率、维度提升、星系、献祭、
-//      无限点数倍率恒开；
+//      无限点数倍率、已解锁的时间维度、时间之理与永恒点数倍率保持开启；
 //      大坍缩严格跟随当帧策略的 true/false，策略要求关闭时下一 Tick 关闭，
 //      一次性 release 由调用方以 true 明确传入。
 //   4. **单一所有者**：本模块托管启用状态、基础购买模式、限制项及大坍缩
@@ -38,6 +38,8 @@ export const MANAGED_KEYS = Object.freeze([
   "infinityDim1", "infinityDim2", "infinityDim3", "infinityDim4",
   "infinityDim5", "infinityDim6", "infinityDim7", "infinityDim8",
   "tickspeed", "dimboost", "galaxy", "sacrifice", "crunch", "ipmult",
+  "timeDim1", "timeDim2", "timeDim3", "timeDim4", "timeDim5", "timeDim6", "timeDim7", "timeDim8",
+  "timeTheorem", "epMult",
 ]);
 
 /**
@@ -444,6 +446,16 @@ export function applyAll({
     STATE.skips += 1;
   }
   each("ipmult", root.ipMult, true);
+  const timeDims = root.timeDimension;
+  const unlockedTimeDims = timeDims?.zeroIndexed.filter(dimension => dimension.isUnlocked) ?? [];
+  if (unlockedTimeDims.length > 0) {
+    field("timeDimGroup", timeDims.isActive, true, value => { timeDims.isActive = value; });
+    for (const dimension of unlockedTimeDims) {
+      each(`timeDim${dimension.tier}`, dimension, true);
+    }
+  }
+  each("timeTheorem", root.timeTheorem, true);
+  each("epMult", root.epMult, true);
 
   for (const { key, item } of dimensionItems) {
     if (!item || (item.isUnlocked !== true && item.isBought !== true)) continue;
@@ -570,6 +582,17 @@ export function releaseAll({ autobuyers = null } = {}) {
   for (const key of ["tickspeed", "dimboost", "galaxy", "sacrifice", "crunch", "ipmult"]) {
     const item = key === "crunch" ? root.bigCrunch : root[key];
     release(key, () => item && item.isActive, value => { item.isActive = value; });
+  }
+  const timeDims = root.timeDimension;
+  if (timeDims) {
+    release("timeDimGroup", () => timeDims.isActive, value => { timeDims.isActive = value; });
+    for (const dimension of timeDims.zeroIndexed) {
+      release(`timeDim${dimension.tier}`, () => dimension.isActive, value => { dimension.isActive = value; });
+    }
+  }
+  for (const key of ["timeTheorem", "epMult"]) {
+    const item = root[key];
+    if (item) release(key, () => item.isActive, value => { item.isActive = value; });
   }
   release("tickspeed.mode", () => root.tickspeed && root.tickspeed.mode,
     value => { root.tickspeed.mode = value; });
