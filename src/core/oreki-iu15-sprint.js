@@ -155,6 +155,8 @@ export const OrekiIu15Sprint = {
   /** 主循环入口，由 `OrekiEarlyAutomation.tick()` 最先调用 */
   tick() {
     try {
+      // 原版总开关由调度器在下一托管周期恢复。暂停期间保留当前现实的防误购保护。
+      if (globalThis.OrekiSmartExecutor?.enabled === true && player.auto.autobuyersOn === false) return;
       // [R83 关键修复] 玩家关闭自动购买器总开关时必须**立即**解除接管。
       //
       // 原实现把整个 tick 挂在 `OrekiEarlyAutomation.tick()` 里，而那个入口在

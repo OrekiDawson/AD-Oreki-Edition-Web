@@ -14,8 +14,8 @@
 //      amount / xHighest / increaseWithMult；大坍缩 mode / interval 由
 //      OrekiManagedCrunchInterval 在同一个托管 Tick 强制到策略值。玩家修改只允许
 //      存活到下一次有效 Tick。
-//   5. 两个总开关（MOD 全局自动化 / 原版自动购买器总开关）任一关闭：
-//      整体不接管，不写配置，也不消费 Tick；关闭 MOD 时按 saveId 写回首次接管前
+//   5. MOD 全局自动化启用时，原版自动购买器总开关也在下一托管 Tick 恢复。
+//      关闭 MOD 时按 saveId 写回首次接管前
 //      的原值（若玩家在最后一次托管写入后再次手改，则保留玩家最新值）。
 //   6. IU15 冲刺整体让路（冲刺模块有意关闭 ID 自动器）；佩勒毁灭态只让大坍缩目标
 //      保持关闭，其余 21 项仍按目标对账（与 Android 旧实现一致，避免玩家关闭后
@@ -60,6 +60,7 @@ export const MANAGED_FIELDS = Object.freeze({
 const STATE = {
   /** 已处理到的托管 Tick 序号；同一 tick 不重复处理。 */
   lastTick: 0,
+  lastGlobalTick: 0,
   /** 存档身份（records.gameCreatedTime），仅用于诊断与换档复位。 */
   saveId: null,
   /** 统计：处理 tick 数 / 真实写入数 / 跳过项数。 */
@@ -278,16 +279,26 @@ export function applyAll({
   if (!executor || executor.enabled === false) {
     return { applied: false, reason: "mod-off", tick: resolvedTick, checked: 0, wrote: 0, restored: [] };
   }
-  // 闸门二：原版自动购买器总开关。必须严格为 true。
-  let vanillaOn = false;
-  try {
-    vanillaOn = typeof player !== "undefined" && player && player.auto &&
-      player.auto.autobuyersOn === true;
-  } catch (e) {
-    vanillaOn = false;
+  const auto = globalThis.player?.auto;
+  if (typeof auto?.autobuyersOn !== "boolean") {
+    return { applied: false, reason: "no-player-auto", tick: resolvedTick, checked: 0, wrote: 0, restored: [] };
   }
-  if (!vanillaOn) {
-    return { applied: false, reason: "vanilla-off", tick: resolvedTick, checked: 0, wrote: 0, restored: [] };
+
+  const saveId = readSaveId();
+  if (STATE.saveId !== null && saveId !== null && saveId !== STATE.saveId) {
+    STATE.lastRestored = [];
+  }
+  STATE.saveId = saveId;
+  ensureOriginalRecord(saveId);
+  if (STATE.lastGlobalTick !== resolvedTick) {
+    STATE.lastGlobalTick = resolvedTick;
+    if (!Object.prototype.hasOwnProperty.call(STATE.originalRecord.fields, "autobuyersOn")) {
+      rememberManagedWrite("autobuyersOn", auto.autobuyersOn, true);
+    }
+    if (!auto.autobuyersOn) {
+      auto.autobuyersOn = true;
+      logLine(`key=autobuyersOn tick=${resolvedTick} event=field-restored target=true`);
+    }
   }
   // IU15 冲刺：冲刺模块有意关闭 ID 自动器，托管层整体让路（不消费 Tick）。
   if (isIu15SprintLocking()) {
@@ -303,13 +314,6 @@ export function applyAll({
   STATE.lastTick = resolvedTick;
   STATE.lastTickAt = nowMs;
   STATE.ticks += 1;
-  const saveId = readSaveId();
-  if (STATE.saveId !== null && saveId !== null && saveId !== STATE.saveId) {
-    // 换存档：目标配置在本次 Tick 已按新档真实字段重算；这里只清诊断残留。
-    STATE.lastRestored = [];
-  }
-  STATE.saveId = saveId;
-  ensureOriginalRecord(saveId);
 
   let checked = 0;
   let wrote = 0;
@@ -517,7 +521,7 @@ export function applyAll({
  */
 export function releaseAll({ autobuyers = null } = {}) {
   const saveId = readSaveId();
-  const record = readOriginalRecord(saveId);
+  const record = ensureOriginalRecord(saveId);
   const root = resolveAutobuyers(autobuyers);
   if (!root || Object.keys(record.fields).length === 0) {
     STATE.originalRecord = record;
@@ -543,6 +547,10 @@ export function releaseAll({ autobuyers = null } = {}) {
     }
   };
 
+  const auto = globalThis.player?.auto;
+  if (auto) {
+    release("autobuyersOn", () => auto.autobuyersOn, value => { auto.autobuyersOn = value; });
+  }
   const dims = root.antimatterDimension;
   release("dimGroup", () => dims && dims.isActive, value => { dims.isActive = value; });
   for (let tier = 1; tier <= 8; tier += 1) {
@@ -590,6 +598,7 @@ export function releaseAll({ autobuyers = null } = {}) {
   try { globalThis.localStorage?.removeItem(ORIGINAL_STORAGE_KEY); } catch (e) { /* ignore */ }
   STATE.originalRecord = null;
   STATE.lastTick = 0;
+  STATE.lastGlobalTick = 0;
   STATE.lastReason = released > 0 ? "released-to-player" : "release-noop";
   return released > 0;
 }
@@ -619,6 +628,7 @@ export function debugState() {
 /** 仅供自检/测试复位。 */
 export function resetForTest() {
   STATE.lastTick = 0;
+  STATE.lastGlobalTick = 0;
   STATE.saveId = null;
   STATE.ticks = 0;
   STATE.writes = 0;

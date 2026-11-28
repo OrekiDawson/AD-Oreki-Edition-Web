@@ -298,8 +298,7 @@ function isManagedContextOpen() {
   try {
     const executor = globalThis.OrekiSmartExecutor;
     if (executor && executor.enabled === false) return false;
-    if (typeof player === "undefined" || !player || !player.auto ||
-        player.auto.autobuyersOn !== true) return false;
+    if (typeof player === "undefined" || !player?.auto) return false;
     const sprint = globalThis.OrekiIu15Sprint;
     if (sprint && sprint.active === true) return false;
     const crunch = globalThis.Autobuyer && globalThis.Autobuyer.bigCrunch;

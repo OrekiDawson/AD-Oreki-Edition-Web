@@ -297,14 +297,35 @@ test("关闭 MOD ⇒ 无限维度自动器恢复为接管前玩家值", () => {
   assert.equal(infinityDims[0].isActive, false);
 });
 
-test("原版自动购买器总开关关闭 ⇒ 整体让路，不写", () => {
+test("原版总开关关闭后在下一托管 tick 恢复，初始开启状态可交还", () => {
   apply(1);
   globalThis.player.auto.autobuyersOn = false;
   registry.antimatterDimension.isActive = false;
+  assert.equal(apply(1).reason, "tick-wait");
+  assert.equal(globalThis.player.auto.autobuyersOn, false);
   const result = apply(2);
-  assert.equal(result.applied, false);
-  assert.equal(result.reason, "vanilla-off");
-  assert.equal(registry.antimatterDimension.isActive, false);
+  assert.equal(result.applied, true);
+  assert.equal(globalThis.player.auto.autobuyersOn, true);
+  assert.equal(registry.antimatterDimension.isActive, true);
+  Managed.releaseAll({ autobuyers: registry });
+  assert.equal(globalThis.player.auto.autobuyersOn, true);
+});
+
+test("IU15 冲刺期间仍恢复全局开关，关闭 MOD 交还原先禁用状态", () => {
+  globalThis.player.auto.autobuyersOn = false;
+  globalThis.OrekiIu15Sprint = { active: true };
+  assert.equal(apply(1).reason, "iu15-sprint");
+  assert.equal(globalThis.player.auto.autobuyersOn, true);
+  globalThis.player.auto.autobuyersOn = false;
+  assert.equal(apply(1).reason, "iu15-sprint");
+  assert.equal(globalThis.player.auto.autobuyersOn, false);
+  assert.equal(apply(2).reason, "iu15-sprint");
+  assert.equal(globalThis.player.auto.autobuyersOn, true);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  Managed.releaseAll({ autobuyers: registry });
+  assert.equal(globalThis.player.auto.autobuyersOn, false);
+  assert.equal(apply(3).reason, "mod-off");
+  assert.equal(globalThis.player.auto.autobuyersOn, false);
 });
 
 test("大坍缩 interval 同样服从总开关、IU15 与解锁门禁", () => {
@@ -312,11 +333,13 @@ test("大坍缩 interval 同样服从总开关、IU15 与解锁门禁", () => {
   globalThis.player.auto.autobuyersOn = false;
   bigCrunch.mode = 0;
   bigCrunch.time = 99;
-  assert.equal(OrekiManagedCrunchInterval.apply(60, "vanilla-off", 1), false);
-  assert.equal(bigCrunch.mode, 0);
-  assert.equal(bigCrunch.time, 99);
+  assert.equal(OrekiManagedCrunchInterval.apply(60, "vanilla-off", 1), true);
+  assert.equal(bigCrunch.mode, 1);
+  assert.equal(bigCrunch.time, 60);
 
   globalThis.player.auto.autobuyersOn = true;
+  bigCrunch.mode = 0;
+  bigCrunch.time = 99;
   globalThis.OrekiIu15Sprint = { active: true };
   assert.equal(OrekiManagedCrunchInterval.apply(60, "iu15", 2), false);
   assert.equal(bigCrunch.mode, 0);

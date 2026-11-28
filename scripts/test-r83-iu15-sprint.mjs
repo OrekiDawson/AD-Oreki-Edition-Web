@@ -223,7 +223,11 @@ check("8. 玩家直接改 player.auto.autobuyersOn=false 时，tick 也会自动
   });
   sb.OrekiIu15Sprint.tick();
   assert.equal(lockValue, true);
+  sb.OrekiSmartExecutor = { enabled: true };
   sb.player.auto.autobuyersOn = false;
+  sb.OrekiIu15Sprint.tick();
+  assert.equal(lockValue, true, "托管等待下一个 tick 时保持 IU15 保护");
+  sb.OrekiSmartExecutor.enabled = false;
   sb.OrekiIu15Sprint.tick();
   assert.equal(lockValue, false, "tick 必须检测到开关关闭并释放");
   assert.equal(sb.OrekiIu15Sprint.active, false);
