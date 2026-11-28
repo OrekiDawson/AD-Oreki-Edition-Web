@@ -33,11 +33,17 @@ assert.match(speed, /export const GAME_SPEED_DEFAULT = 500;/);
 assert.match(speed, /export const GAME_SPEED_POST_BREAK = 70;/);
 assert.match(speed, /export const GAME_SPEED_POST_REALITY = 3000;/);
 assert.match(speed, /export const GAME_SPEED_MAX = 100000;/);
-assert.match(speed, /let dynamicEnabled = readStoredFlag\(DYNAMIC_KEY, true\);/);
+assert.match(speed, /export const SPEED_MODE_STAGE = "stage";/);
+assert.match(speed, /export const SPEED_MODE_MANUAL = "manual";/);
+assert.match(speed, /get isStageManaged\(\) \{ return speedMode === SPEED_MODE_STAGE; \}/);
 assert.match(speed, /tickProgressionSpeed\(\)/);
 assert.match(speed, /progressionStageForState\(p\.break === true, p\.realities\)/);
+assert.doesNotMatch(speed, /DYN_STALL_MS|tickDynamic|dynamicRamp|setDynamic/);
 assert.match(options, /speedPresets: \[1, 10, 100, 1000, 3000, 10000, 100000\]/);
-assert.match(options, /Break 前 500×，Break 后 70×，Reality 后 3000×/);
+assert.match(options, />\s*阶段自动\s*</);
+assert.match(options, />\s*手动固定\s*</);
+assert.doesNotMatch(options, /自动动态速度|dynamicSpeed/);
+assert.match(options, /Break 前 500×，Break 后 70×，首次 Reality 后 3000×/);
 assert.match(
   reality,
   /const simCount = \(multiversalSim \+ 1\) \* \(amplifiedSim \+ 1\) \+ player\.partSimulatedReality - 1;/,
@@ -80,14 +86,20 @@ const chapter0Speeds = [...stageSpeedNumber.value.matchAll(/(?:×\s*(\d+)|(\d+)\
 assert.deepEqual(chapter0Speeds, [500, 70, 3000]);
 const pacingAppendix = tutorial.appendices?.find(item => item.id === "apx_changes");
 assert.ok(pacingAppendix, "缺少附录 F 变更清单");
-const pacingSpeedRows = pacingAppendix.body.split("\n").filter(line => line.startsWith("| 游戏速度 |"));
-assert.equal(1, pacingSpeedRows.length, "附录 F 必须有唯一游戏速度行");
-const pacingSpeeds = pacingSpeedRows[0].match(/按\s*(\d+)\s*×\s*\/\s*(\d+)\s*×\s*\/\s*(\d+)\s*×/);
+const pacingSpeedRows = pacingAppendix.body.split("\n").filter(line => line.startsWith("| 阶段自动 |"));
+assert.equal(1, pacingSpeedRows.length, "附录 F 必须有唯一阶段自动行");
+const pacingSpeeds = pacingSpeedRows[0].match(/切换\s*(\d+)\s*×\s*、\s*(\d+)\s*×\s*、\s*(\d+)\s*×/);
 assert.ok(pacingSpeeds, "附录 F 缺少阶段速度三元组");
 assert.deepEqual(pacingSpeeds.slice(1).map(Number), [500, 70, 3000]);
+const manualSpeedRows = pacingAppendix.body.split("\n").filter(line => line.startsWith("| 手动固定 |"));
+assert.equal(1, manualSpeedRows.length, "附录 F 必须有唯一手动固定行");
+assert.match(manualSpeedRows[0], /1×～100000×/);
 
 assert.equal(tutorialStage.includes("默认 3000×"), false);
 assert.equal(tutorialStage.includes("500×/70×/3000×"), true);
+assert.equal(tutorialText.includes("动态升档 | 已退役"), true);
+assert.equal(tutorialText.includes("阶段自动"), true);
+assert.equal(tutorialText.includes("手动固定"), true);
 assert.match(eternity, /get eternityResetActive\(\)/);
 assert.equal((eternity.match(/get eternityResetActive\(\)/g) || []).length, 1);
 assert.match(eternity, /tickEternity\(\) \{[\s\S]*?if \(!this\.eternityResetActive\) return false;/);

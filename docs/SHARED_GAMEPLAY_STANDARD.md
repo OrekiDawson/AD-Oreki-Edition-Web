@@ -356,12 +356,12 @@ Android 的有效改进与测试结论，Web 也必须评估是否值得吸收�
 
 ### Web 版（`AD-Oreki-Edition`）
 
-- 全局倍率实现：`src/core/speed-config.js`；默认 `10000`，范围 `1 ~ 100000`，存 `localStorage["oreki-game-speed"]`。
+- 全局倍率实现：`src/core/speed-config.js`；模式与最近手动值分别保存在浏览器本地。阶段自动按真实 Break / 首次 Reality 状态使用 `500 / 70 / 3000`，手动固定统一允许 `1 ~ 100000`；动态升档已退役。
   **Pelle 毁灭现实使用与其他阶段相同的全额倍率**（2026-10-27 起取消上游 ADfaster 的 `sqrt` 降级，与 Android 对齐；
   证据与 A/B 见 `_research/doomed-speed-parity-2026-10-27.md`）。
 - 唯一注入点：`src/game.js:449-451` 的 `realDiff`。
 - 「游戏内时间」累计器：`records.totalInGameTime` / `thisX.inGameTime`，读取器 `src/core/time.js` 的 `inGameTimeOf()`。
-- 自动化测试：`_tools/run-all.sh`（16 组套件）。
+- 自动化测试：`_tools/run-all.sh`（16 组套件）；`scripts/check_speed_stage.mjs` 覆盖模式、真实阶段切换、手动固定和旧配置迁移。
 - **虚幻机器上限（IM cap）倍率：双端统一为 3000**（2026-11-14 R108-01 裁决；Web 侧常量 OREKI_IM_CAP_MULT=3000，Android 侧 OrekiImCapScale.MULT=3000）。
   原值 300 是按 R50 存档 log10(uncappedRM)≈6621 标定的；R108-01 默认 10000× 真实新档实测每次现实的 EP 峰值平台只有 3.44e6
   ⇒ log10(uncappedRM)≈2577，×300 时 IM 上限仅 7.43e8 < IU15 成本 1e9，IU15 冲刺 canArm 永不成立 ⇒ 莱特拉/IU25/佩勒/gameEnd 全断；

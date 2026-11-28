@@ -33,9 +33,8 @@ import { DC } from "./constants.js";
  *     于是 oreki-iu15-sprint 的 canArm 闸（currentIMCap >= 1e9）永不成立
  *     ⇒ 莱特拉 / IU25 / 佩勒 / gameEnd 全部不可达（R108-01 默认设置跑次实测
  *     43 min / realities=60 时 iu15 仍为 false）。
- *   · 动态速度救不了：升档只在「1 s 进度指纹连续 4 s 不变」时触发
- *     （speed-config.js），而现实循环里 infinities/IP/eternities/maxAM 持续变化，
- *     全程 speed 恒 10000。
+ *   · 历史动态升档现已退役；当时它只在进度指纹连续停滞时触发，
+ *     现实循环持续变化，因此并未救回该瓶颈。
  * 所以原 300 是按 R50 存档的 log10(uncappedRM)≈6621 标定的，与全新档默认速度差 2.5 倍
  * 指数、平方后差约一个数量级。×3000 把默认速度下的上限恢复到
  * (2577−1000)^2 × 3000 ≈ **7.43e9**（IU15 只需 13.5%、IU25 5e9 占 67%），

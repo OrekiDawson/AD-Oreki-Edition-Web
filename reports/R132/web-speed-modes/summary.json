@@ -1,0 +1,110 @@
+{
+  "result": "PASS",
+  "source": "/home/oreki/AD-Oreki-Edition/网页端-r132-speed-modes",
+  "server": "http://127.0.0.1:34329/",
+  "browser": "158.0.8127.18",
+  "checks": [
+    {
+      "name": "fresh stage mode",
+      "pass": true,
+      "detail": {
+        "mode": "stage",
+        "factor": 500,
+        "dynamic": "undefined",
+        "modeKey": "stage",
+        "manualKey": "500",
+        "widths": {
+          "viewport": 412,
+          "body": 412
+        }
+      }
+    },
+    {
+      "name": "dynamic API retired",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "fresh migration keys",
+      "pass": true,
+      "detail": {
+        "mode": "stage",
+        "factor": 500,
+        "dynamic": "undefined",
+        "modeKey": "stage",
+        "manualKey": "500",
+        "widths": {
+          "viewport": 412,
+          "body": 412
+        }
+      }
+    },
+    {
+      "name": "mobile viewport no horizontal overflow",
+      "pass": true,
+      "detail": {
+        "viewport": 412,
+        "body": 412
+      }
+    },
+    {
+      "name": "stage constants from real state",
+      "pass": true,
+      "detail": [
+        500,
+        70,
+        3000
+      ]
+    },
+    {
+      "name": "manual fixed mode persists",
+      "pass": true,
+      "detail": {
+        "mode": "manual",
+        "factor": 2400,
+        "modeKey": "manual",
+        "manualKey": "2400"
+      }
+    },
+    {
+      "name": "manual mode survives refresh",
+      "pass": true,
+      "detail": {
+        "mode": "manual",
+        "factor": 2400
+      }
+    },
+    {
+      "name": "save import does not overwrite speed mode",
+      "pass": true,
+      "detail": {
+        "mode": "stage",
+        "factor": 500,
+        "manualKey": "2400"
+      }
+    },
+    {
+      "name": "legacy manual migration",
+      "pass": true,
+      "detail": {
+        "mode": "manual",
+        "factor": 777,
+        "manualKey": "777",
+        "oldStage": null,
+        "oldDynamic": null
+      }
+    },
+    {
+      "name": "original 1x manual speed is lawful",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "no browser errors",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "finishedAt": "2026-11-28T18:12:23.616Z"
+}
