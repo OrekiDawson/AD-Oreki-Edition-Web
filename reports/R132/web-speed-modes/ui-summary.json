@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "server": "http://127.0.0.1:37093/",
+  "browser": "158.0.8127.18",
+  "panel": {
+    "mode": "stage",
+    "factor": 500,
+    "stageLabel": true,
+    "manualLabel": true,
+    "speedPanelVisible": true,
+    "bodyWidth": 412,
+    "viewport": 412
+  },
+  "errors": [],
+  "finishedAt": "2026-11-28T18:13:14.670Z"
+}

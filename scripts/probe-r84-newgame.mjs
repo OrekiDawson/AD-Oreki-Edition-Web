@@ -14,7 +14,7 @@
  * ## 口径（与 FACTS C.35 对齐，别写错）
  *
  * · 时间是 `Date.now()` 真实墙钟差，**不是**游戏内时间，也不经过任何倍率换算。
- * · 只记录「开跑为默认速度」，不宣称全程 10000×（动态升档默认开启）。
+ * · 只记录「开跑时的速度模式与倍率」；阶段自动只在真实 Break / Reality 变化时切换，不再动态升档。
  * · `localStorage.clear()` 在首次导航到页面之后、reload 之前执行 —— 必须在同源下才有效。
  *
  * ## 用法
@@ -162,7 +162,7 @@ const SAMPLE_EXPR = `(() => {
     smDeg: (() => { try { return g.OrekiSmartStrategy && g.OrekiSmartStrategy.debugState ? g.OrekiSmartStrategy.debugState.degraded : null; } catch { return null; } })(),
     smErr: (() => { try { return g.OrekiSmartStrategy && g.OrekiSmartStrategy.debugState ? g.OrekiSmartStrategy.debugState.lastError : null; } catch { return null; } })(),
     speed: (() => { try { return g.GameSpeed ? g.GameSpeed.current : null; } catch { return null; } })(),
-    spdDyn: (() => { try { return g.OrekiGameSpeed ? g.OrekiGameSpeed.dynamicEnabled : null; } catch { return null; } })(),
+    spdMode: (() => { try { return g.OrekiGameSpeed ? g.OrekiGameSpeed.mode : null; } catch { return null; } })(),
   };
   try {
     const d = g.OrekiEndgameAutomation && g.OrekiEndgameAutomation.debugState;

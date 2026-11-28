@@ -105,6 +105,37 @@
   line-height: 1.2;
 }
 
+/* 速度模式选择：两个显式按钮，避免把阶段自动与托管总开关混在一起 */
+.c-oreki-speed__mode-select {
+  width: auto !important;
+  height: auto !important;
+  min-height: 5.5rem;
+  flex: 0 1 20rem;
+  margin: 0 !important;
+  padding: 0.6rem 0.9rem;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+.c-oreki-speed__mode-buttons {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.c-oreki-speed__mode-buttons > button {
+  flex: 1 1 0;
+  min-height: 3.2rem;
+  margin: 0 !important;
+  padding: 0 0.6rem;
+  font-size: 1rem;
+}
+
+.c-oreki-speed__mode-active {
+  outline: 0.2rem solid var(--color-reality);
+  outline-offset: -0.2rem;
+}
+
 /* 自动购买器间隔缩放开关：与速度设置区同处一块，排版沿用同一套尺寸 */
 .c-oreki-speed__autobuyer {
   display: flex !important;

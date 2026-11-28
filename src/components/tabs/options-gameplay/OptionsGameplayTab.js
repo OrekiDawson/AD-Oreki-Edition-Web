@@ -28,13 +28,11 @@ export default {
       speedFactor: GameSpeed.factor,
       speedInput: String(GameSpeed.factor),
       speedPresets: [1, 10, 100, 1000, 3000, 10000, 100000],
-      speedStageManaged: GameSpeed.isStageManaged,
+      speedMode: GameSpeed.mode,
       speedModeLabel: GameSpeed.modeLabel,
       // 直接读 GameSpeed 的开关状态，不另设一份存档/本地状态
       scaleAutobuyerInterval: GameSpeed.scaleAutobuyerInterval,
       scaleTickspeedAutobuyerInterval: GameSpeed.scaleTickspeedAutobuyerInterval,
-      // 动态速度模式：唯一来源仍是 GameSpeed，这里只做镜像供 UI 绑定
-      dynamicSpeed: GameSpeed.isDynamic,
       // 智能自动购买器状态（七项 + 让路原因）。数值全部来自 OrekiSmartExecutor.debugState()，
       // 这里不推导、不估算 —— 算不出来就显示「无法判定」。
       smartRows: [],
@@ -56,13 +54,10 @@ export default {
     speedFactorText() {
       return GameSpeed.format(this.speedFactor);
     },
-    dynamicSpeedLabel() {
-      return this.speedModeLabel;
-    },
-    dynamicSpeedHint() {
-      return this.dynamicSpeed
-        ? "进度连续停滞时会自动升档（每次 ×2，上限沿用倍率上限）；进度在走时不动"
-        : "手动模式：倍率只由你设定，控制器不会自动升档";
+    speedModeHint() {
+      return this.speedMode === "stage"
+        ? "阶段自动：按真实 Break / Reality 状态切换 500×、70×、3000×；与智能自动操作总开关无关"
+        : "手动固定：始终使用你设置的倍率，阶段推进不会改写它";
     },
     /** [Oreki R50 web · 九修] 当前生效的间隔（只读镜像，读的是执行层的真实值） */
     automationIntervalLabel() {
@@ -81,9 +76,7 @@ export default {
       return "独立保存在浏览器本地：重置或导入存档都不会改变倍率";
     },
     speedStageHint() {
-      return this.speedStageManaged
-        ? "新档阶段速度：Break 前 500×，Break 后 70×，Reality 后 3000×；手动设置倍率后停止自动接管"
-        : "已使用你的手动倍率；点“恢复默认”可重新启用阶段速度";
+      return "阶段自动：Break 前 500×，Break 后 70×，首次 Reality 后 3000×；恢复默认会按当前真实状态立即重算";
     },
     sliderPropsOfflineTicks() {
       return {
@@ -130,10 +123,10 @@ export default {
     scaleTickspeedAutobuyerInterval(newValue) {
       GameSpeed.setScaleTickspeedAutobuyerInterval(newValue);
     },
-    dynamicSpeed(newValue) {
-      GameSpeed.setDynamic(newValue);
-      this.speedFactor = GameSpeed.factor;
-      this.speedModeLabel = GameSpeed.modeLabel;
+    speedMode(newValue) {
+      if (newValue === "stage") GameSpeed.setStageMode();
+      else GameSpeed.setManualMode();
+      this.syncSpeedUi();
     },
     // [Oreki R50 web · 九修] 开关即时生效并持久化
     automationEnabled(newValue) {
@@ -168,11 +161,10 @@ export default {
       this.automatorUnlocked = Player.automatorUnlocked;
       this.automatorLogSize = options.automatorEvents.maxEntries;
       this.speedFactor = GameSpeed.factor;
-      this.speedStageManaged = GameSpeed.isStageManaged;
+      this.speedMode = GameSpeed.mode;
       this.speedModeLabel = GameSpeed.modeLabel;
       this.scaleAutobuyerInterval = GameSpeed.scaleAutobuyerInterval;
       this.scaleTickspeedAutobuyerInterval = GameSpeed.scaleTickspeedAutobuyerInterval;
-      this.dynamicSpeed = GameSpeed.isDynamic;
       // [R103-07] 同步执行层真实间隔/档位（见 data() 里的 automationIntervalLive 说明）。
       this.automationIntervalLive = OrekiSmartExecutor.intervalSec;
       this.automationStrict = OrekiSmartExecutor.strictGlobal;
@@ -270,16 +262,20 @@ export default {
         GameUI.notify.success(`自动操作间隔已设为 ${result.intervalSec} 秒`);
       }
     },
-    applySpeedValue(value) {      const result = GameSpeed.set(value);
+    syncSpeedUi() {
+      this.speedFactor = GameSpeed.factor;
+      this.speedInput = String(GameSpeed.factor);
+      this.speedMode = GameSpeed.mode;
+      this.speedModeLabel = GameSpeed.modeLabel;
+    },
+    applySpeedValue(value) {
+      const result = GameSpeed.set(value);
       if (!result.ok) {
         GameUI.notify.error(`倍率设置失败：${result.message}`);
         this.speedInput = String(GameSpeed.factor);
         return;
       }
-      this.speedFactor = result.value;
-      this.speedInput = String(result.value);
-      this.speedStageManaged = GameSpeed.isStageManaged;
-      this.speedModeLabel = GameSpeed.modeLabel;
+      this.syncSpeedUi();
       if (result.persisted) {
         GameUI.notify.success(`游戏速度已设置为 ×${GameSpeed.format(result.value)}`);
       } else {
@@ -294,11 +290,8 @@ export default {
     },
     resetSpeed() {
       const result = GameSpeed.resetDefault();
-      this.speedFactor = GameSpeed.factor;
-      this.speedInput = String(GameSpeed.factor);
-      this.speedStageManaged = GameSpeed.isStageManaged;
-      this.speedModeLabel = GameSpeed.modeLabel;
-      if (result.ok) GameUI.notify.info(`游戏速度已恢复阶段管理 ×${GameSpeed.format(result.value)}`);
+      this.syncSpeedUi();
+      if (result.ok) GameUI.notify.info(`游戏速度已恢复阶段自动 ×${GameSpeed.format(result.value)}`);
     },
     // Given the endpoints of 22-54, this produces 500, 600, ... , 900, 1000, 2000, ... , 1e6 ticks
     // It's essentially 10^(x/10) but with the mantissa spaced linearly instead of logarithmically
@@ -361,14 +354,28 @@ export default {
         </button>
       </div>
       <div class="l-options-grid__row c-oreki-speed__autobuyer">
-        <PrimaryToggleButton
-          v-model="dynamicSpeed"
-          class="o-primary-btn--option"
-          label="自动动态速度"
-        />
+        <div class="o-primary-btn o-primary-btn--option c-oreki-speed__mode-select">
+          <b>速度模式</b>
+          <div class="c-oreki-speed__mode-buttons">
+            <button
+              class="o-primary-btn o-primary-btn--option"
+              :class="{ 'c-oreki-speed__mode-active': speedMode === 'stage' }"
+              @click="speedMode = 'stage'"
+            >
+              阶段自动
+            </button>
+            <button
+              class="o-primary-btn o-primary-btn--option"
+              :class="{ 'c-oreki-speed__mode-active': speedMode === 'manual' }"
+              @click="speedMode = 'manual'"
+            >
+              手动固定
+            </button>
+          </div>
+        </div>
         <div class="o-primary-btn o-primary-btn--option c-oreki-speed__info">
-          <b>{{ dynamicSpeedLabel }}</b>
-          <span class="c-oreki-speed__hint">{{ dynamicSpeedHint }}</span>
+          <b>{{ speedModeLabel }}</b>
+          <span class="c-oreki-speed__hint">{{ speedModeHint }}</span>
         </div>
       </div>
       <div class="l-options-grid__row c-oreki-speed__autobuyer">

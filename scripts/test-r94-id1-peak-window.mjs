@@ -365,16 +365,16 @@ check("17. 原版自动购买器的有效间隔 = interval / F（高倍率下按
     /get effectiveInterval\(\) \{\s*\n\s*return this\.interval \/ Math\.max\(1, getGlobalSpeedFactor\(\)\);/);
 });
 
-check("17b. 动态速度进度指纹包含时间之理与反物质峰值，真实成长不得误触升档", () => {
-  assert.match(SPEED_SRC, /ex\(p\.records\.thisInfinity\?\.maxAM\)/);
-  assert.match(SPEED_SRC, /ex\(p\.records\.thisReality\?\.maxAM\)/);
-  assert.match(SPEED_SRC, /ex\(p\.records\.totalAntimatter\)/);
-  assert.match(SPEED_SRC, /ex\(p\.timestudy\?\.theorem\)/);
+check("17b. 动态升档已完全退役", () => {
+  assert.doesNotMatch(SPEED_SRC, /tickDynamic|dynamicRampCount|setDynamic|DYN_STALL_MS/);
+  assert.match(SPEED_SRC, /export const SPEED_MODE_STAGE = "stage";/);
+  assert.match(SPEED_SRC, /export const SPEED_MODE_MANUAL = "manual";/);
 });
 
-check("17c. 首次现实前的离散生长链保持用户设定倍率，不自动升档", () => {
+check("17c. 阶段自动只由真实 Break / Reality 状态选择", () => {
   assert.match(SPEED_SRC,
-    /if \(!positive\(p\.realities\)\) return false;/);
+    /function progressionStageForState\(broken, realities\) \{[\s\S]*?if \(positive\(realities\)\) return "post-reality";[\s\S]*?return broken === true \? "post-break" : "pre-break";/);
+  assert.match(SPEED_SRC, /if \(speedMode !== SPEED_MODE_STAGE \|\| simulationToken !== null\) return false;/);
 });
 
 check("18. HOLD 内的峰值爬升不受 MOD 节拍限制：原版自动购买器在新默认倍率下不超过 50ms 触发", () => {
