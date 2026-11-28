@@ -34,12 +34,13 @@ function target_player() {
 }
 
 /**
- * 新档阶段速度。与 Android `OrekiGamePace` 保持同一节奏：
- * Break 前 500×、Break 后 70×、Reality 后 3000×。
- * 已有玩家保存的合法倍率继续保留，不因升级被覆盖。
+ * Web 新档阶段速度：
+ * Break 前 500×、Break 后 70×、首次永恒后 27×、Reality 后 3000×。
+ * 玩家手动保存的倍率继续保留。
  */
 export const GAME_SPEED_DEFAULT = 500;
 export const GAME_SPEED_POST_BREAK = 70;
+export const GAME_SPEED_POST_ETERNITY = 27;
 export const GAME_SPEED_POST_REALITY = 3000;
 export const GAME_SPEED_MIN = 1;
 /**
@@ -166,15 +167,18 @@ function positive(value) {
   return false;
 }
 
-function progressionStageForState(broken, realities) {
+function progressionStageForState(broken, realities, eternities) {
   if (positive(realities)) return "post-reality";
+  if (positive(eternities)) return "post-eternity";
   return broken === true ? "post-break" : "pre-break";
 }
 
 function readStoredStage() {
   try {
     const value = window.localStorage.getItem(STAGE_KEY);
-    return ["pre-break", "post-break", "post-reality"].includes(value) ? value : null;
+    return ["pre-break", "post-break", "post-eternity", "post-reality"].includes(value)
+      ? value
+      : null;
   } catch (e) {
     return null;
   }
@@ -197,12 +201,13 @@ function writeStageManaged(value) {
 let lastProgressionStage = readStoredStage();
 
 /** 仅由真实游戏状态决定新档阶段速度，不读取墙钟。 */
-export function progressionSpeedForState(broken, realities) {
-  return progressionSpeedForStage(progressionStageForState(broken, realities));
+export function progressionSpeedForState(broken, realities, eternities) {
+  return progressionSpeedForStage(progressionStageForState(broken, realities, eternities));
 }
 
 function progressionSpeedForStage(stage) {
   if (stage === "post-reality") return GAME_SPEED_POST_REALITY;
+  if (stage === "post-eternity") return GAME_SPEED_POST_ETERNITY;
   return stage === "post-break" ? GAME_SPEED_POST_BREAK : GAME_SPEED_DEFAULT;
 }
 
@@ -276,11 +281,11 @@ export const GameSpeed = {
     if (!stageManaged || simulationToken !== null) return false;
     const p = target_player();
     if (!p) return false;
-    const stage = progressionStageForState(p.break === true, p.realities);
+    const stage = progressionStageForState(p.break === true, p.realities, p.eternities);
     if (stage === lastProgressionStage) return false;
     lastProgressionStage = stage;
     writeStoredStage(stage);
-    const next = progressionSpeedForState(p.break === true, p.realities);
+    const next = progressionSpeedForStage(stage);
     if (currentFactor === next) return false;
     currentFactor = next;
     writeStored(next);
@@ -358,7 +363,7 @@ export const GameSpeed = {
   resetDefault() {
     const p = target_player();
     const stage = p
-      ? progressionStageForState(p.break === true, p.realities)
+      ? progressionStageForState(p.break === true, p.realities, p.eternities)
       : "pre-break";
     writeStageManaged(true);
     lastProgressionStage = stage;
