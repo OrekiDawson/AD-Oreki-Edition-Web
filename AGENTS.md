@@ -27,6 +27,7 @@
 ### 2.1 Web 技术与游戏约束
 - 上游冻结于 2026-07-17 的 5409e320；未经授权不整体升级。使用现有 JS/Node 与 Playwright 手机 Chromium 真实新档，证据绑定源码、部署、运行 ID。
 - 双端行为、GUI、中文教程等价；真实合法新档 ≤180 分钟，禁止伪造资源、进度、解锁、挑战、成就、存档和终局。五阶段 0–30、30–75、75–130、130–165、165–180 分钟，首 Reality 早于 70 分钟触发 PACING FAIL 审查，不按时钟强制解锁。节奏明显失败保存证据、停止无效长跑并修复。
+- 开发收口、预发布、正式发布及停工交接前核验 [双端差异台账](WEB_ANDROID_DIFFERENCES.md)，按 [Workspace 维护规范](https://github.com/OrekiDawson/AD-Oreki-Edition-Workspace/blob/main/%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/Agent%E8%A7%84%E5%88%99/02-%E9%A1%B9%E7%9B%AE%E4%B8%8E%E6%B8%B8%E6%88%8F.md#211-双端差异台账) 更新权威源。业务等价以实际行为为准。
 - 调度器独占自动购买器与全局控制；开启托管时玩家修改下一有效 tick 按合法状态重算恢复；间隔 1–60 秒默认 10 秒，独立总开关关闭即停止且不擅自重开。不越级、误重置、重复调度或伪结算。
 - STD/IAP 商店及商店/广告倍率退役（乘法 ×1、加法 0），保护历史购买字段；原版→MOD→原版真实往返，Android/Web 跨平台不推定可直接互读。GAMEPLAY LEGALITY、PACING、ENDGAME、POST-ENDGAME STABILITY、SAVE COMPATIBILITY 五项独立验收。
 - oreki.net 由验证后的 Web 源码部署，Pages 不直接开发业务；详见 [DELIVERY_RULES](docs/DELIVERY_RULES.md)、[FACTS](docs/FACTS.md)。
