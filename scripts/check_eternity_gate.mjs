@@ -1660,6 +1660,30 @@ try {
   reset();
 }
 
+// 自动购买器与 MOD 调度器必须按开关交接结算入口。
+{
+  const autobuyerSource = readFileSync(path.join(ROOT, "src/core/autobuyers/eternity-autobuyer.js"), "utf8")
+    .replace('import { AutobuyerState } from "./autobuyer.js";', "class AutobuyerState {}");
+  const sourceUrl = `data:text/javascript;base64,${Buffer.from(autobuyerSource).toString("base64")}`;
+  const { EternityAutobuyerState } = await import(sourceUrl);
+  const autobuyer = new EternityAutobuyerState();
+  let nativeChecks = 0;
+  Object.defineProperty(autobuyer, "willEternity", {
+    get() {
+      nativeChecks += 1;
+      return false;
+    },
+  });
+  const savedExecutor = globalThis.OrekiSmartExecutor;
+  globalThis.OrekiSmartExecutor = { enabled: true };
+  autobuyer.tick();
+  check("MOD 开启时原版 tick 不走独立结算判定", nativeChecks === 0);
+  globalThis.OrekiSmartExecutor.enabled = false;
+  autobuyer.tick();
+  check("关闭 MOD 后原版 tick 恢复结算判定", nativeChecks === 1);
+  globalThis.OrekiSmartExecutor = savedExecutor;
+}
+
 // ---------------- 汇总 ----------------
 {
   reset();

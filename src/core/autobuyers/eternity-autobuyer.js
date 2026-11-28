@@ -99,6 +99,7 @@ export class EternityAutobuyerState extends AutobuyerState {
   }
 
   tick() {
+    if (globalThis.OrekiSmartExecutor?.enabled === true) return;
     if (this.willEternity) eternity(false, true);
   }
 
