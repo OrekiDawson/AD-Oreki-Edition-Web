@@ -44,7 +44,7 @@ export class EPMultAutobuyerState extends AutobuyerState {
     // call this from the TD autobuyers in order to make sure this is executed before TDs are purchased. Simply
     // reordering the autobuyer call order is undesirable because much of the codebase relies on autobuyers being
     // grouped as they are, and many other autobuyers in the 5xEP group must execute *after* dimensions
-    if (!this.isActive) return;
+    if (!this.isActive || globalThis.OrekiSmartExecutor?.enabled === true) return;
     applyEU2();
     EternityUpgrade.epMult.buyMax(true);
   }

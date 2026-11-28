@@ -18,6 +18,7 @@ export class TimeTheoremAutobuyerState extends AutobuyerState {
   }
 
   tick() {
+    if (globalThis.OrekiSmartExecutor?.enabled === true && !Pelle.isDoomed) return;
     if (this.hasUnlimitedBulk) TimeTheorems.buyMax(true);
     else TimeTheorems.buyOneOfEach();
   }

@@ -52,4 +52,27 @@ assert.equal(automation.buyEternityUpgrades(), true);
 assert.equal(context.balance, 0);
 assert.equal(automation.buyEternityUpgrades(), false);
 assert.equal(context.calls, 2);
-console.log("PASS：总开关、三类挑战、毁灭、时间维度启动资金、单拍限购、真实扣费和幂等边界");
+
+context.Autobuyer = { epMult: { isUnlocked: true, isActive: true } };
+let perkChecks = 0;
+context.applyEU2 = () => { perkChecks++; };
+context.EternityUpgrade.epMult = {
+  buyMax(auto) {
+    assert.equal(auto, true);
+    if (context.balance < 500) return false;
+    context.balance -= 500;
+    return true;
+  },
+};
+context.balance = 600;
+automation.eternityUpgradeReserve = () => 1000;
+assert.equal(automation.buyEternityUpgrades(), false);
+assert.equal(context.balance, 600);
+assert.equal(perkChecks, 0);
+automation.eternityUpgradeReserve = () => null;
+assert.equal(automation.buyEternityUpgrades(), true);
+assert.equal(context.balance, 100);
+assert.equal(perkChecks, 1);
+assert.equal(automation.buyEternityUpgrades(), false);
+assert.equal(context.balance, 100);
+console.log("PASS：总开关、挑战限制、启动资金、升级限购和 EP 倍率支出");

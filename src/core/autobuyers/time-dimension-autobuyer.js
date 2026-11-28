@@ -34,6 +34,7 @@ export class TimeDimensionAutobuyerState extends IntervaledAutobuyerState {
   }
 
   tick() {
+    if (globalThis.OrekiSmartExecutor?.enabled === true && !Pelle.isDoomed) return;
     // We specifically call these two things before actually running the TD autobuyer code because that behavior
     // is desirable to gameplay, but simply reordering the autobuyers overall has undesired side-effects. There
     // are checks internal to these calls which ensure that they don't trigger even when still locked

@@ -1797,6 +1797,11 @@ export const OrekiEternityAutomation = {
         if (upgrade.isBought || !upgrade.canBeBought) continue;
         return upgrade.purchase() === true;
       }
+      const epMultBuyer = globalThis.Autobuyer?.epMult;
+      if (epMultBuyer?.isUnlocked && epMultBuyer.isActive && this.eternityUpgradeReserve() === null) {
+        applyEU2();
+        return EternityUpgrade.epMult.buyMax(true) === true;
+      }
       return false;
     } catch (error) {
       // 加载过程缺失游戏对象时保留原有自动化，不把异常误记为购买成功。
