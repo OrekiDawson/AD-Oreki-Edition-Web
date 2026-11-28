@@ -78,6 +78,7 @@ export class RealityAutobuyerState extends AutobuyerState {
   }
 
   tick() {
+    if (globalThis.OrekiSmartExecutor?.enabled === true) return;
     // Checking if auto-reality should trigger immediately due to bad glyph options happens at a higher priority
     // than everything else, preempting other settings and only checking them if it fails
     // In order to reduce excessive computational load, this only ever gets checked once per reality unless filter
